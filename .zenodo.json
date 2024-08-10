@@ -1,0 +1,26 @@
+{
+    "creators": [
+        {
+            "orcid": "0000-0003-3891-5444",
+            "affiliation": "ACCESS-NRI",
+            "name": "Beucher, Romain"
+        },
+        {
+            "affiliation": "ACCESS-NRI",
+            "name": "Carouge, Claire"
+        }
+    ],
+
+    "license": "Apache-2.0",
+
+    "title": "ACCESS-NRI Template",
+    "decription": "Template repository for ACCESS-NRI, test",
+
+    "keywords": ["Climate", "Science", "ACCESS-NRI", "NCI"],
+
+    "communities": [
+        {"identifier": "access-nri"}
+    ],
+
+    "grants": [{"id":""}]
+}
