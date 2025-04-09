@@ -42,16 +42,3 @@ def copy_files(src_dir, dest_dir, file_extension):
                 src_file = os.path.join(root, file)
                 dest_file = os.path.join(dest_path, file)
                 shutil.copy2(src_file, dest_file)
-
-## -----------------------------------------------------------------
-## Copy *.py and *.m files from ISSM directory
-## -----------------------------------------------------------------
-src_dir = '/Users/lawrence.bird/ISSM/'
-
-# Python files
-dest_dir = '/Users/lawrence.bird/pyISSM/interface/python_files/'
-copy_files(src_dir, dest_dir, file_extension='.py')
-
-# MATLAB files
-dest_dir = '/Users/lawrence.bird/pyISSM/interface/matlab_files/'
-copy_files(src_dir, dest_dir, file_extension='.m')
