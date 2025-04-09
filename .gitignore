@@ -11,6 +11,9 @@ __pycache__/
 # OS files
 .DS_Store
 
+# Auto-IDE files
+.idea/
+
 # Distribution / packaging
 .Python
 build/
