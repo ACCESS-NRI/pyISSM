@@ -1,1 +1,2 @@
-from . import analysis, build, data, learn, plot, execute, model, utils
+from . import analysis, data, learn, plot, execute, utils
+from .model import Model
