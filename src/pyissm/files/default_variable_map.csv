@@ -1,0 +1,24 @@
+﻿issmModelGroup,issmModelSubgroup,issmVariableName,issmVariableUnit,outputVariableName,outputVariableLongName,outputVariableUnit
+geometry,,surface,m,init_surface_altitude,Initial ice sheet altitude,m
+geometry,,thickness,m,init_land_ice_thickness,Initial ice sheet thickness,m
+geometry,,base,m,init_base_altitude,Initial base elevation,m
+geometry,,bed,m,bedrock_altitude,Bedrock altitude,m
+smb,,mass_balance,myr-1ie,init_land_ice_surface_specific_mass_balance_flux,Initial surface mass balance flux,kgm-2s-1
+basalforcings,,geothermalflux,Wm2,upward_geothermal_heat_flux_at_ground_level,Bedrock geothermal heat flux,Wm2
+initialization,,temperature,K,temperature_at_top_of_ice_sheet_model,Surface temperature,K
+results,TransientSolution,Vx,myr-1,land_ice_vertical_mean_x_velocity,X component of land ice vertical mean velocity,ms-1
+results,TransientSolution,Vy,myr-1,land_ice_vertical_mean_y_velocity,Y component of land ice vertical mean velocity,ms-1
+results,TransientSolution,Vel,myr-1,land_ice_vertical_mean_velocity,Land ice vertical mean velocity,ms-1
+results,TransientSolution,Surface,m,surface_altitude,Ice sheet altitude,m
+results,TransientSolution,Thickness,m,land_ice_thickness,Ice sheet thickness,m
+results,TransientSolution,Base,m,base_altitude,Base elevation,m
+results,TransientSolution,GroundinglineMassFlux,Gtyr-1,tendency_of_grounded_ice_mass,Total grounding line flux,kgs-1
+results,TransientSolution,TotalSmb,Gtyr-1,tendency_of_land_ice_mass_due_to_surface_mass_balance,Total SMB flux,kgs-1
+results,TransientSolution,TotalGroundedBmb,Gtyr-1,tendency_of_land_ice_mass_due_to_basal_mass_balance,Total BMB Flux,kgs-1
+results,TransientSolution,GroundedArea,m2,grounded_ice_sheet_area,Area covered by grounded ice,m2
+results,TransientSolution,FloatingArea,m2,floating_ice_shelf_area,Area covered by floating ice,m2
+results,TransientSolution,IceVolume,m3,land_ice_mass,Ice mass,kg
+results,TransientSolution,IceVolumeAboveFloatation,m3,land_ice_mass_not_displacing_sea_water,Ice mass not displacing seawater,kg
+ISMIP6,,,,land_ice_area_fraction,Land ice area fraction,%
+ISMIP6,,,,grounded_ice_sheet_area_fraction,Grounded ice area fraction,%
+ISMIP6,,,,floating_ice_shelf_area_fraction,Floating ice shelf area fraction,%
