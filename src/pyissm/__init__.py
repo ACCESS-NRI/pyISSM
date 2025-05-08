@@ -1,2 +1,2 @@
-from . import analysis, data, learn, plot, execute, utils
-from .model import Model
+from . import analysis, data, learn, plot, execute, utils, model
+from .core import Model
