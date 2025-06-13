@@ -6,6 +6,8 @@ Functions for building and interacting with an ISSM model mesh.
 import numpy as np
 import matplotlib.tri as tri
 from scipy.interpolate import griddata
+import warnings
+from .. import utils
 
 def get_mesh(mesh_x,
              mesh_y,
@@ -53,6 +55,140 @@ def get_mesh(mesh_x,
 
     return mesh
 
+def process_mesh(md):
+    """
+    Process ISSM model mesh
+
+    This function processes key elements of an ISSM model mesh and is
+    used in several core pyISSM functions to ensure consistency
+
+    Parameters
+    ----------
+    md : ISSM Model object
+        ISSM Model object from which the mesh should be extracted/processed.
+
+    Returns
+    -------
+    mesh : matplotlib.tri.Triangulation
+        Triangular mesh object representing the model domai
+    mesh_x : 1d array
+        x-coordinates of the mesh nodes.
+    mesh_y : 1d array
+        y-coordinates of the mesh nodes.
+    mesh_elements : 2d array
+        element connectivity.
+    is3d : bool
+        'True' if elements2d exists (and the model is 3D), 'False' otherwise
+    """
+
+    ## Set default values
+    is3d = False
+
+    ## Process a 3D model
+    if utils.has_nested_attr(md, 'mesh', 'elements2d'):
+
+        # Create mesh object
+        mesh = get_mesh(md.mesh.x2d, md.mesh.y2d, md.mesh.elements2d)
+
+        # Extract X/Y Coordinates for 2D mesh
+        mesh_x = md.mesh.x2d
+        mesh_y = md.mesh.y2d
+
+        # Extract and adjust 2D element numbering to be 0-indexed
+        mesh_elements = md.mesh.elements2d - 1
+
+        # Return is3d and display warning for 3D mesh
+        is3d = True
+        warnings.warn('3D model found. Processing as 2D mesh.')
+
+    ## Process a 2D model
+    else:
+
+        # Create mesh object
+        mesh = get_mesh(md.mesh.x, md.mesh.y, md.mesh.elements)
+
+        # Extract X/Y Coordinates
+        mesh_x = md.mesh.x
+        mesh_y = md.mesh.y
+
+        # Extract and adjust element numbering to be 0-indexed
+        mesh_elements = md.mesh.elements - 1
+
+    return mesh, mesh_x, mesh_y, mesh_elements, is3d
+
+def find_node_types(md,
+                    ice_levelset,
+                    ocean_levelset):
+    """
+    Identify node types (ice, ice-front, ocean, floating ice, grounded ice) from level set data.
+
+    This function processes level set fields for ice and ocean and classifies mesh nodes into
+    several categories based on their sign.
+
+    For 3D meshes, only the surface layer (where `vertexonsurface == 1`) is processed.
+
+    Parameters
+    ----------
+    md : ISSM Model object
+        ISSM Model object containing the mesh and geometry information. Must have attributes:
+        'md.mesh.*' used by process_mesh().
+    ice_levelset : ndarray
+        1D array of values from the ice level set:
+            Ice < 0
+            Ice front = 0
+            No Ice > 0
+    ocean_levelset : ndarray
+        1D array of values from the ocean level set:
+            Ocean < 0
+            No ocean > 0
+
+    Returns
+    -------
+    dict of str -> ndarray
+        Dictionary with boolean arrays (same length as number of surface nodes), indicating:
+
+        - 'ice_nodes' : Nodes with ice (ice_levelset < 0)
+        - 'ice_front_nodes' : Nodes on the ice front (ice_levelset == 0)
+        - 'ocean_nodes' : Nodes with ocean (ocean_levelset < 0)
+        - 'floating_ice_nodes' : Nodes with floating ice (ice_levelset < 0 & ocean_levelset < 0)
+        - 'grounded_ice_nodes' : Nodes with grounded ice (ice_levelset < 0 & ocean_levelset >= 0)
+
+    Warnings
+    --------
+    If a 3D mesh is detected, only the surface layer is used. A warning is issued.
+    """
+
+    ## Process model mesh
+    mesh, mesh_x, mesh_y, mesh_elements, is3d = process_mesh(md)
+
+    ## Identify ice/ocean nodes from surface layer of 3D model
+    if is3d:
+        ice_nodes = ice_levelset[md.mesh.vertexonsurface == 1] < 0
+        ice_front_nodes = ice_levelset[md.mesh.vertexonsurface == 1] == 0
+        ocean_nodes = ocean_levelset[md.mesh.vertexonsurface == 1] < 0
+
+        warnings.warn('3D model found. Processing surface layer only.')
+
+    ## Identify ice/ocean nodes
+    else:
+        ice_nodes = ice_levelset < 0
+        ice_front_nodes = ice_levelset == 0
+        ocean_nodes = ocean_levelset < 0
+
+    ## Identify floating and grounded ice nodes
+    floating_ice_nodes = ice_nodes & ocean_nodes
+    grounded_ice_nodes = ice_nodes  & ~ocean_nodes
+
+    ## Compile dictionary of node types to return
+    output_dict = {
+        'ice_nodes': ice_nodes,
+        'ice_front_nodes': ice_front_nodes,
+        'ocean_nodes': ocean_nodes,
+        'floating_ice_nodes': floating_ice_nodes,
+        'grounded_ice_nodes': grounded_ice_nodes
+    }
+
+    return output_dict
 
 def make_gridded_domain_mask(mesh_x,
                              mesh_y,
