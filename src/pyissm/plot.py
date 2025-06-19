@@ -220,3 +220,126 @@ def plot_model_nodes(md,
         return fig, ax
     else:
         return ax
+
+def plot_model_elements(md,
+                        ice_levelset,
+                        ocean_levelset,
+                        type = 'ice_elements',
+                        ax = None,
+                        color = 'blue',
+                        figsize = (6.4, 4.8),
+                        constrained_layout = True,
+                        show_mesh = True,
+                        mesh_args = {},
+                        show_legend = True,
+                        legend_args={}):
+
+    """
+    Plot model elements by type (ice, ice-front, ocean, floating, grounded, grounding line) on a 2D mesh.
+
+    This function uses level set fields to classify mesh elements and visualize them
+    in a triplot visualisation. Optionally overlays the finite element mesh and includes
+    a custom legend. Supports plotting in existing Matplotlib axes or creating
+    a new figure.
+
+    Parameters
+    ----------
+    md : ISSM Model object
+        ISSM Model object containing mesh. Must be compatible with process_mesh().
+    ice_levelset : ndarray
+        Array of ice level set values. Negative values indicate ice-covered nodes; zero indicates the ice front.
+    ocean_levelset : ndarray
+        Array of ocean level set values. Negative values indicate ocean-covered nodes.
+    type : {'ice_elements', 'ice_front_elements', 'ocean_elements', 'floating_ice_elements',
+            'grounded_ice_elements', 'grounding_line_elements'}, optional
+        The element type to visualize. Default is 'ice_elements'.
+    ax : matplotlib.axes.Axes, optional
+        Axes object to draw on. If None, a new figure and axes are created.
+    color : str, optional
+        Color used for elements. Default is "blue".
+    figsize : tuple of float, optional
+        Size of the figure in inches (width, height). Default is (6.4, 4.8).
+    constrained_layout : bool, optional
+        Whether to use constrained layout in figure. Default is True.
+    show_mesh : bool, optional
+        Whether to overlay the triangular mesh. Default is True.
+    mesh_args : dict, optional
+        Additional keyword arguments passed to plot_mesh2d() for customizing mesh appearance.
+    show_legend : bool, optional
+        Whether to display a legend identifying node types. Default is True.
+    legend_args : dict, optional
+        Additional keyword arguments passed to ax.legend().
+
+    Returns
+    -------
+    matplotlib.figure.Figure or matplotlib.axes.Axes
+        If 'ax' is None, returns a tuple (fig, ax) with the created figure and axes.
+        If 'ax' is provided, returns the updated axes.
+    """
+
+    ## Set defaults
+    ax_defined = ax is not None
+
+    default_mesh_args = {'alpha': 0.5}
+    default_mesh_args.update(**mesh_args)
+
+    default_legend_args = {'title': 'Element type',
+                           'fontsize': 10,
+                           'loc': 'upper right'}
+    default_legend_args.update(**legend_args)
+
+    ## Process model mesh
+    mesh, mesh_x, mesh_y, mesh_elements, is3d = model.mesh.process_mesh(md)
+
+    ## Find element types
+    element_types = model.mesh.find_element_types(md,
+                                                  ice_levelset,
+                                                  ocean_levelset)
+    # Isolate requested elements
+    select_elements = element_types[type]
+
+    # If selected_elements is all False, no elements exist
+    if not np.any(select_elements):
+        raise ValueError(f'No {type} elements exist in the model.')
+
+    ## Get position of elements > 0
+    element_pos = np.where(select_elements > 0)
+
+    ## Set-up (or retrieve) figure
+    if ax is None:
+        fig, ax = plt.subplots(figsize=figsize, constrained_layout=constrained_layout)
+    else:
+        fig = ax.get_figure()
+
+    ## Make plot
+    # Create colors of required length & static cmap of given colour
+    colors = np.ones(np.shape(mesh_elements[element_pos])[0])
+    cmap = matplotlib.colors.ListedColormap(color)
+
+    ## Plot elements
+    ax.tripcolor(mesh_x, mesh_y, mesh_elements[element_pos], facecolors=colors, cmap = cmap, edgecolors = 'none')
+
+    ## Add mesh (optional) with specific arguments
+    if show_mesh:
+        plot_mesh2d(mesh, ax = ax, **default_mesh_args)
+
+    ## Add legend
+    if show_legend:
+        labels_dict = {
+            'ice_elements': 'Ice',
+            'ocean_elements': 'Ocean',
+            'floating_ice_elements': 'Floating ice',
+            'grounded_ice_elements': 'Grounded ice',
+            'grounding_line_elements': 'Grounding line',
+            'ice_front_elements': 'Ice front'}
+
+        legend_elements = [
+            matplotlib.patches.Patch(color = color, label = labels_dict[type]),
+        ]
+        ax.legend(handles = legend_elements, **default_legend_args)
+
+    ## Return
+    if not ax_defined:
+        return fig, ax
+    else:
+        return ax

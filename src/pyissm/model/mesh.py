@@ -190,6 +190,92 @@ def find_node_types(md,
 
     return output_dict
 
+
+def find_element_types(md,
+                       ice_levelset,
+                       ocean_levelset):
+    """
+    Identify element types (ice, ice-front, ocean, floating ice, grounded ice, grounding line) from level set data.
+
+    This function processes level set fields for ice and ocean and classifies mesh elements into
+    several categories based on their sign.
+
+    For 3D meshes, only the surface layer (where `vertexonsurface == 1`) is processed (see find_node_types()).
+
+    Parameters
+    ----------
+    md : ISSM Model object
+        ISSM Model object containing the mesh and geometry information. Must have attributes:
+        'md.mesh.*' used by process_mesh().
+    ice_levelset : ndarray
+        1D array of values from the ice level set:
+            Ice < 0
+            Ice front = 0
+            No Ice > 0
+    ocean_levelset : ndarray
+        1D array of values from the ocean level set:
+            Ocean < 0
+            No ocean > 0
+
+    Returns
+    -------
+    dict of str -> ndarray
+        Dictionary with boolean arrays (same length as number of surface nodes), indicating:
+
+        - 'ice_elements' : Elements with ice
+        - 'ice_front_elements' : Elements on the ice front
+        - 'ocean_elements' : Elements with ocean
+        - 'floating_ice_elements' : Elements with floating ice
+        - 'grounded_ice_elements' : Elements with grounded ice
+        - 'grounding_line_elements' : Elements on the grounding line
+
+    Warnings
+    --------
+    If a 3D mesh is detected, only the surface layer is used. A warning is issued.
+    """
+
+    ## Process model mesh
+    mesh, mesh_x, mesh_y, mesh_elements, is3d = process_mesh(md)
+
+    ## Identify ice/ocean nodes model
+    ## NOTE: This accounts for 3D models internally.
+    node_types = find_node_types(md,
+                                 ice_levelset,
+                                 ocean_levelset)
+
+    ## Isolate individual node types
+    ice_nodes = node_types['ice_nodes']
+    ice_front_nodes = node_types['ice_front_nodes']
+    ocean_nodes = node_types['ocean_nodes']
+    floating_ice_nodes = node_types['floating_ice_nodes']
+    grounded_ice_nodes = node_types['grounded_ice_nodes']
+
+    ## Identify "no-ice" nodes
+    no_ice_nodes = ~ice_nodes
+
+    ## Identify required element types
+    ice_elements = np.sum(ice_nodes[mesh_elements], axis = 1)
+    ocean_elements = np.sum(ocean_nodes[mesh_elements], axis = 1)
+    no_ice_elements = np.sum(no_ice_nodes[mesh_elements], axis = 1)
+    zero_ice_elements = np.sum(ice_front_nodes[mesh_elements], axis = 1)
+    floating_ice_elements = np.sum(floating_ice_nodes[mesh_elements], axis=1)
+    grounded_ice_elements = np.sum(grounded_ice_nodes[mesh_elements], axis=1)
+
+    ## Identify custom elements types
+    ice_front_elements = (ice_elements.astype(bool) & no_ice_elements.astype(bool)) & ~((ice_elements == 2) & zero_ice_elements.astype(bool))
+    grounding_line_elements = (ocean_elements != np.max(ocean_elements)) & (ocean_elements != 0)
+
+    ## Compile dictionary of element types to return
+    output_dict = {
+        'ice_elements': ice_elements,
+        'ocean_elements': ocean_elements,
+        'floating_ice_elements': floating_ice_elements,
+        'grounded_ice_elements': grounded_ice_elements,
+        'ice_front_elements': ice_front_elements,
+        'grounding_line_elements': grounding_line_elements
+    }
+    return output_dict
+
 def make_gridded_domain_mask(mesh_x,
                              mesh_y,
                              mesh_elements,
