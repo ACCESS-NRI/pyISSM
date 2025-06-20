@@ -366,3 +366,142 @@ def plot_model_elements(md,
         return fig, ax
     else:
         return ax
+
+
+def plot_model_field(md,
+                     field,
+                     layer = None,
+                     ax = None,
+                     xlabel = 'X (m)',
+                     ylabel = 'Y (m)',
+                     edgecolors = 'face',
+                     figsize = (6.4, 4.8),
+                     log = False,
+                     constrained_layout = True,
+                     show_mesh = False,
+                     show_cbar = False,
+                     mesh_args = {},
+                     cbar_args = {},
+                     **kwargs):
+
+    """
+    Plot a 2D scalar field defined on a 2D or 3D model mesh.
+
+    This function visualizes a field defined on the mesh of an ISSM model.
+    It works both 2D and 3D meshes by extracting a layer from 3D models. If no layer is specified for a 3D model,
+    the surface values are plotted by default.
+
+    Parameters
+    ----------
+    md : ISSM Model object
+        ISSM Model object containing mesh. Must be compatible with process_mesh()
+    field : np.ndarray
+        A 1D array representing the scalar field to plot. Must be defined on vertices or elements. For 3D models, may be defined across all layers.
+    layer : int, optional
+        Index of the horizontal layer to extract for 3D models (1-based indexing). Ignored for 2D models. If not provided, the surface layer is used by default for vertex- and element-based 3D fields.
+    ax : matplotlib.axes.Axes, optional
+        An existing matplotlib Axes object to plot on. If `None`, a new figure and axes are created.
+    xlabel : str, optional
+        Label for the x-axis. Default is 'X (m)'.
+    ylabel : str, optional
+        Label for the y-axis. Default is 'Y (m)'.
+    edgecolors : str, optional
+        Color of triangle edges in the plot. Passed to 'tripcolor'. Default is 'face'.
+    figsize : tuple, optional
+        Figure size in inches when creating a new figure. Default is (6.4, 4.8).
+    log : bool, optional
+        If True, applies a logarithmic color normalization. Default is 'False'.
+    constrained_layout : bool, optional
+        Whether to use constrained layout for the figure. Default is 'True'.
+    show_mesh : bool, optional
+        If True, overlays the 2D mesh lines on the plot. Default is 'False'.
+    show_cbar : bool, optional
+        If True, adds a colorbar to the plot. Default is 'False'.
+    mesh_args : dict, optional
+        Keyword arguments passed to the mesh plotting function 'plot_mesh2d()'.
+    cbar_args : dict, optional
+        Keyword arguments passed to 'fig.colorbar'.
+    **kwargs : dict, optional
+        Additional keyword arguments passed to 'ax.tripcolor'.
+
+    Returns
+    -------
+    matplotlib.figure.Figure or matplotlib.axes.Axes
+        If 'ax' is not provided, returns a tuple '(fig, ax)'. If 'ax' is provided, returns only 'ax'.
+
+    Example
+    -------
+    fig, ax = plot_model_field(md, md.inversion.vel_obs)
+    fig, ax = plot_model_field(md, md.results.TransientSolution.Vel[0], log = True)
+    fig, ax = plot_model_field(md, md.results.TransientSolution.Temperature[-1], layer = 3)
+    fig, ax = plot_model_field(md, md.results.TransientSolution.Temperature[-1], layer = 3, show_cbar = True, show_mesh = True)
+
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, constrained_layout = True)
+    ax1 = plot_model_field(md, md.inversion.vel_obs, ax = ax1, log = True, cmap = 'viridis')
+    ax2 = plot_model_field(md, md.results.StressbalanceSolution.Vel, ax = ax2, log = True, cmap = 'viridis')
+    ax3 = issm.plot.plot_model_field(md, md.inversion.vel_obs - md.results.StressbalanceSolution.Vel, ax=ax3, cmap='RdBu', show_cbar = True)
+    ax1.set_title('Observed Velocities'); ax2.set_title('Modelled Velocities'); ax3.set_title('Velocity Error')
+    """
+
+    ## Set defaults
+    ax_defined = ax is not None
+    norm = matplotlib.colors.LogNorm() if log else None
+
+    ## Process mesh
+    mesh, mesh_x, mesh_y, mesh_elements, is3d = model.mesh.process_mesh(md)
+
+    ## Dimension checks
+    if is3d:
+        # If a 3D model is provided, extract the layer (if provided), or continue to default extraction of surface layer
+        if layer is not None:
+            # Extract the specified layer
+            field = utils.extract_field_layer(md, field, layer)
+        else:
+            # Default behaviour for 3D model with no layer specified
+            if field.shape == md.mesh.numberofvertices:
+                warnings.warn('plot_model_field: 3D model found with no layer specified. Plotting surface vertices layer only.')
+                field = field[md.mesh.vertexonsurface == 1]
+            elif field.shape == md.mesh.numberofelements:
+                warnings.warn('plot_model_field: 3D model found with no layer specified. Plotting surface elements layer only.')
+                field = field[np.isnan(md.mesh.upperelements) == 1]
+            elif field.shape == md.mesh.numberofelements2d:
+                pass # Field is defined on 2D mesh elements. Already 2D compatible. Continue
+            elif field.shape == md.mesh.numberofvertices2d:
+                pass # Field is defined on 2D mesh vertices. Already 2D compatible. Continue
+            else:
+                raise Exception('plot_model_field: The provided field is an unexpected shape.')
+    else:
+        # If layer is defined, raise warning to explicitly state that it isn't used
+        if layer is not None:
+            warnings.warn('plot_model_field: 2D model found. Layer definition is ignored.')
+        # If a 2D model is provided, the field should be defined on vertices or elements.
+        if field.shape[0] not in (md.mesh.numberofvertices, md.mesh.numberofelements):
+            raise Exception('plot_model_field: The provided field is an unexpected shape.')
+
+    ## If no ax is defined, create new figure (with fig_kwargs, if provided)
+    ## otherwise, plot on defined ax
+    if ax is None:
+        fig, ax = plt.subplots(figsize=figsize, constrained_layout = constrained_layout)
+    else:
+        fig = ax.get_figure()
+
+    ## Plot field
+    trip = ax.tripcolor(mesh, field, edgecolors = edgecolors, norm = norm, **kwargs)
+
+    ## Add optional mesh
+    if show_mesh:
+        plot_mesh2d(mesh, ax = ax, **mesh_args)
+
+    ## Add optional colorbar
+    if show_cbar:
+        fig.colorbar(trip, ax = ax, **cbar_args)
+
+    ## Assign x/y labels
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+
+    ## Return
+    if not ax_defined:
+        return fig, ax
+    else:
+        return ax
