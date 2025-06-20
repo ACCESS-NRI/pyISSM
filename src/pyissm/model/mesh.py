@@ -79,6 +79,10 @@ def process_mesh(md):
         element connectivity.
     is3d : bool
         'True' if elements2d exists (and the model is 3D), 'False' otherwise
+
+    Example
+    -------
+    mesh, mesh_x, mesh_y, mesh_elements, is3d = process_mesh(md)
     """
 
     ## Set default values
@@ -156,6 +160,11 @@ def find_node_types(md,
     Warnings
     --------
     If a 3D mesh is detected, only the surface layer is used. A warning is issued.
+
+    Example
+    --------
+    model_node_types = find_node_types(md, md.mask.ice_levelset, md.mask.ocean_levelset)
+    model_node_types = find_node_types(md, md.results.TransientSolution.MaskIceLevelset[34], md.results.TransientSolution.MaskOceanLevelset[34])
     """
 
     ## Process model mesh
@@ -232,6 +241,11 @@ def find_element_types(md,
     Warnings
     --------
     If a 3D mesh is detected, only the surface layer is used. A warning is issued.
+
+    Example
+    --------
+    model_element_types = find_element_types(md, md.mask.ice_levelset, md.mask.ocean_levelset)
+    model_element_types = find_element_types(md, md.results.TransientSolution.MaskIceLevelset[34], md.results.TransientSolution.MaskOceanLevelset[34])
     """
 
     ## Process model mesh

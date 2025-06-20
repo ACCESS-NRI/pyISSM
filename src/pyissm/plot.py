@@ -27,6 +27,7 @@ def plot_mesh2d(mesh,
     ----------
     mesh : matplotlib.tri.Triangulation or similar
         A 2D mesh object containing 'x', 'y', and triangle connectivity information.
+        Can be created for ISSM models with get_mesh() or process_mesh().
     ax : matplotlib.axes.Axes, optional
         An existing matplotlib axes object to plot on. If None, a new figure and axes are created.
     color : str, optional
@@ -54,6 +55,14 @@ def plot_mesh2d(mesh,
     matplotlib.figure.Figure or matplotlib.axes.Axes
         If 'ax' is None, returns '(fig, ax)' of the created figure and axes.
         If 'ax' is provided, returns the modified 'ax'.
+
+    Example
+    -------
+    fig, ax = plot_mesh2d(mesh)
+    fig, ax = plot_mesh2d(mesh, color = 'blue', linewidth = 0.5)
+    fig, (ax1, ax2) = plt.subplots(1, 2)
+    ax1 = plot_mesh2d(mesh, ax = ax1)
+    ax2 = plot_mesh2d(mesh, ax = ax2, show_nodes = True, node_args = {'color': 'red'})
     """
 
     ## Is an ax passed?
@@ -154,6 +163,13 @@ def plot_model_nodes(md,
     matplotlib.figure.Figure or matplotlib.axes.Axes
         If 'ax' is None, returns a tuple (fig, ax) with the created figure and axes.
         If 'ax' is provided, returns the updated axes.
+
+    Example
+    -------
+    fig, ax = plot_model_nodes(md, md.mask.ice_levelset, md.mask.ocean_levelset)
+    fig, ax = plot_model_nodes(md, md.mask.ice_levelset, md.mask.ocean_levelset, show_mesh = False)
+    fig, ax = plot_model_nodes(md, md.mask.ice_levelset, md.mask.ocean_levelset, type = 'ice_front_nodes', mesh_args = {'linewidth': 0.5, 'color': 'cyan'})
+    fig, ax = plot_model_nodes(md, md.mask.ice_levelset, md.mask.ocean_levelset, type = 'floating_ice_nodes', colors = ['blue', 'magenta'])
     """
 
     ## Set defaults
@@ -275,6 +291,13 @@ def plot_model_elements(md,
     matplotlib.figure.Figure or matplotlib.axes.Axes
         If 'ax' is None, returns a tuple (fig, ax) with the created figure and axes.
         If 'ax' is provided, returns the updated axes.
+
+    Example
+    -------
+    fig, ax = plot_model_elements(md, md.mask.ice_levelset, md.mask.ocean_levelset)
+    fig, ax = plot_model_elements(md, md.mask.ice_levelset, md.mask.ocean_levelset, show_mesh = False)
+    fig, ax = plot_model_elements(md, md.mask.ice_levelset, md.mask.ocean_levelset, type = 'ice_front_elements', mesh_args = {'linewidth': 0.5, 'color': 'cyan'})
+    fig, ax = plot_model_elements(md, md.mask.ice_levelset, md.mask.ocean_levelset, type = 'floating_ice_elements', color = 'red')
     """
 
     ## Set defaults
