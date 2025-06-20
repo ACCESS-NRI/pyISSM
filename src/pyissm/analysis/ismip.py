@@ -4,6 +4,7 @@ ISMIP-related functions for ISSM
 This module contains functions for handling ISMIP-related data and operations.
 """
 
+
 from .. import utils
 
 def calc_perc_ice_cover(total_ice_area, ice_area):

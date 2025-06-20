@@ -7,6 +7,7 @@ This module contains various utility functions that are used throughout the ISSM
 import numpy as np
 from . import model
 
+
 ## ------------------------------------------------------------------------------------
 ## UNIT CONVERSIONS
 ## ------------------------------------------------------------------------------------
@@ -190,7 +191,7 @@ def has_nested_attr(obj, *attrs):
             return False
         obj = getattr(obj, attr)
     return True
-
+  
 def extract_field_layer(md,
                         field,
                         layer):

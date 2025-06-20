@@ -14,7 +14,6 @@ import numpy as np
 import pandas as pd
 import os
 
-
 def load_model_group(nc_file,
                      group_name,
                      sub_group_name = None):
