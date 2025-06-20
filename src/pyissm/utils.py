@@ -75,10 +75,10 @@ def convert_units(input_units,
 
     ## Argument error checks
     if input_units not in accepted_units:
-        raise ValueError(f"Invalid input_units '{input_units}'. Must be one of {accepted_units}")
+        raise ValueError(f"convert_units: Invalid input_units '{input_units}'. Must be one of {accepted_units}")
 
     if output_units not in accepted_units:
-        raise ValueError(f"Invalid output_units '{output_units}'. Must be one of {accepted_units}")
+        raise ValueError(f"convert_units: Invalid output_units '{output_units}'. Must be one of {accepted_units}")
 
     ## Convert to array for element-wise math
     data = np.asarray(data, dtype = np.float64)
@@ -150,7 +150,7 @@ def convert_units(input_units,
         converted_data = (data / rho_ice) * yts
 
     else:
-        raise ValueError("""Requested unit conversion currently not supported. Available conversions include:
+        raise ValueError("""convert_units: Requested unit conversion currently not supported. Available conversions include:
 - m <-> km
 - m2 <-> km2
 - ms-1 <-> my-1
@@ -234,7 +234,7 @@ def extract_field_layer(md,
 
     # If it's not a 3D model, throw and error
     if not is3d:
-        raise TypeError(f'extract_field_layer: provided model is not 3D')
+        raise TypeError('extract_field_layer: provided model is not 3D')
 
     # TODO: Implement "layer = [0, 8]" to DepthAverage over a given layer range.
     # Need to 'weight' the average based on the layer thickness

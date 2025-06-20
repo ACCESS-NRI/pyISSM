@@ -103,7 +103,7 @@ def process_mesh(md):
 
         # Return is3d and display warning for 3D mesh
         is3d = True
-        warnings.warn('3D model found. Processing as 2D mesh.')
+        warnings.warn('process_mesh: 3D model found. Processing as 2D mesh.')
 
     ## Process a 2D model
     else:
@@ -176,7 +176,7 @@ def find_node_types(md,
         ice_front_nodes = ice_levelset[md.mesh.vertexonsurface == 1] == 0
         ocean_nodes = ocean_levelset[md.mesh.vertexonsurface == 1] < 0
 
-        warnings.warn('3D model found. Processing surface layer only.')
+        warnings.warn('find_node_types: 3D model found. Processing surface layer only.')
 
     ## Identify ice/ocean nodes
     else:
@@ -448,7 +448,7 @@ def grid_model_field(md,
         mesh_x = np.mean(md.mesh.x[mesh_elements], axis = 1)
         mesh_y = np.mean(md.mesh.y[mesh_elements], axis = 1)
     else:
-        raise ValueError('model_field must be defined on vertices or elements')
+        raise ValueError('grid_model_field: model_field must be defined on vertices or elements')
 
     ## Initialise output container
     ## -------------------------------------
@@ -474,10 +474,10 @@ def grid_model_field(md,
         domain_mask = make_gridded_domain_mask(md.mesh.x, md.mesh.y, mesh_elements, grid_x, grid_y)
     elif domain_mask.shape != grid_x.shape:
         # If a custom domain_mask is supplied, it must be defined on grid_x / grid_y
-        raise ValueError('domain_mask should be defined on grid_x / grid_y.')
+        raise ValueError('grid_model_field: domain_mask should be defined on grid_x / grid_y.')
     elif domain_mask.dtype != bool:
         # If a custom domain_mask is supplied, it must be boolean
-        raise TypeError('domain_mask should be boolean')
+        raise TypeError('grid_model_field: domain_mask should be boolean')
 
     # Apply mask
     gridded_model_field[:, ~domain_mask] = fill_value

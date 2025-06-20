@@ -325,7 +325,7 @@ def plot_model_elements(md,
 
     # If selected_elements is all False, no elements exist
     if not np.any(select_elements):
-        raise ValueError(f'No {type} elements exist in the model.')
+        raise ValueError(f'plot_model_elements: No {type} elements exist in the model.')
 
     ## Get position of elements > 0
     element_pos = np.where(select_elements > 0)

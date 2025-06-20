@@ -195,7 +195,7 @@ def export_gridded_model(md,
     ## Error Checks
     # Check that all outputVariableNames are unique
     if any(var_map['outputVariableName'].duplicated()):
-        raise ValueError(f"Duplicate outputVariableName found in {variable_map}.")
+        raise ValueError(f"export_gridded_model: Duplicate outputVariableName found in {variable_map}.")
 
     ## Wrap in try so that file can be removed if any error occurs allowing easy re-try
     try:
@@ -350,5 +350,5 @@ def export_gridded_model(md,
     except Exception as e:
         if os.path.exists(out_file):
             os.remove(out_file)
-        print(f"Export failed: {e}\n\033[91mModel not written to file.\033[0m")
+        print(f"export_grided_model: Export failed -- {e}\n\033[91mModel not written to file.\033[0m")
         raise
