@@ -6,9 +6,9 @@ This module contains functions for reading and writing ISSM models to and from f
 
 from types import SimpleNamespace
 from ..core import Model
-from ..analysis import ismip
-from ..model import mesh
-from pyissm import utils
+from .. import analysis
+from .. import model
+from .. import utils
 import netCDF4 as nc
 import numpy as np
 import pandas as pd
@@ -231,7 +231,7 @@ def export_gridded_model(md,
 
                 # Try to get variable
                 ismip_variable = row['outputVariableName']
-                variable = ismip.get_ismip_variable(md, ismip_variable)
+                variable = analysis.ismip.get_ismip_variable(md, ismip_variable)
 
                 # If ISMIP specific requirements were not met, continue
                 if variable is None:
@@ -289,11 +289,11 @@ def export_gridded_model(md,
                 # If mask/levelset variable requested, force nearest-neighbour interpolation method
                 if issm_variable in nn_interp_list:
                     print(f"Gridding: \033[1m{issm_variable}\033[0m using NN interpolation")
-                    variable_grid = mesh.grid_model_field(md, variable, grid_x, grid_y, method = 'nearest', domain_mask = domain_mask)
+                    variable_grid = model.mesh.grid_model_field(md, variable, grid_x, grid_y, method = 'nearest', domain_mask = domain_mask)
 
                 # Otherwise interpolate using the specified method
                 else:
-                    variable_grid = mesh.grid_model_field(md, variable, grid_x, grid_y, method = method, domain_mask = domain_mask)
+                    variable_grid = model.mesh.grid_model_field(md, variable, grid_x, grid_y, method = method, domain_mask = domain_mask)
                     print(f"Gridding: \033[1m{issm_variable}\033[0m")
 
                 ## Create variable in nc_file with t/y/x dimensions
@@ -313,11 +313,11 @@ def export_gridded_model(md,
                     # If mask/levelset variable requested, force nearest-neighbour interpolation method
                     if issm_variable in nn_interp_list:
                         print(f"Gridding: \033[1m{issm_variable}\033[0m using NN interpolation")
-                        variable_grid = mesh.grid_model_field(md, variable, grid_x, grid_y, method='nearest', domain_mask=domain_mask)
+                        variable_grid = model.mesh.grid_model_field(md, variable, grid_x, grid_y, method='nearest', domain_mask=domain_mask)
 
                     # Otherwise interpolate using the specified method
                     else:
-                        variable_grid = mesh.grid_model_field(md, variable, grid_x, grid_y, method=method, domain_mask=domain_mask)
+                        variable_grid = model.mesh.grid_model_field(md, variable, grid_x, grid_y, method=method, domain_mask=domain_mask)
                         print(f"Gridding: \033[1m{issm_variable}\033[0m")
 
                     ## Create variable in nc_file with y/x dimensions

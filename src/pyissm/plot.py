@@ -4,7 +4,9 @@ Functions to visualize ISSM Models
 
 import matplotlib.pyplot as plt
 import matplotlib
-from .model.mesh import process_mesh, find_node_types
+import numpy as np
+from . import model, utils
+import warnings
 
 ## ------------------------------------------------------------------------------------
 ## MESH PLOTTING
@@ -186,12 +188,12 @@ def plot_model_nodes(md,
     cmap = matplotlib.colors.ListedColormap(colors)
 
     ## Process model mesh
-    mesh, mesh_x, mesh_y, mesh_elements, is3d = process_mesh(md)
+    mesh, mesh_x, mesh_y, mesh_elements, is3d = model.mesh.process_mesh(md)
 
     ## Find node types
-    node_types = find_node_types(md,
-                                 ice_levelset,
-                                 ocean_levelset)
+    node_types = model.mesh.find_node_types(md,
+                                            ice_levelset,
+                                            ocean_levelset)
 
     ## Set-up (or retrieve) figure
     if ax is None:
