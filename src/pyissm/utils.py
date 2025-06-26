@@ -5,6 +5,8 @@ This module contains various utility functions that are used throughout the ISSM
 """
 
 import numpy as np
+from . import model
+
 
 ## ------------------------------------------------------------------------------------
 ## UNIT CONVERSIONS
@@ -73,10 +75,10 @@ def convert_units(input_units,
 
     ## Argument error checks
     if input_units not in accepted_units:
-        raise ValueError(f"Invalid input_units '{input_units}'. Must be one of {accepted_units}")
+        raise ValueError(f"convert_units: Invalid input_units '{input_units}'. Must be one of {accepted_units}")
 
     if output_units not in accepted_units:
-        raise ValueError(f"Invalid output_units '{output_units}'. Must be one of {accepted_units}")
+        raise ValueError(f"convert_units: Invalid output_units '{output_units}'. Must be one of {accepted_units}")
 
     ## Convert to array for element-wise math
     data = np.asarray(data, dtype = np.float64)
@@ -148,7 +150,7 @@ def convert_units(input_units,
         converted_data = (data / rho_ice) * yts
 
     else:
-        raise ValueError("""Requested unit conversion currently not supported. Available conversions include:
+        raise ValueError("""convert_units: Requested unit conversion currently not supported. Available conversions include:
 - m <-> km
 - m2 <-> km2
 - ms-1 <-> my-1
@@ -189,3 +191,71 @@ def has_nested_attr(obj, *attrs):
             return False
         obj = getattr(obj, attr)
     return True
+  
+def extract_field_layer(md,
+                        field,
+                        layer):
+    """
+    Extract a 2D horizontal layer from a 3D field defined on the model's vertices.
+
+    This function isolates a specific horizontal layer from a field defined over all
+    3D vertices of a model. Only vertex-based fields are supported; element-based
+    fields will raise an error.
+
+    Parameters
+    ----------
+    md : ISSM Model object
+        ISSM Model object containing mesh. Must be compatible with process_mesh().
+    field : np.ndarray
+        A 1D array of shape 'md.mesh.numberofvertices' representing a 3D field defined on vertices.
+    layer : int
+        The vertical layer index to extract (1-based). Must be a single integer.
+        Layer indexing starts from 1 (base) to 'md.mesh.numberoflayers' (surface).
+
+    Returns
+    -------
+    np.ndarray
+        A 1D array of shape 'md.mesh.numberofvertices2d' containing the field values at the specified layer.
+
+    Notes
+    -----
+    - This function assumes that the 3D vertex ordering in 'field' is layer-major:
+      i.e., all vertices in layer 1 come first, then layer 2, and so on.
+    - Depth-averaging functionality (e.g., specifying a range of layers) is not yet implemented.
+
+    Example
+    -----
+    field_2d = extract_field_layer(md, md.results.TransientSolution.Temperature[0], layer = 1)
+    """
+
+    ## Error Checks
+    # Process mesh
+    mesh, mesh_x, mesh_y, mesh_elements, is3d = model.mesh.process_mesh(md)
+
+    # If it's not a 3D model, throw and error
+    if not is3d:
+        raise TypeError('extract_field_layer: provided model is not 3D')
+
+    # TODO: Implement "layer = [0, 8]" to DepthAverage over a given layer range.
+    # Need to 'weight' the average based on the layer thickness
+    if isinstance(layer, list):
+        raise ValueError('extract_field_layer: A single numeric layer must be defined. Depth averaging is not yet supported.')
+
+    # Check dimensions of field. The number of vertices must be equal to md.mesh.numberofvertices2d * md.mesh.numberoflayers
+    if not np.equal(md.mesh.numberofvertices / md.mesh.numberoflayers, md.mesh.numberofvertices2d):
+        raise ValueError('extract_field_layer: model mesh is not correctly dimensioned')
+
+    # TODO: How are elements numbered? How do we isolate a given layer(s) when the field is defined on elements?
+    # If the field is defined on elements, throw an error. This isn't supported yet.
+    if field.shape == md.mesh.numberofelements:
+        raise ValueError('extract_field_layer: Cannot extract a layer defined on elements. Extracting fields defined on elements is not yet supported.')
+
+    ## Identify vertex positions for requested layer
+    start_pos = md.mesh.numberofvertices2d * (layer - 1)
+    end_pos = md.mesh.numberofvertices2d * layer
+    select_vertices = np.arange(start_pos, end_pos)
+
+    ## Extract requested layer from field
+    select_layer = field[select_vertices]
+
+    return select_layer

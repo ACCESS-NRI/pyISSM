@@ -6,14 +6,13 @@ This module contains functions for reading and writing ISSM models to and from f
 
 from types import SimpleNamespace
 from ..core import Model
-from ..analysis import ismip
-from ..model import mesh
-from pyissm import utils
+from .. import analysis
+from .. import model
+from .. import utils
 import netCDF4 as nc
 import numpy as np
 import pandas as pd
 import os
-
 
 def load_model_group(nc_file,
                      group_name,
@@ -196,7 +195,7 @@ def export_gridded_model(md,
     ## Error Checks
     # Check that all outputVariableNames are unique
     if any(var_map['outputVariableName'].duplicated()):
-        raise ValueError(f"Duplicate outputVariableName found in {variable_map}.")
+        raise ValueError(f"export_gridded_model: Duplicate outputVariableName found in {variable_map}.")
 
     ## Wrap in try so that file can be removed if any error occurs allowing easy re-try
     try:
@@ -231,7 +230,7 @@ def export_gridded_model(md,
 
                 # Try to get variable
                 ismip_variable = row['outputVariableName']
-                variable = ismip.get_ismip_variable(md, ismip_variable)
+                variable = analysis.ismip.get_ismip_variable(md, ismip_variable)
 
                 # If ISMIP specific requirements were not met, continue
                 if variable is None:
@@ -289,11 +288,11 @@ def export_gridded_model(md,
                 # If mask/levelset variable requested, force nearest-neighbour interpolation method
                 if issm_variable in nn_interp_list:
                     print(f"Gridding: \033[1m{issm_variable}\033[0m using NN interpolation")
-                    variable_grid = mesh.grid_model_field(md, variable, grid_x, grid_y, method = 'nearest', domain_mask = domain_mask)
+                    variable_grid = model.mesh.grid_model_field(md, variable, grid_x, grid_y, method = 'nearest', domain_mask = domain_mask)
 
                 # Otherwise interpolate using the specified method
                 else:
-                    variable_grid = mesh.grid_model_field(md, variable, grid_x, grid_y, method = method, domain_mask = domain_mask)
+                    variable_grid = model.mesh.grid_model_field(md, variable, grid_x, grid_y, method = method, domain_mask = domain_mask)
                     print(f"Gridding: \033[1m{issm_variable}\033[0m")
 
                 ## Create variable in nc_file with t/y/x dimensions
@@ -313,11 +312,11 @@ def export_gridded_model(md,
                     # If mask/levelset variable requested, force nearest-neighbour interpolation method
                     if issm_variable in nn_interp_list:
                         print(f"Gridding: \033[1m{issm_variable}\033[0m using NN interpolation")
-                        variable_grid = mesh.grid_model_field(md, variable, grid_x, grid_y, method='nearest', domain_mask=domain_mask)
+                        variable_grid = model.mesh.grid_model_field(md, variable, grid_x, grid_y, method='nearest', domain_mask=domain_mask)
 
                     # Otherwise interpolate using the specified method
                     else:
-                        variable_grid = mesh.grid_model_field(md, variable, grid_x, grid_y, method=method, domain_mask=domain_mask)
+                        variable_grid = model.mesh.grid_model_field(md, variable, grid_x, grid_y, method=method, domain_mask=domain_mask)
                         print(f"Gridding: \033[1m{issm_variable}\033[0m")
 
                     ## Create variable in nc_file with y/x dimensions
@@ -351,5 +350,5 @@ def export_gridded_model(md,
     except Exception as e:
         if os.path.exists(out_file):
             os.remove(out_file)
-        print(f"Export failed: {e}\n\033[91mModel not written to file.\033[0m")
+        print(f"export_grided_model: Export failed -- {e}\n\033[91mModel not written to file.\033[0m")
         raise
