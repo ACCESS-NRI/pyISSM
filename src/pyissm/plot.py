@@ -521,3 +521,206 @@ def plot_model_field(md,
         return fig, ax
     else:
         return ax
+
+def plot_model_bc(md,
+                  type = 'stressbalance',
+                  ax = None,
+                  scale = 10,
+                  figsize = (6.4, 4.8),
+                  constrained_layout = True,
+                  show_mesh = True,
+                  mesh_args = {},
+                  show_legend = True,
+                  legend_args = {}):
+    """
+    Plot Dirichlet and Neumann boundary conditions from an ISSM model.
+
+    This function visualizes boundary conditions for a specified model
+    component (e.g., `stressbalance`, `masstransport`, `thermal`, etc.) on
+    a 2D or 3D mesh. Dirichlet conditions are plotted as colored markers,
+    and Neumann boundaries (e.g. ice-front) plotted as coloured elements.
+
+    Parameters
+    ----------
+    md : ISSM Model object
+        ISSM Model object containing mesh. Must be compatible with process_mesh()
+    type : str, optional
+        The boundary condition type to plot. Must be one of:
+        'stressbalance', 'masstransport', 'thermal',
+        'balancethickness', 'hydrology', 'debris', or 'levelset'.
+        Default is 'stressbalance'.
+    ax : matplotlib.axes.Axes, optional
+        Existing matplotlib Axes object. If not provided, a new figure and
+        axes are created.
+    scale : float, optional
+        Scaling factor for Dirichlet marker sizes. Default is 10.
+    figsize : tuple of float, optional
+        Size of the figure in inches (width, height). Default is (6.4, 4.8).
+    constrained_layout : bool, optional
+        Whether to use constrained layout for figure spacing. Default is True.
+    show_mesh : bool, optional
+        Whether to display the model mesh beneath boundary markers. Default is True.
+    mesh_args : dict, optional
+        Additional keyword arguments passed to the mesh plotting function.
+        Overrides default {'alpha': 0.5}.
+    show_legend : bool, optional
+        Whether to display a legend showing boundary condition types. Default is True.
+    legend_args : dict, optional
+        Additional keyword arguments passed to `ax.legend()`. Overrides default
+        {'title': 'Boundary condition', 'fontsize': 10, 'loc': 'upper right'}.
+
+    Returns
+    -------
+    fig : matplotlib.figure.Figure
+        The matplotlib Figure object (only returned if `ax` is not provided).
+    ax : matplotlib.axes.Axes
+        The matplotlib Axes object containing the plot.
+
+    Notes
+    -----
+    - For 3D models, only surface boundary conditions are plotted.
+    - Neumann (ice-front) elements are included by default as blue elements.
+    - If no constraints are found for a given boundary condition, a message
+      is printed and nothing is plotted for that type.
+
+    Examples
+    --------
+    fig, ax = plot_model_bc(md)
+    fig, ax = plot_model_bc(md, scale = 1)
+    fig, ax = plot_model_bc(md, type='thermal', mesh_args = {'color': 'grey'}, legend_args = {'title': 'Model BCs'})
+
+    See Also
+    --------
+    plot_model_elements : Used internally to visualize Neumann conditions and mesh.
+    """
+
+    ## Set defaults
+    ax_defined = ax is not None
+
+    default_mesh_args = {'alpha': 0.5}
+    default_mesh_args.update(**mesh_args)
+
+    default_legend_args = {'title': 'Boundary condition',
+                           'fontsize': 10,
+                           'loc': 'upper right'}
+    default_legend_args.update(**legend_args)
+
+    ## Process model mesh
+    mesh, mesh_x, mesh_y, mesh_elements, is3d = model.mesh.process_mesh(md)
+
+    ## Get SPC boundaries
+    ## -------------------------------------
+    if type == 'stressbalance':
+        spc_dict = {'spcvx': {'data': md.stressbalance.spcvx,
+                              'label': 'vx Dirichlet',
+                              'col': 'red',
+                              'marker': 'o',
+                              'size': 10 * scale},
+                    'spcvy': {'data': md.stressbalance.spcvy,
+                              'label': 'vy Dirichlet',
+                              'col': 'blue',
+                              'marker': 'o',
+                              'size': 6 * scale},
+                    'spcvz': {'data': md.stressbalance.spcvz,
+                              'label': 'vz Dirichlet',
+                              'col': 'yellow',
+                              'marker': 'o',
+                              'size': 2 * scale}
+                    }
+
+    if type == 'masstransport':
+        spc_dict = {'spcthickness': {'data': md.masstransport.spcthickness,
+                                     'label': 'Thickness Dirichlet',
+                                     'col': 'red',
+                                     'marker': 'o',
+                                     'size': 5 * scale}
+                    }
+
+    if type == 'thermal':
+        spc_dict = {'spctemperature': {'data': md.thermal.spctemperature,
+                                       'label': 'Temperature Dirichlet',
+                                       'col': 'red',
+                                       'marker': 'o',
+                                       'size': 5 * scale}
+                    }
+
+    if type == 'balancethickness':
+        spc_dict = {'spcthickness': {'data': md.balancethickness.spcthickness,
+                                     'label': 'Thickness Dirichlet',
+                                     'col': 'red',
+                                     'marker': 'o',
+                                     'size': 5 * scale}
+                    }
+
+    if type == 'hydrology':
+        spc_dict = {'spcwatercolumn': {'data': md.hydrology.spcwatercolumn,
+                                     'label': 'Water column Dirichlet',
+                                     'col': 'red',
+                                     'marker': 'o',
+                                     'size': 5 * scale}
+                    }
+
+    if type == 'debris':
+        spc_dict = {'spcthickness': {'data': md.debris.spcthickness,
+                                     'label': 'Thickness Dirichlet',
+                                     'col': 'red',
+                                     'marker': 'o',
+                                     'size': 5 * scale}
+                    }
+
+    if type == 'levelset':
+        spc_dict = {'spclevelset': {'data': md.levelset.spclevelset,
+                                    'label': 'Levelset Dirichlet',
+                                    'col': 'red',
+                                    'marker': 'o',
+                                    'size': 5 * scale}
+                    }
+
+    ## Set-up (or retrieve) figure
+    if ax is None:
+        fig, ax = plt.subplots(figsize=figsize, constrained_layout=constrained_layout)
+    else:
+        fig = ax.get_figure()
+
+    ## Initiate plot with Neumann BCs (ice-front)
+    ax = plot_model_elements(md,
+                             md.mask.ice_levelset,
+                             md.mask.ocean_levelset,
+                             ax = ax,
+                             type = 'ice_front_elements',
+                             show_mesh = show_mesh,
+                             show_legend = False,
+                             mesh_args = default_mesh_args)
+
+    ## Add Dirichlet BCs
+    for key, spc in spc_dict.items():
+        data = spc['data']
+
+        # If the data are all NaN, there are no constraints
+        if np.isnan(data).all():
+            print(f'No constraints found in {key}')
+            pass
+        else:
+            # If model is 3D, extract the BCs on the surface layer
+            if is3d:
+                data = data[md.mesh.vertexonsurface == 1]
+                warnings.warn(f'3D model found. Plotting surface BCs only.')
+
+            # Make plot
+            ax.scatter(mesh_x[~np.isnan(data)],
+                       mesh_y[~np.isnan(data)],
+                       c = spc['col'],
+                       marker = spc['marker'],
+                       s = spc['size'],
+                       label = spc['label'])
+
+    ## Add optional legend (including manual entry for Neumann ice-front)
+    if show_legend:
+        ice_front = matplotlib.patches.Patch(color = 'blue', label ='Neumann (ice-front)')
+        ax.legend(handles=[ice_front] + ax.get_legend_handles_labels()[0], **default_legend_args)
+
+    ## Return
+    if not ax_defined:
+        return fig, ax
+    else:
+        return ax
