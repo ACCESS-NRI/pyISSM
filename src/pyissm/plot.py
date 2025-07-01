@@ -400,7 +400,8 @@ def plot_model_field(md,
     field : np.ndarray
         A 1D array representing the scalar field to plot. Must be defined on vertices or elements. For 3D models, may be defined across all layers.
     layer : int, optional
-        Index of the horizontal layer to extract for 3D models (1-based indexing). Ignored for 2D models. If not provided, the surface layer is used by default for vertex- and element-based 3D fields.
+        Index of the horizontal layer to extract for 3D models (1-based indexing). Ignored for 2D models.
+        If not provided, the surface layer is used by default for vertex- and element-based 3D fields.
     ax : matplotlib.axes.Axes, optional
         An existing matplotlib Axes object to plot on. If `None`, a new figure and axes are created.
     xlabel : str, optional
@@ -457,7 +458,7 @@ def plot_model_field(md,
         # If a 3D model is provided, extract the layer (if provided), or continue to default extraction of surface layer
         if layer is not None:
             # Extract the specified layer
-            field = utils.extract_field_layer(md, field, layer)
+            field, _ = utils.extract_field_layer(md, field, layer)
         else:
             # Default behaviour for 3D model with no layer specified
             if field.shape == md.mesh.numberofvertices:

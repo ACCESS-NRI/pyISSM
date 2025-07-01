@@ -214,18 +214,21 @@ def extract_field_layer(md,
 
     Returns
     -------
-    np.ndarray
-        A 1D array of shape 'md.mesh.numberofvertices2d' containing the field values at the specified layer.
+    select_layer : np.ndarray
+        A 1D array of shape 'md.mesh.numberofvertices2d' or 'md.mesh.numberofelements2d' containing the field values at the specified layer.
+    select_indices : np.ndarray
+        A 1D array of shape 'md.mesh.numberofvertices2d' or 'md.mesh.numberofelements2d' containing the indices of vertices/elements associated with the specified layer.
 
     Notes
     -----
-    - This function assumes that the 3D vertex ordering in 'field' is layer-major:
-      i.e., all vertices in layer 1 come first, then layer 2, and so on.
+    - This function assumes that the 3D vertex/element ordering in 'field' is layer-major:
+      i.e., all vertices/elements in layer 1 come first, then layer 2, and so on.
     - Depth-averaging functionality (e.g., specifying a range of layers) is not yet implemented.
 
     Example
     -----
-    field_2d = extract_field_layer(md, md.results.TransientSolution.Temperature[0], layer = 1)
+    field_2d, select_indices = extract_field_layer(md, md.results.TransientSolution.Temperature[0], layer = 1)
+    field_2d, select_indices = extract_field_layer(md, md.materials.rheology_n, layer = 6)
     """
 
     ## Error Checks
@@ -241,21 +244,33 @@ def extract_field_layer(md,
     if isinstance(layer, list):
         raise ValueError('extract_field_layer: A single numeric layer must be defined. Depth averaging is not yet supported.')
 
-    # Check dimensions of field. The number of vertices must be equal to md.mesh.numberofvertices2d * md.mesh.numberoflayers
+    # Check dimensions of model mesh. The number of vertices must be equal to md.mesh.numberofvertices2d * md.mesh.numberoflayers
     if not np.equal(md.mesh.numberofvertices / md.mesh.numberoflayers, md.mesh.numberofvertices2d):
         raise ValueError('extract_field_layer: model mesh is not correctly dimensioned')
 
-    # TODO: How are elements numbered? How do we isolate a given layer(s) when the field is defined on elements?
-    # If the field is defined on elements, throw an error. This isn't supported yet.
+    ## Extract data defined on elements
     if field.shape == md.mesh.numberofelements:
-        raise ValueError('extract_field_layer: Cannot extract a layer defined on elements. Extracting fields defined on elements is not yet supported.')
 
-    ## Identify vertex positions for requested layer
-    start_pos = md.mesh.numberofvertices2d * (layer - 1)
-    end_pos = md.mesh.numberofvertices2d * layer
-    select_vertices = np.arange(start_pos, end_pos)
+        # The number of element layers is (md.mesh.numberoflayers - 1). Check that the defined layer can be extracted.
+        if not (1 <= layer <= md.mesh.numberoflayers - 1):
+            raise ValueError(f'Layer {layer} is out of bounds for element-based fields. Select a layer between 1 and {md.mesh.numberoflayers -1}')
 
-    ## Extract requested layer from field
-    select_layer = field[select_vertices]
+        # Identify element positions for requested layer
+        start_pos = md.mesh.numberofelements2d * (layer - 1)
+        end_pos = md.mesh.numberofelements2d * layer
+        select_indices = np.arange(start_pos, end_pos)
 
-    return select_layer
+        # Extract requested layer from field
+        select_layer = field[select_indices]
+
+    ## Extract data defined on vertices
+    if field.shape == md.mesh.numberofvertices:
+        # Identify vertex positions for requested layer
+        start_pos = md.mesh.numberofvertices2d * (layer - 1)
+        end_pos = md.mesh.numberofvertices2d * layer
+        select_indices = np.arange(start_pos, end_pos)
+
+        ## Extract requested layer from field
+        select_layer = field[select_indices]
+
+    return select_layer, select_indices
