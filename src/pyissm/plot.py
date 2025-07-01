@@ -374,7 +374,7 @@ def plot_model_field(md,
                      field,
                      layer = None,
                      ax = None,
-                     shading = 'gouraud',
+                     plot_data_on = 'points',
                      xlabel = 'X (m)',
                      ylabel = 'Y (m)',
                      edgecolors = 'face',
@@ -405,10 +405,10 @@ def plot_model_field(md,
         If not provided, the surface layer is used by default for vertex- and element-based 3D fields.
     ax : matplotlib.axes.Axes, optional
         An existing matplotlib Axes object to plot on. If `None`, a new figure and axes are created.
-    shading : str, optional
-        Type of shading, controlling the visualisation of data. Options: 'flat' or 'gouraud'.
-        Default is 'gouraud' which defines data on points. 'flat' takes the average of three points for each triangle.
-        'flat' is required when data are defined on elements. This is changed automatically if element-based data are provided.
+    plot_data_on: str, optional
+        Should data be plotted on points or elements? Default is 'points'. These options are converted to 'shading' used by plt.tripcolor(), as follows:
+        plot_data_on = 'points': shading = 'gouraud' / plot_data_on = 'elements': shading = 'flat'. When data are defined on elements, plot_data_on = 'elements'
+        is selected automatically internally.
     xlabel : str, optional
         Label for the x-axis. Default is 'X (m)'.
     ylabel : str, optional
@@ -454,6 +454,7 @@ def plot_model_field(md,
     ## Set defaults
     ax_defined = ax is not None
     norm = matplotlib.colors.LogNorm() if log else None
+    shading = 'gouraud' # Consistent with plot_data_on = 'points'
 
     ## Process mesh
     mesh, mesh_x, mesh_y, mesh_elements, is3d = model.mesh.process_mesh(md)
@@ -486,10 +487,12 @@ def plot_model_field(md,
         if field.shape[0] not in (md.mesh.numberofvertices, md.mesh.numberofelements):
             raise Exception('plot_model_field: The provided field is an unexpected shape.')
 
-    ## When field is defined on elements, shading = 'flat' is required. Change and warn if 'flat' is not already specified
-    if field.shape == md.mesh.numberofelements2d and shading == 'gouraud':
+    ## Update shading, if necessary. When field is defined on elements, shading = 'flat' is required.
+    if field.shape == md.mesh.numberofelements2d and plot_data_on == 'points':
         shading = 'flat'
-        warnings.warn("Changing to shading = 'flat' when plotting data defined on elements")
+        warnings.warn("Using plot_data_on = 'elements'. Data are defined on elements")
+    if plot_data_on == 'elements':
+        shading = 'flat'
 
     ## If no ax is defined, create new figure (with fig_kwargs, if provided)
     ## otherwise, plot on defined ax
