@@ -341,8 +341,8 @@ def plot_model_elements(md,
     colors = np.ones(np.shape(mesh_elements[element_pos])[0])
     cmap = matplotlib.colors.ListedColormap(color)
 
-    ## Plot elements
-    ax.tripcolor(mesh_x, mesh_y, mesh_elements[element_pos], facecolors=colors, cmap = cmap, edgecolors = 'none')
+    ## Plot elements (shading = 'flat' [default] is required when data are defined on elements)
+    ax.tripcolor(mesh_x, mesh_y, mesh_elements[element_pos], facecolors=colors, cmap = cmap, edgecolors = 'none', shading = 'flat')
 
     ## Add mesh (optional) with specific arguments
     if show_mesh:
@@ -374,6 +374,7 @@ def plot_model_field(md,
                      field,
                      layer = None,
                      ax = None,
+                     shading = 'gouraud',
                      xlabel = 'X (m)',
                      ylabel = 'Y (m)',
                      edgecolors = 'face',
@@ -404,6 +405,10 @@ def plot_model_field(md,
         If not provided, the surface layer is used by default for vertex- and element-based 3D fields.
     ax : matplotlib.axes.Axes, optional
         An existing matplotlib Axes object to plot on. If `None`, a new figure and axes are created.
+    shading : str, optional
+        Type of shading, controlling the visualisation of data. Options: 'flat' or 'gouraud'.
+        Default is 'gouraud' which defines data on points. 'flat' takes the average of three points for each triangle.
+        'flat' is required when data are defined on elements. This is changed automatically if element-based data are provided.
     xlabel : str, optional
         Label for the x-axis. Default is 'X (m)'.
     ylabel : str, optional
@@ -481,6 +486,11 @@ def plot_model_field(md,
         if field.shape[0] not in (md.mesh.numberofvertices, md.mesh.numberofelements):
             raise Exception('plot_model_field: The provided field is an unexpected shape.')
 
+    ## When field is defined on elements, shading = 'flat' is required. Change and warn if 'flat' is not already specified
+    if field.shape == md.mesh.numberofelements2d and shading == 'gouraud':
+        shading = 'flat'
+        warnings.warn("Changing to shading = 'flat' when plotting data defined on elements")
+
     ## If no ax is defined, create new figure (with fig_kwargs, if provided)
     ## otherwise, plot on defined ax
     if ax is None:
@@ -489,7 +499,7 @@ def plot_model_field(md,
         fig = ax.get_figure()
 
     ## Plot field
-    trip = ax.tripcolor(mesh, field, edgecolors = edgecolors, norm = norm, **kwargs)
+    trip = ax.tripcolor(mesh, field, edgecolors = edgecolors, norm = norm, **kwargs, shading = shading)
 
     ## Add optional mesh
     if show_mesh:
