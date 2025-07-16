@@ -1,9 +1,7 @@
 """
 Primary class for all ISSM model interactions.
 """
-
-# imports
-
+from . import build
 
 class Model():
     """
@@ -113,53 +111,53 @@ class Model():
         self.args = args
 
         ## Initialise all as None
-        self.mesh = None
-        self.mask = None
-        self.geometry = None
-        self.constants = None
-        self.smb = None
-        self.basalforcings = None
-        self.materials = None
-        self.damage = None
-        self.friction = None
-        self.flowequation = None
-        self.timestepping = None
-        self.initialization = None
-        self.rifts = None
-        self.dsl = None
-        self.solidearth = None
-        self.debug = None
+        self.mesh = build.mesh.mesh2d()
+        self.mask = build.mask()
+        self.geometry = build.geometry()
+        self.constants = build.constants()
+        self.smb = build.smb.default()
+        self.basalforcings = build.basalforcings.default()
+        self.materials = build.materials.ice()
+        self.damage = build.damage()
+        self.friction = build.friction.default()
+        self.flowequation = build.flowequation()
+        self.timestepping = build.timestepping.default()
+        self.initialization = build.initialization()
+        self.rifts = build.rifts()
+        self.dsl = build.dsl.default()
+        self.solidearth = build.solidearth.earth()
+        self.debug = build.debug()
         self.verbose = None
-        self.settings = None
+        self.settings = build.issmsettings()
         self.toolkits = None
         self.cluster = None
-        self.balancethickness = None
-        self.stressbalance = None
-        self.groundingline = None
-        self.hydrology = None
-        self.debris = None
-        self.masstransport = None
-        self.thermal = None
-        self.steadystate = None
-        self.transient = None
-        self.levelset = None
-        self.calving = None
-        self.frontalforcings = None
-        self.love = None
-        self.esa = None
-        self.sampling = None
-        self.autodiff = None
-        self.inversion = None
-        self.qmu = None
-        self.amr = None
-        self.results = None
-        self.outputdefinition = None
-        self.radaroverlay = None
-        self.miscellaneous = None
-        self.private = None
-        self.stochasticforcing = None
+        self.balancethickness = build.balancethickness()
+        self.stressbalance = build.stressbalance()
+        self.groundingline = build.groundingline()
+        self.hydrology = build.hydrology.shreve()
+        self.debris = build.debris()
+        self.masstransport = build.masstransport()
+        self.thermal = build.thermal()
+        self.steadystate = build.steadystate()
+        self.transient = build.transient()
+        self.levelset = build.levelset()
+        self.calving = build.calving.default()
+        self.frontalforcings = build.frontalforcings.default()
+        self.love = build.love.default()
+        self.esa = build.esa()
+        self.sampling = build.sampling()
+        self.autodiff = build.autodiff()
+        self.inversion = build.inversion.default()
+        self.qmu = build.qmu.default()
+        self.amr = build.amr()
+        self.results = build.results.results()
+        self.outputdefinition = build.outputdefinition()
+        self.radaroverlay = build.radaroverlay()
+        self.miscellaneous = build.miscellaneous()
+        self.private = build.private()
+        self.stochasticforcing = build.stochasticforcing()
 
-    ## Define string representation
+    # Define repr
     def __repr__(self):
         # Largely consistent with current MATLAB setup
         s = '%19s %-23s %s' % ('ISSM Model Class', '', '')
@@ -209,7 +207,7 @@ class Model():
         s = '%s\n%s' % (s, '%19s:  %-23s %s' % ('stochasticforcing', 'stochasticity applied to model forcings', ''))
         return s
 
-    ## Define class string
+    # Define class string
     def __str__(self):
         s = 'ISSM Model Class'
         return s
