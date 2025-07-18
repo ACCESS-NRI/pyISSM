@@ -4,9 +4,56 @@ from . import class_registry
 
 @class_registry.register_class
 class independent(class_registry.manage_state):
-    '''
-    independent Class definition
-    '''
+    """
+    Independent variable parameters class for ISSM.
+
+    This class encapsulates parameters for independent variables in the ISSM (Ice Sheet System Model) framework.
+    Independent variables are parameters that can be optimized or varied during inverse problems, 
+    sensitivity analysis, or uncertainty quantification studies.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    name : str, default=''
+        Variable name (must match corresponding String).
+    type : str, default=''
+        Type of variable ('vertex' or 'scalar').
+    fos_forward_index : float, default=nan
+        Index for fos_forward driver of ADOLC.
+    fov_forward_indices : array, default=[]
+        Indices for fov_forward driver of ADOLC.
+    nods : int, default=0
+        Size of independent variables.
+    min_parameters : float, default=nan
+        Absolute minimum acceptable value of the inversed parameter on each vertex.
+    max_parameters : float, default=nan
+        Absolute maximum acceptable value of the inversed parameter on each vertex.
+    control_scaling_factor : float, default=nan
+        Order of magnitude of each control (useful for multi-parameter optimization).
+    control_size : int, default=1
+        Number of timesteps.
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the independent parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the independent parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.independent = pyissm.build.independent()
+    md.independent.name = 'FrictionCoefficient'
+    md.independent.type = 'vertex'
+    md.independent.min_parameters = 1e-3
+    md.independent.max_parameters = 100
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):

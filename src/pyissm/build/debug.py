@@ -3,9 +3,42 @@ from . import class_registry
 
 @class_registry.register_class
 class debug(class_registry.manage_state):
-    '''
-    debug Class definition
-    '''
+    """
+    Debug parameters class for ISSM.
+
+    This class encapsulates debugging and profiling parameters for the ISSM (Ice Sheet System Model) framework.
+    It allows users to enable various debugging tools and profiling capabilities to analyze performance
+    and troubleshoot issues in ice sheet model simulations.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    valgrind : int, default=0
+        Use valgrind to debug (0 or 1).
+    gprof : int, default=0
+        Use GNU profiler to find out where the time is spent.
+    profiling : int, default=0
+        Enables profiling (memory, flops, time).
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the debug parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the debug parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.debug = pyissm.build.debug()
+    md.debug.valgrind = 1
+    md.debug.profiling = 1
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):

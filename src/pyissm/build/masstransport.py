@@ -4,9 +4,53 @@ from . import class_registry
 
 @class_registry.register_class
 class masstransport(class_registry.manage_state):
-    '''
-    masstransport Class definition
-    '''
+    """
+    Mass transport solution parameters class for ISSM.
+
+    This class encapsulates parameters for configuring mass transport simulations in the ISSM (Ice Sheet System Model) framework.
+    It controls ice thickness evolution, free surface behavior, stabilization methods, and hydrostatic adjustments
+    for both grounded and floating ice.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    spcthickness : ndarray, default=nan
+        Thickness constraints (NaN means no constraint) [m].
+    isfreesurface : int, default=0
+        Do we use free surfaces (FS only) or mass conservation.
+    min_thickness : float, default=1.0
+        Minimum ice thickness allowed [m].
+    hydrostatic_adjustment : str, default='Absolute'
+        Adjustment of ice shelves surface and bed elevations: 'Incremental' or 'Absolute'.
+    stabilization : int, default=1
+        Stabilization method: 0=no stabilization, 1=artificial diffusion, 2=streamline upwinding, 3=discontinuous Galerkin, 4=flux corrected transport, 5=streamline upwind Petrov-Galerkin (SUPG).
+    vertex_pairing : float, default=nan
+        Vertex pairing parameter. Used during consistency checks.
+    penalty_factor : float, default=3
+        Penalty factor for constraint enforcement.
+    requested_outputs : str, default='List of requested outputs'
+        Additional outputs requested.
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the masstransport parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the masstransport parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.masstransport = pyissm.build.masstransport()
+    md.masstransport.min_thickness = 10.0
+    md.masstransport.stabilization = 2
+    md.masstransport.hydrostatic_adjustment = 'Incremental'
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):

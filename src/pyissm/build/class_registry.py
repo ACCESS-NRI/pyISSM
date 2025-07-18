@@ -86,7 +86,7 @@ def map_classtype(classtype: str) -> str:
         'timesteppingadaptive.timesteppingadaptive': 'timestepping.adaptive'
     }
     if classtype in legacy_class_map:
-        print(f"⚠️ Legacy classtype '{classtype}' mapped to '{legacy_class_map[classtype]}'")
+        print(f"ℹ️ Legacy classtype '{classtype}' mapped to '{legacy_class_map[classtype]}'")
     return legacy_class_map.get(classtype, classtype)
 
 
@@ -137,6 +137,6 @@ class manage_state:
     def __getstate__(self):
         return self.__dict__
 
-    ## Set the current stat of self
+    ## Set the current state of self
     def __setstate__(self, state):
         self.__dict__.update(state)

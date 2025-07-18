@@ -1,23 +1,57 @@
+import collections
 from . import build_utils
 from . import class_registry
 
 @class_registry.register_class
 class private(class_registry.manage_state):
-    '''
-    private Class definition
-    '''
+    """
+    Private parameters class for ISSM.
+
+    This class encapsulates internal parameters used by the ISSM (Ice Sheet System Model) framework.
+    These parameters are not intended to be modified directly by users and are primarily used for
+    managing model consistency, runtime information, mesh properties, and solution type.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    isconsistent : bool, default=True
+        Indicates whether the model is self-consistent.
+    runtimename : str, default=''
+        Name of the run launched.
+    bamg : collections.OrderedDict, default=OrderedDict()
+        Structure with mesh properties constructed if BAMG is used to mesh the domain.
+    solution : str, default=''
+        Type of solution launched.
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the private parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the private parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.private = pyissm.build.private()
+    md.private.runtimename = 'experiment_001'
+    md.private.solution = 'StressBalance'
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
         self.isconsistent = True
         self.runtimename = ''
-        self.bamg = 'OrderedDict()'
+        self.bamg = collections.OrderedDict()
         self.solution = ''
 
         # Inherit matching fields from provided class
         super().__init__(other)
-
-        ## TODO: How should OrderedDict() be implemented?
 
     # Define repr
     def __repr__(self):

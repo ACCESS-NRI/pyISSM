@@ -4,9 +4,63 @@ from . import class_registry
 
 @class_registry.register_class
 class lovenumbers(class_registry.manage_state):
-    '''
-    lovenumbers Class definition
-    '''
+    """
+    Love numbers parameters class for ISSM.
+
+    This class encapsulates Love numbers parameters for the ISSM (Ice Sheet System Model) framework.
+    Love numbers describe the elastic and viscoelastic response of the solid Earth to surface loading,
+    including ice mass changes. They are essential for modeling sea level change and solid Earth deformation.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    h : float, default=nan
+        Load Love number for radial displacement (provided by PREM model).
+    k : float, default=nan
+        Load Love number for gravitational potential perturbation (provided by PREM model).
+    l : float, default=nan
+        Load Love number for horizontal displacements (provided by PREM model).
+    th : float, default=nan
+        Tidal load Love number (degree 2) for radial displacement.
+    tk : float, default=nan
+        Tidal load Love number (degree 2) for gravitational potential.
+    tl : float, default=nan
+        Tidal load Love number (degree 2) for horizontal displacement.
+    tk2secular : float, default=0
+        Secular fluid Love number (degree 2).
+    pmtf_colinear : float, default=nan
+        Colinear component of the Polar Motion Transfer Function (e.g. x-motion due to x-component perturbation of the inertia tensor).
+    pmtf_ortho : float, default=nan
+        Orthogonal component of the Polar Motion Transfer Function (couples x and y components, only used for Chandler Wobble).
+    timefreq : float, default=nan
+        Time/frequency vector [yr or 1/yr].
+    istime : int, default=1
+        Time (1, default) or frequency love numbers (0).
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the lovenumbers parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the lovenumbers parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Notes
+    -----
+    This functionality is not yet fully implemented in the current version.
+
+    Examples
+    --------
+    md.lovenumbers = pyissm.build.lovenumbers()
+    md.lovenumbers.h = h_love_numbers
+    md.lovenumbers.k = k_love_numbers
+    md.lovenumbers.l = l_love_numbers
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):

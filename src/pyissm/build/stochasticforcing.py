@@ -4,9 +4,54 @@ from . import class_registry
 
 @class_registry.register_class
 class stochasticforcing(class_registry.manage_state):
-    '''
-    stochasticforcing Class definition
-    '''
+    """
+    Stochastic forcing parameters class for ISSM.
+
+    This class encapsulates parameters for stochastic forcing in the ISSM (Ice Sheet System Model) framework.
+    It allows users to apply random forcing to various physical processes such as surface mass balance,
+    basal melting, and calving, enabling uncertainty quantification and probabilistic modeling.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    isstochasticforcing : int, default=0
+        Is stochasticity activated?
+    fields : str, default='List of fields'
+        Fields with stochasticity applied, e.g. ['SMBautoregression'], or ['SMBforcing','DefaultCalving'].
+    defaultdimension : int, default=0
+        Dimensionality of the noise terms (does not apply to fields with their specific dimension).
+    default_id : ndarray, default=nan
+        ID of each element for partitioning of the noise terms (does not apply to fields with their specific partition).
+    covariance : float, default=nan
+        Covariance matrix for within- and between-fields covariance (units must be squared field units), multiple matrices can be concatenated along 3rd dimension to apply different covariances in time.
+    timecovariance : float, default=nan
+        Starting dates at which covariances apply (only applicable if multiple covariance matrices are prescribed).
+    stochastictimestep : float, default=0
+        Timestep at which new stochastic noise terms are generated (default: md.timestepping.time_step).
+    randomflag : int, default=1
+        Whether to apply real randomness (true) or pseudo-randomness with fixed seed (false).
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the stochasticforcing parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the stochasticforcing parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.stochasticforcing = pyissm.build.stochasticforcing()
+    md.stochasticforcing.isstochasticforcing = 1
+    md.stochasticforcing.fields = ['SMBforcing']
+    md.stochasticforcing.defaultdimension = 1
+    md.stochasticforcing.covariance = covariance_matrix
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):

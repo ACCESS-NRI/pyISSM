@@ -4,9 +4,81 @@ from . import class_registry
 
 @class_registry.register_class
 class stressbalance(class_registry.manage_state):
-    '''
-    stressbalance Class definition
-    '''
+    """
+    Stress balance solution parameters class for ISSM.
+
+    This class encapsulates parameters for configuring stress balance simulations in the ISSM (Ice Sheet System Model) framework.
+    It controls velocity constraints, convergence criteria, numerical methods, and other parameters for solving 
+    the momentum balance equations in ice sheet dynamics.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    spcvx : ndarray, default=nan
+        Velocity constraints in x-direction (NaN means no constraint) [m/yr].
+    spcvy : ndarray, default=nan
+        Velocity constraints in y-direction (NaN means no constraint) [m/yr].
+    spcvx_base : ndarray, default=nan
+        Base velocity constraints in x-direction (NaN means no constraint) [m/yr].
+    spcvy_base : ndarray, default=nan
+        Base velocity constraints in y-direction (NaN means no constraint) [m/yr].
+    spcvx_shear : ndarray, default=nan
+        Shear velocity constraints in x-direction (NaN means no constraint) [m/yr].
+    spcvy_shear : ndarray, default=nan
+        Shear velocity constraints in y-direction (NaN means no constraint) [m/yr].
+    spcvz : ndarray, default=nan
+        Velocity constraints in z-direction (NaN means no constraint) [m/yr].
+    restol : float, default=1e-4
+        Mechanical equilibrium residual convergence criterion.
+    reltol : float, default=0.01
+        Velocity relative convergence criterion (NaN: not applied).
+    abstol : float, default=10
+        Velocity absolute convergence criterion (NaN: not applied).
+    ishydrologylayer : int, default=0
+        Is hydrology layer enabled.
+    isnewton : int, default=0
+        Numerical method: 0=Picard's fixed point, 1=Newton's method, 2=hybrid.
+    FSreconditioning : float, default=1e13
+        Full-Stokes reconditioning parameter.
+    maxiter : int, default=100
+        Maximum number of nonlinear iterations.
+    shelf_dampening : float, default=0
+        Shelf dampening parameter.
+    vertex_pairing : float, default=nan
+        Vertex pairing parameter.
+    penalty_factor : float, default=3
+        Penalty factor for constraint enforcement.
+    rift_penalty_lock : float, default=10
+        Rift penalty lock parameter.
+    rift_penalty_threshold : float, default=0
+        Rift penalty threshold parameter.
+    referential : float, default=nan
+        Referential parameter.
+    loadingforce : float, default=nan
+        Loading force parameter.
+    requested_outputs : str, default='List of requested outputs'
+        Additional outputs requested.
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the stressbalance parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the stressbalance parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.stressbalance = pyissm.build.stressbalance()
+    md.stressbalance.restol = 1e-5
+    md.stressbalance.isnewton = 1
+    md.stressbalance.maxiter = 200
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):

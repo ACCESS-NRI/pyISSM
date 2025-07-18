@@ -3,9 +3,41 @@ from . import class_registry
 
 @class_registry.register_class
 class miscellaneous(class_registry.manage_state):
-    '''
-    miscellaneous Class definition
-    '''
+    """
+    Miscellaneous parameters class for ISSM.
+
+    This class encapsulates miscellaneous parameters and metadata for the ISSM (Ice Sheet System Model) framework.
+    It provides storage for model notes, names, and other auxiliary information that doesn't fit into other categories.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    notes : str, default=''
+        Notes in a cell of strings for documentation purposes.
+    name : str, default=''
+        Model name or identifier.
+    dummy : str, default='Placeholder for dummy fields'
+        Empty field to store some data or as placeholder.
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the miscellaneous parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the miscellaneous parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.miscellaneous = pyissm.build.miscellaneous()
+    md.miscellaneous.notes = 'Model run for Antarctic ice sheet'
+    md.miscellaneous.name = 'Antarctica_2024'
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):

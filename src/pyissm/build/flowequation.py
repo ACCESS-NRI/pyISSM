@@ -4,9 +4,79 @@ from . import class_registry
 
 @class_registry.register_class
 class flowequation(class_registry.manage_state):
-    '''
-    flowequation Class definition
-    '''
+    """
+    Flow equation parameters class for ISSM.
+
+    This class encapsulates parameters for configuring flow equations in the ISSM (Ice Sheet System Model) framework.
+    It allows users to select and configure different ice flow approximations such as SIA, SSA, Higher-Order, and Full-Stokes,
+    along with their associated numerical methods and boundary conditions.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    isSIA : int, default=0
+        Is the Shallow Ice Approximation (SIA) used?
+    isL1L2 : int, default=0
+        Are L1L2 equations used?
+    isSSA : int, default=0
+        Is the Shelfy-Stream Approximation (SSA) used?
+    isMOLHO : int, default=0
+        Are MOno-layer Higher-Order (MOLHO) equations used?
+    isHO : int, default=0
+        Is the Higher-Order (HO) approximation used?
+    isFS : int, default=0
+        Are the Full-Stokes (FS) equations used?
+    isNitscheBC : int, default=0
+        Is weakly imposed condition used?
+    FSNitscheGamma : float, default=1e6
+        Gamma value for the Nitsche term.
+    fe_SSA : str, default='P1'
+        Finite Element for SSA: 'P1', 'P1bubble', 'P1bubblecondensed', 'P2'.
+    fe_HO : str, default='P1'
+        Finite Element for HO: 'P1', 'P1bubble', 'P1bubblecondensed', 'P2'.
+    fe_FS : str, default='MINIcondensed'
+        Finite Element for FS: 'MINI', 'MINIcondensed', 'TaylorHood', 'XTaylorHood', 'OneLayerP4z', 'CrouzeixRaviart'.
+    augmented_lagrangian_r : float, default=1
+        Augmented Lagrangian parameter r.
+    augmented_lagrangian_rhop : float, default=1
+        Augmented Lagrangian parameter rhop.
+    augmented_lagrangian_rlambda : float, default=1
+        Augmented Lagrangian parameter rlambda.
+    augmented_lagrangian_rholambda : float, default=1
+        Augmented Lagrangian parameter rholambda.
+    XTH_theta : float, default=0
+        XTH theta parameter.
+    vertex_equation : float, default=nan
+        Vertex equation parameter.
+    element_equation : float, default=nan
+        Element equation parameter.
+    borderSSA : float, default=nan
+        Border parameter for SSA.
+    borderHO : float, default=nan
+        Border parameter for HO.
+    borderFS : float, default=nan
+        Border parameter for FS.
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the flowequation parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the flowequation parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.flowequation = pyissm.build.flowequation()
+    md.flowequation.isSSA = 1
+    md.flowequation.fe_SSA = 'P1bubble'
+    md.flowequation.FSNitscheGamma = 1e5
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):

@@ -4,9 +4,59 @@ from . import class_registry
 
 @class_registry.register_class
 class misfit(class_registry.manage_state):
-    '''
-    misfit Class definition
-    '''
+    """
+    Misfit parameters class for ISSM.
+
+    This class encapsulates parameters for misfit calculations in the ISSM (Ice Sheet System Model) framework.
+    Misfit functions measure the difference between model predictions and observations,
+    and are essential for model validation, calibration, and inverse problem solutions.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    name : str, default=''
+        Identifier for this misfit response.
+    definitionstring : str, default=''
+        String that identifies this output definition uniquely, from "Outputdefinition[1-10]".
+    model_string : str, default=''
+        String for field that is modeled.
+    observation : ndarray, default=nan
+        Observed field that we compare the model against.
+    observation_string : str, default=''
+        Observation string for identification purposes.
+    timeinterpolation : str, default='nearestneighbor'
+        Interpolation routine used to interpolate misfit between two time steps.
+    local : int, default=1
+        Is the response local to the elements, or global?
+    weights : ndarray, default=nan
+        Weights (at vertices) to apply to the misfit.
+    weights_string : str, default=''
+        String for weights for identification purposes.
+    cumulated : float, default=nan
+        Cumulated misfit value.
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the misfit parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the misfit parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.misfit = pyissm.build.misfit()
+    md.misfit.name = 'velocity_misfit'
+    md.misfit.model_string = 'Vel'
+    md.misfit.observation = observed_velocity
+    md.misfit.weights = velocity_weights
+    md.misfit.timeinterpolation = 'linear'
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -19,7 +69,7 @@ class misfit(class_registry.manage_state):
         self.local = 1
         self.weights = np.nan
         self.weights_string = ''
-        self.cumulated = np.nan
+        self.cumulated = None
 
         # Inherit matching fields from provided class
         super().__init__(other)

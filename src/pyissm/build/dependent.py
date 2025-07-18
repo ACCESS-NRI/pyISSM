@@ -4,9 +4,52 @@ from . import class_registry
 
 @class_registry.register_class
 class dependent(class_registry.manage_state):
-    '''
-    dependent Class definition
-    '''
+    """
+    Dependent variable parameters class for ISSM.
+
+    This class encapsulates parameters for dependent variables in the ISSM (Ice Sheet System Model) framework.
+    Dependent variables are outputs or responses that depend on independent variables and are typically
+    used as objective functions in inverse problems or as outputs for sensitivity analysis.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    name : str, default=''
+        Variable name (must match corresponding String).
+    fos_reverse_index : float, default=nan
+        Index for fos_reverse driver of ADOLC.
+    exp : str, default=''
+        File needed to compute dependent variable.
+    segments : str, default='List of segments'
+        Mass flux segments.
+    index : int, default=-1
+        Index parameter.
+    nods : int, default=0
+        Size parameter.
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the dependent parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the dependent parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Notes
+    -----
+    This functionality is not yet fully implemented in the current version.
+
+    Examples
+    --------
+    md.dependent = pyissm.build.dependent()
+    md.dependent.name = 'Vel'
+    md.dependent.exp = 'velocity_observations.exp'
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
