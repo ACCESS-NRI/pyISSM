@@ -150,7 +150,7 @@ class Model():
         self.inversion = build.inversion.default()
         self.qmu = build.qmu.default()
         self.amr = build.amr()
-        self.results = build.results.results()
+        self.results = build.results.default()
         self.outputdefinition = build.outputdefinition()
         self.radaroverlay = build.radaroverlay()
         self.miscellaneous = build.miscellaneous()
