@@ -4,128 +4,288 @@ Functions for reading and writing ISSM models.
 This module contains functions for reading and writing ISSM models to and from files.
 """
 
-from types import SimpleNamespace
-from ..core import Model
-from .. import analysis
-from .. import model
-from .. import utils
 import netCDF4 as nc
 import numpy as np
 import pandas as pd
 import os
+import math
 
-def load_model_group(nc_file,
-                     group_name,
-                     sub_group_name = None):
-    """
-    Load variables from a specified group (and optional subgroup) in a NetCDF file.
+from .. import core, analysis, model, param, utils
 
-    Extracts all variables from the given group (or subgroup if specified) in an open
-    NetCDF file and returns them as attributes of a `SimpleNamespace` for convenient access.
+def load_model(path: str) -> core.Model:
 
-    Parameters
-    ----------
-    nc_file : netCDF4.Dataset
-        An open NetCDF file object.
-    group_name : str
-        Name of the group from which to load variables.
-    sub_group_name : str, optional
-        Name of the subgroup within the specified group. If not provided, variables are
-        loaded from the main group.
+    ## Helper function to load different variables
+    def get_variables(state, group, group_name):
+        for var_name, var in group.variables.items():
+            try:
+                data = var[:]
+                # If it's a scalar, extract the item, otherwise make numpy array
+                if isinstance(data, np.ndarray) and data.shape == ():
+                    state[var_name] = data.item()
+                else:
+                    state[var_name] = np.array(data)
+            except Exception as e:
+                print(f"⚠️ Failed to read variable '{group_name}.{var_name}': {e}")
+                continue
+        return state
 
-    Returns
-    -------
-    types.SimpleNamespace
-        A namespace object containing the variables from the specified group or subgroup.
-        Each attribute corresponds to a variable, stored as a NumPy array.
-    """
+    ## Helper function to load attributes
+    def get_attributes(state, group):
+        for attr in group.ncattrs():
+            if attr != "classtype":
+                state[attr] = group.getncattr(attr)
+        return state
 
-    ## Initialise empty variable_dict
-    variable_dict = {}
+    ## Helper function to retrieve classtype and create new instance object
+    def get_class(group):
+        classtype = group.getncattr("classtype")
+        obj = param.class_registry.create_instance(classtype)
+        return classtype, obj
 
-    ## Extract the group (or sub_group, if defined)
-    group = nc_file.groups[group_name]
-    if sub_group_name:
-        group = group.groups[sub_group_name]
-    else:
-        pass
-
-    ## List all variables within the specified group
-    variable_names = group.variables
-
-    ## Loop over variables and add to variable_dict
-    for variable in variable_names:
-        variable_dict[variable] = group.variables[variable][:]
-
-    ## Convert variable_dict to SimpleNamespace to return
-    variables = SimpleNamespace(**variable_dict)
-
-    return variables
-
-def load_model(filepath):
-
-    """
-    Load an ISSM model from a NetCDF file.
-
-    This function reads a NetCDF file containing an ISSM model, reconstructs the hierarchical group and subgroup
-    structure, and populates an instance of the `Model` class with the data.
-
-    Parameters
-    ----------
-    filepath : str
-        Path to the NetCDF file containing the model data.
-
-    Returns
-    -------
-    Model
-        An instance of the `Model` class populated with data from the NetCDF file.
-
-    Notes
-    -----
-    - Each top-level group in the NetCDF file is added as an attribute of the `Model` instance.
-    - If a group contains nested subgroups, those are recursively added as attributes of their parent group.
-    - Uses `load_model_group()` to extract group and subgroup data.
-    - The function expects the NetCDF file to follow the standard ISSM model structure.
-    """
-
-    ## Initialise empty model to add information to
-    md = Model()
-
-    ## Open netCDF file (read-only)
-    nc_file = nc.Dataset(filepath, mode = 'r')
-
-    ## List available groups
-    model_groups = list(nc_file.groups.keys())
-
-    ## Loop through available groups and add them to md
-    for group_name in model_groups:
-
-        # Load data for given group
-        group_data = load_model_group(nc_file, group_name)
-
-        # Add group_data to md
-        setattr(md, group_name, group_data)
-
-        ## Check for subgroups
-        if len(nc_file.groups[group_name].groups) > 0:
-
-            # List all subgroup_names
-            subgroup_names = list(nc_file.groups[group_name].groups.keys())
-
-            for subgroup in subgroup_names:
-
-                # Get the subgroup data
-                subgroup_data = load_model_group(nc_file, group_name, subgroup)
-
-                # Get the group so the subgroup can be added
-                group = getattr(md, group_name)
-
-                # Add the subgroup_data
-                setattr(group, subgroup, subgroup_data)
+    ## Helper function to normalise NaN values (convert all NaN to np.nan)
+    def normalize_nans(obj):
+        if isinstance(obj, dict):
+            return {k: normalize_nans(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [normalize_nans(item) for item in obj]
+        elif isinstance(obj, tuple):
+            return tuple(normalize_nans(item) for item in obj)
+        elif isinstance(obj, np.ndarray):
+            if np.issubdtype(obj.dtype, np.floating):
+                obj = np.where(np.isnan(obj), np.nan, obj)
+            return obj
+        elif isinstance(obj, float) and math.isnan(obj):
+            return np.nan
         else:
-            pass
+            return obj
+
+    ## Initialise empty model class
+    md = core.Model()
+
+    ## Open the model netcdf file
+    with nc.Dataset(path, 'r') as ds:
+
+        ## Iterate through all top-level groups in the NetCDF file...
+        for grp_name in ds.groups:
+            grp = ds.groups[grp_name]
+
+            ## --------------------------------------------------------
+            ## Process the 'results' group
+            ## - 'results' doesn't have a classtype attribute, but it contains
+            ## various subgroups, like 'TransientSolution', 'StressbalanceSolution' etc.
+            ## --------------------------------------------------------
+
+            if grp_name == "results":
+
+                ## Process indivdiual subgroups...
+                for sub_grp_name, sub_grp in grp.groups.items():
+                    print(f"ℹ️ Processing results group: {sub_grp_name}")
+
+                    ## Check that a valid classtype exists:
+                    if "classtype" in sub_grp.ncattrs():
+
+                        ## Get the classtype for the subgroup & create new instance
+                        classtype, obj = get_class(sub_grp)
+                        # If obj is None, carry on (a warning is printed by create_instance in get_class)
+                        if obj is None:
+                            continue
+
+                        ## Create empty state
+                        state = {}
+
+                        ## Get scalar attributes (those that are not stored as variables) and add to state
+                        state = get_attributes(state, sub_grp)
+
+                        ## Get variables
+                        state = get_variables(state, sub_grp, sub_grp_name)
+
+                        ## Convert all NaN values to np.nan
+                        state = normalize_nans(state)
+
+                        ## Set the state for the model class
+                        try:
+                            obj.__setstate__(state)
+                        except Exception as e:
+                            print(f"⚠️ Failed to set state for '{sub_grp_name}': {e}")
+                            continue
+
+                        ## Assign the object to the model (e.g., md.results.TransientSolution)
+                        setattr(md.results, sub_grp_name, obj)
+
+                    else:
+                        print(f"⚠️️ classtype does not exist for group {grp_name}. Skipping...")
+                        continue
+
+            else:
+                ## --------------------------------------------------------
+                ## Process other model groups
+                ## --------------------------------------------------------
+
+                ## Check that a valid classtype exists:
+                if "classtype" in grp.ncattrs():
+                    ## Get the classtype for the group & create new instance
+                    classtype, obj = get_class(grp)
+                    # If obj is None, carry on (a warning is printed by create_instance in get_class)
+                    if obj is None:
+                        continue
+
+                    ## Create empty state
+                    state = {}
+
+                    ## Get scalar attributes (those that are not stored as variables) and add to state
+                    state = get_attributes(state, grp)
+
+                    ## Get variables
+                    state = get_variables(state, grp, grp_name)
+
+                    ## Convert all NaN values to np.nan
+                    state = normalize_nans(state)
+
+                    ## Set the state for the model class
+                    try:
+                        obj.__setstate__(state)
+                    except Exception as e:
+                        print(f"⚠️ Failed to set state for '{grp_name}': {e}")
+                        continue
+
+                    ## Assign the object to the model (e.g., md.mesh)
+                    setattr(md, grp_name, obj)
+
+                else:
+                    print(f"⚠️️ classtype does not exist for group {grp_name}. Skipping...")
+                    continue
 
     return md
+
+
+def save_model(path: str, md):
+
+    ## Helper function to convert character array to string for NetCDF writing
+    def char_array_to_strings(arr):
+        arr = np.asarray(arr)  # Ensure it's a NumPy array
+        if arr.ndim == 1:
+            # Convert 1D string to single byte string array
+            return np.array(["".join(arr.astype(str))], dtype='S')
+        elif arr.ndim == 2:
+            # Convert 2D strings to multiple byte string array
+            return np.array(["".join(row.astype(str)) for row in arr], dtype='S')
+        else:
+            raise ValueError("Input must be a 1D or 2D char array with dtype='S1'")
+
+    # Helper function to serialize an object's state
+    def serialize_object(obj, group):
+        """
+        Serializes an object's state, including nested objects.
+        """
+
+        ## Get state from the object
+        state = obj.__getstate__()
+
+        ## For each item, write attributes and variables...
+        for attr_name, value in state.items():
+
+            # Handle scalars
+            if isinstance(value, (int, float, str, bool)):
+                group.setncattr(attr_name, value)
+
+            # Handle arrays and lists (convert lists to arrays)
+            elif isinstance(value, np.ndarray) or isinstance(value, list):
+
+                # If it's a list, convert to an array
+                if isinstance(value, list):
+                    value = np.array(value, dtype='S')
+                # Otherwise, check the array type
+                else:
+                    # If it's an object array, convert to a string array (object arrays can't be written to NetCDF)
+                    if value.dtype == object:
+                        value = np.array(value, dtype='S')
+                    # Special handling for 'S1' datatype (these come from NetCDF Char variables when output from MATLAB)
+                    elif value.dtype.kind == 'S':
+                        value = char_array_to_strings(value)
+                    else:
+                        value = value
+
+                # Handle the dimensions -- define a name from the size. If it doesn't already exist, create it.
+                dim_names = []
+                for i, size in enumerate(value.shape):
+                    dim_name = f"dim_{i}_{size}"
+                    if dim_name not in defined_dimensions:
+                        ds.createDimension(dim_name, size)
+                        defined_dimensions[dim_name] = size
+                    dim_names.append(dim_name)
+
+                # Create variable.
+                # If it's a string array, turn off zlib compression
+                if value.dtype.kind == 'S':
+                    var = group.createVariable(attr_name, value.dtype, dimensions=dim_names, zlib=False)
+                else:
+                    var = group.createVariable(attr_name, value.dtype, dimensions=dim_names, zlib=True)
+
+                ## Add data to variable
+                var[:] = value
+
+            ## Handle nested objects (recursively serialize them)
+            elif isinstance(value, object):
+                # If the value is a class instance, treat it as a group and recurse
+                if hasattr(value, '__getstate__'):
+                    nested_group = group.createGroup(attr_name)
+                    serialize_object(value, nested_group)
+
+            else:
+                print(f"⚠️ Skipping unsupported field: {attr_name} ({type(value).__name__})")
+                continue
+
+    def get_registered_name(obj):
+        classname = obj.__class__
+        matching_keys = [k for k, v in param.class_registry.CLASS_REGISTRY.items() if v is classname]
+        if not matching_keys:
+            raise ValueError(f"Class {classname} is not registered.")
+        registered_name = min(matching_keys, key=len)
+        return registered_name
+
+    ## Create the NetCDF file
+    with nc.Dataset(path, 'w', format='NETCDF4') as ds:
+
+        # Initialise dictionary to track existing dimension sizes & names
+        defined_dimensions = {}
+
+        # Loop through model attributes (top-level groups)
+        for name, obj in vars(md).items():
+            # Handle 'results' group specially
+            if name == "results":
+                results_group = ds.createGroup("results")
+
+                # Loop through each solution type in md.results
+                for solution_name, solution_obj in vars(md.results).items():
+                    if solution_obj is None:
+                        print(f"⚠️ Skipping solution type: {solution_name})")
+                        continue
+
+                    # Create subgroup for this solution (e.g., TransientSolution)
+                    solution_group = results_group.createGroup(solution_name)
+
+                    # Attach class type metadata
+                    classname = get_registered_name(solution_obj)
+                    solution_group.setncattr("classtype", classname)
+
+                    # Serialize the solution state
+                    serialize_object(solution_obj, solution_group)
+
+            else:
+                # For regular model components (e.g., mesh, materials, geometry)
+                if obj is None:
+                    continue
+
+                # Create group for the model component
+                group = ds.createGroup(name)
+
+                # Attach class type metadata
+                classname = get_registered_name(obj)
+                group.setncattr("classtype", classname)
+
+                # Serialize the component state
+                serialize_object(obj, group)
+
 
 def export_gridded_model(md,
                          out_file,

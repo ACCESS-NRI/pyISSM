@@ -274,3 +274,38 @@ def extract_field_layer(md,
         select_layer = field[select_indices]
 
     return select_layer, select_indices
+
+## ------------------------------------------------------------------------------------
+## SOLID EARTH FUNCTION
+## ------------------------------------------------------------------------------------
+def planetradius(planet):
+    """
+        Return the mean radius of a specified planetary body.
+
+        Parameters
+        ----------
+        planet : str
+            Name of the planet. Supported values are:
+            - `'earth'` : Earth's mean radius in meters.
+            - `'europa'` : Europa's mean radius in meters.
+
+        Returns
+        -------
+        radius : float
+            Planetary radius in meters.
+
+        Raises
+        ------
+        TypeError
+            If the input `planet` is not one of the supported values.
+    """
+
+    if planet == 'earth':
+        radius = 6.371012e6
+    elif planet == 'europa':
+        radius = 1.5008e6
+    else:
+        raise TypeError(f'planetradius: Planet type {planet} is not supported.')
+
+    return radius
+

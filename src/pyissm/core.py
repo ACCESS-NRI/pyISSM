@@ -1,9 +1,7 @@
 """
 Primary class for all ISSM model interactions.
 """
-
-# imports
-
+from . import param
 
 class Model():
     """
@@ -113,53 +111,53 @@ class Model():
         self.args = args
 
         ## Initialise all as None
-        self.mesh = None
-        self.mask = None
-        self.geometry = None
-        self.constants = None
-        self.smb = None
-        self.basalforcings = None
-        self.materials = None
-        self.damage = None
-        self.friction = None
-        self.flowequation = None
-        self.timestepping = None
-        self.initialization = None
-        self.rifts = None
-        self.dsl = None
-        self.solidearth = None
-        self.debug = None
+        self.mesh = param.mesh.mesh2d()
+        self.mask = param.mask()
+        self.geometry = param.geometry()
+        self.constants = param.constants()
+        self.smb = param.smb.default()
+        self.basalforcings = param.basalforcings.default()
+        self.materials = param.materials.ice()
+        self.damage = param.damage()
+        self.friction = param.friction.default()
+        self.flowequation = param.flowequation()
+        self.timestepping = param.timestepping.default()
+        self.initialization = param.initialization()
+        self.rifts = param.rifts()
+        self.dsl = param.dsl.default()
+        self.solidearth = param.solidearth.earth()
+        self.debug = param.debug()
         self.verbose = None
-        self.settings = None
+        self.settings = param.issmsettings()
         self.toolkits = None
         self.cluster = None
-        self.balancethickness = None
-        self.stressbalance = None
-        self.groundingline = None
-        self.hydrology = None
-        self.debris = None
-        self.masstransport = None
-        self.thermal = None
-        self.steadystate = None
-        self.transient = None
-        self.levelset = None
-        self.calving = None
-        self.frontalforcings = None
-        self.love = None
-        self.esa = None
-        self.sampling = None
-        self.autodiff = None
-        self.inversion = None
-        self.qmu = None
-        self.amr = None
-        self.results = None
-        self.outputdefinition = None
-        self.radaroverlay = None
-        self.miscellaneous = None
-        self.private = None
-        self.stochasticforcing = None
+        self.balancethickness = param.balancethickness()
+        self.stressbalance = param.stressbalance()
+        self.groundingline = param.groundingline()
+        self.hydrology = param.hydrology.shreve()
+        self.debris = param.debris()
+        self.masstransport = param.masstransport()
+        self.thermal = param.thermal()
+        self.steadystate = param.steadystate()
+        self.transient = param.transient()
+        self.levelset = param.levelset()
+        self.calving = param.calving.default()
+        self.frontalforcings = param.frontalforcings.default()
+        self.love = param.love.default()
+        self.esa = param.esa()
+        self.sampling = param.sampling()
+        self.autodiff = param.autodiff()
+        self.inversion = param.inversion.default()
+        self.qmu = param.qmu.default()
+        self.amr = param.amr()
+        self.results = param.results.default()
+        self.outputdefinition = param.outputdefinition()
+        self.radaroverlay = param.radaroverlay()
+        self.miscellaneous = param.miscellaneous()
+        self.private = param.private()
+        self.stochasticforcing = param.stochasticforcing()
 
-    ## Define string representation
+    # Define repr
     def __repr__(self):
         # Largely consistent with current MATLAB setup
         s = '%19s %-23s %s' % ('ISSM Model Class', '', '')
@@ -209,7 +207,11 @@ class Model():
         s = '%s\n%s' % (s, '%19s:  %-23s %s' % ('stochasticforcing', 'stochasticity applied to model forcings', ''))
         return s
 
-    ## Define class string
+    # Define class string
     def __str__(self):
         s = 'ISSM Model Class'
         return s
+
+    # Define state
+    def __getstate__(self):
+        return self.__dict__.copy()
