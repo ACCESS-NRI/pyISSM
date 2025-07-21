@@ -7,9 +7,66 @@ from . import class_registry
 ## ------------------------------------------------------
 @class_registry.register_class
 class ice(class_registry.manage_state):
-    '''
-    materials.ice Class definition
-    '''
+    """
+    Ice materials parameters class for ISSM.
+
+    This class defines the default physical parameters for ice used in ISSM.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    rho_ice : float, default=917.
+        Ice density [kg/m^3]
+    rho_water : float, default=1023.
+        Ocean water density [kg/m^3]
+    rho_freshwater : float, default=1000.
+        Fresh water density [kg/m^3]
+    mu_water : float, default=0.001787
+        Water viscosity [N s/m^2]
+    heatcapacity : float, default=2093.
+        Heat capacity [J/kg/K]
+    latentheat : float, default=3.34e5
+        Latent heat of fusion [J/m^3]
+    thermalconductivity : float, default=2.4
+        Ice thermal conductivity [W/m/K]
+    temperateiceconductivity : float, default=0.24
+        Temperate ice thermal conductivity [W/m/K]
+    effectiveconductivity_averaging : int, default=1
+        Computation of effective conductivity: (0) arithmetic mean, (1) harmonic mean, (2) geometric mean
+    meltingpoint : float, default=273.15
+        Melting point of ice at 1 atm [K]
+    beta : float, default=9.8e-8
+        Rate of change of melting point with pressure [K/Pa]
+    mixed_layer_capacity : float, default=3974.
+        Mixed layer capacity [W/kg/K]
+    thermal_exchange_velocity : float, default=1.00e-4
+        Thermal exchange velocity [m/s]
+    rheology_law : str, default='Paterson'
+        Law for the temperature dependence of the rheology: 'None', 'BuddJacka', 'Cuffey', 'CuffeyTemperate', 'Paterson', 'Arrhenius', 'LliboutryDuval', 'NyeCO2', or 'NyeH2O'
+    rheology_B : float, default=2.1e8
+        Flow law parameter [Pa s^(1/n)]
+    rheology_n : float, default=3.
+        Glen's flow law exponent
+    earth_density : float, default=5512.
+        Mantle density [kg/m^3]
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the default ice material parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the ice material parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.materials = pyissm.build.materials.ice()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -65,9 +122,40 @@ class ice(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class hydro(class_registry.manage_state):
-    '''
-    materials.hydro Class definition
-    '''
+    """
+    Hydro materials parameters class for ISSM.
+
+    This class defines the default physical parameters for hydro (hydrology) used in ISSM.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    rho_ice : float, default=917.
+        Ice density [kg/m^3]
+    rho_water : float, default=1023.
+        Ocean water density [kg/m^3]
+    rho_freshwater : float, default=1000.
+        Fresh water density [kg/m^3]
+    earth_density : float, default=5512.
+        Mantle density [kg/m^3]
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the default hydro material parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the hydro material parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.materials = pyissm.build.materials.hydro()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -99,9 +187,62 @@ class hydro(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class litho(class_registry.manage_state):
-    '''
-    materials.litho Class definition
-    '''
+    """
+    Lithosphere materials parameters class for ISSM.
+
+    This class defines the default physical parameters for the lithosphere used in ISSM.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    numlayers : int, default=2
+        Number of layers in the lithosphere model.
+    radius : list of float, default=[1e3, 6278e3, 6378e3]
+        Radii for each interface (numlayers + 1) [m].
+    viscosity : list of float, default=[1e21, 1e40]
+        Viscosity for each layer (numlayers) [Pa.s].
+    lame_mu : list of float, default=[1.45e11, 6.7e10]
+        Shear modulus for each layer (numlayers) [Pa].
+    lame_lambda : list of float, default=[1.45e11, 6.7e10]
+        Lame lambda parameter for each layer (numlayers) [Pa].
+    burgers_viscosity : list of float, default=[np.nan, np.nan]
+        Transient viscosity for Burgers rheologies (numlayers) [Pa.s].
+    burgers_mu : list of float, default=[np.nan, np.nan]
+        Transient shear modulus for Burgers rheologies (numlayers) [Pa].
+    ebm_alpha : list of float, default=[np.nan, np.nan]
+        Exponent parameter for EBM rheology (numlayers).
+    ebm_delta : list of float, default=[np.nan, np.nan]
+        Amplitude of transient relaxation for EBM rheology (numlayers).
+    ebm_taul : list of float, default=[np.nan, np.nan]
+        Starting period for transient relaxation for EBM rheology (numlayers) [s].
+    ebm_tauh : list of float, default=[np.nan, np.nan]
+        End period for transient relaxation for Burgers rheology (numlayers) [s].
+    rheologymodel : list of int, default=[0, 0]
+        Rheology model for each layer: Maxwell (0), Burgers (1), or EBM (2).
+    density : list of float, default=[5.51e3, 5.50e3]
+        Density for each layer (numlayers) [kg/m^3].
+    issolid : list of int, default=[1, 1]
+        Whether each layer is solid (1) or liquid (0) (numlayers).
+    earth_density : float, default=5512.
+        Mantle density [kg/m^3].
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the default lithosphere material parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the lithosphere material parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.materials = pyissm.build.materials.litho()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -155,9 +296,66 @@ class litho(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class damageice(class_registry.manage_state):
-    '''
-    materials.damageice Class definition
-    '''
+    """
+    Damage ice materials parameters class for ISSM.
+
+    This class defines the default physical parameters for damage ice used in ISSM.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    rho_ice : float, default=917.
+        Ice density [kg/m^3]
+    rho_water : float, default=1023.
+        Ocean water density [kg/m^3]
+    rho_freshwater : float, default=1000.
+        Fresh water density [kg/m^3]
+    mu_water : float, default=0.001787
+        Water viscosity [N s/m^2]
+    heatcapacity : float, default=2093.
+        Heat capacity [J/kg/K]
+    latentheat : float, default=3.34e5
+        Latent heat of fusion [J/m^3]
+    thermalconductivity : float, default=2.4
+        Ice thermal conductivity [W/m/K]
+    temperateiceconductivity : float, default=0.24
+        Temperate ice thermal conductivity [W/m/K]
+    effectiveconductivity_averaging : int, default=1
+        Computation of effective conductivity: (0) arithmetic mean, (1) harmonic mean, (2) geometric mean
+    meltingpoint : float, default=273.15
+        Melting point of ice at 1 atm [K]
+    beta : float, default=9.8e-8
+        Rate of change of melting point with pressure [K/Pa]
+    mixed_layer_capacity : float, default=3974.
+        Mixed layer capacity [W/kg/K]
+    thermal_exchange_velocity : float, default=1.00e-4
+        Thermal exchange velocity [m/s]
+    rheology_B : float, default=np.nan
+        Flow law parameter [Pa s^(1/n)]
+    rheology_n : float, default=np.nan
+        Glen's flow law exponent
+    rheology_law : str, default='Paterson'
+        Law for the temperature dependence of the rheology: 'None', 'BuddJacka', 'Cuffey', 'CuffeyTemperate', 'Paterson', 'Arrhenius', 'LliboutryDuval', 'NyeCO2', or 'NyeH2O'
+    earth_density : float, default=5512.
+        Mantle density [kg/m^3]
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the default damage ice material parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the damage ice material parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.materials = pyissm.build.materials.damageice()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -215,9 +413,68 @@ class damageice(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class enhancedice(class_registry.manage_state):
-    '''
-    materials.enhancedice Class definition
-    '''
+    """
+    Enhanced ice materials parameters class for ISSM.
+
+    This class defines the default physical parameters for enhanced ice used in ISSM.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    rho_ice : float, default=917.
+        Ice density [kg/m^3]
+    rho_water : float, default=1023.
+        Ocean water density [kg/m^3]
+    rho_freshwater : float, default=1000.
+        Fresh water density [kg/m^3]
+    mu_water : float, default=0.001787
+        Water viscosity [N s/m^2]
+    heatcapacity : float, default=2093.
+        Heat capacity [J/kg/K]
+    latentheat : float, default=3.34e5
+        Latent heat of fusion [J/m^3]
+    thermalconductivity : float, default=2.4
+        Ice thermal conductivity [W/m/K]
+    temperateiceconductivity : float, default=0.24
+        Temperate ice thermal conductivity [W/m/K]
+    effectiveconductivity_averaging : int, default=1
+        Computation of effective conductivity: (0) arithmetic mean, (1) harmonic mean, (2) geometric mean
+    meltingpoint : float, default=273.15
+        Melting point of ice at 1 atm [K]
+    beta : float, default=9.8e-8
+        Rate of change of melting point with pressure [K/Pa]
+    mixed_layer_capacity : float, default=3974.
+        Mixed layer capacity [W/kg/K]
+    thermal_exchange_velocity : float, default=1.00e-4
+        Thermal exchange velocity [m/s]
+    rheology_E : float, default=np.nan
+        Enhancement factor
+    rheology_B : float, default=np.nan
+        Flow law parameter [Pa s^(1/n)]
+    rheology_n : float, default=np.nan
+        Glen's flow law exponent
+    rheology_law : str, default='Paterson'
+        Law for the temperature dependence of the rheology: 'None', 'BuddJacka', 'Cuffey', 'CuffeyTemperate', 'Paterson', 'Arrhenius', or 'LliboutryDuval'
+    earth_density : float, default=5512.
+        Mantle density [kg/m^3]
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the default enhanced ice material parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the enhanced ice material parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.materials = pyissm.build.materials.enhancedice()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -277,9 +534,68 @@ class enhancedice(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class estar(class_registry.manage_state):
-    '''
-    materials.estar Class definition
-    '''
+    """
+    E* (estar) ice materials parameters class for ISSM.
+
+    This class defines the default physical parameters for E* (estar) ice used in ISSM.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    rho_ice : float, default=917.
+        Ice density [kg/m^3]
+    rho_water : float, default=1023.
+        Ocean water density [kg/m^3]
+    rho_freshwater : float, default=1000.
+        Fresh water density [kg/m^3]
+    mu_water : float, default=0.001787
+        Water viscosity [N s/m^2]
+    heatcapacity : float, default=2093.
+        Heat capacity [J/kg/K]
+    latentheat : float, default=3.34e5
+        Latent heat of fusion [J/m^3]
+    thermalconductivity : float, default=2.4
+        Ice thermal conductivity [W/m/K]
+    temperateiceconductivity : float, default=0.24
+        Temperate ice thermal conductivity [W/m/K]
+    effectiveconductivity_averaging : int, default=1
+        Computation of effective conductivity: (0) arithmetic mean, (1) harmonic mean, (2) geometric mean
+    meltingpoint : float, default=273.15
+        Melting point of ice at 1 atm [K]
+    beta : float, default=9.8e-8
+        Rate of change of melting point with pressure [K/Pa]
+    mixed_layer_capacity : float, default=3974.
+        Mixed layer capacity [W/kg/K]
+    thermal_exchange_velocity : float, default=1.00e-4
+        Thermal exchange velocity [m/s]
+    rheology_B : ndarray, default=np.nan
+        Flow law parameter [Pa s^(1/3)]
+    rheology_Ec : ndarray, default=np.nan
+        Compressive enhancement factor
+    rheology_Es : ndarray, default=np.nan
+        Shear enhancement factor
+    rheology_law : str, default='Paterson'
+        Law for the temperature dependence of the rheology: 'None', 'BuddJacka', 'Cuffey', 'CuffeyTemperate', 'Paterson', 'Arrhenius', or 'LliboutryDuval'
+    earth_density : float, default=5512.
+        Mantle density [kg/m^3]
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the default E* ice material parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the E* ice material parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.materials = pyissm.build.materials.estar()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):

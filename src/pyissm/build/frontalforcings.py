@@ -7,9 +7,37 @@ from . import class_registry
 ## ------------------------------------------------------
 @class_registry.register_class
 class default(class_registry.manage_state):
-    '''
-    frontalforcings.default Class definition
-    '''
+    """
+    Default frontalforcings parameters class for ISSM.
+
+    This class encapsulates the default parameters for frontal forcings in the ISSM (Ice Sheet System Model) framework.
+    It defines the main frontal forcing-related parameters.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    meltingrate : ndarray, default=np.nan
+        Melting rate at given location [m/a].
+    ablationrate : ndarray, default=np.nan
+        Frontal ablation rate at given location [m/a], it contains both calving and melting.
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the frontalforcings parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the frontalforcings parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.frontalforcings = pyissm.build.frontalforcings.default()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -37,9 +65,41 @@ class default(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class rignot(class_registry.manage_state):
-    '''
-    frontalforcings.rignot Class definition
-    '''
+    """
+    Rignot frontalforcings parameters class for ISSM.
+
+    This class encapsulates the parameters for frontal forcings based on the Rignot methodology in the ISSM (Ice Sheet System Model) framework.
+    It defines the main frontal forcing-related parameters specific to the Rignot approach.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    basin_id : ndarray, default=np.nan
+        Basin ID for elements.
+    num_basins : int, default=0
+        Number of basins.
+    subglacial_discharge : ndarray, default=np.nan
+        Sum of subglacial discharge for each basin [m/d].
+    thermalforcing : ndarray, default=np.nan
+        Thermal forcing [°C].
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the Rignot frontalforcings parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the Rignot frontalforcings parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.frontalforcings = pyissm.build.frontalforcings.rignot()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -71,9 +131,87 @@ class rignot(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class rignotarma(class_registry.manage_state):
-    '''
-    frontalforcings.rignotarma Class definition
-    '''
+    """
+    RignotARMA frontalforcings parameters class for ISSM.
+
+    This class encapsulates the parameters for frontal forcings based on the Rignot methodology with ARMA (AutoRegressive Moving Average) modeling in the ISSM (Ice Sheet System Model) framework.
+    It defines the main frontal forcing-related parameters specific to the RignotARMA approach, including polynomial trends, breakpoints, ARMA coefficients, and subglacial discharge modeling.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    num_basins : int, default=0
+        Number of different basins.
+    num_params : int, default=0
+        Number of different parameters in the piecewise-polynomial (1:intercept only, 2:with linear trend, 3:with quadratic trend, etc.).
+    num_breaks : int, default=0
+        Number of different breakpoints in the piecewise-polynomial (separating num_breaks+1 periods).
+    polynomialparams : ndarray, default=np.nan
+        Coefficients for the polynomial (const, trend, quadratic, etc.), dim1 for basins, dim2 for periods, dim3 for orders.
+    datebreaks : ndarray, default=np.nan
+        Dates at which the breakpoints in the piecewise polynomial occur (1 row per basin) [yr].
+    ar_order : int, default=0
+        Order of the autoregressive model.
+    ma_order : int, default=0
+        Order of the moving-average model.
+    arma_timestep : int, default=0
+        Time resolution of the ARMA model [yr].
+    arlag_coefs : ndarray, default=np.nan
+        Basin-specific vectors of AR lag coefficients.
+    malag_coefs : ndarray, default=np.nan
+        Basin-specific vectors of MA lag coefficients.
+    monthlyvals_intercepts : ndarray, default=np.nan
+        Monthly intercept values for each basin.
+    monthlyvals_trends : ndarray, default=np.nan
+        Monthly trend values for each basin.
+    monthlyvals_numbreaks : int, default=0
+        Number of breakpoints for monthly values.
+    monthlyvals_datebreaks : ndarray, default=np.nan
+        Dates at which the monthly value breakpoints occur.
+    basin_id : ndarray, default=np.nan
+        Basin number assigned to each element.
+    subglacial_discharge : ndarray, default=np.nan
+        Sum of subglacial discharge for each basin [m/d].
+    isdischargearma : int, default=0
+        Whether an ARMA model is also used for the subglacial discharge (if 0: subglacial_discharge is used, if 1: sd_ parameters are used).
+    sd_ar_order : int, default=0
+        Order of the subglacial discharge autoregressive model.
+    sd_ma_order : int, default=0
+        Order of the subglacial discharge moving-average model.
+    sd_arma_timestep : int, default=0
+        Time resolution of the subglacial discharge ARMA model [yr].
+    sd_arlag_coefs : ndarray, default=np.nan
+        Basin-specific vectors of AR lag coefficients for subglacial discharge.
+    sd_malag_coefs : ndarray, default=np.nan
+        Basin-specific vectors of MA lag coefficients for subglacial discharge.
+    sd_monthlyfrac : ndarray, default=np.nan
+        Basin-specific vectors of 12 values with fraction of the annual discharge occurring every month.
+    sd_num_breaks : int, default=0
+        Number of different breakpoints in the subglacial discharge piecewise-polynomial (separating sd_num_breaks+1 periods).
+    sd_num_params : int, default=0
+        Number of different parameters in the subglacial discharge piecewise-polynomial.
+    sd_polynomialparams : ndarray, default=np.nan
+        Coefficients for the subglacial discharge polynomial (const, trend, quadratic, etc.).
+    sd_datebreaks : ndarray, default=np.nan
+        Dates at which the breakpoints in the subglacial discharge piecewise polynomial occur (1 row per basin) [yr].
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the RignotARMA frontalforcings parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the RignotARMA frontalforcings parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.frontalforcings = pyissm.build.frontalforcings.rignotarma()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):

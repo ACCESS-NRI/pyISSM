@@ -7,9 +7,47 @@ from . import class_registry
 ## ------------------------------------------------------
 @class_registry.register_class
 class default(class_registry.manage_state):
-    '''
-    friction.default Class definition
-    '''
+    """
+    Default friction parameters class for ISSM.
+
+    This class encapsulates the default parameters for friction in the ISSM (Ice Sheet System Model) framework.
+    It defines the main friction-related parameters.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    coefficient : ndarray, default=np.nan
+        Friction coefficient [SI].
+    p : ndarray, default=np.nan
+        p exponent.
+    q : ndarray, default=np.nan
+        q exponent.
+    coupling : int, default=0
+        Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet).
+    linearize : int, default=0
+        0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0).
+    effective_pressure : ndarray, default=np.nan
+        Effective Pressure for the forcing if not coupled [Pa].
+    effective_pressure_limit : ndarray, default=0
+        Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the friction parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the friction parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.friction = pyissm.build.friction.default()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -48,9 +86,47 @@ class default(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class coulomb(class_registry.manage_state):
-    '''
-    friction.coulomb Class definition
-    '''
+    """
+    Coulomb friction parameters class for ISSM.
+
+    This class encapsulates the parameters for the Coulomb friction law in the ISSM (Ice Sheet System Model) framework.
+    It defines the main friction-related parameters specific to the Coulomb law.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    coefficient : ndarray, default=np.nan
+        Power law (Weertman) friction coefficient [SI].
+    coefficientcoulomb : ndarray, default=np.nan
+        Coulomb friction coefficient [SI].
+    p : ndarray, default=np.nan
+        p exponent.
+    q : ndarray, default=np.nan
+        q exponent.
+    coupling : int, default=0
+        Coupling flag: 0 for default, 1 for forcing (provide md.friction.effective_pressure), 2 for coupled (not implemented yet).
+    effective_pressure : =ndarray, default=np.nan
+        Effective Pressure for the forcing if not coupled [Pa].
+    effective_pressure_limit : =ndarray, default=0
+        Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the friction parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the friction parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.friction = pyissm.build.friction.coulomb()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -89,9 +165,47 @@ class coulomb(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class coulomb2(class_registry.manage_state):
-    '''
-    friction.coulomb2 Class definition
-    '''
+    """
+    Coulomb2 friction parameters class for ISSM.
+
+    This class encapsulates the parameters for the Coulomb2 friction law in the ISSM (Ice Sheet System Model) framework.
+    It defines the main friction-related parameters specific to the Coulomb2 law.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    coefficient : ndarray, default=np.nan
+        Power law (Weertman) friction coefficient [SI].
+    coefficientcoulomb : ndarray, default=np.nan
+        Coulomb friction coefficient [SI].
+    p : ndarray, default=np.nan
+        p exponent.
+    q : ndarray, default=np.nan
+        q exponent.
+    coupling : int, default=0
+        Coupling flag: 0 for default, 1 for forcing (provide md.friction.effective_pressure), 2 for coupled (not implemented yet).
+    effective_pressure : ndarray, default=np.nan
+        Effective Pressure for the forcing if not coupled [Pa].
+    effective_pressure_limit : ndarray, default=0
+        Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the friction parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the friction parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.friction = pyissm.build.friction.coulomb2()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -130,9 +244,45 @@ class coulomb2(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class hydro(class_registry.manage_state):
-    '''
-    friction.hydro Class definition
-    '''
+    """
+    Hydro friction parameters class for ISSM.
+
+    This class encapsulates the parameters for the hydro (Gagliardini 2007) friction law in the ISSM (Ice Sheet System Model) framework.
+    It defines the main friction-related parameters specific to the hydro law.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    coupling : int, default=0
+        Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: use coupled model (not implemented yet).
+    q : ndarray, default=np.nan
+        Friction law exponent q >= 1.
+    C : ndarray, default=np.nan
+        Friction law max value (Iken bound).
+    As : ndarray, default=np.nan
+        Sliding parameter without cavitation [m Pa^-n s^-1].
+    effective_pressure : ndarray, default=np.nan
+        Effective Pressure for the forcing if not coupled [Pa].
+    effective_pressure_limit : ndarray, default=0
+        Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the friction parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the friction parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.friction = pyissm.build.friction.hydro()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -168,9 +318,41 @@ class hydro(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class josh(class_registry.manage_state):
-    '''
-    friction.josh Class definition
-    '''
+    """
+    Josh friction parameters class for ISSM.
+
+    This class encapsulates the parameters for the Josh friction law in the ISSM (Ice Sheet System Model) framework.
+    It defines the main friction-related parameters specific to the Josh law.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    coefficient : ndarray, default=np.nan
+        Friction coefficient [SI].
+    pressure_adjusted_temperature : ndarray, default=np.nan
+        Friction pressure_adjusted_temperature (T - Tpmp) [K].
+    gamma : ndarray, default=1.
+        (T - Tpmp)/gamma [K].
+    effective_pressure_limit : ndarray, default=0
+        Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the friction parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the friction parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.friction = pyissm.build.friction.josh()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -203,9 +385,47 @@ class josh(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class pism(class_registry.manage_state):
-    '''
-    friction.pism Class definition
-    '''
+    """
+    PISM friction parameters class for ISSM.
+
+    This class encapsulates the parameters for the PISM friction law in the ISSM (Ice Sheet System Model) framework.
+    It defines the main friction-related parameters specific to the PISM law.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    pseudoplasticity_exponent : float, default=0.6
+        Pseudoplasticity exponent [dimensionless].
+    threshold_speed : float, default=100.
+        Threshold speed [m/yr].
+    delta : float, default=0.02
+        Lower limit of the effective pressure, expressed as a fraction of overburden pressure [dimensionless].
+    void_ratio : float, default=0.69
+        Void ratio at a reference effective pressure [dimensionless].
+    till_friction_angle : float, default=np.nan
+        Till friction angle [deg], recommended default: 30 deg.
+    sediment_compressibility_coefficient : float, default=np.nan
+        Coefficient of compressibility of the sediment [dimensionless], recommended default: 0.12.
+    requested_outputs : str, default='List of requested outputs'
+        List of requested outputs.
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the friction parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the friction parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.friction = pyissm.build.friction.pism()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -242,9 +462,39 @@ class pism(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class regcoulomb(class_registry.manage_state):
-    '''
-    friction.regcoulomb Class definition
-    '''
+    """
+    Regularized Coulomb friction parameters class for ISSM.
+
+    This class encapsulates the parameters for the regularized Coulomb friction law (Joughin et al., 2019) in the ISSM (Ice Sheet System Model) framework.
+    It defines the main friction-related parameters specific to the regularized Coulomb law.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    C : float or ndarray, default=np.nan
+        Friction coefficient [SI].
+    u0 : float or ndarray, default=1000
+        Velocity controlling plastic limit.
+    m : float or ndarray, default=np.nan
+        m exponent (set to m = 3 in original paper).
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the friction parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the friction parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.friction = pyissm.build.friction.regcoulomb()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -280,9 +530,41 @@ class regcoulomb(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class regcoulomb2(class_registry.manage_state):
-    '''
-    friction.regcoulomb2 Class definition
-    '''
+    """
+    Regularized Coulomb 2 friction parameters class for ISSM.
+
+    This class encapsulates the parameters for the regularized Coulomb 2 friction law (see Zoet and Iverson 2020 or Choi et al., 2022) in the ISSM (Ice Sheet System Model) framework.
+    It defines the main friction-related parameters specific to the regularized Coulomb 2 law.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    C : \ndarray, default=np.nan
+        Friction coefficient [SI].
+    K : ndarray, default=np.nan
+        K parameter for velocity controlling plastic limit.
+    m : ndarray, default=np.nan
+        m exponent.
+    effective_pressure_limit : float, default=0
+        Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the friction parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the friction parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.friction = pyissm.build.friction.regcoulomb2()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -320,9 +602,45 @@ class regcoulomb2(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class schoof(class_registry.manage_state):
-    '''
-    friction.schoof Class definition
-    '''
+    """
+    Schoof friction parameters class for ISSM.
+
+    This class encapsulates the parameters for the Schoof sliding law in the ISSM (Ice Sheet System Model) framework.
+    It defines the main friction-related parameters specific to the Schoof law.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    C : ndarray, default=np.nan
+        Friction coefficient [SI].
+    Cmax : ndarray, default=np.nan
+        Iken's bound (typically between 0.17 and 0.84) [SI].
+    m : ndarray, default=np.nan
+        m exponent (generally taken as m = 1/n = 1/3).
+    coupling : int, default=0
+        Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet).
+    effective_pressure : ndarray, default=np.nan
+        Effective Pressure for the forcing if not coupled [Pa].
+    effective_pressure_limit : float, default=0
+        Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the friction parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the friction parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.friction = pyissm.build.friction.schoof()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -364,9 +682,35 @@ class schoof(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class shakti(class_registry.manage_state):
-    '''
-    friction.shakti Class definition
-    '''
+    """
+    Shakti friction parameters class for ISSM.
+
+    This class encapsulates the parameters for the Shakti friction law in the ISSM (Ice Sheet System Model) framework.
+    It defines the main friction-related parameters specific to the Shakti law.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    coefficient : ndarray, default=np.nan
+        Friction coefficient [SI].
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the friction parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the friction parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.friction = pyissm.build.friction.shakti()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -393,9 +737,43 @@ class shakti(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class waterlayer(class_registry.manage_state):
-    '''
-    friction.waterlayer Class definition
-    '''
+    """
+    Waterlayer friction parameters class for ISSM.
+
+    This class encapsulates the parameters for the waterlayer friction law in the ISSM (Ice Sheet System Model) framework.
+    It defines the main friction-related parameters specific to the waterlayer law.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    coefficient : ndarray, default=np.nan
+        Friction coefficient [SI].
+    f : ndarray, default=np.nan
+        f variable for effective pressure.
+    p : ndarray, default=np.nan
+        p exponent.
+    q : ndarray, default=np.nan
+        q exponent.
+    water_layer : ndarray, default=np.nan
+        Water thickness at the base of the ice (m).
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the friction parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the friction parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.friction = pyissm.build.friction.waterlayer()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -429,9 +807,39 @@ class waterlayer(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class weertman(class_registry.manage_state):
-    '''
-    friction.weertman Class definition
-    '''
+    """
+    Weertman friction parameters class for ISSM.
+
+    This class encapsulates the parameters for the Weertman sliding law in the ISSM (Ice Sheet System Model) framework.
+    It defines the main friction-related parameters specific to the Weertman law.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    C : ndarray, default=np.nan
+        Friction coefficient [SI].
+    m : ndarray, default=np.nan
+        m exponent.
+    linearize : int, default=0
+        0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0).
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the friction parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the friction parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.friction = pyissm.build.friction.weertman()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):

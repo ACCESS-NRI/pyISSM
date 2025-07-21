@@ -7,9 +7,68 @@ from . import class_registry
 ## ------------------------------------------------------
 @class_registry.register_class
 class default(class_registry.manage_state):
-    '''
-    inversion.default Class definition
-    '''
+    """
+    Default inversion parameters class for ISSM.
+
+    This class defines the default parameters for the ISSM inversion process.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    iscontrol : int, default=0
+        Is inversion activated? (0: no, 1: yes)
+    incomplete_adjoint : int, default=1
+        1: linear viscosity, 0: non-linear viscosity
+    control_parameters : str, default='FrictionCoefficient'
+        Control parameter(s) for inversion (e.g., 'FrictionCoefficient', 'MaterialsRheologyBbar')
+    nsteps : int, default=20
+        Number of optimization searches
+    maxiter_per_step : ndarray, default=20*np.ones(nsteps)
+        Maximum iterations during each optimization step
+    cost_functions : str, default='List of cost functions'
+        Type of response for each optimization step
+    cost_functions_coefficients : ndarray, default=np.nan
+        Coefficients applied to the misfit of each vertex and for each control parameter
+    gradient_scaling : ndarray, default=50*np.ones((nsteps, 1))
+        Scaling factor on gradient direction during optimization, for each optimization step
+    cost_function_threshold : float, default=np.nan
+        Misfit convergence criterion. Default is 1%, NaN if not applied
+    min_parameters : float, default=np.nan
+        Absolute minimum acceptable value of the inversed parameter on each vertex
+    max_parameters : float, default=np.nan
+        Absolute maximum acceptable value of the inversed parameter on each vertex
+    step_threshold : ndarray, default=0.7*np.ones(nsteps)
+        Decrease threshold for misfit, default is 30%
+    vx_obs : ndarray, default=np.nan
+        Observed velocity x component [m/yr]
+    vy_obs : ndarray, default=np.nan
+        Observed velocity y component [m/yr]
+    vz_obs : ndarray, default=np.nan
+        Observed velocity z component [m/yr]
+    vel_obs : ndarray, default=np.nan
+        Observed velocity magnitude [m/yr]
+    thickness_obs : ndarray, default=np.nan
+        Observed thickness [m]
+    surface_obs : ndarray, default=np.nan
+        Observed surface elevation [m]
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the default inversion parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the default inversion parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.inversion = pyissm.build.inversion.default()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -78,9 +137,68 @@ class default(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class m1qn3(class_registry.manage_state):
-    '''
-    inversion.m1qn3 Class definition
-    '''
+    """
+    m1qn3 inversion parameters class for ISSM.
+
+    This class defines the default parameters for the ISSM inversion process using the m1qn3 optimization algorithm.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    iscontrol : int, default=0
+        Is inversion activated? (0: no, 1: yes)
+    incomplete_adjoint : int, default=1
+        1: linear viscosity, 0: non-linear viscosity
+    control_parameters : str, default='FrictionCoefficient'
+        Control parameter(s) for inversion (e.g., 'FrictionCoefficient', 'MaterialsRheologyBbar')
+    control_scaling_factors : float or ndarray, default=1
+        Order of magnitude of each control (useful for multi-parameter optimization)
+    maxsteps : int, default=20
+        Maximum number of iterations (gradient computation)
+    maxiter : int, default=40
+        Maximum number of function evaluations (forward run)
+    dxmin : float, default=0.1
+        Convergence criterion: two points less than dxmin from each other (sup-norm) are considered identical
+    dfmin_frac : float, default=1.0
+        Expected reduction of cost function during the first step (e.g., 0.3 = 30% reduction)
+    gttol : float, default=1e4
+        ||g(X)||/||g(X0)|| (g(X0): gradient at initial guess X0)
+    cost_functions : int or list, default=101
+        Type of response for each optimization step
+    cost_functions_coefficients : ndarray, default=np.nan
+        Coefficients applied to the misfit of each vertex and for each control parameter
+    min_parameters : float, default=np.nan
+        Absolute minimum acceptable value of the inversed parameter on each vertex
+    max_parameters : float, default=np.nan
+        Absolute maximum acceptable value of the inversed parameter on each vertex
+    vx_obs : ndarray, default=np.nan
+        Observed velocity x component [m/yr]
+    vy_obs : ndarray, default=np.nan
+        Observed velocity y component [m/yr]
+    vz_obs : ndarray, default=np.nan
+        Observed velocity z component [m/yr]
+    vel_obs : ndarray, default=np.nan
+        Observed velocity magnitude [m/yr]
+    thickness_obs : ndarray, default=np.nan
+        Observed thickness [m]
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the m1qn3 inversion parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the m1qn3 inversion parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.inversion = pyissm.build.inversion.m1qn3()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -148,9 +266,74 @@ class m1qn3(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class tao(class_registry.manage_state):
-    '''
-    inversion.tao Class definition
-    '''
+    """
+    tao inversion parameters class for ISSM.
+
+    This class defines the default parameters for the ISSM inversion process using the TAO optimization algorithms.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    iscontrol : int, default=0
+        Is inversion activated? (0: no, 1: yes)
+    incomplete_adjoint : int, default=1
+        1: linear viscosity, 0: non-linear viscosity
+    control_parameters : str, default='FrictionCoefficient'
+        Control parameter(s) for inversion (e.g., 'FrictionCoefficient', 'MaterialsRheologyBbar')
+    maxsteps : int, default=20
+        Maximum number of iterations (gradient computation)
+    maxiter : int, default=30
+        Maximum number of function evaluations (forward run)
+    fatol : float, default=0
+        Absolute tolerance for cost function convergence (f(X) - f(X*))
+    frtol : float, default=0
+        Relative tolerance for cost function convergence (|f(X) - f(X*)| / |f(X*)|)
+    gatol : float, default=0
+        Absolute tolerance for gradient norm convergence (||g(X)||)
+    grtol : float, default=0
+        Relative tolerance for gradient norm convergence (||g(X)|| / |f(X)|)
+    gttol : float, default=1e-4
+        Tolerance for gradient norm relative to initial (||g(X)|| / ||g(X0)||)
+    algorithm : str, default='blmvm'
+        Minimization algorithm: 'blmvm', 'cg', 'lmvm'
+    cost_functions : int or list, default=101
+        Type of response for each optimization step
+    cost_functions_coefficients : ndarray, default=np.nan
+        Coefficients applied to the misfit of each vertex and for each control parameter
+    min_parameters : float, default=np.nan
+        Absolute minimum acceptable value of the inversed parameter on each vertex
+    max_parameters : float, default=np.nan
+        Absolute maximum acceptable value of the inversed parameter on each vertex
+    vx_obs : ndarray, default=np.nan
+        Observed velocity x component [m/yr]
+    vy_obs : ndarray, default=np.nan
+        Observed velocity y component [m/yr]
+    vz_obs : ndarray, default=np.nan
+        Observed velocity z component [m/yr]
+    vel_obs : ndarray, default=np.nan
+        Observed velocity magnitude [m/yr]
+    thickness_obs : ndarray, default=np.nan
+        Observed thickness [m]
+    surface_obs : ndarray, default=np.nan
+        Observed surface elevation [m]
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the tao inversion parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the tao inversion parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.inversion = pyissm.build.inversion.tao()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):

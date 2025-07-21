@@ -7,9 +7,41 @@ from . import class_registry
 ## ------------------------------------------------------
 @class_registry.register_class
 class default(class_registry.manage_state):
-    '''
-    smb.default Class definition
-    '''
+    """
+    Default surface mass balance (SMB) parameters class for ISSM.
+
+    This class encapsulates the default parameters for surface mass balance in the ISSM (Ice Sheet System Model) framework.
+    It defines the main SMB-related parameters.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    mass_balance : ndarray, default=np.nan
+        Surface mass balance [m/yr ice eq].
+    steps_per_step : int, default=1
+        Number of SMB steps per time step.
+    requested_outputs : str, default='List of requested outputs'
+        Additional outputs requested (default: ['SmbMassBalance']).
+    averaging : int, default=0
+        Averaging method from short to long steps. 0: Arithmetic (default), 1: Geometric, 2: Harmonic.
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the SMB parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the SMB parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.smb = pyissm.build.smb.default()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -44,9 +76,73 @@ class default(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class arma(class_registry.manage_state):
-    '''
-    smb.arma Class definition
-    '''
+    """
+    ARMA (AutoRegressive Moving Average) surface mass balance model for ISSM.
+
+    This class implements an ARMA-based surface mass balance model that combines 
+    autoregressive and moving average components with piecewise polynomial trends
+    and elevation-dependent lapse rates for basin-specific SMB modeling.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values 
+        in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    num_basins : int, default=0
+        Number of different basins [unitless].
+    num_params : int, default=0
+        Number of different parameters in the piecewise-polynomial (1:intercept only, 
+        2:with linear trend, 3:with quadratic trend, etc.).
+    num_breaks : int, default=0
+        Number of different breakpoints in the piecewise-polynomial (separating 
+        num_breaks+1 periods).
+    polynomialparams : ndarray, default=np.nan
+        Coefficients for the polynomial (const,trend,quadratic,etc.), dim1 for basins,
+        dim2 for periods, dim3 for orders.
+    ar_order : float, default=0.0
+        Order of the autoregressive model [unitless].
+    ma_order : float, default=0.0
+        Order of the moving-average model [unitless].
+    arlag_coefs : ndarray, default=np.nan
+        Basin-specific vectors of AR lag coefficients [unitless].
+    malag_coefs : ndarray, default=np.nan
+        Basin-specific vectors of MA lag coefficients [unitless].
+    datebreaks : ndarray, default=np.nan
+        Dates at which the breakpoints in the piecewise polynomial occur (1 row per basin) [yr].
+    basin_id : ndarray, default=np.nan
+        Basin number assigned to each element [unitless].
+    lapserates : ndarray, default=np.nan
+        Basin-specific SMB lapse rates applied in each elevation bin, 1 row per basin,
+        1 column per bin, dimension 3 can be of size 12 to prescribe monthly varying 
+        values [m ice eq yr^-1 m^-1].
+    elevationbins : ndarray, default=np.nan
+        Basin-specific separations between elevation bins, 1 row per basin, 1 column 
+        per limit between bins [m].
+    refelevation : ndarray, default=np.nan
+        Basin-specific reference elevations at which SMB is calculated [m].
+    steps_per_step : int, default=1
+        Number of SMB steps per time step.
+    averaging : int, default=0
+        Averaging method from short to long steps. 0: Arithmetic, 1: Geometric, 2: Harmonic.
+    requested_outputs : str, default='List of requested outputs'
+        Additional outputs requested.
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the ARMA SMB parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the ARMA SMB parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.smb = pyissm.build.smb.arma()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -108,9 +204,55 @@ class arma(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class components(class_registry.manage_state):
-    '''
-    smb.components Class definition
-    '''
+    """
+    Component-based surface mass balance model for ISSM.
+
+    This class implements a component-based SMB model where the surface mass balance
+    is calculated as SMB = accumulation - runoff - evaporation. Each component can
+    be specified independently.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values 
+        in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    accumulation : ndarray, default=np.nan
+        Accumulated snow [m/yr ice eq].
+    runoff : ndarray, default=np.nan
+        Amount of ice melt lost from the ice column [m/yr ice eq].
+    evaporation : ndarray, default=np.nan
+        Amount of ice lost to evaporative processes [m/yr ice eq].
+    steps_per_step : int, default=1
+        Number of SMB steps per time step.
+    averaging : int, default=0
+        Averaging method from short to long steps. 0: Arithmetic, 1: Geometric, 2: Harmonic.
+    requested_outputs : str, default='List of requested outputs'
+        Additional outputs requested.
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the component SMB parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the component SMB parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Notes
+    -----
+    The surface mass balance is computed as:
+    SMB = accumulation - runoff - evaporation
+
+    Examples
+    --------
+    md.smb = pyissm.build.smb.components()
+    md.smb.accumulation = accumulation_data
+    md.smb.runoff = runoff_data
+    md.smb.evaporation = evaporation_data
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -149,9 +291,87 @@ class components(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class d18opdd(class_registry.manage_state):
-    '''
-    smb.d18opdd Class definition
-    '''
+    """
+    Delta-18-O driven positive degree day surface mass balance model for ISSM.
+
+    This class implements a positive degree day (PDD) SMB model driven by delta-18-O 
+    isotope data for paleoclimate applications. It includes temperature and precipitation
+    scaling based on isotope ratios and elevation-dependent corrections.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values 
+        in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    desfac : float, default=0.5
+        Desertification elevation factor (between 0 and 1) [m].
+    s0p : ndarray, default=np.nan
+        Elevation from precipitation source (between 0 and a few 1000s m) [m].
+    s0t : ndarray, default=np.nan
+        Elevation from temperature source (between 0 and a few 1000s m) [m].
+    rlaps : float, default=6.5
+        Present day lapse rate [degree/km].
+    rlapslgm : float, default=6.5
+        LGM lapse rate [degree/km].
+    dpermil : float, default=2.4
+        Degree per mil, required if d18opd is activated.
+    f : float, default=0.169
+        Precipitation/temperature scaling factor, required if d18opd is activated.
+    Tdiff : ndarray, default=np.nan
+        Temperature difference field.
+    sealev : ndarray, default=np.nan
+        Sea level data.
+    ismungsm : int, default=0
+        Is mungsm parametrisation activated (0 or 1).
+    isd18opd : int, default=1
+        Is delta18o parametrisation from present day temperature and precipitation activated (0 or 1).
+    issetpddfac : int, default=0
+        Is user passing in defined PDD factors (0 or 1).
+    istemperaturescaled : int, default=1
+        Is temperature scaled to delta18o value (0 or 1).
+    isprecipscaled : int, default=1
+        Is precipitation scaled to delta18o value (0 or 1).
+    delta18o : ndarray, default=np.nan
+        Delta-18-O values [per mil].
+    delta18o_surface : ndarray, default=np.nan
+        Surface delta-18-O values.
+    temperatures_presentday : ndarray, default=np.nan
+        Monthly present day surface temperatures [K].
+    precipitations_presentday : ndarray, default=np.nan
+        Monthly surface precipitation [m/yr water eq].
+    temperatures_reconstructed : ndarray, default=np.nan
+        Monthly historical surface temperatures [K].
+    precipitations_reconstructed : ndarray, default=np.nan
+        Monthly historical precipitation [m/yr water eq].
+    pddfac_snow : ndarray, default=np.nan
+        PDD factor for snow [mm ice equiv/day/degree C].
+    pddfac_ice : ndarray, default=np.nan
+        PDD factor for ice [mm ice equiv/day/degree C].
+    steps_per_step : int, default=1
+        Number of SMB steps per time step.
+    averaging : int, default=0
+        Averaging method from short to long steps. 0: Arithmetic, 1: Geometric, 2: Harmonic.
+    requested_outputs : str, default='List of requested outputs'
+        Additional outputs requested.
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the delta-18-O PDD SMB parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the delta-18-O PDD SMB parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.smb = pyissm.build.smb.d18opdd()
+    md.smb.delta18o = delta18o_data
+    md.smb.temperatures_presentday = temp_data
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -223,9 +443,59 @@ class d18opdd(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class gradients(class_registry.manage_state):
-    '''
-    smb.gradients Class definition
-    '''
+    """
+    Gradient-based surface mass balance model for ISSM.
+
+    This class implements a gradient-based SMB model where SMB varies linearly with
+    elevation relative to a reference elevation and SMB. Different gradients can be
+    specified for accumulation and ablation regimes.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values 
+        in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    href : ndarray, default=np.nan
+        Reference elevation from which deviation is used to calculate SMB adjustment [m].
+    smbref : ndarray, default=np.nan
+        Reference SMB from which deviation is calculated [m/yr ice equiv].
+    b_pos : ndarray, default=np.nan
+        Slope of elevation-SMB regression line for accumulation regime.
+    b_neg : ndarray, default=np.nan
+        Slope of elevation-SMB regression line for ablation regime.
+    steps_per_step : int, default=1
+        Number of SMB steps per time step.
+    averaging : int, default=0
+        Averaging method from short to long steps. 0: Arithmetic, 1: Geometric, 2: Harmonic.
+    requested_outputs : str, default='List of requested outputs'
+        Additional outputs requested.
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the gradient SMB parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the gradient SMB parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Notes
+    -----
+    SMB is calculated as:
+    SMB = smbref + gradient * (elevation - href)
+    where gradient = b_pos for positive SMB or b_neg for negative SMB.
+
+    Examples
+    --------
+    md.smb = pyissm.build.smb.gradients()
+    md.smb.href = reference_elevation
+    md.smb.smbref = reference_smb
+    md.smb.b_pos = positive_gradient
+    md.smb.b_neg = negative_gradient
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -267,9 +537,62 @@ class gradients(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class gradientscomponents(class_registry.manage_state):
-    '''
-    smb.gradientscomponents Class definition
-    '''
+    """
+    Component-based gradient surface mass balance model for ISSM.
+
+    This class implements a gradient-based SMB model where accumulation and runoff
+    components vary separately with elevation. Each component has its own reference
+    value, reference elevation, and elevation gradient.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values 
+        in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    accuref : ndarray, default=np.nan
+        Reference value of the accumulation [m ice eq/yr].
+    accualti : ndarray, default=np.nan
+        Altitude at which the accumulation is equal to the reference value [m].
+    accugrad : ndarray, default=np.nan
+        Gradient of the variation of the accumulation (0 for uniform accumulation) [m ice eq/yr/m].
+    runoffref : ndarray, default=np.nan
+        Reference value of the runoff [m w.e. y^-1].
+    runoffalti : ndarray, default=np.nan
+        Altitude at which the runoff is equal to the reference value [m].
+    runoffgrad : ndarray, default=np.nan
+        Gradient of the variation of the runoff (0 for uniform runoff) [m w.e. m^-1 y^-1].
+    steps_per_step : int, default=1
+        Number of SMB steps per time step.
+    averaging : int, default=0
+        Averaging method from short to long steps. 0: Arithmetic, 1: Geometric, 2: Harmonic.
+    requested_outputs : str, default='List of requested outputs'
+        Additional outputs requested.
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the gradient components SMB parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the gradient components SMB parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Notes
+    -----
+    SMB components are calculated as:
+    accumulation = accuref + accugrad * (elevation - accualti)
+    runoff = runoffref + runoffgrad * (elevation - runoffalti)
+    SMB = accumulation - runoff
+
+    Examples
+    --------
+    md.smb = pyissm.build.smb.gradientscomponents()
+    md.smb.accuref = reference_accumulation
+    md.smb.runoffref = reference_runoff
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -315,9 +638,61 @@ class gradientscomponents(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class gradientsela(class_registry.manage_state):
-    '''
-    smb.gradientsela Class definition
-    '''
+    """
+    Equilibrium Line Altitude (ELA) gradient surface mass balance model for ISSM.
+
+    This class implements an ELA-based SMB model where SMB varies linearly with 
+    elevation relative to the equilibrium line altitude. Different gradients are
+    applied above and below the ELA, with optional caps on maximum and minimum SMB rates.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values 
+        in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    ela : ndarray, default=np.nan
+        Equilibrium line altitude from which deviation is used to calculate SMB [m a.s.l.].
+    b_pos : ndarray, default=np.nan
+        Vertical SMB gradient (dB/dz) above ELA [m ice eq./yr/m].
+    b_neg : ndarray, default=np.nan
+        Vertical SMB gradient (dB/dz) below ELA [m ice eq./yr/m].
+    b_max : float, default=9999
+        Upper cap on SMB rate [m ice eq./yr]. Default: 9999 (no cap).
+    b_min : float, default=-9999
+        Lower cap on SMB rate [m ice eq./yr]. Default: -9999 (no cap).
+    steps_per_step : int, default=1
+        Number of SMB steps per time step.
+    averaging : int, default=0
+        Averaging method from short to long steps. 0: Arithmetic, 1: Geometric, 2: Harmonic.
+    requested_outputs : str, default='List of requested outputs'
+        Additional outputs requested.
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the ELA gradient SMB parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the ELA gradient SMB parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Notes
+    -----
+    SMB is calculated as:
+    - For elevation > ELA: SMB = b_pos * (elevation - ELA)
+    - For elevation < ELA: SMB = b_neg * (elevation - ELA)
+    SMB is then clamped between b_min and b_max if specified.
+
+    Examples
+    --------
+    md.smb = pyissm.build.smb.gradientsela()
+    md.smb.ela = equilibrium_line_altitude
+    md.smb.b_pos = positive_gradient  # Above ELA
+    md.smb.b_neg = negative_gradient  # Below ELA
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -361,9 +736,43 @@ class gradientsela(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class henning(class_registry.manage_state):
-    '''
-    smb.henning Class definition
-    '''
+    """
+    Henning surface mass balance model for ISSM.
+
+    This class implements the Henning SMB parametrization, which is a specialized
+    approach for modeling surface mass balance in ice sheet applications.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values 
+        in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    smbref : ndarray, default=np.nan
+        Reference surface mass balance [m/yr ice eq].
+    steps_per_step : int, default=1
+        Number of SMB steps per time step.
+    averaging : int, default=0
+        Averaging method from short to long steps. 0: Arithmetic, 1: Geometric, 2: Harmonic.
+    requested_outputs : str, default='List of requested outputs'
+        Additional outputs requested.
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the Henning SMB parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the Henning SMB parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.smb = pyissm.build.smb.henning()
+    md.smb.smbref = reference_smb_data
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -398,9 +807,60 @@ class henning(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class meltcomponents(class_registry.manage_state):
-    '''
-    smb.meltcomponents Class definition
-    '''
+    """
+    Melt component-based surface mass balance model for ISSM.
+
+    This class implements a component-based SMB model that explicitly separates
+    melt and refreeze processes. The surface mass balance is calculated as 
+    SMB = accumulation - evaporation - melt + refreeze.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values 
+        in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    accumulation : ndarray, default=np.nan
+        Accumulated snow [m/yr ice eq].
+    evaporation : ndarray, default=np.nan
+        Amount of ice lost to evaporative processes [m/yr ice eq].
+    melt : ndarray, default=np.nan
+        Amount of ice melt in the ice column [m/yr ice eq].
+    refreeze : ndarray, default=np.nan
+        Amount of ice melt refrozen in the ice column [m/yr ice eq].
+    steps_per_step : int, default=1
+        Number of SMB steps per time step.
+    averaging : int, default=0
+        Averaging method from short to long steps. 0: Arithmetic, 1: Geometric, 2: Harmonic.
+    requested_outputs : str, default='List of requested outputs'
+        Additional outputs requested.
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the melt components SMB parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the melt components SMB parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Notes
+    -----
+    The surface mass balance is computed as:
+    SMB = accumulation - evaporation - melt + refreeze
+
+    This formulation explicitly accounts for refreezing processes that can occur
+    in firn layers, which is important for accurate SMB modeling in cold regions.
+
+    Examples
+    --------
+    md.smb = pyissm.build.smb.meltcomponents()
+    md.smb.accumulation = accumulation_data
+    md.smb.melt = melt_data
+    md.smb.refreeze = refreeze_data
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -441,9 +901,92 @@ class meltcomponents(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class pdd(class_registry.manage_state):
-    '''
-    smb.pdd Class definition
-    '''
+    """
+    Positive Degree Day surface mass balance model for ISSM.
+
+    This class implements a positive degree day (PDD) SMB model that calculates
+    surface mass balance based on temperature and precipitation data. It supports
+    multiple temperature and precipitation data sources, including delta-18-O and
+    MUNGSM parametrizations for paleoclimate applications.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values 
+        in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    precipitation : ndarray, default=np.nan
+        Monthly surface precipitation [m/yr water eq].
+    monthlytemperatures : ndarray, default=np.nan
+        Monthly surface temperatures [K].
+    desfac : float, default=0.5
+        Desertification elevation factor (between 0 and 1) [m].
+    s0p : ndarray, default=np.nan
+        Elevation from precipitation source (between 0 and a few 1000s m) [m].
+    s0t : ndarray, default=np.nan
+        Elevation from temperature source (between 0 and a few 1000s m) [m].
+    rlaps : float, default=6.5
+        Present day lapse rate [degree/km].
+    rlapslgm : float, default=6.5
+        LGM lapse rate [degree/km].
+    Pfac : ndarray, default=np.nan
+        Time interpolation parameter for precipitation, 1D(year).
+    Tdiff : ndarray, default=np.nan
+        Time interpolation parameter for temperature, 1D(year).
+    sealev : ndarray, default=np.nan
+        Sea level [m], 1D(year).
+    isdelta18o : int, default=0
+        Is temperature and precipitation delta18o parametrisation activated (0 or 1).
+    ismungsm : int, default=0
+        Is temperature and precipitation mungsm parametrisation activated (0 or 1).
+    issetpddfac : int, default=0
+        Is user passing in defined PDD factors (0 or 1).
+    delta18o : float, default=0
+        Delta-18-O values [per mil].
+    delta18o_surface : ndarray, default=np.nan
+        Surface elevation of the delta18o site [m].
+    temperatures_presentday : ndarray, default=np.nan
+        Monthly present day surface temperatures [K].
+    temperatures_lgm : ndarray, default=np.nan
+        Monthly LGM surface temperatures [K].
+    precipitations_presentday : ndarray, default=np.nan
+        Monthly present day surface precipitation [m/yr water eq].
+    precipitations_lgm : ndarray, default=np.nan
+        Monthly LGM surface precipitation [m/yr water eq].
+    pddfac_snow : ndarray, default=np.nan
+        PDD factor for snow [mm ice equiv/day/degree C].
+    pddfac_ice : ndarray, default=np.nan
+        PDD factor for ice [mm ice equiv/day/degree C].
+    steps_per_step : int, default=1
+        Number of SMB steps per time step.
+    averaging : int, default=0
+        Averaging method from short to long steps. 0: Arithmetic, 1: Geometric, 2: Harmonic.
+    requested_outputs : str, default='List of requested outputs'
+        Additional outputs requested.
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the PDD SMB parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the PDD SMB parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Notes
+    -----
+    The PDD model calculates melt based on the number of positive degree days,
+    which is the sum of temperatures above freezing over a given time period.
+    This approach is widely used in glaciology for its simplicity and effectiveness.
+
+    Examples
+    --------
+    md.smb = pyissm.build.smb.pdd()
+    md.smb.monthlytemperatures = temperature_data
+    md.smb.precipitation = precipitation_data
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -522,9 +1065,75 @@ class pdd(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class pddSicopolis(class_registry.manage_state):
-    '''
-    smb.pddSicopolis Class definition
-    '''
+    """
+    SICOPOLIS-style Positive Degree Day surface mass balance model for ISSM.
+
+    This class implements the SICOPOLIS PDD scheme (Calov & Greve, 2005) for 
+    surface mass balance calculations. It includes temperature and precipitation
+    anomalies, firn warming effects, and desertification corrections based on
+    the SICOPOLIS ice sheet model approach.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values 
+        in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    precipitation : ndarray, default=np.nan
+        Monthly surface precipitation [m/yr water eq].
+    monthlytemperatures : ndarray, default=np.nan
+        Monthly surface temperatures [K].
+    temperature_anomaly : ndarray, default=np.nan
+        Anomaly to monthly reference temperature (additive) [K].
+    precipitation_anomaly : ndarray, default=np.nan
+        Anomaly to monthly precipitation (multiplicative, e.g. q = q0*exp(0.070458*DeltaT)) [unitless].
+    smb_corr : ndarray, default=np.nan
+        Correction of SMB after PDD call [m/a].
+    desfac : float, default=-np.log(2.0)/1000
+        Desertification elevation factor. Default: -log(2.0)/1000.
+    s0p : ndarray, default=np.nan
+        Elevation from precipitation source (between 0 and a few 1000s m) [m].
+    s0t : ndarray, default=np.nan
+        Elevation from temperature source (between 0 and a few 1000s m) [m].
+    rlaps : float, default=7.4
+        Present day lapse rate [degree/km]. Default: 7.4.
+    isfirnwarming : int, default=1
+        Is firn warming (Reeh 1991) activated (0 or 1). Default: 1.
+    steps_per_step : int, default=1
+        Number of SMB steps per time step.
+    averaging : int, default=0
+        Averaging method from short to long steps. 0: Arithmetic, 1: Geometric, 2: Harmonic.
+    requested_outputs : str, default='List of requested outputs'
+        Additional outputs requested (TemperaturePDD, SmbAccumulation, SmbMelt).
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the SICOPOLIS PDD SMB parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the SICOPOLIS PDD SMB parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Notes
+    -----
+    This implementation follows the SICOPOLIS PDD scheme as described in:
+    Calov, R., & Greve, R. (2005). A semi-analytical solution for the positive 
+    degree-day model with stochastic temperature variations. Journal of Glaciology, 
+    51(172), 173-175.
+
+    The firn warming correction (Reeh, 1991) adjusts melt rates based on firn
+    temperature, which is important for accurate SMB calculations in accumulation zones.
+
+    Examples
+    --------
+    md.smb = pyissm.build.smb.pddSicopolis()
+    md.smb.monthlytemperatures = temperature_data
+    md.smb.precipitation = precipitation_data
+    md.smb.temperature_anomaly = temp_anomaly
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):

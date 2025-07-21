@@ -211,3 +211,7 @@ class Model():
     def __str__(self):
         s = 'ISSM Model Class'
         return s
+
+    # Define state
+    def __getstate__(self):
+        return self.__dict__.copy()

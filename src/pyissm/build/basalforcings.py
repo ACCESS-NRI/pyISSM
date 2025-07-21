@@ -7,9 +7,43 @@ from . import class_registry
 ## ------------------------------------------------------
 @class_registry.register_class
 class default(class_registry.manage_state):
-    '''
-    basalforcings.default Class definition
-    '''
+    """
+    Default basal forcings parameters class for ISSM.
+
+    This class encapsulates the default parameters for basal forcings in the ISSM (Ice Sheet System Model) framework.
+    It defines the melting rates for grounded and floating ice, perturbation melting rate, and geothermal heat flux.
+    
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    groundedice_melting_rate : ndarray, default=np.nan
+        Basal melting rate for grounded ice (positive if melting) [m/yr].
+    floatingice_melting_rate : ndarray, default=np.nan
+        Basal melting rate for floating ice (positive if melting) [m/yr].
+    perturbation_melting_rate : ndarray, default=np.nan
+        Optional perturbation in basal melting rate under floating ice (positive if melting) [m/yr].
+    geothermalflux : float, default=np.nan
+        Geothermal heat flux [W/m^2].
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the basal forcings parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the basal forcings parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.basalforcings = pyissm.build.basalforcings.default()
+    md.basalforcings.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices,))
+    md.basalforcings.floatingice_melting_rate = np.ones((md.mesh.numberofvertices,)) * 2
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -41,9 +75,56 @@ class default(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class pico(class_registry.manage_state):
-    '''
-    basalforcings.pico Class definition
-    '''
+    """
+    Potsdam Ice-shelf Cavity mOdel (PICO) basal forcings parameters class for ISSM.
+
+    This class encapsulates the parameters for the PICO basal melt parameterization in the ISSM (Ice Sheet System Model) framework.
+    It defines the structure of the ice shelf cavities, including the number of basins, basin IDs, and various parameters related to ocean temperature, salinity, and melting rates.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    num_basins : int, default=0
+        Number of basins the model domain is partitioned into [unitless].
+    basin_id : ndarray, default=np.nan
+        Basin number assigned to each node [unitless].
+    maxboxcount : int, default=0
+        Maximum number of boxes initialized under all ice shelves.
+    overturning_coeff : float, default=np.nan
+        Overturning strength [m^3/s].
+    gamma_T : float, default=0.
+        Turbulent temperature exchange velocity [m/s].
+    farocean_temperature : ndarray, default=np.nan
+        Depth averaged ocean temperature in front of the ice shelf for each basin [K].
+    farocean_salinity : ndarray, default=np.nan
+        Depth averaged ocean salinity in front of the ice shelf for each basin [psu].
+    isplume : int, default=0
+        Boolean (0 or 1) to use buoyant plume melt rate parameterization from Lazeroms et al., 2018 (default false).
+    geothermalflux : float, default=np.nan
+        Geothermal heat flux [W/m^2].
+    groundedice_melting_rate : ndarray, default=np.nan
+        Basal melting rate for grounded ice (positive if melting) [m/yr].
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the PICO basal forcings parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the PICO basal forcings parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.basalforcings = pyissm.build.basalforcings.pico()
+    md.basalforcings.num_basins = 3
+    md.basalforcings.basin_id = np.array([1, 2, 3])
+    md.basalforcings.farocean_temperature = np.array([273.15, 273.2, 273.1])
+    """
 
     # Initialise with default parameters
     def __init__(self, other=None):
@@ -88,9 +169,51 @@ class pico(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class linear(class_registry.manage_state):
-    '''
-    basalforcings.linear Class definition
-    '''
+    """
+    Linear basal forcings parameters class for ISSM.
+
+    This class encapsulates the parameters for linear basal forcings in the ISSM (Ice Sheet System Model) framework.
+    It defines the melting rates for deep and upper water, grounded ice, and geothermal flux, allowing for a depth-dependent representation of basal melting processes.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    deepwater_melting_rate : float, default=0.
+        Basal melting rate applied for floating ice with base < deepwater_elevation [m/yr].
+    deepwater_elevation : float, default=0.
+        Elevation threshold for deepwater melting rate [m].
+    upperwater_melting_rate : float, default=0.
+        Basal melting rate applied for floating ice with base >= upperwater_elevation [m/yr].
+    upperwater_elevation : float, default=0.
+        Elevation threshold for upperwater melting rate [m].
+    groundedice_melting_rate : ndarray, default=np.nan
+        Basal melting rate for grounded ice (positive if melting) [m/yr].
+    perturbation_melting_rate : ndarray, default=np.nan
+        Perturbation applied to computed melting rate (positive if melting) [m/yr].
+    geothermalflux : float, default=np.nan
+        Geothermal heat flux [W/m^2].
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the linear basal forcings parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the linear basal forcings parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.basalforcings = pyissm.build.basalforcings.linear()
+    md.basalforcings.deepwater_melting_rate = 1.5
+    md.basalforcings.deepwater_elevation = -500
+    md.basalforcings.upperwater_melting_rate = 0.5
+    md.basalforcings.upperwater_elevation = -200
+    """
 
     # Initialise with default parameters
     def __init__(self, other=None):
@@ -128,9 +251,65 @@ class linear(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class lineararma(class_registry.manage_state):
-    '''
-    basalforcings.lineararma Class definition
-    '''
+    """
+    Linear ARMA basal forcings parameters class for ISSM.
+
+    This class encapsulates the parameters for linear ARMA basal forcings in the ISSM (Ice Sheet System Model) framework.
+    It defines the structure for piecewise polynomial parameters, autoregressive and moving-average coefficients, and various melting rates and elevations for different basins.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    num_basins : int, default=0
+        Number of different basins [unitless].
+    num_params : int, default=0
+        Number of different parameters in the piecewise-polynomial (1:intercept only, 2:with linear trend, 3:with quadratic trend, etc.).
+    num_breaks : int, default=0
+        Number of different breakpoints in the piecewise-polynomial (separating num_breaks+1 periods).
+    polynomialparams : ndarray, default=np.nan
+        Coefficients for the polynomial (const, trend, quadratic, etc.), dim1 for basins, dim2 for periods, dim3 for orders.
+    datebreaks : ndarray, default=np.nan
+        Dates at which the breakpoints in the piecewise polynomial occur (1 row per basin) [yr].
+    ar_order : float, default=0.
+        Order of the autoregressive model [unitless].
+    ma_order : float, default=0.
+        Order of the moving-average model [unitless].
+    arma_timestep : int, default=0
+        Time resolution of the ARMA model [yr].
+    arlag_coefs : ndarray, default=np.nan
+        Basin-specific vectors of AR lag coefficients [unitless].
+    malag_coefs : ndarray, default=np.nan
+        Basin-specific vectors of MA lag coefficients [unitless].
+    basin_id : ndarray, default=np.nan
+        Basin number assigned to each element [unitless].
+    groundedice_melting_rate : ndarray, default=np.nan
+        Node-specific basal melting rate for grounded ice (positive if melting) [m/yr].
+    deepwater_elevation : ndarray, default=np.nan
+        Basin-specific elevation of ocean deepwater [m].
+    upperwater_melting_rate : ndarray, default=np.nan
+        Basin-specific basal melting rate (positive if melting applied for floating ice with base >= upperwater_elevation) [m/yr].
+    upperwater_elevation : ndarray, default=np.nan
+        Basin-specific elevation of ocean upperwater [m].
+    geothermalflux : ndarray, default=np.nan
+        Node-specific geothermal heat flux [W/m^2].
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the linear ARMA basal forcings parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the linear ARMA basal forcings parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.basalforcings = pyissm.build.basalforcings.lineararma()
+    """
 
     # Initialise with default parameters
     def __init__(self, other=None):
@@ -187,9 +366,48 @@ class lineararma(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class mismip(class_registry.manage_state):
-    '''
-    basalforcings.mismip Class definition
-    '''
+    """
+    MISMIP basal forcings parameters class for ISSM.
+
+    This class encapsulates the parameters for the MISMIP basal melt parameterization in the ISSM (Ice Sheet System Model) framework.
+    It defines the basal melting rate for grounded ice, a melt rate factor, a threshold thickness for saturation of basal melting,
+    an upper depth above which the melt rate is zero, and geothermal heat flux.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    groundedice_melting_rate : ndarray, default=np.nan
+        Basal melting rate for grounded ice (positive if melting) [m/yr].
+    meltrate_factor : float, default=0.2
+        Melt-rate factor [1/yr] (sign is opposite to MISMIP+ benchmark to remain consistent with ISSM convention of positive values for melting).
+    threshold_thickness : float, default=75.
+        Threshold thickness for saturation of basal melting [m].
+    upperdepth_melt : float, default=-100.
+        Depth above which melt rate is zero [m].
+    geothermalflux : float, default=np.nan
+        Geothermal heat flux [W/m^2].
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the MISMIP basal forcings parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the MISMIP basal forcings parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.basalforcings = pyissm.build.basalforcings.mismip()
+    md.basalforcings.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices,))
+    md.basalforcings.meltrate_factor = 0.2
+    md.basalforcings.threshold_thickness = 75.
+    md.basalforcings.upperdepth_melt = -100.
+    """
 
     # Initialise with default parameters
     def __init__(self, other=None):
@@ -223,9 +441,63 @@ class mismip(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class plume(class_registry.manage_state):
-    '''
-    basalforcings.plume Class definition
-    '''
+    """
+    Plume basal forcings parameters class for ISSM.
+
+    This class encapsulates the parameters for plume basal forcings in the ISSM (Ice Sheet System Model) framework.
+    It defines the structure of the mantle plume, including its radius, depth, and position, as well as parameters related to geothermal heat flux and melting rates.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    floatingice_melting_rate : ndarray, default=np.nan
+        Basal melting rate for floating ice (positive if melting) [m/yr].
+    groundedice_melting_rate : ndarray, default=np.nan
+        Basal melting rate for grounded ice (positive if melting) [m/yr].
+    mantleconductivity : float, default=2.2
+        Mantle heat conductivity [W/m^3].
+    nusselt : float, default=300
+        Nusselt number, ratio of mantle to plume [1].
+    dtbg : float, default=0.011
+        Background temperature gradient [degree/m].
+    plumeradius : float, default=100000
+        Radius of the mantle plume [m].
+    topplumedepth : float, default=10000
+        Depth of the mantle plume top below the crust [m].
+    bottomplumedepth : float, default=1050000
+        Depth of the mantle plume base below the crust [m].
+    plumex : float, default=np.nan
+        x coordinate of the center of the plume [m].
+    plumey : float, default=np.nan
+        y coordinate of the center of the plume [m].
+    crustthickness : float, default=30000
+        Thickness of the crust [m].
+    uppercrustthickness : float, default=14000
+        Thickness of the upper crust [m].
+    uppercrustheat : float, default=1.7e-6
+        Volumic heat of the upper crust [W/m^3].
+    lowercrustheat : float, default=0.4e-6
+        Volumic heat of the lower crust [W/m^3].
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the plume basal forcings parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the plume basal forcings parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.basalforcings = pyissm.build.basalforcings.plume()
+    md.basalforcings.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices,))
+    md.basalforcings.floatingice_melting_rate = np.ones((md.mesh.numberofvertices,)) * 2
+    """
 
     # Initialise with default parameters
     def __init__(self, other=None):
@@ -277,9 +549,47 @@ class plume(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class spatiallinear(class_registry.manage_state):
-    '''
-    basalforcings.spatiallinear Class definition
-    '''
+    """
+    Spatial linear basal forcings parameters class for ISSM.
+
+    This class encapsulates the parameters for spatial linear basal forcings in the ISSM (Ice Sheet System Model) framework.
+    It defines the melting rates for grounded ice, deepwater, and upperwater, as well as geothermal heat flux and perturbation melting rate.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    groundedice_melting_rate : ndarray, default=np.nan
+        Basal melting rate for grounded ice (positive if melting) [m/yr].
+    deepwater_melting_rate : ndarray, default=np.nan
+        Basal melting rate applied for floating ice with base < deepwater_elevation [m/yr].
+    deepwater_elevation : ndarray, default=np.nan
+        Elevation threshold for deepwater melting rate [m].
+    upperwater_melting_rate : ndarray, default=np.nan
+        Basal melting rate applied for floating ice with base >= upperwater_elevation [m/yr].
+    upperwater_elevation : ndarray, default=np.nan
+        Elevation threshold for upperwater melting rate [m].
+    geothermalflux : ndarray, default=np.nan
+        Geothermal heat flux [W/m^2].
+    perturbation_melting_rate : ndarray, default=np.nan
+        Basal melting rate perturbation added to computed melting rate (positive if melting) [m/yr].
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the spatial linear basal forcings parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the spatial linear basal forcings parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.basalforcings = pyissm.build.basalforcings.spatiallinear()
+    """
 
     # Initialise with default parameters
     def __init__(self, other=None):

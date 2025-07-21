@@ -6,9 +6,92 @@ from . import class_registry
 ## ------------------------------------------------------
 @class_registry.register_class
 class default(class_registry.manage_state):
-    '''
-    love.default Class definition
-    '''
+    """
+    Default parameters class for Love number calculations in ISSM.
+
+    This class defines the default parameters for the Love number computation process.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    nfreq : int, default=1
+        Number of frequencies sampled (elastic case: 1).
+    frequencies : float or array-like, default=0
+        Frequencies sampled (0 for elastic case) [Hz].
+    sh_nmax : int, default=256
+        Maximum spherical harmonic degree.
+    sh_nmin : int, default=1
+        Minimum spherical harmonic degree.
+    g0 : float, default=9.81
+        Gravity constant [m/s^2].
+    r0 : float, default=6371000.0
+        Reference radius [m].
+    mu0 : float, default=1e11
+        Reference stress [Pa].
+    Gravitational_Constant : float, default=6.67259e-11
+        Newtonian constant of gravitation [m^3 kg^-1 s^-2].
+    chandler_wobble : int, default=0
+        Include inertial terms for Chandler wobble in rotational feedback Love numbers.
+    allow_layer_deletion : int, default=1
+        Allow migration of the integration boundary with increasing spherical harmonic degree.
+    underflow_tol : float, default=1e-16
+        Threshold for deep to surface Love number ratio to trigger deletion of layers.
+    pw_threshold : float, default=1e-3
+        Threshold for bypassing the Post-Widder transform for time-dependent Love numbers.
+    min_integration_steps : int, default=500
+        Minimum number of radial steps per layer.
+    max_integration_dr : float, default=1e4
+        Maximum length of radial steps [m].
+    integration_scheme : int, default=2
+        Integration scheme identifier.
+    istemporal : int, default=1
+        1 for time-dependent Love numbers, 0 for frequency-dependent or elastic.
+    n_temporal_iterations : int, default=7
+        Number of spectral samples per time step (inverse Laplace transform).
+    time : float or array-like, default=0
+        Time vector for deformation [s].
+    love_kernels : int, default=0
+        Compute Love numbers at depth.
+    forcing_type : int, default=11
+        Nature and depth of the forcing for the Love number calculation.
+    inner_core_boundary : int, default=1
+        Interface index for inner core boundary forcing.
+    core_mantle_boundary : int, default=2
+        Interface index for core mantle boundary forcing.
+    complex_computation : int, default=0
+        Return Love numbers as real (0) or complex (1).
+    quad_precision : int, default=0
+        Use 32-digit precision for computation and Post-Widder transform.
+    debug : int, default=0
+        Output yi system matrix prior to solving.
+    hypergeom_table1 : int, default=1
+        Table 1 for hypergeometric function (EBM rheology).
+    hypergeom_table2 : int, default=1
+        Table 2 for hypergeometric function (EBM rheology).
+    hypergeom_nalpha : int, default=1
+        Length of hypergeometric table (EBM rheology).
+    hypergeom_nz : int, default=1
+        Width of hypergeometric table (EBM rheology).
+    hypergeom_z : int, default=0
+        Abscissa for hypergeometric table (EBM rheology).
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the default Love number parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the Love number parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.love = pyissm.build.love.default()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -103,9 +186,74 @@ class default(class_registry.manage_state):
 ## ------------------------------------------------------
 @class_registry.register_class
 class fourier(class_registry.manage_state):
-    '''
-    love.fourier Class definition
-    '''
+    """
+    Default parameters class for Fourier Love number calculations in ISSM.
+
+    This class defines the default parameters for the Fourier (frequency-dependent) Love number computation process.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    nfreq : int, default=1
+        Number of frequencies sampled (elastic case: 1).
+    frequencies : float or array-like, default=0
+        Frequencies sampled (0 for elastic case) [Hz].
+    sh_nmax : int, default=256
+        Maximum spherical harmonic degree.
+    sh_nmin : int, default=1
+        Minimum spherical harmonic degree.
+    g0 : float, default=9.81
+        Gravity constant [m/s^2].
+    r0 : float, default=6371000.0
+        Reference radius [m].
+    mu0 : float, default=1e11
+        Reference stress [Pa].
+    Gravitational_Constant : float, default=6.67259e-11
+        Newtonian constant of gravitation [m^3 kg^-1 s^-2].
+    chandler_wobble : int, default=0
+        Include inertial terms for Chandler wobble in rotational feedback Love numbers.
+    allow_layer_deletion : int, default=1
+        Allow migration of the integration boundary with increasing spherical harmonic degree.
+    underflow_tol : float, default=1e-16
+        Threshold for deep to surface Love number ratio to trigger deletion of layers.
+    pw_threshold : float, default=1e-3
+        Threshold for bypassing the Post-Widder transform for time-dependent Love numbers.
+    integration_steps_per_layer : int, default=100
+        Number of radial steps per layer.
+    istemporal : int, default=0
+        1 for time-dependent Love numbers, 0 for frequency-dependent or elastic.
+    n_temporal_iterations : int, default=8
+        Number of spectral samples per time step (inverse Laplace transform).
+    time : float or array-like, default=0
+        Time vector for deformation [s].
+    love_kernels : int, default=0
+        Compute Love numbers at depth.
+    forcing_type : int, default=11
+        Nature and depth of the forcing for the Love number calculation.
+    inner_core_boundary : int, default=1
+        Interface index for inner core boundary forcing.
+    core_mantle_boundary : int, default=2
+        Interface index for core mantle boundary forcing.
+    complex_computation : int, default=0
+        Return Love numbers as real (0) or complex (1).
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the Fourier Love number parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the Fourier Love number parameters.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.love = pyissm.build.love.fourier()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):

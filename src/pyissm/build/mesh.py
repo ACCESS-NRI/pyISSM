@@ -7,9 +7,70 @@ from . import class_registry
 ## --------------------------------------------------------
 @class_registry.register_class
 class mesh2d(class_registry.manage_state):
-    '''
-    mesh.mesh2d Class definition
-    '''
+    """
+    Horizontal 2D Mesh Class definition for ISSM.
+
+    This class defines the default parameters for a 2D triangular mesh used in ISSM.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    x : ndarray, default=np.nan
+        Vertices x coordinate [m]
+    y : ndarray, default=np.nan
+        Vertices y coordinate [m]
+    elements : ndarray, default=np.nan
+        Vertex indices of the mesh elements
+    numberofelements : int, default=0
+        Number of elements
+    numberofvertices : int, default=0
+        Number of vertices
+    numberofedges : int, default=0
+        Number of edges of the 2d mesh
+    lat : ndarray, default=np.nan
+        Vertices latitude [degrees]
+    long : ndarray, default=np.nan
+        Vertices longitude [degrees]
+    epsg : int, default=0
+        EPSG code (ex: 3413 for UPS Greenland, 3031 for UPS Antarctica)
+    scale_factor : float, default=np.nan
+        Projection correction for volume, area, etc. computation
+    vertexonboundary : ndarray, default=np.nan
+        Vertices on the boundary of the domain flag list
+    edges : ndarray, default=np.nan
+        Edges of the 2d mesh (vertex1 vertex2 element1 element2)
+    segments : ndarray, default=np.nan
+        Edges on domain boundary (vertex1 vertex2 element)
+    segmentmarkers : ndarray, default=np.nan
+        Number associated to each segment
+    vertexconnectivity : ndarray, default=np.nan
+        List of elements connected to vertex_i
+    elementconnectivity : ndarray, default=np.nan
+        List of elements adjacent to element_i
+    average_vertex_connectivity : int, default=25
+        Average number of vertices connected to one vertex
+    extractedvertices : ndarray, default=np.nan
+        Vertices extracted from the model
+    extractedelements : ndarray, default=np.nan
+        Elements extracted from the model
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the default mesh2d parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the mesh2d object.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.mesh = pyissm.build.mesh.mesh2d()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -78,9 +139,70 @@ class mesh2d(class_registry.manage_state):
 ## --------------------------------------------------------
 @class_registry.register_class
 class mesh2dvertical(class_registry.manage_state):
-    '''
-    mesh.mesh2dvertical Class definition
-    '''
+    """
+    Vertical 2D Mesh Class definition for ISSM.
+
+    This class defines the default parameters for a 2D triangular mesh in the vertical plane used in ISSM.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    x : ndarray, default=np.nan
+        Vertices x coordinate [m]
+    y : ndarray, default=np.nan
+        Vertices y coordinate [m]
+    elements : ndarray, default=np.nan
+        Vertex indices of the mesh elements
+    numberofelements : int, default=0
+        Number of elements
+    numberofvertices : int, default=0
+        Number of vertices
+    numberofedges : int, default=0
+        Number of edges of the 2d mesh
+    lat : ndarray, default=np.nan
+        Vertices latitude [degrees]
+    long : ndarray, default=np.nan
+        Vertices longitude [degrees]
+    epsg : int or float, default=np.nan
+        EPSG code (ex: 3413 for UPS Greenland, 3031 for UPS Antarctica)
+    scale_factor : float, default=np.nan
+        Projection correction for volume, area, etc. computation
+    vertexonboundary : ndarray, default=np.nan
+        Vertices on the boundary of the domain flag list
+    vertexonbase : ndarray, default=np.nan
+        Vertices on the bed of the domain flag list
+    vertexonsurface : ndarray, default=np.nan
+        Vertices on the surface of the domain flag list
+    edges : ndarray, default=np.nan
+        Edges of the 2d mesh (vertex1 vertex2 element1 element2)
+    segments : ndarray, default=np.nan
+        Edges on domain boundary (vertex1 vertex2 element)
+    segmentmarkers : ndarray, default=np.nan
+        Number associated to each segment
+    vertexconnectivity : ndarray, default=np.nan
+        List of elements connected to vertex_i
+    elementconnectivity : ndarray, default=np.nan
+        List of elements adjacent to element_i
+    average_vertex_connectivity : int, default=25
+        Average number of vertices connected to one vertex
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the default mesh2dvertical parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the mesh2dvertical object.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.mesh = pyissm.build.mesh.mesh2dvertical()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):
@@ -147,9 +269,88 @@ class mesh2dvertical(class_registry.manage_state):
 ## --------------------------------------------------------
 @class_registry.register_class
 class mesh3dprisms(class_registry.manage_state):
-    '''
-    mesh.mesh3dprisms Class definition
-    '''
+    """
+    3D Prism Mesh Class definition for ISSM.
+
+    This class defines the default parameters for a 3D mesh composed of extruded prisms, used in ISSM.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    x : ndarray, default=np.nan
+        Vertices x coordinate [m]
+    y : ndarray, default=np.nan
+        Vertices y coordinate [m]
+    z : ndarray, default=np.nan
+        Vertices z coordinate [m]
+    elements : ndarray, default=np.nan
+        Vertex indices of the 3D mesh elements
+    numberoflayers : int, default=0
+        Number of extrusion layers
+    numberofelements : int, default=0
+        Number of elements in the 3D mesh
+    numberofvertices : int, default=0
+        Number of vertices in the 3D mesh
+    lat : ndarray, default=np.nan
+        Vertices latitude [degrees]
+    long : ndarray, default=np.nan
+        Vertices longitude [degrees]
+    epsg : int, default=0
+        EPSG code (ex: 3413 for UPS Greenland, 3031 for UPS Antarctica)
+    scale_factor : float, default=np.nan
+        Projection correction for volume, area, etc. computation
+    vertexonbase : ndarray, default=np.nan
+        Lower vertices flags list
+    vertexonsurface : ndarray, default=np.nan
+        Upper vertices flags list
+    lowerelements : ndarray, default=np.nan
+        Lower element list (NaN for element on the lower layer)
+    lowervertex : ndarray, default=np.nan
+        Lower vertex list (NaN for vertex on the lower surface)
+    upperelements : ndarray, default=np.nan
+        Upper element list (NaN for element on the upper layer)
+    uppervertex : ndarray, default=np.nan
+        Upper vertex list (NaN for vertex on the upper surface)
+    vertexonboundary : ndarray, default=np.nan
+        Vertices on the boundary of the domain flag list
+    vertexconnectivity : ndarray, default=np.nan
+        List of elements connected to vertex_i
+    elementconnectivity : ndarray, default=np.nan
+        List of elements adjacent to element_i
+    average_vertex_connectivity : int, default=25
+        Average number of vertices connected to one vertex
+    x2d : ndarray, default=np.nan
+        2D mesh vertices x coordinate [m]
+    y2d : ndarray, default=np.nan
+        2D mesh vertices y coordinate [m]
+    elements2d : ndarray, default=np.nan
+        2D mesh vertex indices of the mesh elements
+    numberofvertices2d : int, default=0
+        Number of vertices in the original 2D mesh
+    numberofelements2d : int, default=0
+        Number of elements in the original 2D mesh
+    extractedvertices : ndarray, default=np.nan
+        Vertices extracted from the model
+    extractedelements : ndarray, default=np.nan
+        Elements extracted from the model
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the default mesh3dprisms parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the mesh3dprisms object.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.mesh = pyissm.build.mesh.mesh3dprisms()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):  # {{{
@@ -241,9 +442,70 @@ class mesh3dprisms(class_registry.manage_state):
 ## --------------------------------------------------------
 @class_registry.register_class
 class mesh3dsurface(class_registry.manage_state):
-    '''
-    mesh.mesh3dsurface Class definition
-    '''
+    """
+    3D Surface Mesh Class definition for ISSM.
+
+    This class defines the default parameters for a 3D triangular surface mesh used in ISSM.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+
+    Attributes
+    ----------
+    x : ndarray, default=np.nan
+        Vertices x coordinate [m]
+    y : ndarray, default=np.nan
+        Vertices y coordinate [m]
+    z : ndarray, default=np.nan
+        Vertices z coordinate [m]
+    elements : ndarray, default=np.nan
+        Vertex indices of the mesh elements
+    numberofelements : int, default=0
+        Number of elements
+    numberofvertices : int, default=0
+        Number of vertices
+    numberofedges : int, default=0
+        Number of edges of the 3d mesh
+    lat : ndarray, default=np.nan
+        Vertices latitude [degrees]
+    long : ndarray, default=np.nan
+        Vertices longitude [degrees]
+    r : ndarray, default=np.nan
+        Vertices radius [m]
+    vertexonboundary : ndarray, default=np.nan
+        Vertices on the boundary of the domain flag list
+    edges : ndarray, default=np.nan
+        Edges of the 3d mesh (vertex1 vertex2 element1 element2)
+    segments : ndarray, default=np.nan
+        Edges on domain boundary (vertex1 vertex2 element)
+    segmentmarkers : ndarray, default=np.nan
+        Number associated to each segment
+    vertexconnectivity : ndarray, default=np.nan
+        List of elements connected to vertex_i
+    elementconnectivity : ndarray, default=np.nan
+        List of elements adjacent to element_i
+    average_vertex_connectivity : int, default=25
+        Average number of vertices connected to one vertex
+    extractedvertices : ndarray, default=np.nan
+        Vertices extracted from the model
+    extractedelements : ndarray, default=np.nan
+        Elements extracted from the model
+
+    Methods
+    -------
+    __init__(self, other=None)
+        Initializes the default mesh3dsurface parameters, optionally inheriting from another instance.
+    __repr__(self)
+        Returns a detailed string representation of the mesh3dsurface object.
+    __str__(self)
+        Returns a short string identifying the class.
+
+    Examples
+    --------
+    md.mesh = pyissm.build.mesh.mesh3dsurface()
+    """
 
     # Initialise with default parameters
     def __init__(self, other = None):  # {{{

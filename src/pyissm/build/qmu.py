@@ -1,4 +1,5 @@
 import numpy as np
+import collections
 from . import build_utils
 from . import class_registry
 
@@ -18,10 +19,10 @@ class default(class_registry.manage_state):
         self.variables = 'OrderedStruct() -- NOT IMPLEMENTED'
         self.correlation_matrix = 'List of correlation matrix'
         self.responses = 'OrderedStruct() -- NOT IMPLEMENTED'
-        self.method = 'OrderedDict() -- NOT IMPLEMENTED'
-        self.params = 'OrderedsSruct() -- NOT IMPLEMENTED'
+        self.method = collections.OrderedDict()
+        self.params = 'OrderedStruct() -- NOT IMPLEMENTED'
         self.statistics = statistics()
-        self.results = 'OrderedDict() -- NOT IMPLEMENTED'
+        self.results = collections.OrderedDict()
         self.numberofresponses = 0
         self.variabledescriptors = 'List of variable descriptors'
         self.variablepartitions = 'List of variable partitions'
