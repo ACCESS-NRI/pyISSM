@@ -249,7 +249,7 @@ def extract_field_layer(md,
         raise ValueError('extract_field_layer: model mesh is not correctly dimensioned')
 
     ## Extract data defined on elements
-    if field.shape == md.mesh.numberofelements:
+    if field.shape[0] == md.mesh.numberofelements:
 
         # The number of element layers is (md.mesh.numberoflayers - 1). Check that the defined layer can be extracted.
         if not (1 <= layer <= md.mesh.numberoflayers - 1):
@@ -264,7 +264,7 @@ def extract_field_layer(md,
         select_layer = field[select_indices]
 
     ## Extract data defined on vertices
-    if field.shape == md.mesh.numberofvertices:
+    if field.shape[0] == md.mesh.numberofvertices:
         # Identify vertex positions for requested layer
         start_pos = md.mesh.numberofvertices2d * (layer - 1)
         end_pos = md.mesh.numberofvertices2d * layer
