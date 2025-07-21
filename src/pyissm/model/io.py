@@ -10,7 +10,7 @@ import pandas as pd
 import os
 import math
 
-from .. import core, analysis, model, build, utils
+from .. import core, analysis, model, param, utils
 
 def load_model(path: str) -> core.Model:
 
@@ -39,7 +39,7 @@ def load_model(path: str) -> core.Model:
     ## Helper function to retrieve classtype and create new instance object
     def get_class(group):
         classtype = group.getncattr("classtype")
-        obj = build.class_registry.create_instance(classtype)
+        obj = param.class_registry.create_instance(classtype)
         return classtype, obj
 
     ## Helper function to normalise NaN values (convert all NaN to np.nan)
@@ -237,7 +237,7 @@ def save_model(path: str, md):
 
     def get_registered_name(obj):
         classname = obj.__class__
-        matching_keys = [k for k, v in build.class_registry.CLASS_REGISTRY.items() if v is classname]
+        matching_keys = [k for k, v in param.class_registry.CLASS_REGISTRY.items() if v is classname]
         if not matching_keys:
             raise ValueError(f"Class {classname} is not registered.")
         registered_name = min(matching_keys, key=len)
