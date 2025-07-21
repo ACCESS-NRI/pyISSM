@@ -33,7 +33,7 @@ class rifts(class_registry.manage_state):
 
     Examples
     --------
-    md.rifts = pyissm.build.rifts()
+    md.rifts = pyissm.param.rifts()
     md.rifts.riftstruct = rift_structure_data
     md.rifts.riftproperties = rift_properties_data
     """

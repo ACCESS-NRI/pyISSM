@@ -39,7 +39,7 @@ class geometry(class_registry.manage_state):
 
     Examples
     --------
-    md.geometry = pyissm.build.geometry()
+    md.geometry = pyissm.param.geometry()
     md.geometry.surface = surface_elevation
     md.geometry.thickness = ice_thickness
     md.geometry.bed = bed_elevation

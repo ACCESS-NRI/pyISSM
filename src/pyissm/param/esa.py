@@ -44,7 +44,7 @@ class esa(class_registry.manage_state):
 
     Examples
     --------
-    md.esa = pyissm.build.esa()
+    md.esa = pyissm.param.esa()
     md.esa.deltathickness = thickness_change
     md.esa.love_h = 0.6
     md.esa.love_l = 0.1

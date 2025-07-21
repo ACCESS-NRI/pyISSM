@@ -58,7 +58,7 @@ class default(class_registry.manage_state):
 
     Examples
     --------
-    md.timestepping = pyissm.build.timestepping.default()
+    md.timestepping = pyissm.param.timestepping.default()
     md.timestepping.start_time = 0
     md.timestepping.final_time = 100
     md.timestepping.time_step = 1.0
@@ -163,7 +163,7 @@ class adaptive(class_registry.manage_state):
 
     Examples
     --------
-    md.timestepping = pyissm.build.timestepping.adaptive()
+    md.timestepping = pyissm.param.timestepping.adaptive()
     md.timestepping.time_step_min = 0.001
     md.timestepping.time_step_max = 5.0
     md.timestepping.cfl_coefficient = 0.8

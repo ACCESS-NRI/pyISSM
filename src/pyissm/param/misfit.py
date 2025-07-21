@@ -50,7 +50,7 @@ class misfit(class_registry.manage_state):
 
     Examples
     --------
-    md.misfit = pyissm.build.misfit()
+    md.misfit = pyissm.param.misfit()
     md.misfit.name = 'velocity_misfit'
     md.misfit.model_string = 'Vel'
     md.misfit.observation = observed_velocity

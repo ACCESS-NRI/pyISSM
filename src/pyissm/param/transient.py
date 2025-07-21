@@ -65,7 +65,7 @@ class transient(class_registry.manage_state):
 
     Examples
     --------
-    md.transient = pyissm.build.transient()
+    md.transient = pyissm.param.transient()
     md.transient.isage = 1
     md.transient.isgroundingline = 1
     md.transient.requested_outputs = ['IceVolume', 'IceVolumeAboveFloatation']

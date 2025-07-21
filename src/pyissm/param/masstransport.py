@@ -46,7 +46,7 @@ class masstransport(class_registry.manage_state):
 
     Examples
     --------
-    md.masstransport = pyissm.build.masstransport()
+    md.masstransport = pyissm.param.masstransport()
     md.masstransport.min_thickness = 10.0
     md.masstransport.stabilization = 2
     md.masstransport.hydrostatic_adjustment = 'Incremental'

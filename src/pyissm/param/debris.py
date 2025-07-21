@@ -52,7 +52,7 @@ class debris(class_registry.manage_state):
 
     Examples
     --------
-    md.debris = pyissm.build.debris()
+    md.debris = pyissm.param.debris()
     md.debris.min_thickness = 0.001
     md.debris.packingfraction = 0.02
     md.debris.stabilization = 2

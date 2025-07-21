@@ -34,7 +34,7 @@ class rotational(class_registry.manage_state):
 
     Examples
     --------
-    md.rotational = pyissm.build.rotational()
+    md.rotational = pyissm.param.rotational()
     """
 
     # Initialise with default parameters

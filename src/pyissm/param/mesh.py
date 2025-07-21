@@ -69,7 +69,7 @@ class mesh2d(class_registry.manage_state):
 
     Examples
     --------
-    md.mesh = pyissm.build.mesh.mesh2d()
+    md.mesh = pyissm.param.mesh.mesh2d()
     """
 
     # Initialise with default parameters
@@ -201,7 +201,7 @@ class mesh2dvertical(class_registry.manage_state):
 
     Examples
     --------
-    md.mesh = pyissm.build.mesh.mesh2dvertical()
+    md.mesh = pyissm.param.mesh.mesh2dvertical()
     """
 
     # Initialise with default parameters
@@ -349,7 +349,7 @@ class mesh3dprisms(class_registry.manage_state):
 
     Examples
     --------
-    md.mesh = pyissm.build.mesh.mesh3dprisms()
+    md.mesh = pyissm.param.mesh.mesh3dprisms()
     """
 
     # Initialise with default parameters
@@ -504,7 +504,7 @@ class mesh3dsurface(class_registry.manage_state):
 
     Examples
     --------
-    md.mesh = pyissm.build.mesh.mesh3dsurface()
+    md.mesh = pyissm.param.mesh.mesh3dsurface()
     """
 
     # Initialise with default parameters

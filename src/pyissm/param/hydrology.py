@@ -55,7 +55,7 @@ class armapw(class_registry.manage_state):
 
     Examples
     --------
-    md.hydrology = pyissm.build.hydrology.armapw()
+    md.hydrology = pyissm.param.hydrology.armapw()
     """
 
     # Initialise with default parameters
@@ -195,7 +195,7 @@ class dc(class_registry.manage_state):
 
     Examples
     --------
-    md.hydrology = pyissm.build.hydrology.dc()
+    md.hydrology = pyissm.param.hydrology.dc()
     """
 
     # Initialise with default parameters
@@ -368,7 +368,7 @@ class glads(class_registry.manage_state):
 
     Examples
     --------
-    md.hydrology = pyissm.build.hydrology.glads()
+    md.hydrology = pyissm.param.hydrology.glads()
     """
 
     # Initialise with default parameters
@@ -474,7 +474,7 @@ class pism(class_registry.manage_state):
 
     Examples
     --------
-    md.hydrology = pyissm.build.hydrology.pism()
+    md.hydrology = pyissm.param.hydrology.pism()
     """
 
     # Initialise with default parameters
@@ -555,7 +555,7 @@ class shakti(class_registry.manage_state):
 
     Examples
     --------
-    md.hydrology = pyissm.build.hydrology.shakti()
+    md.hydrology = pyissm.param.hydrology.shakti()
     """
 
     # Initialise with default parameters
@@ -638,7 +638,7 @@ class shreve(class_registry.manage_state):
 
     Examples
     --------
-    md.hydrology = pyissm.build.hydrology.shreve()
+    md.hydrology = pyissm.param.hydrology.shreve()
     """
 
     # Initialise with default parameters
@@ -697,7 +697,7 @@ class tws(class_registry.manage_state):
 
     Examples
     --------
-    md.hydrology = pyissm.build.hydrology.tws()
+    md.hydrology = pyissm.param.hydrology.tws()
     """
 
     # Initialise with default parameters

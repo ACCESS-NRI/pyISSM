@@ -34,7 +34,7 @@ class default(class_registry.manage_state):
 
     Examples
     --------
-    md.calving = pyissm.build.calving.default()
+    md.calving = pyissm.param.calving.default()
     md.calving.calvingrate = np.zeros((md.mesh.numberofvertices,))
     """
 
@@ -93,7 +93,7 @@ class crevassedepth(class_registry.manage_state):
 
     Examples
     --------
-    md.calving = pyissm.build.calving.crevassedepth()
+    md.calving = pyissm.param.calving.crevassedepth()
     md.calving.crevasse_opening_stress = 1.0
     md.calving.crevasse_threshold = 0.75
     md.calving.water_height = 10.0
@@ -156,7 +156,7 @@ class dev(class_registry.manage_state):
 
     Examples
     --------
-    md.calving = pyissm.build.calving.dev()
+    md.calving = pyissm.param.calving.dev()
     md.calving.stress_threshold_groundedice = 2e6
     md.calving.stress_threshold_floatingice = 200e3
     """
@@ -214,7 +214,7 @@ class levermann(class_registry.manage_state):
 
     Examples
     --------
-    md.calving = pyissm.build.calving.levermann()
+    md.calving = pyissm.param.calving.levermann()
     """
 
     # Initialise with default parameters
@@ -268,7 +268,7 @@ class minthickness(class_registry.manage_state):
 
     Examples
     --------
-    md.calving = pyissm.build.calving.minthickness()
+    md.calving = pyissm.param.calving.minthickness()
     """
 
     # Initialise with default parameters
@@ -345,7 +345,7 @@ class parameterization(class_registry.manage_state):
 
     Examples
     --------
-    md.calving = pyissm.build.calving.parameterization()
+    md.calving = pyissm.param.calving.parameterization()
     md.calving.min_thickness = 50.
     md.calving.use_param = 1
     md.calving.theta = 2.0
@@ -428,7 +428,7 @@ class vonmises(class_registry.manage_state):
 
     Examples
     --------
-    md.calving = pyissm.build.calving.vonmises()
+    md.calving = pyissm.param.calving.vonmises()
     md.calving.stress_threshold_groundedice = 1e6
     md.calving.stress_threshold_floatingice = 150e3
     md.calving.min_thickness = 50.

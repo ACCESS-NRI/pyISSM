@@ -46,7 +46,7 @@ class sampling(class_registry.manage_state):
 
     Examples
     --------
-    md.sampling = pyissm.build.sampling()
+    md.sampling = pyissm.param.sampling()
     md.sampling.kappa = 0.1
     md.sampling.alpha = 2.0
     md.sampling.phi = 0.9

@@ -67,7 +67,7 @@ class amr(class_registry.manage_state):
 
     Examples
     -------
-    md.amr = pyissm.build.amr()
+    md.amr = pyissm.param.amr()
     md.amr.hmin = 50
     md.amr.fieldname = 'Thickness'
     """ 

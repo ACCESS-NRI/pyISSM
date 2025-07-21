@@ -38,7 +38,7 @@ class default(class_registry.manage_state):
 
     Examples
     --------
-    md.dsl = pyissm.build.dsl.default()
+    md.dsl = pyissm.param.dsl.default()
     """
 
     # Initialise with default parameters
@@ -101,7 +101,7 @@ class mme(class_registry.manage_state):
 
     Examples
     --------
-    md.dsl = pyissm.build.dsl.mme()
+    md.dsl = pyissm.param.dsl.mme()
     """
 
     # Initialise with default parameters

@@ -39,7 +39,7 @@ class groundingline(class_registry.manage_state):
 
     Examples
     --------
-    md.groundingline = pyissm.build.groundingline()
+    md.groundingline = pyissm.param.groundingline()
     md.groundingline.migration = 'AggressiveMigration'
     md.groundingline.friction_interpolation = 'SubelementFriction2'
     md.groundingline.melt_interpolation = 'SubelementMelt1'

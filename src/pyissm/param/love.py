@@ -90,7 +90,7 @@ class default(class_registry.manage_state):
 
     Examples
     --------
-    md.love = pyissm.build.love.default()
+    md.love = pyissm.param.love.default()
     """
 
     # Initialise with default parameters
@@ -252,7 +252,7 @@ class fourier(class_registry.manage_state):
 
     Examples
     --------
-    md.love = pyissm.build.love.fourier()
+    md.love = pyissm.param.love.fourier()
     """
 
     # Initialise with default parameters

@@ -66,7 +66,7 @@ class damage(class_registry.manage_state):
 
     Examples
     --------
-    md.damage = pyissm.build.damage()
+    md.damage = pyissm.param.damage()
     md.damage.isdamage = 1
     """
 

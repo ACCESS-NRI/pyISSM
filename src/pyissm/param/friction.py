@@ -46,7 +46,7 @@ class default(class_registry.manage_state):
 
     Examples
     --------
-    md.friction = pyissm.build.friction.default()
+    md.friction = pyissm.param.friction.default()
     """
 
     # Initialise with default parameters
@@ -125,7 +125,7 @@ class coulomb(class_registry.manage_state):
 
     Examples
     --------
-    md.friction = pyissm.build.friction.coulomb()
+    md.friction = pyissm.param.friction.coulomb()
     """
 
     # Initialise with default parameters
@@ -204,7 +204,7 @@ class coulomb2(class_registry.manage_state):
 
     Examples
     --------
-    md.friction = pyissm.build.friction.coulomb2()
+    md.friction = pyissm.param.friction.coulomb2()
     """
 
     # Initialise with default parameters
@@ -281,7 +281,7 @@ class hydro(class_registry.manage_state):
 
     Examples
     --------
-    md.friction = pyissm.build.friction.hydro()
+    md.friction = pyissm.param.friction.hydro()
     """
 
     # Initialise with default parameters
@@ -351,7 +351,7 @@ class josh(class_registry.manage_state):
 
     Examples
     --------
-    md.friction = pyissm.build.friction.josh()
+    md.friction = pyissm.param.friction.josh()
     """
 
     # Initialise with default parameters
@@ -424,7 +424,7 @@ class pism(class_registry.manage_state):
 
     Examples
     --------
-    md.friction = pyissm.build.friction.pism()
+    md.friction = pyissm.param.friction.pism()
     """
 
     # Initialise with default parameters
@@ -493,7 +493,7 @@ class regcoulomb(class_registry.manage_state):
 
     Examples
     --------
-    md.friction = pyissm.build.friction.regcoulomb()
+    md.friction = pyissm.param.friction.regcoulomb()
     """
 
     # Initialise with default parameters
@@ -563,7 +563,7 @@ class regcoulomb2(class_registry.manage_state):
 
     Examples
     --------
-    md.friction = pyissm.build.friction.regcoulomb2()
+    md.friction = pyissm.param.friction.regcoulomb2()
     """
 
     # Initialise with default parameters
@@ -639,7 +639,7 @@ class schoof(class_registry.manage_state):
 
     Examples
     --------
-    md.friction = pyissm.build.friction.schoof()
+    md.friction = pyissm.param.friction.schoof()
     """
 
     # Initialise with default parameters
@@ -709,7 +709,7 @@ class shakti(class_registry.manage_state):
 
     Examples
     --------
-    md.friction = pyissm.build.friction.shakti()
+    md.friction = pyissm.param.friction.shakti()
     """
 
     # Initialise with default parameters
@@ -772,7 +772,7 @@ class waterlayer(class_registry.manage_state):
 
     Examples
     --------
-    md.friction = pyissm.build.friction.waterlayer()
+    md.friction = pyissm.param.friction.waterlayer()
     """
 
     # Initialise with default parameters
@@ -790,11 +790,11 @@ class waterlayer(class_registry.manage_state):
     def __repr__(self):
         s = 'Basal shear stress parameters: tau_b = coefficient^2 * Neff ^r * |u_b|^(s - 1) * u_b * 1 / f(T)\n(effective stress Neff = rho_ice * g * thickness + rho_water * g * (bed + water_layer), r = q / p and s = 1 / p)\n'
 
-        s = "{}\n".format(param_utils.fielddisplay(self, 'coefficient', 'frictiontemp coefficient [SI]'))
-        s = "{}\n".format(param_utils.fielddisplay(self, 'f', 'f variable for effective pressure'))
-        s = "{}\n".format(param_utils.fielddisplay(self, 'p', 'p exponent'))
-        s = "{}\n".format(param_utils.fielddisplay(self, 'q', 'q exponent'))
-        s = "{}\n".format(param_utils.fielddisplay(self, 'water_layer', 'water thickness at the base of the ice (m)'))
+        s += '{}\n'.format(param_utils.fielddisplay(self, 'coefficient', 'frictiontemp coefficient [SI]'))
+        s += '{}\n'.format(param_utils.fielddisplay(self, 'f', 'f variable for effective pressure'))
+        s += '{}\n'.format(param_utils.fielddisplay(self, 'p', 'p exponent'))
+        s += '{}\n'.format(param_utils.fielddisplay(self, 'q', 'q exponent'))
+        s += '{}\n'.format(param_utils.fielddisplay(self, 'water_layer', 'water thickness at the base of the ice (m)'))
         return s
 
     # Define class string
@@ -838,7 +838,7 @@ class weertman(class_registry.manage_state):
 
     Examples
     --------
-    md.friction = pyissm.build.friction.weertman()
+    md.friction = pyissm.param.friction.weertman()
     """
 
     # Initialise with default parameters
@@ -854,9 +854,9 @@ class weertman(class_registry.manage_state):
     def __repr__(self):
         s = 'Weertman sliding law parameters: Sigma_b = C^(- 1 / m) * |u_b|^(1 / m - 1) * u_b\n'
 
-        s = "{}\n".format(param_utils.fielddisplay(self, 'C', 'friction coefficient [SI]'))
-        s = "{}\n".format(param_utils.fielddisplay(self, 'm', 'm exponent'))
-        s = "{}\n".format(param_utils.fielddisplay(self, 'linearize', '0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0)'))
+        s += '{}\n'.format(param_utils.fielddisplay(self, 'C', 'friction coefficient [SI]'))
+        s += '{}\n'.format(param_utils.fielddisplay(self, 'm', 'm exponent'))
+        s += '{}\n'.format(param_utils.fielddisplay(self, 'linearize', '0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0)'))
         return s
 
     # Define class string

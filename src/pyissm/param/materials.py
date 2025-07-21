@@ -65,7 +65,7 @@ class ice(class_registry.manage_state):
 
     Examples
     --------
-    md.materials = pyissm.build.materials.ice()
+    md.materials = pyissm.param.materials.ice()
     """
 
     # Initialise with default parameters
@@ -154,7 +154,7 @@ class hydro(class_registry.manage_state):
 
     Examples
     --------
-    md.materials = pyissm.build.materials.hydro()
+    md.materials = pyissm.param.materials.hydro()
     """
 
     # Initialise with default parameters
@@ -241,7 +241,7 @@ class litho(class_registry.manage_state):
 
     Examples
     --------
-    md.materials = pyissm.build.materials.litho()
+    md.materials = pyissm.param.materials.litho()
     """
 
     # Initialise with default parameters
@@ -354,7 +354,7 @@ class damageice(class_registry.manage_state):
 
     Examples
     --------
-    md.materials = pyissm.build.materials.damageice()
+    md.materials = pyissm.param.materials.damageice()
     """
 
     # Initialise with default parameters
@@ -473,7 +473,7 @@ class enhancedice(class_registry.manage_state):
 
     Examples
     --------
-    md.materials = pyissm.build.materials.enhancedice()
+    md.materials = pyissm.param.materials.enhancedice()
     """
 
     # Initialise with default parameters
@@ -594,7 +594,7 @@ class estar(class_registry.manage_state):
 
     Examples
     --------
-    md.materials = pyissm.build.materials.estar()
+    md.materials = pyissm.param.materials.estar()
     """
 
     # Initialise with default parameters

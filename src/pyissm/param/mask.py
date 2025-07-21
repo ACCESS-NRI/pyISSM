@@ -34,7 +34,7 @@ class mask(class_registry.manage_state):
 
     Examples
     --------
-    md.mask = pyissm.build.mask()
+    md.mask = pyissm.param.mask()
     md.mask.ice_levelset = ice_levelset_field
     md.mask.ocean_levelset = ocean_levelset_field
     """

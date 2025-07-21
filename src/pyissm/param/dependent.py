@@ -46,7 +46,7 @@ class dependent(class_registry.manage_state):
 
     Examples
     --------
-    md.dependent = pyissm.build.dependent()
+    md.dependent = pyissm.param.dependent()
     md.dependent.name = 'Vel'
     md.dependent.exp = 'velocity_observations.exp'
     """

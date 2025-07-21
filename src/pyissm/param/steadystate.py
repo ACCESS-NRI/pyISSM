@@ -35,7 +35,7 @@ class steadystate(class_registry.manage_state):
 
     Examples
     --------
-    md.steadystate = pyissm.build.steadystate()
+    md.steadystate = pyissm.param.steadystate()
     md.steadystate.reltol = 0.001
     md.steadystate.maxiter = 200
     md.steadystate.requested_outputs = ['IceVolume', 'IceVolumeAboveFloatation']

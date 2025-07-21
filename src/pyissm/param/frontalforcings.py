@@ -36,7 +36,7 @@ class default(class_registry.manage_state):
 
     Examples
     --------
-    md.frontalforcings = pyissm.build.frontalforcings.default()
+    md.frontalforcings = pyissm.param.frontalforcings.default()
     """
 
     # Initialise with default parameters
@@ -98,7 +98,7 @@ class rignot(class_registry.manage_state):
 
     Examples
     --------
-    md.frontalforcings = pyissm.build.frontalforcings.rignot()
+    md.frontalforcings = pyissm.param.frontalforcings.rignot()
     """
 
     # Initialise with default parameters
@@ -210,7 +210,7 @@ class rignotarma(class_registry.manage_state):
 
     Examples
     --------
-    md.frontalforcings = pyissm.build.frontalforcings.rignotarma()
+    md.frontalforcings = pyissm.param.frontalforcings.rignotarma()
     """
 
     # Initialise with default parameters

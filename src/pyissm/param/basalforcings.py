@@ -40,7 +40,7 @@ class default(class_registry.manage_state):
 
     Examples
     --------
-    md.basalforcings = pyissm.build.basalforcings.default()
+    md.basalforcings = pyissm.param.basalforcings.default()
     md.basalforcings.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices,))
     md.basalforcings.floatingice_melting_rate = np.ones((md.mesh.numberofvertices,)) * 2
     """
@@ -120,7 +120,7 @@ class pico(class_registry.manage_state):
 
     Examples
     --------
-    md.basalforcings = pyissm.build.basalforcings.pico()
+    md.basalforcings = pyissm.param.basalforcings.pico()
     md.basalforcings.num_basins = 3
     md.basalforcings.basin_id = np.array([1, 2, 3])
     md.basalforcings.farocean_temperature = np.array([273.15, 273.2, 273.1])
@@ -208,7 +208,7 @@ class linear(class_registry.manage_state):
 
     Examples
     --------
-    md.basalforcings = pyissm.build.basalforcings.linear()
+    md.basalforcings = pyissm.param.basalforcings.linear()
     md.basalforcings.deepwater_melting_rate = 1.5
     md.basalforcings.deepwater_elevation = -500
     md.basalforcings.upperwater_melting_rate = 0.5
@@ -308,7 +308,7 @@ class lineararma(class_registry.manage_state):
 
     Examples
     --------
-    md.basalforcings = pyissm.build.basalforcings.lineararma()
+    md.basalforcings = pyissm.param.basalforcings.lineararma()
     """
 
     # Initialise with default parameters
@@ -402,7 +402,7 @@ class mismip(class_registry.manage_state):
 
     Examples
     --------
-    md.basalforcings = pyissm.build.basalforcings.mismip()
+    md.basalforcings = pyissm.param.basalforcings.mismip()
     md.basalforcings.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices,))
     md.basalforcings.meltrate_factor = 0.2
     md.basalforcings.threshold_thickness = 75.
@@ -494,7 +494,7 @@ class plume(class_registry.manage_state):
 
     Examples
     --------
-    md.basalforcings = pyissm.build.basalforcings.plume()
+    md.basalforcings = pyissm.param.basalforcings.plume()
     md.basalforcings.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices,))
     md.basalforcings.floatingice_melting_rate = np.ones((md.mesh.numberofvertices,)) * 2
     """
@@ -588,7 +588,7 @@ class spatiallinear(class_registry.manage_state):
 
     Examples
     --------
-    md.basalforcings = pyissm.build.basalforcings.spatiallinear()
+    md.basalforcings = pyissm.param.basalforcings.spatiallinear()
     """
 
     # Initialise with default parameters

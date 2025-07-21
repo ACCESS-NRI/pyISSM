@@ -46,7 +46,7 @@ class stochasticforcing(class_registry.manage_state):
 
     Examples
     --------
-    md.stochasticforcing = pyissm.build.stochasticforcing()
+    md.stochasticforcing = pyissm.param.stochasticforcing()
     md.stochasticforcing.isstochasticforcing = 1
     md.stochasticforcing.fields = ['SMBforcing']
     md.stochasticforcing.defaultdimension = 1
