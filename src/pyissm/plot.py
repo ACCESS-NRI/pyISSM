@@ -73,7 +73,8 @@ def plot_mesh2d(mesh,
     ## Define default node argus and update node_args with passed arguments
     default_node_args = {'marker': '.',
                          'color': 'k',
-                         's': 5}
+                         's': 5,
+                         'zorder': 3}
     default_node_args.update(**node_args)
 
 
@@ -88,6 +89,7 @@ def plot_mesh2d(mesh,
     ax.triplot(mesh,
                color = color,
                linewidth = linewidth,
+               zorder = 2,
                **kwargs)
 
     ## Add optional nodes
@@ -467,15 +469,15 @@ def plot_model_field(md,
             field, _ = utils.extract_field_layer(md, field, layer)
         else:
             # Default behaviour for 3D model with no layer specified
-            if field.shape == md.mesh.numberofvertices:
+            if field.shape[0] == md.mesh.numberofvertices:
                 warnings.warn('plot_model_field: 3D model found with no layer specified. Plotting surface vertices layer only.')
                 field = field[md.mesh.vertexonsurface == 1]
-            elif field.shape == md.mesh.numberofelements:
+            elif field.shape[0] == md.mesh.numberofelements:
                 warnings.warn('plot_model_field: 3D model found with no layer specified. Plotting surface elements layer only.')
                 field = field[np.isnan(md.mesh.upperelements) == 1]
-            elif field.shape == md.mesh.numberofelements2d:
+            elif field.shape[0] == md.mesh.numberofelements2d:
                 pass # Field is defined on 2D mesh elements. Already 2D compatible. Continue
-            elif field.shape == md.mesh.numberofvertices2d:
+            elif field.shape[0] == md.mesh.numberofvertices2d:
                 pass # Field is defined on 2D mesh vertices. Already 2D compatible. Continue
             else:
                 raise Exception('plot_model_field: The provided field is an unexpected shape.')
