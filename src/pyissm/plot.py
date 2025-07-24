@@ -485,9 +485,16 @@ def plot_model_field(md,
         # If layer is defined, raise warning to explicitly state that it isn't used
         if layer is not None:
             warnings.warn('plot_model_field: 2D model found. Layer definition is ignored.')
+        
         # If a 2D model is provided, the field should be defined on vertices or elements.
         if field.shape[0] not in (md.mesh.numberofvertices, md.mesh.numberofelements):
-            raise Exception('plot_model_field: The provided field is an unexpected shape.')
+            
+            # If the field has one extra row, it is a timestep. Remove this row for plotting.
+            if (field.shape[0] == md.mesh.numberofvertices + 1) or (field.shape[0] == md.mesh.numberofelements + 1):
+                warnings.warn(f'plot_model_field: Ignoring the timestep value {field[-1]}.')
+                field = field[:-1]
+            else:
+                raise Exception('plot_model_field: The provided field is an unexpected shape.')
 
     ## Update shading, if necessary. When field is defined on elements, shading = 'flat' is required.
     if (is3d and field.shape == md.mesh.numberofelements2d and plot_data_on == 'points') or (not is3d and field.shape == md.mesh.numberofelements and plot_data_on == 'points'):
