@@ -72,7 +72,7 @@ class flowequation(class_registry.manage_state):
 
     Examples
     --------
-    md.flowequation = pyissm.build.flowequation()
+    md.flowequation = pyissm.param.flowequation()
     md.flowequation.isSSA = 1
     md.flowequation.fe_SSA = 'P1bubble'
     md.flowequation.FSNitscheGamma = 1e5

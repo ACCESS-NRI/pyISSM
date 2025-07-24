@@ -38,7 +38,7 @@ class massfluxatgate(class_registry.manage_state):
 
     Examples
     --------
-    md.massfluxatgate = pyissm.build.massfluxatgate()
+    md.massfluxatgate = pyissm.param.massfluxatgate()
     md.massfluxatgate.name = 'terminus_flux'
     md.massfluxatgate.profilename = 'terminus_profile.shp'
     md.massfluxatgate.definitionstring = 'Outputdefinition1'

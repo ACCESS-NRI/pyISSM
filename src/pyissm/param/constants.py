@@ -39,7 +39,7 @@ class constants(class_registry.manage_state):
 
     Examples
     --------
-    md.constants = pyissm.build.constants()
+    md.constants = pyissm.param.constants()
     md.constants.g = 9.81
     md.constants.yts = 365.25 * 24.0 * 3600.0
     """

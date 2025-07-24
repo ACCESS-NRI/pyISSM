@@ -58,7 +58,7 @@ class autodiff(class_registry.manage_state):
 
     Examples
     --------
-    md.autodiff = pyissm.build.autodiff()
+    md.autodiff = pyissm.param.autodiff()
     md.autodiff.isautodiff = 1
     md.autodiff.dependents = ['Vel']
     md.autodiff.independents = ['MaterialsRheologyBbar']

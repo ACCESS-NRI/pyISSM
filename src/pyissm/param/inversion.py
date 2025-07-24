@@ -67,7 +67,7 @@ class default(class_registry.manage_state):
 
     Examples
     --------
-    md.inversion = pyissm.build.inversion.default()
+    md.inversion = pyissm.param.inversion.default()
     """
 
     # Initialise with default parameters
@@ -197,7 +197,7 @@ class m1qn3(class_registry.manage_state):
 
     Examples
     --------
-    md.inversion = pyissm.build.inversion.m1qn3()
+    md.inversion = pyissm.param.inversion.m1qn3()
     """
 
     # Initialise with default parameters
@@ -332,7 +332,7 @@ class tao(class_registry.manage_state):
 
     Examples
     --------
-    md.inversion = pyissm.build.inversion.tao()
+    md.inversion = pyissm.param.inversion.tao()
     """
 
     # Initialise with default parameters

@@ -38,7 +38,7 @@ class nodalvalue(class_registry.manage_state):
 
     Examples
     --------
-    md.nodalvalue = pyissm.build.nodalvalue()
+    md.nodalvalue = pyissm.param.nodalvalue()
     md.nodalvalue.name = 'velocity_at_glacier_terminus'
     md.nodalvalue.model_string = 'Vel'
     md.nodalvalue.node = 1245

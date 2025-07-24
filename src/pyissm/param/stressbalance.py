@@ -74,7 +74,7 @@ class stressbalance(class_registry.manage_state):
 
     Examples
     --------
-    md.stressbalance = pyissm.build.stressbalance()
+    md.stressbalance = pyissm.param.stressbalance()
     md.stressbalance.restol = 1e-5
     md.stressbalance.isnewton = 1
     md.stressbalance.maxiter = 200

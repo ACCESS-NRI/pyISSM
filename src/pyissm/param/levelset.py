@@ -42,7 +42,7 @@ class levelset(class_registry.manage_state):
 
     Examples
     --------
-    md.levelset = pyissm.build.levelset()
+    md.levelset = pyissm.param.levelset()
     md.levelset.stabilization = 5
     md.levelset.reinit_frequency = 5
     md.levelset.kill_icebergs = 0

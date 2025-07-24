@@ -48,7 +48,7 @@ class independent(class_registry.manage_state):
 
     Examples
     --------
-    md.independent = pyissm.build.independent()
+    md.independent = pyissm.param.independent()
     md.independent.name = 'FrictionCoefficient'
     md.independent.type = 'vertex'
     md.independent.min_parameters = 1e-3

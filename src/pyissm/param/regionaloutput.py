@@ -40,7 +40,7 @@ class regionaloutput(class_registry.manage_state):
 
     Examples
     --------
-    md.regionaloutput = pyissm.build.regionaloutput()
+    md.regionaloutput = pyissm.param.regionaloutput()
     md.regionaloutput.name = 'west_antarctica_volume'
     md.regionaloutput.outputnamestring = 'IceVolume'
     md.regionaloutput.mask = west_antarctica_mask

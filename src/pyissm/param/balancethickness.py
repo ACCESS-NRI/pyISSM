@@ -42,7 +42,7 @@ class balancethickness(class_registry.manage_state):
 
     Examples
     --------
-    md.balancethickness = pyissm.build.balancethickness()
+    md.balancethickness = pyissm.param.balancethickness()
     md.balancethickness.spcthickness = 100.0
     md.balancethickness.thickening_rate = 0.1
     """

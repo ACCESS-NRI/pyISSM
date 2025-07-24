@@ -36,7 +36,7 @@ class radaroverlay(class_registry.manage_state):
 
     Examples
     --------
-    md.radaroverlay = pyissm.build.radaroverlay()
+    md.radaroverlay = pyissm.param.radaroverlay()
     md.radaroverlay.pwr = radar_power_matrix
     md.radaroverlay.x = x_coordinates
     md.radaroverlay.y = y_coordinates

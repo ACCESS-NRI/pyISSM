@@ -34,7 +34,7 @@ class miscellaneous(class_registry.manage_state):
 
     Examples
     --------
-    md.miscellaneous = pyissm.build.miscellaneous()
+    md.miscellaneous = pyissm.param.miscellaneous()
     md.miscellaneous.notes = 'Model run for Antarctic ice sheet'
     md.miscellaneous.name = 'Antarctica_2024'
     """

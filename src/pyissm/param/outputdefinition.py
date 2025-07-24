@@ -31,7 +31,7 @@ class outputdefinition(class_registry.manage_state):
 
     Examples
     --------
-    md.outputdefinition = pyissm.build.outputdefinition()
+    md.outputdefinition = pyissm.param.outputdefinition()
     md.outputdefinition.definitions = ['IceVolume', 'IceVolumeAboveFloatation', 'CustomOutput1']
     """
 

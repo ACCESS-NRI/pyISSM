@@ -38,7 +38,7 @@ class private(class_registry.manage_state):
 
     Examples
     --------
-    md.private = pyissm.build.private()
+    md.private = pyissm.param.private()
     md.private.runtimename = 'experiment_001'
     md.private.solution = 'StressBalance'
     """

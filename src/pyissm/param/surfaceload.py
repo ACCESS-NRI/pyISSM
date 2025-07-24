@@ -36,7 +36,7 @@ class surfaceload(class_registry.manage_state):
 
     Examples
     --------
-    md.surfaceload = pyissm.build.surfaceload()
+    md.surfaceload = pyissm.param.surfaceload()
     md.surfaceload.icethicknesschange = ice_thickness_change
     md.surfaceload.waterheightchange = water_height_change
     md.surfaceload.other = sediment_load

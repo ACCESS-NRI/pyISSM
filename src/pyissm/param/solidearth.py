@@ -70,7 +70,7 @@ class earth(class_registry.manage_state):
 
     Examples
     --------
-    md.solidearth = pyissm.build.solidearth.earth()
+    md.solidearth = pyissm.param.solidearth.earth()
     md.solidearth.settings.elastic = 1
     md.solidearth.settings.viscous = 1
     """
@@ -178,7 +178,7 @@ class europa(class_registry.manage_state):
 
     Examples
     --------
-    md.solidearth = pyissm.build.solidearth.europa()
+    md.solidearth = pyissm.param.solidearth.europa()
     md.solidearth.settings.elastic = 1
     md.solidearth.lovenumbers = custom_europa_lovenumbers
     """
@@ -300,7 +300,7 @@ class settings(class_registry.manage_state):
 
     Examples
     --------
-    md.solidearth.settings = pyissm.build.solidearth.settings()
+    md.solidearth.settings = pyissm.param.solidearth.settings()
     md.solidearth.settings.elastic = 1
     md.solidearth.settings.viscous = 1
     md.solidearth.settings.grdmodel = 1

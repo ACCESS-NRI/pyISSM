@@ -40,7 +40,7 @@ class default(class_registry.manage_state):
 
     Examples
     --------
-    md.smb = pyissm.build.smb.default()
+    md.smb = pyissm.param.smb.default()
     """
 
     # Initialise with default parameters
@@ -141,7 +141,7 @@ class arma(class_registry.manage_state):
 
     Examples
     --------
-    md.smb = pyissm.build.smb.arma()
+    md.smb = pyissm.param.smb.arma()
     """
 
     # Initialise with default parameters
@@ -248,7 +248,7 @@ class components(class_registry.manage_state):
 
     Examples
     --------
-    md.smb = pyissm.build.smb.components()
+    md.smb = pyissm.param.smb.components()
     md.smb.accumulation = accumulation_data
     md.smb.runoff = runoff_data
     md.smb.evaporation = evaporation_data
@@ -368,7 +368,7 @@ class d18opdd(class_registry.manage_state):
 
     Examples
     --------
-    md.smb = pyissm.build.smb.d18opdd()
+    md.smb = pyissm.param.smb.d18opdd()
     md.smb.delta18o = delta18o_data
     md.smb.temperatures_presentday = temp_data
     """
@@ -490,7 +490,7 @@ class gradients(class_registry.manage_state):
 
     Examples
     --------
-    md.smb = pyissm.build.smb.gradients()
+    md.smb = pyissm.param.smb.gradients()
     md.smb.href = reference_elevation
     md.smb.smbref = reference_smb
     md.smb.b_pos = positive_gradient
@@ -589,7 +589,7 @@ class gradientscomponents(class_registry.manage_state):
 
     Examples
     --------
-    md.smb = pyissm.build.smb.gradientscomponents()
+    md.smb = pyissm.param.smb.gradientscomponents()
     md.smb.accuref = reference_accumulation
     md.smb.runoffref = reference_runoff
     """
@@ -688,7 +688,7 @@ class gradientsela(class_registry.manage_state):
 
     Examples
     --------
-    md.smb = pyissm.build.smb.gradientsela()
+    md.smb = pyissm.param.smb.gradientsela()
     md.smb.ela = equilibrium_line_altitude
     md.smb.b_pos = positive_gradient  # Above ELA
     md.smb.b_neg = negative_gradient  # Below ELA
@@ -770,7 +770,7 @@ class henning(class_registry.manage_state):
 
     Examples
     --------
-    md.smb = pyissm.build.smb.henning()
+    md.smb = pyissm.param.smb.henning()
     md.smb.smbref = reference_smb_data
     """
 
@@ -856,7 +856,7 @@ class meltcomponents(class_registry.manage_state):
 
     Examples
     --------
-    md.smb = pyissm.build.smb.meltcomponents()
+    md.smb = pyissm.param.smb.meltcomponents()
     md.smb.accumulation = accumulation_data
     md.smb.melt = melt_data
     md.smb.refreeze = refreeze_data
@@ -983,7 +983,7 @@ class pdd(class_registry.manage_state):
 
     Examples
     --------
-    md.smb = pyissm.build.smb.pdd()
+    md.smb = pyissm.param.smb.pdd()
     md.smb.monthlytemperatures = temperature_data
     md.smb.precipitation = precipitation_data
     """
@@ -1129,7 +1129,7 @@ class pddSicopolis(class_registry.manage_state):
 
     Examples
     --------
-    md.smb = pyissm.build.smb.pddSicopolis()
+    md.smb = pyissm.param.smb.pddSicopolis()
     md.smb.monthlytemperatures = temperature_data
     md.smb.precipitation = precipitation_data
     md.smb.temperature_anomaly = temp_anomaly

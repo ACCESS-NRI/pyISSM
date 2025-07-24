@@ -56,7 +56,7 @@ class thermal(class_registry.manage_state):
 
     Examples
     --------
-    md.thermal = pyissm.build.thermal()
+    md.thermal = pyissm.param.thermal()
     md.thermal.isenthalpy = 1
     md.thermal.stabilization = 2
     md.thermal.maxiter = 200

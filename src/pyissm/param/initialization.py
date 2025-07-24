@@ -72,7 +72,7 @@ class initialization(class_registry.manage_state):
 
     Examples
     --------
-    md.initialization = pyissm.build.initialization()
+    md.initialization = pyissm.param.initialization()
     md.initialization.vx = vx_initial
     md.initialization.vy = vy_initial
     md.initialization.temperature = temp_initial

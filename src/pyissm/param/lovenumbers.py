@@ -56,7 +56,7 @@ class lovenumbers(class_registry.manage_state):
 
     Examples
     --------
-    md.lovenumbers = pyissm.build.lovenumbers()
+    md.lovenumbers = pyissm.param.lovenumbers()
     md.lovenumbers.h = h_love_numbers
     md.lovenumbers.k = k_love_numbers
     md.lovenumbers.l = l_love_numbers

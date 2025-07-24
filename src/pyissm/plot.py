@@ -73,7 +73,8 @@ def plot_mesh2d(mesh,
     ## Define default node argus and update node_args with passed arguments
     default_node_args = {'marker': '.',
                          'color': 'k',
-                         's': 5}
+                         's': 5,
+                         'zorder': 3}
     default_node_args.update(**node_args)
 
 
@@ -88,6 +89,7 @@ def plot_mesh2d(mesh,
     ax.triplot(mesh,
                color = color,
                linewidth = linewidth,
+               zorder = 2,
                **kwargs)
 
     ## Add optional nodes
@@ -467,15 +469,15 @@ def plot_model_field(md,
             field, _ = utils.extract_field_layer(md, field, layer)
         else:
             # Default behaviour for 3D model with no layer specified
-            if field.shape == md.mesh.numberofvertices:
+            if field.shape[0] == md.mesh.numberofvertices:
                 warnings.warn('plot_model_field: 3D model found with no layer specified. Plotting surface vertices layer only.')
                 field = field[md.mesh.vertexonsurface == 1]
-            elif field.shape == md.mesh.numberofelements:
+            elif field.shape[0] == md.mesh.numberofelements:
                 warnings.warn('plot_model_field: 3D model found with no layer specified. Plotting surface elements layer only.')
                 field = field[np.isnan(md.mesh.upperelements) == 1]
-            elif field.shape == md.mesh.numberofelements2d:
+            elif field.shape[0] == md.mesh.numberofelements2d:
                 pass # Field is defined on 2D mesh elements. Already 2D compatible. Continue
-            elif field.shape == md.mesh.numberofvertices2d:
+            elif field.shape[0] == md.mesh.numberofvertices2d:
                 pass # Field is defined on 2D mesh vertices. Already 2D compatible. Continue
             else:
                 raise Exception('plot_model_field: The provided field is an unexpected shape.')
@@ -483,12 +485,19 @@ def plot_model_field(md,
         # If layer is defined, raise warning to explicitly state that it isn't used
         if layer is not None:
             warnings.warn('plot_model_field: 2D model found. Layer definition is ignored.')
+        
         # If a 2D model is provided, the field should be defined on vertices or elements.
         if field.shape[0] not in (md.mesh.numberofvertices, md.mesh.numberofelements):
-            raise Exception('plot_model_field: The provided field is an unexpected shape.')
+            
+            # If the field has one extra row, it is a timestep. Remove this row for plotting.
+            if (field.shape[0] == md.mesh.numberofvertices + 1) or (field.shape[0] == md.mesh.numberofelements + 1):
+                warnings.warn(f'plot_model_field: Ignoring the timestep value {field[-1]}.')
+                field = field[:-1]
+            else:
+                raise Exception('plot_model_field: The provided field is an unexpected shape.')
 
     ## Update shading, if necessary. When field is defined on elements, shading = 'flat' is required.
-    if field.shape == md.mesh.numberofelements2d and plot_data_on == 'points':
+    if (is3d and field.shape == md.mesh.numberofelements2d and plot_data_on == 'points') or (not is3d and field.shape == md.mesh.numberofelements and plot_data_on == 'points'):
         shading = 'flat'
         warnings.warn("Using plot_data_on = 'elements'. Data are defined on elements")
     if plot_data_on == 'elements':
@@ -724,3 +733,132 @@ def plot_model_bc(md,
         return fig, ax
     else:
         return ax
+    
+def plot_model_ts(md,
+                  data_list = None,
+                  variable_list = None,
+                  unit_list = None,
+                  time = (0, np.inf),
+                  figsize = (6.4, 4.8),
+                  fontsize = 8,
+                  color = 'black',
+                  show_grid = True,
+                  constrained_layout = True,
+                  sharex = True,
+                  **kwargs):
+    """
+    Plot time series data from an ISSM model's TransientSolution.
+
+    Automatically extracts 1D time series arrays from `md.results.TransientSolution` if `data_list` is not provided.
+    Plots each variable as a separate subplot, sharing the x-axis (time).
+    
+    Parameters
+    ----------
+    md : object
+        ISSM model object containing results with a `TransientSolution` attribute.
+    data_list : list of np.ndarray, optional
+        List of 1D numpy arrays to plot. If None, all 1D arrays in `md.results.TransientSolution` (except 'time' and 'step') are used.
+    variable_list : list of str, optional
+        List of variable names corresponding to `data_list`. If None, names are auto-generated or extracted from `TransientSolution`.
+    unit_list : list of str, optional
+        List of units for each variable. If None, defaults to 'Units unspecified' or 'ISSM Units'.
+    time : tuple of float, optional
+        Time range (start, end) to plot. Defaults to (0, np.inf).
+    figsize : tuple of int, optional
+        Figure size in inches. Defaults to (6.4, 4.8).
+    fontsize : int, optional
+        Font size for labels and titles. Defaults to 8.
+    color : str, optional
+        Line color for plots. Defaults to 'black'.
+    show_grid : bool, optional
+        Whether to show grid lines on plots. Defaults to True.
+    constrained_layout : bool, optional
+        Whether to use matplotlib's constrained layout. Defaults to True.
+    sharex : bool, optional
+        Whether subplots share the x-axis. Defaults to True.
+    
+    Returns
+    -------
+    fig : matplotlib.figure.Figure
+        The matplotlib figure object containing the plots.
+    axs : np.ndarray of matplotlib.axes.Axes
+        Array of axes objects for each subplot.
+    
+    Raises
+    ------
+    ValueError
+        If no time array is found, no 1D time series are available, input lists are mismatched, or data arrays are not 1D.
+
+    Examples
+    --------
+    >>> fig, axs = plot_model_ts(md)
+    >>> fig, axs = plot_model_ts(md, data_list=[arr1, arr2], variable_list=['Var1', 'Var2'], unit_list=['m', 'kg'])
+    """
+
+    # Check if md has the required attributes
+    if hasattr(md, 'results') is False or not hasattr(md.results, 'TransientSolution'):
+        raise ValueError("The provided model does not have a 'results.TransientSolution' attribute.")
+
+    # Extract model time from the TransientSolution
+    model_time = getattr(md.results.TransientSolution, 'time', None)
+    if model_time is None:
+        raise ValueError("No 'time' array found in md.results.TransientSolution.")
+
+    # Auto-extract 1D arrays if no data_list provided
+    if data_list is None:
+        variables = {}
+        for k, v in vars(md.results.TransientSolution).items():
+            # If the variable is a 1D numpy array and not 'time' or 'step' variables, add it to variables dictionary
+            if isinstance(v, np.ndarray) and v.ndim == 1 and k not in ('step', 'time'):
+                variables[k] = v
+        
+        # If no 1D time series found, raise an error
+        if not variables:
+            raise ValueError("No 1D time series found in md.results.TransientSolution.")
+
+        # Construct data_list, variable_list, and unit_list from the variables dictionary. Use 'ISSM units'.    
+        data_list = list(variables.values())
+        variable_list = list(variables.keys())
+        unit_list = ['ISSM Units'] * len(data_list)
+
+    # Check that data_list is not empty
+    n_vars = len(data_list)
+    if n_vars == 0:
+        raise ValueError("data_list must contain at least one 1D numpy array.")
+
+    # Fill missing variable names/units
+    if variable_list is None:
+        variable_list = [f'Variable {i + 1}' for i in range(n_vars)]
+        
+    if unit_list is None:
+        unit_list = ['Units unspecified'] * n_vars
+
+    # Validate input lengths
+    if not (len(data_list) == len(variable_list) == len(unit_list)):
+        raise ValueError("data_list, variable_list, and unit_list must all be the same length.")
+
+    # Check that all data arrays are 1D
+    if not all(arr.ndim == 1 for arr in data_list):
+        raise ValueError("All data in data_list must be 1D numpy arrays.")
+
+    # Filter time range
+    time_idx = np.where((model_time >= time[0]) & (model_time <= time[1]))[0]
+    model_time = model_time[time_idx]
+
+    # Create subplots & ensure axs is iterable even if n_vars == 1
+    fig, axs = plt.subplots(n_vars, 1, figsize=figsize, constrained_layout=constrained_layout, sharex=sharex)
+    axs = np.atleast_1d(axs)
+
+    # Plot each variable iteratively
+    for data, variable, unit, ax in zip(data_list, variable_list, unit_list, axs):
+        ax.plot(model_time, data[time_idx], color = color, **kwargs)
+        ax.set_title(variable, fontsize = fontsize)
+        ax.set_ylabel(f'{variable}\n({unit})', fontsize = fontsize)
+        ax.tick_params(axis = 'both', labelsize = fontsize)
+        if show_grid:
+            ax.grid(alpha = 0.4)
+
+    # Add a common x-label for the last subplot
+    axs[-1].set_xlabel('Year', fontsize = fontsize)
+
+    return fig, axs

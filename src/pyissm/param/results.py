@@ -35,7 +35,7 @@ class default(class_registry.manage_state):
 
     Examples
     --------
-    results = pyissm.build.results.default()
+    results = pyissm.param.results.default()
     """
 
     # Initialise with default parameters
@@ -95,7 +95,7 @@ class resultsdakota(class_registry.manage_state):
 
     Examples
     --------
-    results = pyissm.build.results.resultsdakota()
+    results = pyissm.param.results.resultsdakota()
     """
 
     # Initialise with default parameters
@@ -157,7 +157,7 @@ class solution(class_registry.manage_state):
 
     Examples
     --------
-    results = pyissm.build.results.solution()
+    results = pyissm.param.results.solution()
     """
 
     # Initialise with default parameters
@@ -228,7 +228,7 @@ class solutionstep(class_registry.manage_state):
 
     Examples
     --------
-    step = pyissm.build.results.solutionstep()
+    step = pyissm.param.results.solutionstep()
     """
 
     # Initialise with default parameters

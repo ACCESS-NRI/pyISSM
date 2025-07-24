@@ -36,7 +36,7 @@ class offlinesolidearthsolution(class_registry.manage_state):
 
     Examples
     --------
-    md.solidearth = pyissm.build.offlinesolidearthsolution()
+    md.solidearth = pyissm.param.offlinesolidearthsolution()
     """
 
     # Initialise with default parameters

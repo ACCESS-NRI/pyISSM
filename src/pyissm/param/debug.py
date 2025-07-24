@@ -35,7 +35,7 @@ class debug(class_registry.manage_state):
 
     Examples
     --------
-    md.debug = pyissm.build.debug()
+    md.debug = pyissm.param.debug()
     md.debug.valgrind = 1
     md.debug.profiling = 1
     """

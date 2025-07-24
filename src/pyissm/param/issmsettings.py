@@ -45,7 +45,7 @@ class issmsettings(class_registry.manage_state):
 
     Examples
     --------
-    md.settings = pyissm.build.issmsettings()
+    md.settings = pyissm.param.issmsettings()
     md.settings.output_frequency = 5
     md.settings.lowmem = 1
     md.settings.results_on_nodes = ['Vel', 'Thickness']
