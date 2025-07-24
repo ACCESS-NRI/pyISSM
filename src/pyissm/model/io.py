@@ -299,7 +299,7 @@ def export_gridded_model(md,
     Export gridded model variables to a NetCDF file based on a variable mapping specification.
 
     This function interpolates ISSM model output variables onto a regular 2D grid and writes the
-    results to a NetCDF file. Variables are defined in a CSV variable map which specifies the
+    results to a NetCDF file. Variables are defined in a variable map which specifies the
     desired output name, source location in the model, and optional unit conversions.
 
     Parameters
@@ -312,10 +312,11 @@ def export_gridded_model(md,
         2D array of X coordinates for the regular grid.
     grid_y : ndarray
         2D array of Y coordinates for the regular grid.
-    variable_map : str, optional
-        Path to a CSV file mapping model variables to output variable names and metadata.
-        If not provided, a default variable map located in `../files/default_variable_map.csv`
-        relative to this script will be used.
+    variable_map : str or pd.DataFrame, optional
+        Custom variable mapping specification. If a string, it should be the path to a CSV file
+        mapping model variables to output variable names and metadata. If a DataFrame, it should
+        contain the same columns as the CSV file. If not provided, a default variable map will
+        be used located in `../files/default_variable_map.csv` relative to this script.
     method : str, optional
         Interpolation method used to grid model data. Specific variables override this option.
         Options are `'linear'`, `'nearest'`, etc. Default is `'linear'`.
@@ -327,6 +328,8 @@ def export_gridded_model(md,
 
     Raises
     ------
+    FileNotFoundError
+        If the variable map CSV file does not exist.
     ValueError
         If the variable map file contains duplicate output variable names.
     Exception
@@ -350,7 +353,17 @@ def export_gridded_model(md,
         variable_map = os.path.join(os.path.dirname(__file__), '../files/default_variable_map.csv')
         variable_map = os.path.abspath(variable_map)
 
-    var_map = pd.read_csv(variable_map)
+    # If it's a string, read the CSV file
+    if isinstance(variable_map, str):
+        if not os.path.exists(variable_map):
+            raise FileNotFoundError(f"export_gridded_model: Variable map file {variable_map} does not exist.")
+        
+        # Read the variable map CSV file
+        var_map = pd.read_csv(variable_map)
+    
+    # If it's a DataFrame, use it directly
+    elif isinstance(variable_map, pd.DataFrame):
+        var_map = variable_map
 
     ## Error Checks
     # Check that all outputVariableNames are unique
@@ -428,6 +441,15 @@ def export_gridded_model(md,
 
                 ## Extract the variable
                 variable = getattr(sub_group, issm_variable)
+
+                ## If the variable is empty, skip it and print a warning
+                if np.isnan(variable).all() or variable.shape[0] == 0:
+                    if pd.isna(issm_subgroup):
+                        print(f"\033[1m{issm_variable}\033[0m is empty in \033[1m{issm_group}\033[0m and will be skipped.")
+                        continue
+                    else:
+                        print(f"\033[1m{issm_variable}\033[0m is empty in \033[1m{issm_group}.{issm_subgroup}\033[0m and will be skipped.")
+                        continue   
 
                 ## Check if unit conversion is required
                 if pd.isnull(row['issmVariableUnit']) and pd.isnull(row['outputVariableUnit']):
