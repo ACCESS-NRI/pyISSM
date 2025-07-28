@@ -116,6 +116,8 @@ def plot_model_nodes(md,
                      s = 5,
                      colors = ['r', 'k'],
                      marker = 'o',
+                     xlabel = 'X (m)',
+                     ylabel = 'Y (m)',
                      figsize = (6.4, 4.8),
                      constrained_layout = True,
                      show_mesh = True,
@@ -235,6 +237,10 @@ def plot_model_nodes(md,
         ]
         ax.legend(handles = legend_elements, **default_legend_args)
 
+    ## Add axis labels
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+
     ## Return
     if not ax_defined:
         return fig, ax
@@ -247,6 +253,8 @@ def plot_model_elements(md,
                         type = 'ice_elements',
                         ax = None,
                         color = 'blue',
+                        xlabel = 'X (m)',
+                        ylabel = 'Y (m)',
                         figsize = (6.4, 4.8),
                         constrained_layout = True,
                         show_mesh = True,
@@ -364,6 +372,10 @@ def plot_model_elements(md,
             matplotlib.patches.Patch(color = color, label = labels_dict[type]),
         ]
         ax.legend(handles = legend_elements, **default_legend_args)
+
+    ## Add axis labels
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
 
     ## Return
     if not ax_defined:
@@ -535,6 +547,8 @@ def plot_model_bc(md,
                   type = 'stressbalance',
                   ax = None,
                   scale = 10,
+                  xlabel = 'X (m)',
+                  ylabel = 'Y (m)',
                   figsize = (6.4, 4.8),
                   constrained_layout = True,
                   show_mesh = True,
@@ -728,6 +742,10 @@ def plot_model_bc(md,
         ice_front = matplotlib.patches.Patch(color = 'blue', label ='Neumann (ice-front)')
         ax.legend(handles=[ice_front] + ax.get_legend_handles_labels()[0], **default_legend_args)
 
+    ## Add axis labels
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+
     ## Return
     if not ax_defined:
         return fig, ax
@@ -739,6 +757,7 @@ def plot_model_ts(md,
                   variable_list = None,
                   unit_list = None,
                   time = (0, np.inf),
+                  xlabel = 'Time (years)',
                   figsize = (6.4, 4.8),
                   fontsize = 8,
                   color = 'black',
@@ -859,6 +878,6 @@ def plot_model_ts(md,
             ax.grid(alpha = 0.4)
 
     # Add a common x-label for the last subplot
-    axs[-1].set_xlabel('Year', fontsize = fontsize)
+    axs[-1].set_xlabel(xlabel, fontsize = fontsize)
 
     return fig, axs
