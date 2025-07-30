@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 ## --------------------------------------------------------
 ## mesh.mesh2d
@@ -133,6 +134,37 @@ class mesh2d(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - mesh.mesh2d Class'
         return s
+    
+    # Marshall method for saving the mesh parameters
+    def marshall_class(self, prefix, md, fid):
+        """
+        Marshall the mesh parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+
+        Returns
+        -------
+        None
+        """
+        execute.WriteData(fid, prefix, name = 'md.mesh.domain_type', data = 'Domain2Dhorizontal', format = 'String')
+        execute.WriteData(fid, prefix, name = 'md.mesh.domain_dimension', data = 2, format = 'Integer')
+        execute.WriteData(fid, prefix, name = 'md.mesh.elementtype', data = 'Tria', format = 'String')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'x', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'y', format = 'DoubleMat', mattype = 1 )
+        execute.WriteData(fid, prefix, name = 'md.mesh.z', data = np.zeros(self.numberofvertices), format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'elements', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'numberofelements', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'numberofvertices', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'average_vertex_connectivity', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'vertexonboundary', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'segments', format = 'DoubleMat', mattype = 3)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'scale_factor', format = 'DoubleMat', mattype = 1)
+        if md.transient.isoceancoupling:
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'lat', format = 'DoubleMat', mattype = 1)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'long', format = 'DoubleMat', mattype = 1)
 
 ## --------------------------------------------------------
 ## mesh.mesh2dvertical

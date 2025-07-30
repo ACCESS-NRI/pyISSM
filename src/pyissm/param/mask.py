@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class mask(class_registry.manage_state):
@@ -59,3 +60,22 @@ class mask(class_registry.manage_state):
         s = 'ISSM - mask Class'
         return s
 
+    # Marshall method for saving the mask parameters
+    def marshall_class(self, prefix, md, fid):
+        """
+        Marshall the mask parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write each field to the file (all fields are of the same type/format)
+        fieldnames = list(self.__dict__.keys())
+        for fieldname in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)

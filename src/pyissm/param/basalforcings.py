@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 ## ------------------------------------------------------
 ## basalforcings.default
@@ -69,6 +70,33 @@ class default(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - basalforcings.default Class'
         return s
+    
+
+    # Marshall method for saving the basalforcing parameters
+    def marshall_class(self, prefix, md, fid):
+        """
+        Marshall the basalforcing parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+
+        Returns
+        -------
+        None
+        """
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.basalforcings.model', data = 1, format = 'Integer')
+
+        ## Write scaled fields
+        fieldnames = ['groundedice_melting_rate', 'floatingice_melting_rate', 'perturbation_melting_rate']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+
+        ## Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'geothermalflux', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
 ## ------------------------------------------------------
 ## basalforcings.pico

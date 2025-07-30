@@ -47,3 +47,4 @@ from .surfaceload import surfaceload
 from .thermal import thermal
 from .timestepping import default, adaptive
 from .transient import transient
+from .verbose import verbose

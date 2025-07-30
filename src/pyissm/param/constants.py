@@ -1,5 +1,6 @@
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class constants(class_registry.manage_state):
@@ -69,4 +70,24 @@ class constants(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - constants Class'
         return s
+
+    # Marshall method for saving the constants parameters
+    def marshall_class(self, prefix, md, fid):
+        """
+        Marshall the constants parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+
+        Returns
+        -------
+        None
+        """
+        
+        ## Write each field to the file (all fields are of the same type/format)
+        fieldnames = list(self.__dict__.keys())
+        for fieldname in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'Double')
 

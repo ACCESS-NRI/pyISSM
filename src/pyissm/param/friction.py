@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 ## ------------------------------------------------------
 ## friction.default
@@ -80,6 +81,46 @@ class default(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - friction.default Class'
         return s
+
+
+    # Marshall method for saving the friction parameters
+    def marshall_class(self, prefix, md, fid):
+        """
+        Marshall the friction parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write headers to file
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, data = 1, name = 'md.friction.law', format = 'Integer')
+
+        ## Write coefficient field
+        if isinstance(self.coefficient, np.ndarray) and ((self.coefficient.shape[0] == md.mesh.numberofvertices) or self.coefficient.shape[0] == md.mesh.numberofvertices + 1):
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'coefficient', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        elif isinstance(self.coefficient, np.ndarray) and ((self.coefficient.shape[0] == md.mesh.numberofelements) or (self.coefficient.shape[0] == md.mesh.numberofelements + 1)):
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'coefficient', format = 'DoubleMat', mattype = 2, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
+        else:
+            raise RuntimeError('friction coefficient time series should be a vertex or element time series')
+        
+        ## Write other fields with specific formats
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'p', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'q', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'coupling', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'linearize', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure_limit', format = 'Double')
+        
+        ## Write conditional effective pressure
+        if (self.coupling == 3) or (self.coupling == 4):
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        
 
 ## ------------------------------------------------------
 ## friction.coulomb

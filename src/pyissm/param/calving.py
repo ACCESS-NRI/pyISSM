@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 ## ------------------------------------------------------
 ## calving.default
@@ -56,6 +57,26 @@ class default(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - calving.default Class'
         return s
+
+    # Marshall method for saving the calving parameters
+    def marshall_class(self, prefix, md, fid):
+        """
+        Marshall the calving parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+
+        Returns
+        -------
+        None
+        """
+        ## Write header
+        execute.WriteData(fid, prefix, name = 'md.calving.law', data = 1, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'calvingrate', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts, scale = 1. / md.constants.yts)
 
 ## ------------------------------------------------------
 ## calving.crevassedepth
