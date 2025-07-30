@@ -3,6 +3,7 @@ from . import param_utils
 from . import class_registry
 from . import rotational
 from . import lovenumbers
+from .. import execute
 
 ## ------------------------------------------------------
 ## solidearth.earth
@@ -110,6 +111,25 @@ class earth(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - solidearth.earth Class'
         return s
+
+    # Marshall method for saving the earth parameters
+    def marshall_class(self, prefix, md, fid):
+        """
+        Marshall the earth parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+
+        Returns
+        -------
+        None
+        """
+        self.settings.marshall_class(prefix, md, fid)
+
+        ## TODO: Marshall requested outputs and add all other fields
+
 
 ## ------------------------------------------------------
 ## solidearth.europa
@@ -357,6 +377,39 @@ class settings(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - solidearth.settings Class'
         return s
+
+    
+   # Marshall method for saving the settings parameters
+    def marshall_class(self, prefix, md, fid):
+        """
+        Marshall the settings parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+
+        Returns
+        -------
+        None
+        """
+        ## Write Double fields
+        fieldnames = ['reltol', 'abstol', 'degacc']
+        for fieldname in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'Double', name = 'md.solidearth.settings.' + fieldname)
+
+        ## Write Integer fields
+        fieldnames = ['maxiter', 'runfrequency', 'horiz', 'sealevelloading', 'isgrd', 'compute_bp_grd', 'grdmodel', 'cross_section_shape']
+        for fieldname in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'Integer', name = 'md.solidearth.settings.' + fieldname)
+        ## Write Boolean fields
+        fieldnames = ['selfattraction', 'elastic', 'viscous', 'rotation', 'grdocean', 'ocean_area_scaling']
+        for fieldname in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'Boolean', name = 'md.solidearth.settings.' + fieldname)
+        
+        ## Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'timeacc', format = 'Double', name = 'md.solidearth.settings.timeacc', scale = md.constants.yts)
+
 
 ## ------------------------------------------------------
 ## solidearth.solution

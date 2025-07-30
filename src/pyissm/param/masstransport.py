@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class masstransport(class_registry.manage_state):
@@ -82,4 +83,28 @@ class masstransport(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - masstransport Class'
         return s
+    
+    # Marshall method for saving the masstransport parameters
+    def marshall_class(self, prefix, md, fid):
+        """
+        Marshall the masstransport parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+
+        Returns
+        -------
+        None
+        """
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'spcthickness', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'isfreesurface', format = 'Boolean')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'min_thickness', format = 'Double')
+        execute.WriteData(fid, prefix, name = 'md.masstransport.hydrostatic_adjustment', data = self.hydrostatic_adjustment, format = 'String')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'stabilization', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'vertex_pairing', format = 'DoubleMat', mattype = 3)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'penalty_factor', format = 'Double')
+
+        ## TODO: Implement marshalling logic for requested_outputs
 

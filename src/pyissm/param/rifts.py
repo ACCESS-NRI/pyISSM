@@ -1,5 +1,7 @@
 from . import param_utils
 from . import class_registry
+import numpy as np
+from .. import execute
 
 @class_registry.register_class
 class rifts(class_registry.manage_state):
@@ -59,3 +61,20 @@ class rifts(class_registry.manage_state):
         s = 'ISSM - rifts Class'
         return s
 
+    # Marshall method for saving the rifts parameters
+    def marshall_class(self, prefix, md, fid):
+        """
+        Marshall the rifts parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+
+        Returns
+        -------
+        None
+        """
+        # TODO: Implement marshalling logic for riftstruct and riftproperties. Set to 0 for now to pass errors at runtime.
+        execute.WriteData(fid, prefix, name = 'md.rifts.numrifts', data = 0, format = 'Integer')
+        execute.WriteData(fid, prefix, name = 'md.rifts.riftstruct', data = np.zeros((0, 12)), format = 'DoubleMat', mattype = 3)

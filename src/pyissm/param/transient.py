@@ -1,5 +1,6 @@
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class transient(class_registry.manage_state):
@@ -124,3 +125,32 @@ class transient(class_registry.manage_state):
         s = 'ISSM - transient Class'
         return s
 
+    # Marshall method for saving the transient parameters
+    def marshall_class(self, prefix, md, fid):
+        """
+        Marshall the transient parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write Boolean fields
+        fieldnames = ['isage', 'issmb', 'ismasstransport', 'ismmemasstransport',
+            'isoceantransport', 'isstressbalance', 'isthermal',
+            'isgroundingline', 'isesa', 'isdamageevolution',
+            'ismovingfront', 'ishydrology', 'isdebris',
+            'issampling', 'isslc']
+        for fieldname in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'Boolean')
+        
+        ## Write Integer fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'isoceancoupling', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'amr_frequency', format = 'Integer')
+
+        ## TODO: Implement marshalling logic for requested_outputs

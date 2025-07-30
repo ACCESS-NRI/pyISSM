@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class stochasticforcing(class_registry.manage_state):
@@ -97,3 +98,19 @@ class stochasticforcing(class_registry.manage_state):
         s = 'ISSM - stochasticforcing Class'
         return s
 
+    # Marshall method for saving the stochasticforcing parameters
+    def marshall_class(self, prefix, md, fid):
+        """
+        Marshall the stochasticforcing parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+
+        Returns
+        -------
+        None
+        """
+        ## Write placeholder field
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'isstochasticforcing', format = 'Boolean')

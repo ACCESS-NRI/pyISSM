@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class stressbalance(class_registry.manage_state):
@@ -155,3 +156,54 @@ class stressbalance(class_registry.manage_state):
         s = 'ISSM - stressbalance Class'
         return s
 
+
+    # Marshall method for saving the stressbalance parameters
+    def marshall_class(self, prefix, md, fid):
+        """
+        Marshall the stressbalance parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+
+        Returns
+        -------
+        None
+        """
+
+        # White DoubleMat fields (mattype = 1)
+        fieldnames = ['spcvx', 'spcvy', 'spcvz']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+
+        # Write Double fields
+        fieldnames = ['restol', 'reltol', 'FSreconditioning', 'penalty_factor']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+
+        # Write Integer fields
+        fieldnames = ['isnewton', 'maxiter', 'shelf_dampening', 'rift_penalty_lock', 'rift_penalty_threshold']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+
+        # Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'abstol', format = 'Double', scale = 1. / md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'ishydrologylayer', format = 'Boolean')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'referential', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'vertex_pairing', format = 'DoubleMat', mattype = 3)
+
+        ## Write conditional fields (loading force and MOLHO)
+        # Loading force
+        if isinstance(self.loadingforce, (list, tuple, np.ndarray)) and np.size(self.loadingforce, 1) == 3:
+            execute.WriteData(fid, prefix, name = 'md.stressbalance.loadingforcex', data = self.loadingforce[:, 0], format = 'DoubleMat', mattype = 1)
+            execute.WriteData(fid, prefix, name = 'md.stressbalance.loadingforcey', data = self.loadingforce[:, 1], format = 'DoubleMat', mattype = 1)
+            execute.WriteData(fid, prefix, name = 'md.stressbalance.loadingforcez', data = self.loadingforce[:, 2], format = 'DoubleMat', mattype = 1)
+        
+        # MOLHO
+        if md.flowequation.isMOLHO:
+            fieldnames = ['spcvx_base', 'spcvy_base', 'spcvx_shear', 'spcvy_shear']
+            for field in fieldnames:
+                execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+
+        ## TODO: Write requested outputs

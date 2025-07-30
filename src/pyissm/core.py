@@ -106,9 +106,7 @@ class Model():
         Stochasticity applied to model forcings.
     """
 
-    def __init__(self, args=None):
-
-        self.args = args
+    def __init__(self):
 
         ## Initialise all as None
         self.mesh = param.mesh.mesh2d()
@@ -127,7 +125,7 @@ class Model():
         self.dsl = param.dsl.default()
         self.solidearth = param.solidearth.earth()
         self.debug = param.debug()
-        self.verbose = None
+        self.verbose = param.verbose()
         self.settings = param.issmsettings()
         self.toolkits = None
         self.cluster = None
