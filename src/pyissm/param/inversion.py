@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 ## ------------------------------------------------------
 ## inversion.default
@@ -131,6 +132,26 @@ class default(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - inversion.default Class'
         return s
+    
+    # Marshall method for saving the inversion parameters
+    def marshall_class(self, prefix, md, fid):
+        """
+        Marshall the inversion parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+
+        Returns
+        -------
+        None
+        """
+        ## Write header
+        execute.WriteData(fid, prefix, name = 'md.inversion.type', data = 0, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'iscontrol', format = 'Boolean')
 
 ## ------------------------------------------------------
 ## inversion.m1qn3

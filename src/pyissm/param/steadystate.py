@@ -1,5 +1,6 @@
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class steadystate(class_registry.manage_state):
@@ -63,4 +64,24 @@ class steadystate(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - steadystate Class'
         return s
+    
+    # Marshall method for saving the earth parameters
+    def marshall_class(self, prefix, md, fid):
+        """
+        Marshall the earth parameters to a binary file.
 
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write each field to the file
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'reltol', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'maxiter', format = 'Integer')
+
+        ## TODO: Marshall requested_outputs

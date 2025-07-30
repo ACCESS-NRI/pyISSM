@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 ## ------------------------------------------------------
 ## smb.default
@@ -70,6 +71,31 @@ class default(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - smb.default Class'
         return s
+    
+    # Marshall method for saving the smb parameters
+    def marshall_class(self, prefix, md, fid):
+        """
+        Marshall the smb parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+
+        Returns
+        -------
+        None
+        """
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 1, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'mass_balance', format = 'DoubleMat', scale = 1. / md.constants.yts, mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+
+        ## TODO: Write requested outputs
 
 ## ------------------------------------------------------
 ## smb.arma

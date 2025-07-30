@@ -2,6 +2,7 @@ import numpy as np
 import collections
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 ## ------------------------------------------------------
 ## qmu.default
@@ -53,6 +54,24 @@ class default(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - qmu.default Class'
         return s
+
+    # Marshall method for saving the qmu parameters
+    def marshall_class(self, prefix, md, fid):
+        """
+        Marshall the qmu parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Fields to fils
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'isdakota', format = 'Boolean')
 
 ## ------------------------------------------------------
 ## qmu.statistics

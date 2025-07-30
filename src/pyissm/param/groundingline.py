@@ -1,5 +1,6 @@
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class groundingline(class_registry.manage_state):
@@ -72,3 +73,26 @@ class groundingline(class_registry.manage_state):
         s = 'ISSM - groundingline Class'
         return s
 
+    # Marshall method for saving the groundingline parameters
+    def marshall_class(self, prefix, md, fid):
+        """
+        Marshall the groundingline parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+
+        Returns
+        -------
+        None
+        """
+        ## Write String fields
+        fieldnames = ['migration', 'friction_interpolation', 'melt_interpolation']
+        for fieldname in fieldnames:
+            execute.WriteData(fid, prefix, name = 'md.groundingline.' + fieldname, data = getattr(self, fieldname), format = 'String')
+        
+        ## Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'intrusion_distance', format = 'Double')
+
+        ## TODO: Marshall requested outputs and add all other fields

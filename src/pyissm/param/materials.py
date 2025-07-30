@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 ## ------------------------------------------------------
 ## materials.ice
@@ -116,6 +117,39 @@ class ice(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - materials.ice Class'
         return s
+    
+    # Marshall method for saving the mask parameters
+    def marshall_class(self, prefix, md, fid):
+        """
+        Marshall the mask parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write headers to file
+        # NOTE: data types must match the expected types in the ISSM code. These come from naturetointeger in $ISSM_DIR/src/m/materials.py
+        execute.WriteData(fid, prefix, data = 3, name = 'md.materials.nature', format = 'IntMat', mattype = 3)
+        execute.WriteData(fid, prefix, data = 5, name = 'md.materials.type', format = 'Integer')
+
+        ## Write all 'Double' fields to file
+        fieldnames = ['rho_ice', 'rho_water', 'rho_freshwater', 'mu_water', 'heatcapacity',
+                      'latentheat', 'thermalconductivity', 'temperateiceconductivity', 'meltingpoint', 'beta',
+                      'mixed_layer_capacity', 'thermal_exchange_velocity', 'earth_density']
+        for fieldname in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'Double')
+
+        ## Write all other fields to file
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'effectiveconductivity_averaging', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_B', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_n', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, data = self.rheology_law, name = 'md.materials.rheology_law', format = 'String')
 
 ## ------------------------------------------------------
 ## materials.hydro

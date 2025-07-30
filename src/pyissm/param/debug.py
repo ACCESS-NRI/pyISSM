@@ -1,5 +1,6 @@
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class debug(class_registry.manage_state):
@@ -62,4 +63,21 @@ class debug(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - debug Class'
         return s
+    
+    # Marshall method for saving the debug parameters
+    def marshall_class(self, prefix, md, fid):
+        """
+        Marshall the debug parameters to a binary file.
 
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write single field to file
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'profiling', format = 'Boolean')
