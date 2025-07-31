@@ -207,3 +207,4 @@ class stressbalance(class_registry.manage_state):
                 execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
         ## TODO: Write requested outputs
+        execute.WriteData(fid, prefix, name = 'md.stressbalance.requested_outputs', data = self.requested_outputs, format = 'StringArray')

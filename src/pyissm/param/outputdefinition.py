@@ -1,5 +1,6 @@
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class outputdefinition(class_registry.manage_state):
@@ -54,3 +55,21 @@ class outputdefinition(class_registry.manage_state):
         s = 'ISSM - outputdefinition Class'
         return s
 
+    # Marshall method for saving the outputdefinition parameters
+    def marshall_class(self, prefix, md, fid):
+        """
+        Marshall the outputdefinition parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+
+        Returns
+        -------
+        None
+        """
+        ## TODO: Iteratre through definitions and write them individually
+        ## For now, just write the definitions list as a string array
+        data = []
+        execute.WriteData(fid, prefix, name = 'md.outputdefinition.list', data = data, format = 'StringArray')

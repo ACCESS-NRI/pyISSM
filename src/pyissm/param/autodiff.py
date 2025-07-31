@@ -124,4 +124,7 @@ class autodiff(class_registry.manage_state):
         -------
         None
         """
+
+        ## Temporary fix for output (turn off for now)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'isautodiff', format = 'Boolean')
+        execute.WriteData(fid, prefix, data = False, name = 'md.autodiff.mass_flux_segments_present', format = 'Boolean')

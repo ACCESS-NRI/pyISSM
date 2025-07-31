@@ -35,7 +35,7 @@ class default(class_registry.manage_state):
         self.responsepartitions_nt = 'List of response partitions (nt)'
         self.mass_flux_profile_directory = np.nan
         self.mass_flux_profiles = np.nan
-        self.mass_flux_segments = 'List of mass flux segments'
+        self.mass_flux_segments = [] # List of mass flux segments
         self.adjacency = np.nan
         self.vertex_weight = np.nan
 
@@ -72,6 +72,9 @@ class default(class_registry.manage_state):
 
         ## Fields to fils
         execute.WriteData(fid, prefix, obj = self, fieldname = 'isdakota', format = 'Boolean')
+
+        ## Temporary fix for output (turn off for now)
+        execute.WriteData(fid, prefix, data = False, name = 'md.qmu.mass_flux_segments_present', format = 'Boolean')
 
 ## ------------------------------------------------------
 ## qmu.statistics

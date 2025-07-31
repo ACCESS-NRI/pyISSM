@@ -154,3 +154,4 @@ class transient(class_registry.manage_state):
         execute.WriteData(fid, prefix, obj = self, fieldname = 'amr_frequency', format = 'Integer')
 
         ## TODO: Implement marshalling logic for requested_outputs
+        execute.WriteData(fid, prefix, name = 'md.transient.requested_outputs', data = self.requested_outputs, format = 'StringArray')
