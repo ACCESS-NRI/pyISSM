@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 ## ------------------------------------------------------
 ## hydrology.armapw
@@ -663,6 +664,32 @@ class shreve(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - hydrology.shreve Class'
         return s
+    
+        
+    # Marshall method for saving the hydrology parameters
+    def marshall_class(self, prefix, md, fid):
+        """
+        Marshall the hydrology parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write the header
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.hydrology.model', data = 2, format = 'Integer')
+
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'spcwatercolumn', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'stabilization', format = 'Double')
+
+        ## TODO: Implement marshalling logic for requested_outputs
+        execute.WriteData(fid, prefix, name = 'md.hydrology.requested_outputs', data = self.requested_outputs, format = 'StringArray')
 
 ## ------------------------------------------------------
 ## hydrology.tws

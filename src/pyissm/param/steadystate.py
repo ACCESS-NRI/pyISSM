@@ -84,4 +84,7 @@ class steadystate(class_registry.manage_state):
         execute.WriteData(fid, prefix, obj = self, fieldname = 'reltol', format = 'Double')
         execute.WriteData(fid, prefix, obj = self, fieldname = 'maxiter', format = 'Integer')
 
-        ## TODO: Marshall requested_outputs
+        ## TODO: Implement marshalling logic for requested_outputs
+        execute.WriteData(fid, prefix, name = 'md.steadystate.requested_outputs', data = self.requested_outputs, format = 'StringArray')
+
+
