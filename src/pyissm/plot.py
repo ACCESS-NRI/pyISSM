@@ -20,7 +20,7 @@ def plot_mesh2d(mesh,
                 figsize = (6.4, 4.8),
                 constrained_layout = True,
                 show_nodes = False,
-                node_args = {},
+                node_kwargs = {},
                 **kwargs):
     """
     Plot a 2D triangular mesh using matplotlib.
@@ -46,7 +46,7 @@ def plot_mesh2d(mesh,
         Whether to use constrained layout when creating a new figure. Default is 'True'.
     show_nodes : bool, optional
         If True, overlay nodes on the mesh using ax.scatter(). Default is 'False'.
-    node_args : dict, optional
+    node_kwargs : dict, optional
         Keyword arguments passed to ax.scatter() for node display. Defaults to
         {'marker': '.', 'color': 'k', 's': 5}.
     **kwargs
@@ -64,18 +64,18 @@ def plot_mesh2d(mesh,
     fig, ax = plot_mesh2d(mesh, color = 'blue', linewidth = 0.5)
     fig, (ax1, ax2) = plt.subplots(1, 2)
     ax1 = plot_mesh2d(mesh, ax = ax1)
-    ax2 = plot_mesh2d(mesh, ax = ax2, show_nodes = True, node_args = {'color': 'red'})
+    ax2 = plot_mesh2d(mesh, ax = ax2, show_nodes = True, node_kwargs = {'color': 'red'})
     """
 
     ## Is an ax passed?
     ax_defined = ax is not None
 
-    ## Define default node argus and update node_args with passed arguments
-    default_node_args = {'marker': '.',
+    ## Define default node kwargs and update node_kwargs with passed arguments
+    default_node_kwargs = {'marker': '.',
                          'color': 'k',
                          's': 5,
                          'zorder': 3}
-    default_node_args.update(**node_args)
+    default_node_kwargs.update(**node_kwargs)
 
 
     ## If no ax is defined, create new figure
@@ -94,7 +94,7 @@ def plot_mesh2d(mesh,
 
     ## Add optional nodes
     if show_nodes:
-        ax.scatter(mesh.x, mesh.y, **default_node_args)
+        ax.scatter(mesh.x, mesh.y, **default_node_kwargs)
 
     ## Add axis labels
     ax.set_xlabel(xlabel)
@@ -121,9 +121,9 @@ def plot_model_nodes(md,
                      figsize = (6.4, 4.8),
                      constrained_layout = True,
                      show_mesh = True,
-                     mesh_args = {},
+                     mesh_kwargs = {},
                      show_legend = True,
-                     legend_args = {}):
+                     legend_kwargs = {}):
 
     """
     Plot model nodes by type (ice, ice-front, ocean, floating, grounded) on a 2D mesh.
@@ -157,11 +157,11 @@ def plot_model_nodes(md,
         Whether to use constrained layout in figure. Default is True.
     show_mesh : bool, optional
         Whether to overlay the triangular mesh. Default is True.
-    mesh_args : dict, optional
+    mesh_kwargs : dict, optional
         Additional keyword arguments passed to plot_mesh2d() for customizing mesh appearance.
     show_legend : bool, optional
         Whether to display a legend identifying node types. Default is True.
-    legend_args : dict, optional
+    legend_kwargs : dict, optional
         Additional keyword arguments passed to ax.legend().
 
     Returns
@@ -174,19 +174,19 @@ def plot_model_nodes(md,
     -------
     fig, ax = plot_model_nodes(md, md.mask.ice_levelset, md.mask.ocean_levelset)
     fig, ax = plot_model_nodes(md, md.mask.ice_levelset, md.mask.ocean_levelset, show_mesh = False)
-    fig, ax = plot_model_nodes(md, md.mask.ice_levelset, md.mask.ocean_levelset, type = 'ice_front_nodes', mesh_args = {'linewidth': 0.5, 'color': 'cyan'})
+    fig, ax = plot_model_nodes(md, md.mask.ice_levelset, md.mask.ocean_levelset, type = 'ice_front_nodes', mesh_kwargs = {'linewidth': 0.5, 'color': 'cyan'})
     fig, ax = plot_model_nodes(md, md.mask.ice_levelset, md.mask.ocean_levelset, type = 'floating_ice_nodes', colors = ['blue', 'magenta'])
     """
 
     ## Set defaults
     ax_defined = ax is not None
 
-    default_mesh_args = {'alpha': 0.5}
-    default_mesh_args.update(**mesh_args)
+    default_mesh_kwargs = {'alpha': 0.5}
+    default_mesh_kwargs.update(**mesh_kwargs)
 
-    default_legend_args = {'title': 'Node types',
+    default_legend_kwargs = {'title': 'Node types',
                            'fontsize': 10}
-    default_legend_args.update(**legend_args)
+    default_legend_kwargs.update(**legend_kwargs)
 
     ## Define binary colormap
     cmap = matplotlib.colors.ListedColormap(colors)
@@ -219,7 +219,7 @@ def plot_model_nodes(md,
     if show_mesh:
         plot_mesh2d(mesh,
                     ax=ax,
-                    **default_mesh_args)
+                    **default_mesh_kwargs)
 
     ## Add legend
     if show_legend:
@@ -235,7 +235,7 @@ def plot_model_nodes(md,
             matplotlib.lines.Line2D([0], [0], marker = marker, linestyle = 'none', color = 'none', markerfacecolor = colors[1], markeredgecolor='none', label = labels_dict[type][0]),
             matplotlib.lines.Line2D([0], [0], marker = marker, linestyle = 'none', color = 'none', markerfacecolor = colors[0], markeredgecolor='none', label = labels_dict[type][1])
         ]
-        ax.legend(handles = legend_elements, **default_legend_args)
+        ax.legend(handles = legend_elements, **default_legend_kwargs)
 
     ## Add axis labels
     ax.set_xlabel(xlabel)
@@ -258,9 +258,9 @@ def plot_model_elements(md,
                         figsize = (6.4, 4.8),
                         constrained_layout = True,
                         show_mesh = True,
-                        mesh_args = {},
+                        mesh_kwargs = {},
                         show_legend = True,
-                        legend_args={}):
+                        legend_kwargs={}):
 
     """
     Plot model elements by type (ice, ice-front, ocean, floating, grounded, grounding line) on a 2D mesh.
@@ -291,11 +291,11 @@ def plot_model_elements(md,
         Whether to use constrained layout in figure. Default is True.
     show_mesh : bool, optional
         Whether to overlay the triangular mesh. Default is True.
-    mesh_args : dict, optional
+    mesh_kwargs : dict, optional
         Additional keyword arguments passed to plot_mesh2d() for customizing mesh appearance.
     show_legend : bool, optional
         Whether to display a legend identifying node types. Default is True.
-    legend_args : dict, optional
+    legend_kwargs : dict, optional
         Additional keyword arguments passed to ax.legend().
 
     Returns
@@ -308,20 +308,20 @@ def plot_model_elements(md,
     -------
     fig, ax = plot_model_elements(md, md.mask.ice_levelset, md.mask.ocean_levelset)
     fig, ax = plot_model_elements(md, md.mask.ice_levelset, md.mask.ocean_levelset, show_mesh = False)
-    fig, ax = plot_model_elements(md, md.mask.ice_levelset, md.mask.ocean_levelset, type = 'ice_front_elements', mesh_args = {'linewidth': 0.5, 'color': 'cyan'})
+    fig, ax = plot_model_elements(md, md.mask.ice_levelset, md.mask.ocean_levelset, type = 'ice_front_elements', mesh_kwargs = {'linewidth': 0.5, 'color': 'cyan'})
     fig, ax = plot_model_elements(md, md.mask.ice_levelset, md.mask.ocean_levelset, type = 'floating_ice_elements', color = 'red')
     """
 
     ## Set defaults
     ax_defined = ax is not None
 
-    default_mesh_args = {'alpha': 0.5}
-    default_mesh_args.update(**mesh_args)
+    default_mesh_kwargs = {'alpha': 0.5}
+    default_mesh_kwargs.update(**mesh_kwargs)
 
-    default_legend_args = {'title': 'Element type',
+    default_legend_kwargs = {'title': 'Element type',
                            'fontsize': 10,
                            'loc': 'upper right'}
-    default_legend_args.update(**legend_args)
+    default_legend_kwargs.update(**legend_kwargs)
 
     ## Process model mesh
     mesh, mesh_x, mesh_y, mesh_elements, is3d = model.mesh.process_mesh(md)
@@ -356,7 +356,7 @@ def plot_model_elements(md,
 
     ## Add mesh (optional) with specific arguments
     if show_mesh:
-        plot_mesh2d(mesh, ax = ax, **default_mesh_args)
+        plot_mesh2d(mesh, ax = ax, **default_mesh_kwargs)
 
     ## Add legend
     if show_legend:
@@ -371,7 +371,7 @@ def plot_model_elements(md,
         legend_elements = [
             matplotlib.patches.Patch(color = color, label = labels_dict[type]),
         ]
-        ax.legend(handles = legend_elements, **default_legend_args)
+        ax.legend(handles = legend_elements, **default_legend_kwargs)
 
     ## Add axis labels
     ax.set_xlabel(xlabel)
@@ -397,8 +397,8 @@ def plot_model_field(md,
                      constrained_layout = True,
                      show_mesh = False,
                      show_cbar = False,
-                     mesh_args = {},
-                     cbar_args = {},
+                     mesh_kwargs = {},
+                     cbar_kwargs = {},
                      **kwargs):
 
     """
@@ -439,9 +439,9 @@ def plot_model_field(md,
         If True, overlays the 2D mesh lines on the plot. Default is 'False'.
     show_cbar : bool, optional
         If True, adds a colorbar to the plot. Default is 'False'.
-    mesh_args : dict, optional
+    mesh_kwargs : dict, optional
         Keyword arguments passed to the mesh plotting function 'plot_mesh2d()'.
-    cbar_args : dict, optional
+    cbar_kwargs : dict, optional
         Keyword arguments passed to 'fig.colorbar'.
     **kwargs : dict, optional
         Additional keyword arguments passed to 'ax.tripcolor'.
@@ -515,10 +515,10 @@ def plot_model_field(md,
     if plot_data_on == 'elements':
         shading = 'flat'
 
-    ## If no ax is defined, create new figure (with fig_kwargs, if provided)
+    ## If no ax is defined, create new figure
     ## otherwise, plot on defined ax
     if ax is None:
-        fig, ax = plt.subplots(figsize=figsize, constrained_layout = constrained_layout)
+        fig, ax = plt.subplots(figsize = figsize, constrained_layout = constrained_layout)
     else:
         fig = ax.get_figure()
 
@@ -527,11 +527,11 @@ def plot_model_field(md,
 
     ## Add optional mesh
     if show_mesh:
-        plot_mesh2d(mesh, ax = ax, **mesh_args)
+        plot_mesh2d(mesh, ax = ax, **mesh_kwargs)
 
     ## Add optional colorbar
     if show_cbar:
-        fig.colorbar(trip, ax = ax, **cbar_args)
+        fig.colorbar(trip, ax = ax, **cbar_kwargs)
 
     ## Assign x/y labels
     ax.set_xlabel(xlabel)
@@ -552,9 +552,9 @@ def plot_model_bc(md,
                   figsize = (6.4, 4.8),
                   constrained_layout = True,
                   show_mesh = True,
-                  mesh_args = {},
+                  mesh_kwargs = {},
                   show_legend = True,
-                  legend_args = {}):
+                  legend_kwargs = {}):
     """
     Plot Dirichlet and Neumann boundary conditions from an ISSM model.
 
@@ -583,12 +583,12 @@ def plot_model_bc(md,
         Whether to use constrained layout for figure spacing. Default is True.
     show_mesh : bool, optional
         Whether to display the model mesh beneath boundary markers. Default is True.
-    mesh_args : dict, optional
+    mesh_kwargs : dict, optional
         Additional keyword arguments passed to the mesh plotting function.
         Overrides default {'alpha': 0.5}.
     show_legend : bool, optional
         Whether to display a legend showing boundary condition types. Default is True.
-    legend_args : dict, optional
+    legend_kwargs : dict, optional
         Additional keyword arguments passed to `ax.legend()`. Overrides default
         {'title': 'Boundary condition', 'fontsize': 10, 'loc': 'upper right'}.
 
@@ -610,7 +610,7 @@ def plot_model_bc(md,
     --------
     fig, ax = plot_model_bc(md)
     fig, ax = plot_model_bc(md, scale = 1)
-    fig, ax = plot_model_bc(md, type='thermal', mesh_args = {'color': 'grey'}, legend_args = {'title': 'Model BCs'})
+    fig, ax = plot_model_bc(md, type='thermal', mesh_kwargs = {'color': 'grey'}, legend_kwargs = {'title': 'Model BCs'})
 
     See Also
     --------
@@ -620,13 +620,13 @@ def plot_model_bc(md,
     ## Set defaults
     ax_defined = ax is not None
 
-    default_mesh_args = {'alpha': 0.5}
-    default_mesh_args.update(**mesh_args)
+    default_mesh_kwargs = {'alpha': 0.5}
+    default_mesh_kwargs.update(**mesh_kwargs)
 
-    default_legend_args = {'title': 'Boundary condition',
+    default_legend_kwargs = {'title': 'Boundary condition',
                            'fontsize': 10,
                            'loc': 'upper right'}
-    default_legend_args.update(**legend_args)
+    default_legend_kwargs.update(**legend_kwargs)
 
     ## Process model mesh
     mesh, mesh_x, mesh_y, mesh_elements, is3d = model.mesh.process_mesh(md)
@@ -713,7 +713,7 @@ def plot_model_bc(md,
                              type = 'ice_front_elements',
                              show_mesh = show_mesh,
                              show_legend = False,
-                             mesh_args = default_mesh_args)
+                             mesh_kwargs = default_mesh_kwargs)
 
     ## Add Dirichlet BCs
     for key, spc in spc_dict.items():
@@ -740,7 +740,7 @@ def plot_model_bc(md,
     ## Add optional legend (including manual entry for Neumann ice-front)
     if show_legend:
         ice_front = matplotlib.patches.Patch(color = 'blue', label ='Neumann (ice-front)')
-        ax.legend(handles=[ice_front] + ax.get_legend_handles_labels()[0], **default_legend_args)
+        ax.legend(handles=[ice_front] + ax.get_legend_handles_labels()[0], **default_legend_kwargs)
 
     ## Add axis labels
     ax.set_xlabel(xlabel)
