@@ -67,6 +67,8 @@ class mesh2d(class_registry.manage_state):
         Returns a detailed string representation of the mesh2d object.
     __str__(self)
         Returns a short string identifying the class.
+    domain_type(self)
+        Returns the domain type of the mesh.
 
     Examples
     --------
@@ -134,7 +136,11 @@ class mesh2d(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - mesh.mesh2d Class'
         return s
-    
+
+    # Define domain type
+    def domain_type(self):
+        return '2Dhorizontal'
+
     # Marshall method for saving the mesh parameters
     def marshall_class(self, prefix, md, fid):
         """
@@ -230,6 +236,8 @@ class mesh2dvertical(class_registry.manage_state):
         Returns a detailed string representation of the mesh2dvertical object.
     __str__(self)
         Returns a short string identifying the class.
+    domain_type(self)
+        Returns the domain type of the mesh.
 
     Examples
     --------
@@ -295,6 +303,10 @@ class mesh2dvertical(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - mesh.mesh2dvertical Class'
         return s
+
+    # Define domain type
+    def domain_type(self):
+        return '2Dvertical'
 
 ## --------------------------------------------------------
 ## mesh.mesh3dprisms
@@ -378,6 +390,8 @@ class mesh3dprisms(class_registry.manage_state):
         Returns a detailed string representation of the mesh3dprisms object.
     __str__(self)
         Returns a short string identifying the class.
+    domain_type(self)
+        Returns the domain type of the mesh.
 
     Examples
     --------
@@ -468,6 +482,9 @@ class mesh3dprisms(class_registry.manage_state):
         s = 'ISSM - mesh.mesh3dprisms Class'
         return s
 
+    # Define domain type
+    def domain_type(self):
+        return '3D'
 
 ## --------------------------------------------------------
 ## mesh.mesh3dsurface
@@ -533,6 +550,8 @@ class mesh3dsurface(class_registry.manage_state):
         Returns a detailed string representation of the mesh3dsurface object.
     __str__(self)
         Returns a short string identifying the class.
+    domain_type(self)
+        Returns the domain type of the mesh.
 
     Examples
     --------
@@ -599,3 +618,7 @@ class mesh3dsurface(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - mesh.mesh3dsurface Class'
         return s
+
+    # Define domain type
+    def domain_type(self):
+        return '3Dsurface'

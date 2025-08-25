@@ -33,6 +33,8 @@ class debug(class_registry.manage_state):
         Returns a detailed string representation of the debug parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -65,14 +67,18 @@ class debug(class_registry.manage_state):
         return s
     
     # Marshall method for saving the debug parameters
-    def marshall_class(self, prefix, md, fid):
+    def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall the debug parameters to a binary file.
+        Marshall [debug] parameters to a binary file.
 
         Parameters
         ----------
         fid : file object
             The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
 
         Returns
         -------

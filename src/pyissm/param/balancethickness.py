@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class balancethickness(class_registry.manage_state):
@@ -39,6 +40,8 @@ class balancethickness(class_registry.manage_state):
         Returns a detailed string representation of the balance thickness parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -73,3 +76,32 @@ class balancethickness(class_registry.manage_state):
         s = 'ISSM - balancethickness Class'
         return s
 
+    # Marshall method for saving the balancethickness parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [balancethickness] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write DoubleMat fields
+        fieldnames = ['spcthickness', 'omega', 'slopex', 'slopey']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
+
+        ## Write Integer fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'stabilization', format = 'Integer')
+
+        ## Write Scaled fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'thickening_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts)

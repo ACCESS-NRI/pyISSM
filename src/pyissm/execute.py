@@ -48,9 +48,9 @@ def marshall(md):
 
         # Marshall the model class
         try:
-            getattr(md, model_class).marshall_class(prefix = f'md.{model_class}',
-                                                    md = md, 
-                                                    fid = fid)
+            getattr(md, model_class).marshall_class(fid = fid,
+                                                    prefix = f'md.{model_class}',
+                                                    md = md)
         except Exception as e:
             raise RuntimeError(f"Error marshalling model class {model_class}: {e}")
         
