@@ -44,6 +44,8 @@ class default(class_registry.manage_state):
         Returns a detailed string representation of the friction parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -83,15 +85,19 @@ class default(class_registry.manage_state):
         return s
 
 
-    # Marshall method for saving the friction parameters
-    def marshall_class(self, prefix, md, fid):
+    # Marshall method for saving the friction.default parameters
+    def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall the friction parameters to a binary file.
+        Marshall [friction.default] parameters to a binary file.
 
         Parameters
         ----------
         fid : file object
             The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
 
         Returns
         -------
@@ -120,6 +126,8 @@ class default(class_registry.manage_state):
         ## Write conditional effective pressure
         if (self.coupling == 3) or (self.coupling == 4):
             execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        elif self.coupling > 4:
+            raise ValueError(f'md.friction.coupling = {self.coupling} is not implemented yet')
         
 
 ## ------------------------------------------------------
@@ -163,6 +171,8 @@ class coulomb(class_registry.manage_state):
         Returns a detailed string representation of the friction parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -200,6 +210,43 @@ class coulomb(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - friction.coulomb Class'
         return s
+    
+    # Marshall method for saving the friction.coulomb parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [friction.coulomb] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write headers to file
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.friction.law', data = 7, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'coefficient', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'coefficientcoulomb', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'p', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'q', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'coupling', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure_limit', format = 'Double')
+
+        ## Write conditional effective pressure
+        if self.coupling == 1:
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        elif self.coupling > 1:
+            raise ValueError(f'md.friction.coupling = {self.coupling} is not implemented yet')
 
 ## ------------------------------------------------------
 ## friction.coulomb2
@@ -242,6 +289,8 @@ class coulomb2(class_registry.manage_state):
         Returns a detailed string representation of the friction parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -279,6 +328,43 @@ class coulomb2(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - friction.coulomb2 Class'
         return s
+
+    # Marshall method for saving the friction.coulomb2 parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [friction.coulomb2] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write headers to file
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.friction.law', data = 7, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'coefficient', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'coefficientcoulomb', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'p', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'q', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'coupling', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure_limit', format = 'Double')
+
+        ## Write conditional effective pressure
+        if self.coupling == 1:
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        elif self.coupling > 1:
+            raise ValueError(f'md.friction.coupling = {self.coupling} is not implemented yet')
 
 ## ------------------------------------------------------
 ## friction.hydro
@@ -319,6 +405,8 @@ class hydro(class_registry.manage_state):
         Returns a detailed string representation of the friction parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -353,6 +441,42 @@ class hydro(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - friction.hydro Class'
         return s
+
+    # Marshall method for saving the friction.hydro parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [friction.hydro] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write headers to file
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.friction.law', data = 3, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'q', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'C', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'As', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'coupling', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure_limit', format = 'Double')
+
+        ## Write conditional effective pressure
+        if self.coupling in [3, 4]:
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        elif self.coupling > 4:
+            raise ValueError(f'md.friction.coupling = {self.coupling} is not implemented yet')
 
 ## ------------------------------------------------------
 ## friction.josh
@@ -389,6 +513,8 @@ class josh(class_registry.manage_state):
         Returns a detailed string representation of the friction parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -420,6 +546,35 @@ class josh(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - friction.josh Class'
         return s
+    
+    # Marshall method for saving the friction.josh parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [friction.josh] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write headers to file
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.friction.law', data = 9, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'coefficient', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'pressure_adjusted_temperature', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'gamma', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure_limit', format = 'Double')
 
 ## ------------------------------------------------------
 ## friction.pism
@@ -462,6 +617,8 @@ class pism(class_registry.manage_state):
         Returns a detailed string representation of the friction parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -498,6 +655,37 @@ class pism(class_registry.manage_state):
         s = 'ISSM - friction.pism Class'
         return s
 
+    # Marshall method for saving the friction.pism parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [friction.pism] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write headers to file
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.friction.law', data = 10, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'pseudoplasticity_exponent', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'threshold_speed', format = 'Double', scale = 1. / md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'delta', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'void_ratio', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'till_friction_angle', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'sediment_compressibility_coefficient', format = 'DoubleMat', mattype = 1)
+
 ## ------------------------------------------------------
 ## friction.regcoulomb
 ## ------------------------------------------------------
@@ -531,6 +719,8 @@ class regcoulomb(class_registry.manage_state):
         Returns a detailed string representation of the friction parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -565,6 +755,34 @@ class regcoulomb(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - friction.regcoulomb Class'
         return s
+    
+    # Marshall method for saving the friction.regcoulomb parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [friction.regcoulomb] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write headers to file
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.friction.law', data = 14, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'C', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'u0', format = 'Double', scale = 1. / md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'm', format = 'DoubleMat', mattype = 2)
 
 ## ------------------------------------------------------
 ## friction.regcoulomb2
@@ -601,6 +819,8 @@ class regcoulomb2(class_registry.manage_state):
         Returns a detailed string representation of the friction parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -637,6 +857,35 @@ class regcoulomb2(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - friction.regcoulomb2 Class'
         return s
+
+    # Marshall method for saving the friction.regcoulomb2 parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [friction.regcoulomb2] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write headers to file
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.friction.law', data = 15, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'C', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'K', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'm', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure_limit', format = 'Double')
 
 ## ------------------------------------------------------
 ## friction.schoof
@@ -677,6 +926,8 @@ class schoof(class_registry.manage_state):
         Returns a detailed string representation of the friction parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -717,6 +968,42 @@ class schoof(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - friction.schoof Class'
         return s
+    
+    # Marshall method for saving the friction.schoof parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [friction.schoof] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write headers to file
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.friction.law', data = 11, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'C', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'Cmax', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'm', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'coupling', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure_limit', format = 'Double')
+
+        ## Write conditional effective pressure
+        if self.coupling in [3, 4]:
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        elif self.coupling > 4:
+            raise ValueError(f'md.friction.coupling = {self.coupling} is not implemented yet')
 
 ## ------------------------------------------------------
 ## friction.shakti
@@ -747,6 +1034,8 @@ class shakti(class_registry.manage_state):
         Returns a detailed string representation of the friction parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -772,6 +1061,32 @@ class shakti(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - friction.shakti Class'
         return s
+    
+    # Marshall method for saving the friction.shakti parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [friction.shakti] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write headers to file
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.friction.law', data = 8, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'coefficient', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
 ## ------------------------------------------------------
 ## friction.waterlayer
@@ -810,6 +1125,8 @@ class waterlayer(class_registry.manage_state):
         Returns a detailed string representation of the friction parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -843,6 +1160,36 @@ class waterlayer(class_registry.manage_state):
         s = 'ISSM - friction.waterlayer Class'
         return s
 
+    # Marshall method for saving the friction.waterlayer parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [friction.waterlayer] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write headers to file
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.friction.law', data = 5, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'coefficient', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'f', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'p', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'q', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'water_layer', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        
 ## ------------------------------------------------------
 ## friction.weertman
 ## ------------------------------------------------------
@@ -876,6 +1223,8 @@ class weertman(class_registry.manage_state):
         Returns a detailed string representation of the friction parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -904,3 +1253,31 @@ class weertman(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - friction.weertman Class'
         return s
+
+    # Marshall method for saving the friction.weertman parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [friction.weertman] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write headers to file
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.friction.law', data = 2, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'C', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'm', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'linearize', format = 'Integer')

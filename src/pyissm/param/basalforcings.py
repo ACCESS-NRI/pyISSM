@@ -38,6 +38,8 @@ class default(class_registry.manage_state):
         Returns a detailed string representation of the basal forcings parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -72,20 +74,25 @@ class default(class_registry.manage_state):
         return s
     
 
-    # Marshall method for saving the basalforcing parameters
-    def marshall_class(self, prefix, md, fid):
+    # Marshall method for saving the basalforcings.default parameters
+    def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall the basalforcing parameters to a binary file.
+        Marshall [basalforcings.default] parameters to a binary file.
 
         Parameters
         ----------
         fid : file object
             The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
 
         Returns
         -------
         None
         """
+
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
         execute.WriteData(fid, prefix, name = 'md.basalforcings.model', data = 1, format = 'Integer')
@@ -145,6 +152,8 @@ class pico(class_registry.manage_state):
         Returns a detailed string representation of the PICO basal forcings parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -192,6 +201,49 @@ class pico(class_registry.manage_state):
         s = 'ISSM - basalforcings.pico Class'
         return s
 
+    # Marshall method for saving the basalforcings.pico parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [basalforcings.pico] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.basalforcings.model', data = 5, format = 'Integer')
+
+        ## Write Integer fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'num_basins', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'maxboxcount', format = 'Integer')
+
+        ## Write Boolean fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'isplume', format = 'Boolean')
+
+        ## Write DoubleMat fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'overturning_coeff', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'farocean_temperature', format = 'DoubleMat', timeserieslength = md.basalforcings.num_basins + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'farocean_salinity', format = 'DoubleMat', timeserieslength = md.basalforcings.num_basins + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'geothermalflux', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'groundedice_melting_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+
+        ## Write Double fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'gamma_T', format = 'Double')
+
+        ## Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'basin_id', data = self.basin_id - 1, format = 'IntMat', mattype = 2) # Change to 0-indexing
+
 ## ------------------------------------------------------
 ## basalforcings.linear
 ## ------------------------------------------------------
@@ -233,6 +285,8 @@ class linear(class_registry.manage_state):
         Returns a detailed string representation of the linear basal forcings parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -273,6 +327,38 @@ class linear(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - basalforcings.linear Class'
         return s
+
+    # Marshall method for saving the basalforcings.linear parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [basalforcings.linear] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.basalforcings.model', data = 2, format = 'Integer')
+
+        ## Write DoubleMat fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'perturbation_melting_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'groundedice_melting_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'geothermalflux', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'deepwater_melting_rate', format = 'DoubleMat', mattype = 3, timeserieslength = 2, scale = 1. / md.constants.yts, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'upperwater_melting_rate', format = 'DoubleMat', mattype = 3, timeserieslength = 2, scale = 1. / md.constants.yts, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'deepwater_elevation', format = 'DoubleMat', mattype = 3, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'upperwater_elevation', format = 'DoubleMat', mattype = 3, yts = md.constants.yts)
 
 ## ------------------------------------------------------
 ## basalforcings.lineararma
@@ -333,6 +419,8 @@ class lineararma(class_registry.manage_state):
         Returns a detailed string representation of the linear ARMA basal forcings parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -345,7 +433,7 @@ class lineararma(class_registry.manage_state):
         self.num_params = 0
         self.num_breaks = 0
         self.polynomialparams = np.nan
-        self.datebreaks       = np.nan
+        self.datebreaks = np.nan
         self.ar_order = 0.
         self.ma_order = 0.
         self.arma_timestep = 0
@@ -386,8 +474,90 @@ class lineararma(class_registry.manage_state):
 
     # Define class string
     def __str__(self):
-        s = 'ISSM - basalforcings.lineararmaClass'
+        s = 'ISSM - basalforcings.lineararma Class'
         return s
+    
+    # Marshall method for saving the basalforcings.lineararma parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [basalforcings.lineararma] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Scale parameters
+        ## NOTE: Scaling logic here taken from $ISSM_DIR/src/m/classes/linearbasalforcingsarma.py
+        polyParams_scaled = np.copy(md.basalforcings.polynomialparams)
+        polyParams_scaled_2d = np.zeros((md.basalforcings.num_basins, md.basalforcings.num_breaks + 1 * md.basalforcings.num_params))
+
+        if(md.basalforcings.num_params > 1):
+            # Case 3D
+            if(md.basalforcings.num_basins > 1 and md.basalforcings.num_breaks + 1 > 1):
+                for ii in range(md.basalforcings.num_params):
+                    polyParams_scaled[:, :, ii] = polyParams_scaled[:, :, ii] * (1. / md.constants.yts) ** (ii + 1)
+                ## Fit in 2D array
+                for ii in range(md.basalforcings.num_params):
+                    polyParams_scaled_2d[:, ii * (md.basalforcings.num_breaks + 1):(ii + 1) * (md.basalforcings.num_breaks + 1)] = 1 * polyParams_scaled[:, :, ii]
+            # Case 2D and higher-order params at increasing row index #
+            elif(md.basalforcings.num_basins == 1):
+                for ii in range(md.basalforcings.num_params):
+                    polyParams_scaled[ii, :] = polyParams_scaled[ii,:] * (1. / md.constants.yts) ** (ii + 1)
+                ## Fit in row array
+                for ii in range(md.basalforcings.num_params):
+                    polyParams_scaled_2d[0, ii * (md.basalforcings.num_breaks + 1):(ii + 1) * (md.basalforcings.num_breaks + 1)] = 1 * polyParams_scaled[ii, :]
+            # Case 2D and higher-order params at incrasing column index #
+            elif(md.basalforcings.num_breaks + 1 == 1):
+                for ii in range(md.basalforcings.num_params):
+                    polyParams_scaled[:, ii] = polyParams_scaled[:, ii] * (1. / md.constants.yts) ** (ii + 1)
+                # 2D array is already in correct format #
+                polyParams_scaled_2d = np.copy(polyParams_scaled)
+        else:
+            polyParams_scaled   = polyParams_scaled * (1. / md.constants.yts)
+            # 2D array is already in correct format #
+            polyParams_scaled_2d = np.copy(polyParams_scaled)
+
+        if(md.basalforcings.num_breaks + 1 == 1):
+            dbreaks = np.zeros((md.basalforcings.num_basins, 1))
+        else:
+            dbreaks = np.copy(md.basalforcings.datebreaks)
+
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.basalforcings.model', data = 9, format = 'Integer')
+
+        ## Write Integer fields
+        fieldnames = ['num_basins', 'num_params', 'num_breaks', 'ar_order', 'ma_order']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+
+        ## Write DoubleMat fields
+        execute.WriteData(fid, prefix, name = 'md.basalforcings.polynomialparams', data = polyParams_scaled_2d, format = 'DoubleMat')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'arlag_coefs', format = 'DoubleMat', yts =  md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'malag_coefs', format = 'DoubleMat', yts =  md.constants.yts)
+        execute.WriteData(fid, prefix, name = 'md.basalforcings.datebreaks', data = dbreaks, format = 'DoubleMat', scale = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'deepwater_elevation', format = 'DoubleMat')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'upperwater_melting_rate', format = 'DoubleMat', scale = 1. / md.constants.yts, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'upperwater_elevation', format = 'DoubleMat')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'groundedice_melting_rate', format = 'DoubleMat', scale = 1. / md.constants.yts, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'geothermalflux', format = 'DoubleMat', scale = 1. / md.constants.yts, yts = md.constants.yts)
+
+        ## Write IntMat fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'basin_id', data = self.basin_id - 1, format = 'IntMat', mattype = 2)  # 0-indexed
+
+        ## Write Double fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'arma_timestep', format = 'Double', scale = md.constants.yts)
 
 ## ------------------------------------------------------
 ## basalforcings.mismip
@@ -427,6 +597,8 @@ class mismip(class_registry.manage_state):
         Returns a detailed string representation of the MISMIP basal forcings parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -463,6 +635,42 @@ class mismip(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - basalforcings.mismip Class'
         return s
+
+    # Marshall method for saving the basalforcings.mismip parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [basalforcings.mismip] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write warning if yts does not match this adjusted value
+        if md.constants.yts != 365.2422 * 24. * 3600.:
+            print('WARNING: value of yts for MISMIP + runs different from ISSM default!')
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.basalforcings.model', data = 3, format = 'Integer')
+
+        ## Write DoubleMat fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'groundedice_melting_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'geothermalflux', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        
+        ## Write Double fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'meltrate_factor', format = 'Double', scale = 1. / md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'threshold_thickness', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'upperdepth_melt', format = 'Double')
 
 ## ------------------------------------------------------
 ## basalforcings.plume
@@ -519,6 +727,8 @@ class plume(class_registry.manage_state):
         Returns a detailed string representation of the plume basal forcings parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -572,6 +782,40 @@ class plume(class_registry.manage_state):
         s = 'ISSM - basalforcings.plume Class'
         return s
 
+    # Marshall method for saving the basalforcings.plume parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [basalforcings.plume] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.basalforcings.model', data = 4, format = 'Integer')
+
+        ## Write DoubleMat fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'groundedice_melting_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'floatingice_melting_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        
+        ## Write Double fields
+        fieldnames = ['mantleconductivity', 'nusselt', 'dtbg', 'plumeradius', 'topplumedepth',
+                      'bottomplumedepth', 'plumex', 'plumey', 'crustthickness', 'uppercrustthickness',
+                      'uppercrustheat', 'lowercrustheat']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+
 ## ------------------------------------------------------
 ## basalforcings.spatiallinear
 ## ------------------------------------------------------
@@ -613,6 +857,8 @@ class spatiallinear(class_registry.manage_state):
         Returns a detailed string representation of the spatial linear basal forcings parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -649,3 +895,35 @@ class spatiallinear(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - basalforcings.spatiallinear Class'
         return s
+
+    # Marshall method for saving the basalforcings.spatiallinear parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [basalforcings.spatiallinear] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.basalforcings.model', data = 6, format = 'Integer')
+
+        ## Write DoubleMat fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'groundedice_melting_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'geothermalflux', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'deepwater_melting_rate', format = 'DoubleMat', scale = 1. / md.constants.yts, mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'deepwater_elevation', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'upperwater_melting_rate', format = 'DoubleMat', scale = 1. / md.constants.yts, mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'upperwater_elevation', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'perturbation_melting_rate', format = 'DoubleMat',  scale = 1. / md.constants.yts, mattype = 1)
