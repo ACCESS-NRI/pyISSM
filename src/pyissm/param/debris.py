@@ -39,7 +39,7 @@ class debris(class_registry.manage_state):
         Critical stress [Pa] for removalmodel (2).
     vertex_pairing : float, default=nan
         Pairs of vertices that are penalized.
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested.
 
     Methods
@@ -119,6 +119,7 @@ class debris(class_registry.manage_state):
         outputs
             List of output strings with 'default' expanded to actual output names.
         """
+        
         outputs = []
         default_outputs = ['DebrisThickness', 'DebrisMaskNodeActivation', 'VxDebris', 'VyDebris']
 

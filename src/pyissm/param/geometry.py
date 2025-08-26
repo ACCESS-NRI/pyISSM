@@ -74,19 +74,24 @@ class geometry(class_registry.manage_state):
         return s
 
     # Marshall method for saving the geometry parameters
-    def marshall_class(self, prefix, md, fid):
+    def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall the geometry parameters to a binary file.
+        Marshall [geometry] parameters to a binary file.
 
         Parameters
         ----------
         fid : file object
             The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
 
         Returns
         -------
         None
         """
+
         ## 1. Handle thickness field
         # Determine the length of the thickness array (could be list or ndarray)
         if isinstance(self.thickness, (list, np.ndarray)):
@@ -103,10 +108,8 @@ class geometry(class_registry.manage_state):
             # Raise error if thickness does not match expected sizes
             raise RuntimeError('geometry thickness time series should be a vertex or element time series')
 
-        ## 2. Write other geometry fields to file
+        ## 2. Write other geometry fields to file (all fields are of the same type/format)
         fieldnames = list(self.__dict__.keys())
         fieldnames.remove('thickness') # Remove thickness as it is handled separately above
-        
-        # Write each field to the file (all fields are of the same type/format)
         for fieldname in fieldnames:
                 execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'DoubleMat', mattype = 1)

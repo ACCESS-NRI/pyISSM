@@ -29,9 +29,9 @@ class esa(class_registry.manage_state):
         North-south, East-west components of 2-D horizontal displacement vector: -1 south, 1 north.
     degacc : float, default=0.01
         Accuracy (default 0.01 deg) for numerical discretization of the Green's functions.
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested (default: EsaUmotion).
-    transitions : str, default='List of transitions'
+    transitions : list, default=[]
         Indices into parts of the mesh that will be icecaps.
 
     Methods
@@ -102,6 +102,7 @@ class esa(class_registry.manage_state):
         outputs
             List of output strings with 'default' expanded to actual output names.
         """
+        
         outputs = []
         default_outputs = ['EsaUmotion']
 

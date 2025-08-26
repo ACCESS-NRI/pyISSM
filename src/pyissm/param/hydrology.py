@@ -44,6 +44,8 @@ class armapw(class_registry.manage_state):
         Basin number assigned to each element [unitless].
     monthlyfactors : ndarray, default=np.nan
         Monthly multiplicative factor on the subglacial water pressure, specified per basin (size: [num_basins, 12]).
+    requested_outputs : list, default=['default']
+        Additional outputs requested.
 
     Methods
     -------
@@ -53,6 +55,10 @@ class armapw(class_registry.manage_state):
         Returns a detailed string representation of the armapw parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -73,6 +79,7 @@ class armapw(class_registry.manage_state):
         self.datebreaks = np.nan
         self.basin_id = np.nan
         self.monthlyfactors = np.nan
+        self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -96,12 +103,124 @@ class armapw(class_registry.manage_state):
         s += '{}\n'.format(param_utils.fielddisplay(self, 'arma_timestep', 'time resolution of the ARMA model [yr]'))
         s += '{}\n'.format(param_utils.fielddisplay(self, 'arlag_coefs', 'basin-specific vectors of AR lag coefficients [unitless]'))
         s += '{}\n'.format(param_utils.fielddisplay(self, 'malag_coefs', 'basin-specific vectors of MA lag coefficients [unitless]'))
+        s += '{}\n'.format(param_utils.fielddisplay(self, 'requested_outputs', 'List of requested outputs'))
         return s
 
     # Define class string
     def __str__(self):
         s = 'ISSM - hydrology.armapw Class'
         return s
+    
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self, md = None):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+            
+        Returns
+        -------
+        outputs
+            List of output strings with 'default' expanded to actual output names.
+        """
+        outputs = []
+        default_outputs = ['FrictionWaterPressure']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        return outputs
+    
+    # Marshall method for saving the hydrology.armapw parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [hydrology.armapw] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        # Scale the parameters #
+        polyParams_Scaled   = np.copy(md.hydrology.polynomialparams)
+        polyParams_Scaled_2d = np.zeros((md.hydrology.num_basins, md.hydrology.num_breaks + 1 * md.hydrology.num_params))
+        if(md.hydrology.num_params>1):
+            # Case 3D #
+            if(md.hydrology.num_basins > 1 and md.hydrology.num_breaks + 1 > 1):
+                for ii in range(md.hydrology.num_params):
+                    polyParams_Scaled[:, :, ii] = polyParams_Scaled[:, :, ii] * (1. / md.constants.yts) ** (ii)
+                # Fit in 2D array #
+                for ii in range(md.hydrology.num_params):
+                    polyParams_Scaled_2d[:, ii * md.hydrology.num_breaks + 1:(ii + 1) * md.hydrology.num_breaks + 1] = 1 * polyParams_Scaled[:, :, ii]
+            # Case 2D and higher-order params at increasing row index #
+            elif(md.hydrology.num_basins==1):
+                for ii in range(md.hydrology.num_params):
+                    polyParams_Scaled[ii, :] = polyParams_Scaled[ii, :] * (1. / md.constants.yts) ** (ii)
+                # Fit in row array #
+                for ii in range(md.hydrology.num_params):
+                    polyParams_Scaled_2d[0, ii * md.hydrology.num_breaks + 1 : (ii + 1) * md.hydrology.num_breaks + 1] = 1 * polyParams_Scaled[ii, :]
+            # Case 2D and higher-order params at incrasing column index #
+            elif(md.hydrology.num_breaks + 1 == 1):
+                for ii in range(md.hydrology.num_params):
+                    polyParams_Scaled[:, ii] = polyParams_Scaled[:, ii] * (1. / md.constants.yts) ** (ii)
+                # 2D array is already in correct format #
+                polyParams_Scaled_2d = np.copy(polyParams_Scaled)
+        else:
+            # 2D array is already in correct format and no need for scaling#
+            polyParams_Scaled_2d = np.copy(polyParams_Scaled)
+
+        if(md.hydrology.num_breaks + 1 == 1):
+            dbreaks = np.zeros((md.hydrology.num_basins, 1))
+        else:
+            dbreaks = np.copy(md.hydrology.datebreaks)
+
+        # If no monthlyfactors provided: set them all to 1 #
+        if(np.size(md.hydrology.monthlyfactors) == 1):
+            tempmonthlyfactors = np.ones((md.hydrology.num_basins, 12))
+        else:
+            tempmonthlyfactors = np.copy(md.hydrology.monthlyfactors)
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.hydrology.model', data = 7, format = 'Integer')
+
+        ## Write Integer fields
+        fieldnames = ['num_basins', 'num_breaks', 'num_params', 'ar_order', 'ma_order']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+
+        ## Write DoubleMat fields
+        execute.WriteData(fid, prefix, name = 'md.hydrology.polynomialparams', data = polyParams_Scaled_2d, format = 'DoubleMat')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'arlag_coefs', format = 'DoubleMat', yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'malag_coefs', format = 'DoubleMat', yts = md.constants.yts)
+        execute.WriteData(fid, prefix, name = 'md.hydrology.datebreaks', data = dbreaks, format = 'DoubleMat', scale = md.constants.yts)
+        execute.WriteData(fid,prefix, name = 'md.hydrology.monthlyfactors', data = tempmonthlyfactors, format = 'DoubleMat')
+
+        ## Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'arma_timestep', format = 'Double', scale = md.constants.yts)
+        execute.WriteData(fid, prefix, name = 'md.hydrology.basin_id', data = self.basin_id - 1,  format = 'IntMat', mattype = 2)  # 0-indexed
+        execute.WriteData(fid, prefix, name = 'md.hydrology.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+
 
 ## ------------------------------------------------------
 ## hydrology.dc
@@ -150,7 +269,7 @@ class dc(class_registry.manage_state):
         User-defined leakage factor [m].
     basal_moulin_input : ndarray, default=np.nan
         Water flux at a given point [m3 s^-1].
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested.
     spcsediment_head : ndarray, default=np.nan
         Sediment water head constraints [m above MSL].
@@ -193,6 +312,10 @@ class dc(class_registry.manage_state):
         Returns a detailed string representation of the dc parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -216,7 +339,7 @@ class dc(class_registry.manage_state):
         self.unconfined_flag = 0
         self.leakage_factor = 1.0e-10
         self.basal_moulin_input = np.nan
-        self.requested_outputs = 'List of requested outputs'
+        self.requested_outputs = ['default']
         self.spcsediment_head = np.nan
         self.mask_thawed_node = np.nan
         self.sediment_transmitivity = 8.0e-04
@@ -293,7 +416,112 @@ class dc(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - hydrology.dc Class'
         return s
+    
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self, md = None):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
 
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+            
+        Returns
+        -------
+        outputs
+            List of output strings with 'default' expanded to actual output names.
+        """
+
+        outputs = []
+        default_outputs = ['SedimentHead', 'SedimentHeadResidual', 'EffectivePressure']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    
+                    ## Conditionally adjust the default_outputs
+                    if self.isefficientlayer == 1:
+                        default_outputs.extend(['EplHead', 'HydrologydcMaskEplactiveNode', 'HydrologydcMaskEplactiveElt', 'EplHeadSlopeX', 'EplHeadSlopeY', 'HydrologydcEplThickness'])
+                    if self.steps_per_step > 1 or self.step_adapt:
+                        default_outputs.extend(['EffectivePressureSubstep', 'SedimentHeadSubstep'])
+                        if self.isefficientlayer == 1:
+                            default_outputs.extend(['EplHeadSubstep', 'HydrologydcEplThicknessSubstep'])
+
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        return outputs
+        
+    # Marshall method for saving the hydrology.dc parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [hydrology.dc] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.hydrology.model', data = 1, format = 'Integer')
+
+        ## Write Integer fields
+        fieldnames = ['penalty_lock', 'max_iter', 'steps_per_step', 'averaging', 'sedimentlimit_flag', 'transfer_flag', 'unconfined_flag']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+
+        ## Write Double fields
+        fieldnames = ['water_compressibility', 'penalty_factor', 'rel_tol', 'sediment_compressibility', 'sediment_porosity', 'sediment_thickness']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+
+        ## Write DoubleMat fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'basal_moulin_input', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'spcsediment_head', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'sediment_transmitivity', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'mask_thawed_node', format = 'DoubleMat', mattype = 1)
+
+        ## Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'isefficientlayer', format = 'Boolean')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'step_adapt', format = 'Boolean')
+        execute.WriteData(fid, prefix, name = 'md.hydrology.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+
+        ## Write conditional fields
+        if self.sedimentlimit_flag == 1:
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'sedimentlimit', format = 'Double')
+
+        if self.transfer_flag == 1:
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'leakage_factor', format = 'Double')
+
+        if self.isefficientlayer == 1:
+            ## Write Double fields
+            fieldnames = ['epl_compressibility', 'epl_porosity', 'epl_max_thickness', 'epl_initial_thickness', 'epl_colapse_thickness', 'epl_conductivity']
+            for field in fieldnames:
+                execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+
+            ## Write other fields
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'spcepl_head', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'mask_eplactive_node', format = 'DoubleMat', mattype = 1)            
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'epl_thick_comp', format = 'Integer')
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'eplflip_lock', format = 'Integer')
+
+        
 ## ------------------------------------------------------
 ## hydrology.glads
 ## ------------------------------------------------------
@@ -351,7 +579,7 @@ class glads(class_registry.manage_state):
         Water flux applied along the model boundary [m^2/s].
     englacial_void_ratio : float, default=1.e-5
         Englacial void ratio (e_v).
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested.
     melt_flag : int, default=0
         User specified basal melt? 0: no (default), 1: use md.basalforcings.groundedice_melting_rate.
@@ -366,6 +594,10 @@ class glads(class_registry.manage_state):
         Returns a detailed string representation of the glads parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -399,7 +631,7 @@ class glads(class_registry.manage_state):
         self.moulin_input = np.nan
         self.neumannflux = np.nan
         self.englacial_void_ratio = 1.e-5
-        self.requested_outputs = 'List of requested outputs'
+        self.requested_outputs = ['default']
         self.melt_flag = 0
         self.istransition = 0
 
@@ -442,6 +674,84 @@ class glads(class_registry.manage_state):
         s = 'ISSM - hydrology.glads Class'
         return s
 
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self, md = None):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+            
+        Returns
+        -------
+        outputs
+            List of output strings with 'default' expanded to actual output names.
+        """
+
+        outputs = []
+        default_outputs = ['EffectivePressure', 'HydraulicPotential', 'HydrologySheetThickness', 'ChannelArea', 'ChannelDischarge']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        return outputs
+        
+    # Marshall method for saving the hydrology.glads parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [hydrology.glads] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.hydrology.model', data = 5, format = 'Integer')
+
+        ## Write Double fields
+        fieldnames = ['pressure_melt_coefficient', 'cavity_spacing', 'omega', 'sheet_alpha', 'sheet_beta',
+                      'channel_sheet_width', 'channel_alpha', 'channel_beta', 'englacial_void_ratio']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+
+        ## Write DoubleMat fields
+        fieldnames = ['sheet_conductivity', 'bump_height', 'rheology_B_base', 'channel_conductivity']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
+
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'spcphi', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'neumannflux', format = 'DoubleMat', mattype = 2, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'moulin_input', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+
+        ## Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'isincludesheetthickness', format = 'Boolean')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'ischannels', format = 'Boolean')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'creep_open_flag', format = 'Boolean')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'istransition', format = 'Boolean')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'melt_flag', format = 'Integer')
+        execute.WriteData(fid, prefix, name = 'md.hydrology.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+
 ## ------------------------------------------------------
 ## hydrology.pism
 ## ------------------------------------------------------
@@ -463,6 +773,8 @@ class pism(class_registry.manage_state):
         Fixed drainage rate [mm/yr].
     watercolumn_max : float, default=np.nan
         Maximum water column height [m], recommended default: 2 m.
+    requested_outputs: list, default=['default']
+        List of requested output variables.
 
     Methods
     -------
@@ -472,6 +784,10 @@ class pism(class_registry.manage_state):
         Returns a detailed string representation of the pism parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -482,6 +798,7 @@ class pism(class_registry.manage_state):
     def __init__(self, other = None):
         self.drainage_rate = np.nan
         self.watercolumn_max = np.nan
+        self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -492,12 +809,73 @@ class pism(class_registry.manage_state):
 
         s += '{}\n'.format(param_utils.fielddisplay(self, 'drainage_rate', 'fixed drainage rate [mm / yr]'))
         s += '{}\n'.format(param_utils.fielddisplay(self, 'watercolumn_max', 'maximum water column height [m], recommended default: 2 m'))
+        s += '{}\n'.format(param_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
     def __str__(self):
         s = 'ISSM - hydrology.pism Class'
         return s
+
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self, md = None):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+            
+        Returns
+        -------
+        outputs
+            List of output strings with 'default' expanded to actual output names.
+        """
+
+        outputs = []
+        default_outputs = ['Watercolumn']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        return outputs
+        
+    # Marshall method for saving the hydrology.pism parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [hydrology.pism] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.hydrology.model', data = 4, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'drainage_rate', format = 'DoubleMat', mattype = 1, scale = 1. / (1000. * md.constants.yts))
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'watercolumn_max', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, name = 'md.hydrology.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## hydrology.shakti
@@ -542,7 +920,7 @@ class shakti(class_registry.manage_state):
         Under-relaxation coefficient for nonlinear iteration.
     storage : float or ndarray, default=np.nan
         Englacial storage coefficient (void ratio).
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested.
 
     Methods
@@ -553,6 +931,10 @@ class shakti(class_registry.manage_state):
         Returns a detailed string representation of the shakti parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -574,7 +956,7 @@ class shakti(class_registry.manage_state):
         self.neumannflux = np.nan
         self.relaxation = 1
         self.storage = np.nan
-        self.requested_outputs = 'List of requested outputs'
+        self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -603,6 +985,90 @@ class shakti(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - hydrology.shakti Class'
         return s
+    
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self, md = None):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+            
+        Returns
+        -------
+        outputs
+            List of output strings with 'default' expanded to actual output names.
+        """
+
+        outputs = []
+        default_outputs = ['HydrologyHead', 'HydrologyGapHeight', 'EffectivePressure', 'HydrologyBasalFlux', 'DegreeOfChannelization']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        return outputs
+        
+    # Marshall method for saving the hydrology.shakti parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [hydrology.shakti] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.hydrology.model', data = 3, format = 'Integer')
+
+        ## Write DoubleMat fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'head', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'gap_height', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'bump_spacing', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'bump_height', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'reynolds', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'englacial_input', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'moulin_input', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'scphead', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'neumannflux', format = 'DoubleMat', mattype = 2, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        
+        ## Write Double fields
+        fieldnames = ['gap_height_min', 'gap_height_max', 'relaxation']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+
+        ## Write conditional fields
+        # NOTE: We first have to check if we have a NumPy array here
+        if np.size(self.storage) == 1 or (((np.shape(self.storage)[0] == md.mesh.numberofvertices) or (np.shape(self.storage)[0] == md.mesh.numberofvertices + 1)) or ((len(np.shape(self.storage)) == 2) and (np.shape(self.storage)[0] == md.mesh.numberofelements) and (np.shape(self.storage)[1] > 1))):
+            mattype = 1
+            tsl = md.mesh.numberofvertices + 1
+        else:
+            mattype = 2
+            tsl = md.mesh.numberofelements + 1
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'storage', format = 'DoubleMat', mattype = mattype, timeserieslength = tsl, yts = md.constants.yts)
+
+        ## Write other fields
+        execute.WriteData(fid, prefix, name = 'md.hydrology.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## hydrology.shreve
@@ -625,7 +1091,7 @@ class shreve(class_registry.manage_state):
         Water thickness constraints (NaN means no constraint) [m].
     stabilization : int, default=1
         Artificial diffusivity (default: 1). Can be more than 1 to increase diffusivity.
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested.
 
     Methods
@@ -636,6 +1102,10 @@ class shreve(class_registry.manage_state):
         Returns a detailed string representation of the shreve parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -646,7 +1116,7 @@ class shreve(class_registry.manage_state):
     def __init__(self, other = None):
         self.spcwatercolumn = np.nan
         self.stabilization = 1
-        self.requested_outputs = 'List of requested outputs'
+        self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -664,32 +1134,66 @@ class shreve(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - hydrology.shreve Class'
         return s
-    
-        
-    # Marshall method for saving the hydrology parameters
-    def marshall_class(self, prefix, md, fid):
+
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self, md = None):
         """
-        Marshall the hydrology parameters to a binary file.
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+            
+        Returns
+        -------
+        outputs
+            List of output strings with 'default' expanded to actual output names.
+        """
+
+        outputs = []
+        default_outputs = ['Watercolumn', 'HydrologyWaterVx', 'HydrologyWaterVy']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        return outputs
+        
+    # Marshall method for saving the hydrology.shreve parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [hydrology.shreve] parameters to a binary file.
 
         Parameters
         ----------
         fid : file object
             The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
 
         Returns
         -------
         None
         """
 
-        ## Write the header
+        ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
         execute.WriteData(fid, prefix, name = 'md.hydrology.model', data = 2, format = 'Integer')
 
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'spcwatercolumn', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'spcwatercolumn', format = 'DoubleMat', mattype = 1, timeserieslength =  md.mesh.numberofvertices + 1, yts = md.constants.yts)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'stabilization', format = 'Double')
-
-        ## TODO: Implement marshalling logic for requested_outputs
-        execute.WriteData(fid, prefix, name = 'md.hydrology.requested_outputs', data = self.requested_outputs, format = 'StringArray')
+        execute.WriteData(fid, prefix, name = 'md.hydrology.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## hydrology.tws
@@ -721,6 +1225,10 @@ class tws(class_registry.manage_state):
         Returns a detailed string representation of the tws parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -730,7 +1238,7 @@ class tws(class_registry.manage_state):
     # Initialise with default parameters
     def __init__(self, other = None):
         self.spcwatercolumn = np.nan
-        self.requested_outputs = 'List of requested outputs'
+        self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -747,3 +1255,62 @@ class tws(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - hydrology.tws Class'
         return s
+    
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self, md = None):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+            
+        Returns
+        -------
+        outputs
+            List of output strings with 'default' expanded to actual output names.
+        """
+
+        outputs = []
+        default_outputs = ['']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        return outputs
+        
+    # Marshall method for saving the hydrology.tws parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [hydrology.tws] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.hydrology.model', data = 6, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'spcwatercolumn', format = 'DoubleMat', mattype = 1, timeserieslength =  md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, name = 'md.hydrology.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
