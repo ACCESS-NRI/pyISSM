@@ -153,6 +153,7 @@ class flowequation(class_registry.manage_state):
         -------
         None
         """
+        
         ## Write Boolean fields
         fieldnames = ['isSIA', 'isSSA', 'isL1L2', 'isMOLHO', 'isHO', 'isFS', 'isNitscheBC']
         for field in fieldnames:

@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class levelset(class_registry.manage_state):
@@ -39,6 +40,8 @@ class levelset(class_registry.manage_state):
         Returns a detailed string representation of the levelset parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -81,3 +84,29 @@ class levelset(class_registry.manage_state):
         s = 'ISSM - levelset Class'
         return s
 
+    # Marshall method for saving the levelset parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [levelset] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+        
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'stabilization', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'spclevelset', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'reinit_frequency', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'kill_icebergs', format = 'Boolean')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'migration_max', format = 'Double', scale = 1. / md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'fe', format = 'String')

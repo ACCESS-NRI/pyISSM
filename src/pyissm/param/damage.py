@@ -53,7 +53,7 @@ class damage(class_registry.manage_state):
         Healing parameter.
     equiv_stress : float, default=0
         Equivalent stress parameter.
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested.
 
     Methods
@@ -142,6 +142,7 @@ class damage(class_registry.manage_state):
         outputs
             List of output strings with 'default' expanded to actual output names.
         """
+        
         outputs = []
 
         ## Loop through all requested outputs

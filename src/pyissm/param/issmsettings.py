@@ -18,7 +18,7 @@ class issmsettings(class_registry.manage_state):
 
     Attributes
     ----------
-    results_on_nodes : str, default='List of output'
+    results_on_nodes : list, default=[]
         List of output for which results will be output for all the nodes of each element. Use 'all' for all output on nodes.
     io_gather : int, default=1
         I/O gathering strategy for result outputs.
@@ -43,6 +43,8 @@ class issmsettings(class_registry.manage_state):
         Returns a detailed string representation of the issmsettings parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -54,7 +56,7 @@ class issmsettings(class_registry.manage_state):
 
     # Initialise with default parameters
     def __init__(self, other = None):
-        self.results_on_nodes = 'List of output'
+        self.results_on_nodes = []
         self.io_gather = 1
         self.lowmem = 0
         self.output_frequency = 1
@@ -85,32 +87,36 @@ class issmsettings(class_registry.manage_state):
         s = 'ISSM - issmsettings Class'
         return s
 
-    # Marshall method for saving the settings parameters
-    def marshall_class(self, prefix, md, fid):
+    # Marshall method for saving the issmsettings parameters
+    def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall the settings parameters to a binary file.
+        Marshall [issmsettings] parameters to a binary file.
 
         Parameters
         ----------
         fid : file object
             The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
 
         Returns
         -------
         None
         """
         
-        ## Write the settings parameters to the file
+        ## Write fields
         execute.WriteData(fid, prefix, name = 'md.settings.results_on_nodes', data = self.results_on_nodes, format = 'StringArray')
         execute.WriteData(fid, prefix, obj = self, fieldname = 'io_gather', format = 'Boolean')
         execute.WriteData(fid, prefix, obj = self, fieldname = 'lowmem', format = 'Boolean')
         execute.WriteData(fid, prefix, obj = self, fieldname = 'output_frequency', format = 'Integer')
         execute.WriteData(fid, prefix, obj = self, fieldname = 'sb_coupling_frequency', format = 'Integer')
         execute.WriteData(fid, prefix, obj = self, fieldname = 'checkpoint_frequency', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'solver_residue_threshold', format = 'Double')
 
+        ## Write conditional fields
         if self.waitonlock > 0:
             execute.WriteData(fid, prefix, name = 'md.settings.waitonlock', data = True, format = 'Boolean')
         else:
             execute.WriteData(fid, prefix, name = 'md.settings.waitonlock', data = False, format = 'Boolean')
-
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'solver_residue_threshold', format = 'Double')

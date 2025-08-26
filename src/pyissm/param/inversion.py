@@ -65,6 +65,8 @@ class default(class_registry.manage_state):
         Returns a detailed string representation of the default inversion parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -133,25 +135,55 @@ class default(class_registry.manage_state):
         s = 'ISSM - inversion.default Class'
         return s
     
-    # Marshall method for saving the inversion parameters
-    def marshall_class(self, prefix, md, fid):
+    # Marshall method for saving the inversion.default parameters
+    def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall the inversion parameters to a binary file.
+        Marshall [inversion.default] parameters to a binary file.
 
         Parameters
         ----------
         fid : file object
             The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
 
         Returns
         -------
         None
         """
-        ## Write header
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
         execute.WriteData(fid, prefix, name = 'md.inversion.type', data = 0, format = 'Integer')
 
         ## Write fields
         execute.WriteData(fid, prefix, obj = self, fieldname = 'iscontrol', format = 'Boolean')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'incomplete_adjoint', format = 'Boolean')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'vel_obs', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts)
+
+        if self.iscontrol:
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'nsteps', format = 'Integer')
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'maxiter_per_step', format = 'IntMat', mattype = 3)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'cost_functions_coefficients', format = 'DoubleMat', mattype = 1)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'gradient_scaling', format = 'DoubleMat', mattype = 3)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'cost_function_threshold', format = 'Double')
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'min_parameters', format = 'DoubleMat', mattype = 3)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'max_parameters', format = 'DoubleMat', mattype = 3)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'step_threshold', format = 'DoubleMat', mattype = 3)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'vx_obs', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'vy_obs', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'vz_obs', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'thickness_obs', format = 'DoubleMat', mattype = 1)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'surface_obs', format = 'DoubleMat', mattype = 1)
+
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'control_parameters', format = 'StringArray')
+            execute.WriteData(fid, prefix, name = 'md.inversion.num_control_parameters', data = len(self.control_parameters), format = 'Integer')
+
+            execute.WriteData(fid, prefix, name = 'md.inversion.cost_functions', data = param_utils.marshall_inversion_cost_functions(self.cost_functions), format = 'StringArray')
+            execute.WriteData(fid, prefix, name = 'md.inversion.num_cost_functions', data = np.size(self.cost_functions), format = 'Integer')
+
 
 ## ------------------------------------------------------
 ## inversion.m1qn3
@@ -215,6 +247,8 @@ class m1qn3(class_registry.manage_state):
         Returns a detailed string representation of the m1qn3 inversion parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -281,6 +315,54 @@ class m1qn3(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - inversion.m1qn3 Class'
         return s
+
+    # Marshall method for saving the inversion.m1qn3 parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [inversion.m1qn3] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.inversion.type', data = 2, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'iscontrol', format = 'Boolean')
+
+        if self.iscontrol:
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'incomplete_adjoint', format = 'Boolean')
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'control_scaling_factors', format = 'DoubleMat', mattype = 3)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'maxsteps', format = 'Integer')
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'maxiter', format = 'Integer')
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'dxmin', format = 'Double')
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'dfmin_frac', format = 'Double')
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'gttol', format = 'Double')
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'cost_functions_coefficients', format = 'DoubleMat', mattype = 1)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'min_parameters', format = 'DoubleMat', mattype = 3)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'max_parameters', format = 'DoubleMat', mattype = 3)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'vx_obs', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'vy_obs', format = 'DoubleMat', mattype = 1, scale =  1. / md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'vz_obs', format = 'DoubleMat', mattype = 1, scale =  1. / md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'thickness_obs', format = 'DoubleMat', mattype = 1)
+
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'control_parameters', format = 'StringArray')
+            execute.WriteData(fid, prefix, name = 'md.inversion.num_control_parameters', data = len(self.control_parameters), format = 'Integer')
+
+            execute.WriteData(fid, prefix, name = 'md.inversion.cost_functions', data = param_utils.marshall_inversion_cost_functions(self.cost_functions), format = 'StringArray')
+            execute.WriteData(fid, prefix, name = 'md.inversion.num_cost_functions', data = np.size(self.cost_functions), format = 'Integer')
 
 ## ------------------------------------------------------
 ## inversion.tao
