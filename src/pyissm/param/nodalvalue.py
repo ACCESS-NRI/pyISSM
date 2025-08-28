@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class nodalvalue(class_registry.manage_state):
@@ -35,6 +36,8 @@ class nodalvalue(class_registry.manage_state):
         Returns a detailed string representation of the nodalvalue parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -68,4 +71,28 @@ class nodalvalue(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - nodalvalue Class'
         return s
+    
+    # Marshall method for saving the nodalvalue parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [nodalvalue] parameters to a binary file.
 
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'name', format = 'String')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'definitionstring', format = 'String')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'model_string', format = 'String')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'node', format = 'Integer')

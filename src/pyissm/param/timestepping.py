@@ -45,6 +45,8 @@ class default(class_registry.manage_state):
         Returns a detailed string representation of the timestepping parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Notes
     -----
@@ -96,32 +98,37 @@ class default(class_registry.manage_state):
         s = 'ISSM - timestepping.default Class'
         return s
 
-    # Marshall method for saving the timestepping parameters
-    def marshall_class(self, prefix, md, fid):
+    # Marshall method for saving the timestepping.default() parameters
+    def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall the timestepping parameters to a binary file.
+        Marshall [timestepping.default()] parameters to a binary file.
 
         Parameters
         ----------
         fid : file object
             The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
 
         Returns
         -------
         None
         """
-        ## Write eader field
+
+        ## Write header field
         execute.WriteData(fid, prefix, name = 'md.timestepping.type', data = 1, format = 'Integer')
 
-        ## Write all other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'start_time', format = 'Double', scale = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'final_time', format = 'Double', scale = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'time_step', format = 'Double', scale = md.constants.yts)
+        ## Write Double fields (all consistent format)
+        fieldnames = ['start_time', 'final_time', 'time_step', 'coupling_time']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double', scale = md.constants.yts)
+
+        ## Write Boolean fields
         execute.WriteData(fid, prefix, obj = self, fieldname = 'interp_forcing', format = 'Boolean')
         execute.WriteData(fid, prefix, obj = self, fieldname = 'average_forcing', format = 'Boolean')
         execute.WriteData(fid, prefix, obj = self, fieldname = 'cycle_forcing', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'coupling_time', format = 'Double', scale = md.constants.yts)
-        
 
 ## ------------------------------------------------------
 ## timestepping.adaptive
@@ -170,6 +177,8 @@ class adaptive(class_registry.manage_state):
         Returns a detailed string representation of the adaptive timestepping parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Notes
     -----
@@ -233,3 +242,35 @@ class adaptive(class_registry.manage_state):
         s = 'ISSM - timestepping.adaptive Class'
         return s
 
+    # Marshall method for saving the timestepping.adaptive parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [timestepping.adaptive] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        execute.WriteData(fid, prefix, name = 'md.timestepping.type', data = 2, format = 'Integer')
+
+        ## Write Double fields (all consistent format)
+        fieldnames = ['start_time', 'final_time', 'time_step_min', 'time_step_max', 'coupling_time']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double', scale = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'cfl_coefficient', format = 'Double')
+
+        ## Write Boolean fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'interp_forcing', format = 'Boolean')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'average_forcing', format = 'Boolean')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'cycle_forcing', format = 'Boolean')

@@ -50,7 +50,7 @@ class debris(class_registry.manage_state):
         Returns a detailed string representation of the debris parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md)
+    process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file.
@@ -104,8 +104,10 @@ class debris(class_registry.manage_state):
         s = 'ISSM - debris Class'
         return s
 
-# Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self, md = None):
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
         """
         Process requested outputs, expanding 'default' to appropriate outputs.
 
@@ -113,14 +115,20 @@ class debris(class_registry.manage_state):
         ----------
         md : ISSM model object, optional
             Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
             
         Returns
         -------
-        outputs
+        outputs : list
             List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
         """
-        
+
         outputs = []
+
+        ## Set default_outputs
         default_outputs = ['DebrisThickness', 'DebrisMaskNodeActivation', 'VxDebris', 'VyDebris']
 
         ## Loop through all requested outputs
@@ -134,6 +142,8 @@ class debris(class_registry.manage_state):
             else:
                 outputs.append(item)
 
+        if return_default_outputs:
+            return outputs, default_outputs
         return outputs
     
     # Marshall method for saving the debris parameters

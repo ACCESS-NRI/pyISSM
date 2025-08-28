@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class sampling(class_registry.manage_state):
@@ -32,7 +33,7 @@ class sampling(class_registry.manage_state):
         Apply Robin boundary conditions (1 if applied and 0 for homogeneous Neumann boundary conditions).
     seed : int, default=-1
         Seed for pseudorandom number generator (given seed if >=0 and random seed if <0).
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=[]
         Additional outputs requested (not implemented yet).
 
     Methods
@@ -43,6 +44,10 @@ class sampling(class_registry.manage_state):
         Returns a detailed string representation of the sampling parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md=None, return_default_outputs=False)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -63,7 +68,7 @@ class sampling(class_registry.manage_state):
         self.alpha = 2
         self.robin = 0
         self.seed = -1
-        self.requested_outputs = 'List of requested outputs'
+        self.requested_outputs = []
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -93,4 +98,75 @@ class sampling(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - sampling Class'
         return s
+    
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
 
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+            
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+
+    # Marshall method for saving the sampling parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [sampling] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write DoubleMat fields (all consistent formats)
+        fieldnames = ['kappa', 'tau', 'beta', 'phi']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
+
+        ## Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'alpha', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'robin', format = 'Boolean')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'seed', format = 'Integer')
+        execute.WriteData(fid, prefix, name = 'md.sampling.requested_outputs', data = self.process_outputs(md), format = 'StringArray')

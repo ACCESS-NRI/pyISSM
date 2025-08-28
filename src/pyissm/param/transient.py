@@ -52,7 +52,7 @@ class transient(class_registry.manage_state):
         Frequency at which mesh is refined in simulations with multiple time_steps.
     isoceancoupling : int, default=0
         Indicates whether coupling with an ocean model is used in the transient (1 for cartesian coordinates, 2 for lat/long coordinates).
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         List of additional outputs requested.
 
     Methods
@@ -63,6 +63,10 @@ class transient(class_registry.manage_state):
         Returns a detailed string representation of the transient parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md=None, return_default_outputs=False)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -91,7 +95,7 @@ class transient(class_registry.manage_state):
         self.isslc = 0
         self.amr_frequency = 0
         self.isoceancoupling = 0
-        self.requested_outputs = 'List of requested outputs'
+        self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -125,15 +129,61 @@ class transient(class_registry.manage_state):
         s = 'ISSM - transient Class'
         return s
 
-    # Marshall method for saving the transient parameters
-    def marshall_class(self, prefix, md, fid):
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
         """
-        Marshall the transient parameters to a binary file.
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+            
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = []
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+
+    # Marshall method for saving the transient parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [transient] parameters to a binary file.
 
         Parameters
         ----------
         fid : file object
             The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
 
         Returns
         -------
@@ -149,9 +199,7 @@ class transient(class_registry.manage_state):
         for fieldname in fieldnames:
             execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'Boolean')
         
-        ## Write Integer fields
+        ## Write other fields
         execute.WriteData(fid, prefix, obj = self, fieldname = 'isoceancoupling', format = 'Integer')
         execute.WriteData(fid, prefix, obj = self, fieldname = 'amr_frequency', format = 'Integer')
-
-        ## TODO: Implement marshalling logic for requested_outputs
-        execute.WriteData(fid, prefix, name = 'md.transient.requested_outputs', data = self.requested_outputs, format = 'StringArray')
+        execute.WriteData(fid, prefix, name = 'md.transient.requested_outputs', data = self.process_outputs(md), format = 'StringArray')

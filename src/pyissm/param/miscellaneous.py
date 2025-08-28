@@ -1,5 +1,7 @@
 from . import param_utils
 from . import class_registry
+from .. import execute
+import collections
 
 @class_registry.register_class
 class miscellaneous(class_registry.manage_state):
@@ -31,6 +33,8 @@ class miscellaneous(class_registry.manage_state):
         Returns a detailed string representation of the miscellaneous parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -43,7 +47,7 @@ class miscellaneous(class_registry.manage_state):
     def __init__(self, other = None):
         self.notes = ''
         self.name = ''
-        self.dummy = 'Placeholder for dummy fields'
+        self.dummy = collections.OrderedDict()#'Placeholder for dummy fields -- NOT IMPLEMENTED YET'
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -62,3 +66,24 @@ class miscellaneous(class_registry.manage_state):
         s = 'ISSM - miscellaneous Class'
         return s
 
+    # Marshall method for saving the miscellaneous parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [miscellaneous] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write field
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'name', format = 'String')
