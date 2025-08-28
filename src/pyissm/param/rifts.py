@@ -19,9 +19,9 @@ class rifts(class_registry.manage_state):
 
     Attributes
     ----------
-    riftstruct : str, default='Rift structure'
+    riftstruct : list, default=[]
         Structure containing all rift information (vertices coordinates, segments, type of melange, etc.).
-    riftproperties : str, default='Rift properties'
+    riftproperties : list, default=[]
         Rift properties including physical and mechanical characteristics.
 
     Methods
@@ -32,6 +32,8 @@ class rifts(class_registry.manage_state):
         Returns a detailed string representation of the rifts parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -42,8 +44,8 @@ class rifts(class_registry.manage_state):
 
     # Initialise with default parameters
     def __init__(self, other = None):
-        self.riftstruct = 'Rift structure'
-        self.riftproperties = 'Rift properties'
+        self.riftstruct = []
+        self.riftproperties = []
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -61,20 +63,26 @@ class rifts(class_registry.manage_state):
         s = 'ISSM - rifts Class'
         return s
 
+
     # Marshall method for saving the rifts parameters
-    def marshall_class(self, prefix, md, fid):
+    def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall the rifts parameters to a binary file.
+        Marshall [rifts] parameters to a binary file.
 
         Parameters
         ----------
         fid : file object
             The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
 
         Returns
         -------
         None
         """
+
         # TODO: Implement marshalling logic for riftstruct and riftproperties. Set to 0 for now to pass errors at runtime.
         execute.WriteData(fid, prefix, name = 'md.rifts.numrifts', data = 0, format = 'Integer')
         execute.WriteData(fid, prefix, name = 'md.rifts.riftstruct', data = np.zeros((0, 12)), format = 'DoubleMat', mattype = 3)

@@ -64,7 +64,7 @@ class damage(class_registry.manage_state):
         Returns a detailed string representation of the damage parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md)
+    process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file.
@@ -128,41 +128,50 @@ class damage(class_registry.manage_state):
         return s
     
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self, md = None):
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
         """
         Process requested outputs, expanding 'default' to appropriate outputs.
-        
+
         Parameters
         ----------
         md : ISSM model object, optional
             Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
             
         Returns
         -------
-        outputs
+        outputs : list
             List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
         """
-        
+
         outputs = []
+
+        ## Set default_outputs
+        if md.mesh.domain_type() == '2Dhorizontal':
+            default_outputs = ['DamageDbar']
+        else:
+            default_outputs = ['DamageD']
 
         ## Loop through all requested outputs
         for item in self.requested_outputs:
             
             ## Process default outputs
-            if item == 'default':
-                
-                ## Adjust default output based on domain type
-                if md.mesh.domain_type() == '2Dhorizontal':
-                    default_outputs = ['DamageDbar']
-                    outputs.extend(default_outputs)
-                else:
-                    default_outputs = ['DamageD']
-                    outputs.extend(default_outputs)
+            if item == 'default':                
+                outputs.extend(default_outputs)
+            else:
+                outputs.extend(default_outputs)
 
             ## Append other requested outputs (not defaults)
-            else:
-                outputs.append(item)
+        else:
+            outputs.append(item)
 
+        if return_default_outputs:
+            return outputs, default_outputs
         return outputs
 
     # Marshall method for saving the damage parameters

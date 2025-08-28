@@ -25,8 +25,8 @@ class default(class_registry.manage_state):
         Surface mass balance [m/yr ice eq].
     steps_per_step : int, default=1
         Number of SMB steps per time step.
-    requested_outputs : str, default='List of requested outputs'
-        Additional outputs requested (default: ['SmbMassBalance']).
+    requested_outputs : list, default=['default']
+        Additional outputs requested
     averaging : int, default=0
         Averaging method from short to long steps. 0: Arithmetic (default), 1: Geometric, 2: Harmonic.
 
@@ -38,6 +38,10 @@ class default(class_registry.manage_state):
         Returns a detailed string representation of the SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md=None, return_default_outputs=False)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -48,7 +52,7 @@ class default(class_registry.manage_state):
     def __init__(self, other = None):
         self.mass_balance = np.nan
         self.steps_per_step = 1
-        self.requested_outputs = 'List of requested outputs' # Default = ['SmbMassBalance']
+        self.requested_outputs = ['default']
         self.averaging = 0
 
         # Inherit matching fields from provided class
@@ -72,20 +76,67 @@ class default(class_registry.manage_state):
         s = 'ISSM - smb.default Class'
         return s
     
-    # Marshall method for saving the smb parameters
-    def marshall_class(self, prefix, md, fid):
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
         """
-        Marshall the smb parameters to a binary file.
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+            
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['SmbMassBalance']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+        
+    # Marshall method for saving the smb.default parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [smb.default] parameters to a binary file.
 
         Parameters
         ----------
         fid : file object
             The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
 
         Returns
         -------
         None
         """
+
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
         execute.WriteData(fid, prefix, name = 'md.smb.model', data = 1, format = 'Integer')
@@ -94,8 +145,7 @@ class default(class_registry.manage_state):
         execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
         execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
         execute.WriteData(fid, prefix, obj = self, fieldname = 'mass_balance', format = 'DoubleMat', scale = 1. / md.constants.yts, mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-
-        ## TODO: Write requested outputs
+        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.arma
@@ -153,7 +203,7 @@ class arma(class_registry.manage_state):
         Number of SMB steps per time step.
     averaging : int, default=0
         Averaging method from short to long steps. 0: Arithmetic, 1: Geometric, 2: Harmonic.
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested.
 
     Methods
@@ -164,6 +214,10 @@ class arma(class_registry.manage_state):
         Returns a detailed string representation of the ARMA SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md=None, return_default_outputs=False)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -189,7 +243,7 @@ class arma(class_registry.manage_state):
         self.datebreaks = np.nan
         self.steps_per_step = 1
         self.averaging = 0
-        self.requested_outputs = 'List of requested outputs'
+        self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -225,6 +279,168 @@ class arma(class_registry.manage_state):
         s = 'ISSM - smb.arma Class'
         return s
 
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+            
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['SmbMassBalance']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+        
+    # Marshall method for saving the smb.arma parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [smb.arma] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Scale parameters & set elevation bins
+        ## NOTE: Taken from $ISSM_DIR/src/m/classes/SMBarma.py
+        if(np.any(np.isnan(md.smb.lapserates))):
+            temp_lapse_rates = np.zeros((md.smb.num_basins, 2, 12))
+            print('      smb.lapserates not specified: set to 0')
+            temp_elevation_bins = np.zeros((md.smb.num_basins, 1, 12)) # Dummy elevation bins
+            nbins    = 2
+            ntmlapse = 12
+        else:
+            if len(np.shape(md.smb.lapserates)) == 1:
+                nbins    = 1
+                ntmlapse = 1
+            elif len(np.shape(md.smb.lapserates)) == 2:
+                nbins    = np.shape(md.smb.lapserates)[1]
+                ntmlapse = 1
+            elif len(np.shape(md.smb.lapserates)) == 3:
+                nbins    = np.shape(md.smb.lapserates)[1]
+                ntmlapse = np.shape(md.smb.lapserates)[2]
+            temp_lapse_rates    = np.reshape(md.smb.lapserates,[md.smb.num_basins, nbins, ntmlapse])
+            temp_elevation_bins = np.reshape(md.smb.elevationbins, [md.smb.num_basins, max(1, nbins - 1), ntmlapse])
+        temp_ref_elevation  = np.copy(md.smb.refelevation)
+        
+        # Scale the parameters
+        polyParams_scaled   = np.copy(md.smb.polynomialparams)
+        polyParams_scaled_2d = np.zeros((md.smb.num_basins, md.smb.num_breaks + 1 * md.smb.num_params))
+        if md.smb.num_params > 1:
+            # Case 3D
+            if md.smb.num_basins > 1 and md.smb.num_breaks + 1 > 1:
+                for ii in range(md.smb.num_params):
+                    polyParams_scaled[:, :, ii] = polyParams_scaled[:, :, ii] * (1 / md.constants.yts) ** (ii + 1)
+                # Fit in 2D array
+                for ii in range(md.smb.num_params):
+                    polyParams_scaled_2d[:, ii * md.smb.num_breaks + 1:(ii + 1) * md.smb.num_breaks + 1] = 1 * polyParams_scaled[:, :, ii]
+            # Case 2D and higher-order params at increasing row index
+            elif md.smb.num_basins == 1:
+                for ii in range(md.smb.num_params):
+                    polyParams_scaled[ii, :] = polyParams_scaled[ii, :] * (1 / md.constants.yts) ** (ii + 1)
+                # Fit in row array
+                for ii in range(md.smb.num_params):
+                    polyParams_scaled_2d[0, ii * md.smb.num_breaks + 1:(ii + 1) * md.smb.num_breaks + 1] = 1 * polyParams_scaled[ii, :]
+            # Case 2D and higher-order params at increasing column index
+            elif md.smb.num_breaks + 1 == 1:
+                for ii in range(md.smb.num_params):
+                    polyParams_scaled[:, ii] = polyParams_scaled[:, ii] * (1 / md.constants.yts) ** (ii + 1)
+                # 2D array is already in correct format
+                polyParams_scaled_2d = np.copy(polyParams_scaled)
+        else:
+            polyParams_scaled   = polyParams_scaled * (1 / md.constants.yts)
+            # 2D array is already in correct format
+            polyParams_scaled_2d = np.copy(polyParams_scaled)
+
+        if md.smb.num_breaks + 1 == 1:
+            dbreaks = np.zeros((md.smb.num_basins, 1))
+        else:
+            dbreaks = np.copy(md.smb.datebreaks)
+
+        if ntmlapse == 1:
+            temp_lapse_rates    = np.repeat(temp_lapse_rates, 12, axis = 2)
+            temp_elevation_bins = np.repeat(temp_elevation_bins, 12, axis = 2)
+        if np.any(np.isnan(md.smb.refelevation)):
+            temp_ref_elevation = np.zeros((md.smb.num_basins)).reshape(1, md.smb.num_basins)
+            areas = GetAreas(md.mesh.elements, md.mesh.x, md.mesh.y)
+            for ii, bid in enumerate(np.unique(md.smb.basin_id)):
+                indices = np.where(md.smb.basin_id == bid)[0]
+                elemsh = np.zeros((len(indices)))
+                for jj in range(len(indices)):
+                    elemsh[jj] = np.mean(md.geometry.surface[md.mesh.elements[indices[jj], :] - 1])
+                temp_ref_elevation[0, ii] = np.sum(areas[indices] * elemsh) / np.sum(areas[indices])
+            if(np.any(temp_lapse_rates != 0)):
+                print('      smb.refelevation not specified: Reference elevations set to mean surface elevation of basins')
+        nbins = np.shape(temp_lapse_rates)[1]
+        temp_lapse_rates_2d    = np.zeros((md.smb.num_basins, nbins * 12))
+        temp_elevation_bins_2d = np.zeros((md.smb.num_basins, max(12, (nbins - 1) * 12)))
+        for ii in range(12):
+            temp_lapse_rates_2d[:, ii * nbins:(ii + 1) * nbins] = temp_lapse_rates[:, :, ii]
+            temp_elevation_bins_2d[:, ii * (nbins - 1):(ii + 1) * (nbins - 1)] = temp_elevation_bins[:, :, ii]
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 13, format = 'Integer')
+
+        ## Write Integer fields
+        fieldnames = ['num_basins', 'num_breaks', 'num_params', 'ar_order', 'ma_order', 'steps_per_step', 'averaging']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+        execute.WriteData(fid, prefix, name = 'md.smb.num_bins', data = nbins, format = 'Integer')
+
+        ## Write DoubleMat fields
+        execute.WriteData(fid, prefix, name = 'md.smb.polynomialparams', data = polyParams_scaled_2d,  format = 'DoubleMat')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'arlag_coefs', format = 'DoubleMat', yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'malag_coefs', format = 'DoubleMat', yts = md.constants.yts)
+        execute.WriteData(fid, prefix, name = 'md.smb.datebreaks', data = dbreaks, format = 'DoubleMat', yts = md.constants.yts)
+        execute.WriteData(fid, prefix, name = 'smb.smb.lapserates', data = temp_lapse_rates_2d, format = 'DoubleMat', scale = 1. / md.constants.yts, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, name = 'md.smb.elevationbins', data = temp_elevation_bins_2d, format = 'DoubleMat')
+        execute.WriteData(fid, prefix, name = 'md.smb.refelevation', data = temp_ref_elevation, format = 'DoubleMat')
+
+        ## Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'arma_timestep', format = 'Double', scale = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, name = 'md.smb.basin_id', data = self.basin_id - 1, format = 'IntMat', mattype = 2)  # 0-indexed
+        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+
 ## ------------------------------------------------------
 ## smb.components
 ## ------------------------------------------------------
@@ -255,7 +471,7 @@ class components(class_registry.manage_state):
         Number of SMB steps per time step.
     averaging : int, default=0
         Averaging method from short to long steps. 0: Arithmetic, 1: Geometric, 2: Harmonic.
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested.
 
     Methods
@@ -266,6 +482,10 @@ class components(class_registry.manage_state):
         Returns a detailed string representation of the component SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md=None, return_default_outputs=False)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Notes
     -----
@@ -287,7 +507,7 @@ class components(class_registry.manage_state):
         self.evaporation = np.nan
         self.steps_per_step = 1
         self.averaging = 0
-        self.requested_outputs = 'List of requested outputs'
+        self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -311,6 +531,80 @@ class components(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - smb.components Class'
         return s
+    
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+            
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['SmbMassBalance']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+        
+    # Marshall method for saving the smb.components parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [smb.components] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 2, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'accumulation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'runoff', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'evaporation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+
 
 ## ------------------------------------------------------
 ## smb.d18opdd
@@ -380,7 +674,7 @@ class d18opdd(class_registry.manage_state):
         Number of SMB steps per time step.
     averaging : int, default=0
         Averaging method from short to long steps. 0: Arithmetic, 1: Geometric, 2: Harmonic.
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested.
 
     Methods
@@ -391,6 +685,10 @@ class d18opdd(class_registry.manage_state):
         Returns a detailed string representation of the delta-18-O PDD SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md=None, return_default_outputs=False)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -463,6 +761,106 @@ class d18opdd(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - smb.d18opdd Class'
         return s
+    
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+            
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['SmbMassBalance']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+        
+    # Marshall method for saving the smb.d18opdd parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [smb.d18opdd] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 5, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'ismungsm', format = 'Boolean')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'isd18opd', format = 'Boolean')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'issetpddfac', format = 'Boolean')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'desfac', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 's0p', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 's0t', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'rlapslgm', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'Tdiff', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'sealev', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+
+        ## Write conditional fields
+        if self.isd18opd:
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'temperatures_presentday', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitations_presentday', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'istemperaturescaled', format = 'Boolean')
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'isprecipscaled', format = 'Boolean')
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'delta18o', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'dpermil', format = 'Double')
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'f', format = 'Double')
+
+            if self.istemperaturescaled == 0:
+                execute.WriteData(fid, prefix, obj = self, fieldname = 'temperatures_reconstructed', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+
+            if self.isprecipscaled == 0:
+                execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitations_reconstructed', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+
+        if self.issetpddfac:
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'pddfac_snow', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'pddfac_ice', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
 ## ------------------------------------------------------
 ## smb.gradients
@@ -496,7 +894,7 @@ class gradients(class_registry.manage_state):
         Number of SMB steps per time step.
     averaging : int, default=0
         Averaging method from short to long steps. 0: Arithmetic, 1: Geometric, 2: Harmonic.
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested.
 
     Methods
@@ -507,6 +905,10 @@ class gradients(class_registry.manage_state):
         Returns a detailed string representation of the gradient SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md=None, return_default_outputs=False)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Notes
     -----
@@ -557,6 +959,79 @@ class gradients(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - smb.gradients Class'
         return s
+    
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+            
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['SmbMassBalance']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+        
+    # Marshall method for saving the smb.gradients parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [smb.gradients] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 6, format = 'Integer')
+
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'href', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'smbref', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'b_pos', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'b_neg', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.gradientscomponents
@@ -594,7 +1069,7 @@ class gradientscomponents(class_registry.manage_state):
         Number of SMB steps per time step.
     averaging : int, default=0
         Averaging method from short to long steps. 0: Arithmetic, 1: Geometric, 2: Harmonic.
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested.
 
     Methods
@@ -605,6 +1080,10 @@ class gradientscomponents(class_registry.manage_state):
         Returns a detailed string representation of the gradient components SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md=None, return_default_outputs=False)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Notes
     -----
@@ -630,7 +1109,7 @@ class gradientscomponents(class_registry.manage_state):
         self.runoffgrad = np.nan
         self.steps_per_step = 1
         self.averaging = 0
-        self.requested_outputs = 'List of requested outputs'
+        self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -658,6 +1137,89 @@ class gradientscomponents(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - smb.gradientscomponents Class'
         return s
+    
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+            
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['SmbMassBalance']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+
+                    ## Add to default_outputs when steps_per_step > 1
+                    if self.steps_per_step > 1:
+                        default_outputs.append('SmbMassBalanceSubstep')
+
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+        
+    # Marshall method for saving the smb.gradientscomponents parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [smb.gradientscomponents] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 11, format = 'Integer')
+
+        ## Write DoubleMat fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'accuref', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts, scale = 1. / md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'accugrad', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts, scale = 1. / md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'runoffref', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts, scale = 1. / md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'runoffgrad', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts, scale = 1. / md.constants.yts)
+        
+        ## Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'accualti', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'runoffalti', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.gradientsela
@@ -693,7 +1255,7 @@ class gradientsela(class_registry.manage_state):
         Number of SMB steps per time step.
     averaging : int, default=0
         Averaging method from short to long steps. 0: Arithmetic, 1: Geometric, 2: Harmonic.
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested.
 
     Methods
@@ -704,6 +1266,10 @@ class gradientsela(class_registry.manage_state):
         Returns a detailed string representation of the ELA gradient SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md=None, return_default_outputs=False)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Notes
     -----
@@ -729,7 +1295,7 @@ class gradientsela(class_registry.manage_state):
         self.b_min = -9999
         self.steps_per_step = 1
         self.averaging = 0
-        self.requested_outputs = 'List of requested outputs'
+        self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -756,6 +1322,83 @@ class gradientsela(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - smb.gradientsela Class'
         return s
+    
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+            
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['SmbMassBalance']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+        
+    # Marshall method for saving the smb.gradientsela parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [smb.gradientsela] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 9, format = 'Integer')
+
+        ## Write DoubleMat fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'ela', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'b_pos', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'b_neg', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'b_max', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'b_min', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        
+        ## Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.henning
@@ -782,7 +1425,7 @@ class henning(class_registry.manage_state):
         Number of SMB steps per time step.
     averaging : int, default=0
         Averaging method from short to long steps. 0: Arithmetic, 1: Geometric, 2: Harmonic.
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested.
 
     Methods
@@ -793,6 +1436,10 @@ class henning(class_registry.manage_state):
         Returns a detailed string representation of the Henning SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md=None, return_default_outputs=False)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -805,7 +1452,7 @@ class henning(class_registry.manage_state):
         self.smbref = np.nan
         self.steps_per_step = 1
         self.averaging = 0
-        self.requested_outputs = 'List of requested outputs'
+        self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -827,6 +1474,77 @@ class henning(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - smb.henning Class'
         return s
+
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+            
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['SmbMassBalance']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+        
+    # Marshall method for saving the smb.henning parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [smb.henning] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 1, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'mass_balance', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.meltcomponents
@@ -860,7 +1578,7 @@ class meltcomponents(class_registry.manage_state):
         Number of SMB steps per time step.
     averaging : int, default=0
         Averaging method from short to long steps. 0: Arithmetic, 1: Geometric, 2: Harmonic.
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested.
 
     Methods
@@ -871,6 +1589,10 @@ class meltcomponents(class_registry.manage_state):
         Returns a detailed string representation of the melt components SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md=None, return_default_outputs=False)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Notes
     -----
@@ -896,7 +1618,7 @@ class meltcomponents(class_registry.manage_state):
         self.refreeze = np.nan
         self.steps_per_step = 1
         self.averaging = 0
-        self.requested_outputs = 'List of requested outputs'
+        self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -921,6 +1643,80 @@ class meltcomponents(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - smb.meltcomponents Class'
         return s
+
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+            
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['SmbMassBalance']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+        
+    # Marshall method for saving the smb.meltcomponents parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [smb.meltcomponents] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 3, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'accumulation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'evaporation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'melt', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'refreeze', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.pdd
@@ -989,7 +1785,7 @@ class pdd(class_registry.manage_state):
         Number of SMB steps per time step.
     averaging : int, default=0
         Averaging method from short to long steps. 0: Arithmetic, 1: Geometric, 2: Harmonic.
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested.
 
     Methods
@@ -1000,6 +1796,10 @@ class pdd(class_registry.manage_state):
         Returns a detailed string representation of the PDD SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md=None, return_default_outputs=False)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Notes
     -----
@@ -1086,6 +1886,110 @@ class pdd(class_registry.manage_state):
         s = 'ISSM - smb.pdd Class'
         return s
 
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+            
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['SmbMassBalance']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+        
+    # Marshall method for saving the smb.pdd parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [smb.pdd] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 4, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'isdelta18o', format = 'Boolean')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'ismungsm', format = 'Boolean')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'issetpddfac', format = 'Boolean')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'desfac', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 's0p', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 's0t', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'rlapslgm', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+
+        ## Write conditional fields
+        if (self.isdelta18o == 0 and self.ismungsm == 0):
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'monthlytemperatures', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        elif self.isdelta18o:
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'temperatures_presentday', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'temperatures_lgm', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitations_presentday', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitations_lgm', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'delta18o_surface', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'delta18o', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'Tdiff', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'sealev', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+        elif self.ismungsm:
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'temperatures_presentday', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'temperatures_lgm', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitations_presentday', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitations_lgm', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'Pfac', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'Tdiff', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'sealev', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+
+        if self.issetpddfac:
+            execute.WriteData(fid, prefix, ovj = self, fieldname = 'pddfac_snow', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute.WriteData(fid, prefix, ovj = self, fieldname = 'pddfac_ice', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+
 ## ------------------------------------------------------
 ## smb.pddSicopolis
 ## ------------------------------------------------------
@@ -1131,7 +2035,7 @@ class pddSicopolis(class_registry.manage_state):
         Number of SMB steps per time step.
     averaging : int, default=0
         Averaging method from short to long steps. 0: Arithmetic, 1: Geometric, 2: Harmonic.
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested (TemperaturePDD, SmbAccumulation, SmbMelt).
 
     Methods
@@ -1142,6 +2046,10 @@ class pddSicopolis(class_registry.manage_state):
         Returns a detailed string representation of the SICOPOLIS PDD SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md=None, return_default_outputs=False)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Notes
     -----
@@ -1175,7 +2083,7 @@ class pddSicopolis(class_registry.manage_state):
         self.isfirnwarming = 1
         self.steps_per_step = 1
         self.averaging = 0
-        self.requested_outputs = 'List of requested outputs'
+        self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -1206,3 +2114,83 @@ class pddSicopolis(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - smb.pddSicopolis Class'
         return s
+
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+            
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['SmbMassBalance']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+        
+    # Marshall method for saving the smb.pddSicopolis parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [smb.pddSicopolis] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 10, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'isfirnwarming', format = 'Boolean')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'desfac', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 's0p', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 's0t', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'monthlytemperatures', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'temperature_anomaly', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitation_anomaly', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'smb_corr', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')

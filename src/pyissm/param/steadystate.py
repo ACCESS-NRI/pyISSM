@@ -22,7 +22,7 @@ class steadystate(class_registry.manage_state):
         Relative tolerance criterion for convergence.
     maxiter : int, default=100
         Maximum number of iterations allowed.
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional requested outputs for the steady state solution.
 
     Methods
@@ -33,6 +33,10 @@ class steadystate(class_registry.manage_state):
         Returns a detailed string representation of the steadystate parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md=None, return_default_outputs=False)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -46,7 +50,7 @@ class steadystate(class_registry.manage_state):
     def __init__(self, other = None):
         self.reltol = 0.01
         self.maxiter = 100
-        self.requested_outputs = 'List of requested outputs'
+        self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -64,27 +68,73 @@ class steadystate(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - steadystate Class'
         return s
-    
-    # Marshall method for saving the earth parameters
-    def marshall_class(self, prefix, md, fid):
+
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
         """
-        Marshall the earth parameters to a binary file.
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+            
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        _, stressbalance_defaults = md.stressbalance.process_outputs(md, return_default_outputs = True)
+        _, thermal_defaults = md.thermal.process_outputs(md, return_default_outputs = True)
+        default_outputs = [stressbalance_defaults + thermal_defaults]
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+    
+    # Marshall method for saving the steadystate parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [steadystate] parameters to a binary file.
 
         Parameters
         ----------
         fid : file object
             The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
 
         Returns
         -------
         None
         """
 
-        ## Write each field to the file
+        ## Write fields
         execute.WriteData(fid, prefix, obj = self, fieldname = 'reltol', format = 'Double')
         execute.WriteData(fid, prefix, obj = self, fieldname = 'maxiter', format = 'Integer')
-
-        ## TODO: Implement marshalling logic for requested_outputs
-        execute.WriteData(fid, prefix, name = 'md.steadystate.requested_outputs', data = self.requested_outputs, format = 'StringArray')
+        execute.WriteData(fid, prefix, name = 'md.steadystate.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 

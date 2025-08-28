@@ -55,7 +55,7 @@ class armapw(class_registry.manage_state):
         Returns a detailed string representation of the armapw parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md)
+    process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file.
@@ -112,7 +112,9 @@ class armapw(class_registry.manage_state):
         return s
     
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self, md = None):
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
         """
         Process requested outputs, expanding 'default' to appropriate outputs.
 
@@ -120,13 +122,20 @@ class armapw(class_registry.manage_state):
         ----------
         md : ISSM model object, optional
             Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
             
         Returns
         -------
-        outputs
+        outputs : list
             List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
         """
+
         outputs = []
+
+        ## Set default_outputs
         default_outputs = ['FrictionWaterPressure']
 
         ## Loop through all requested outputs
@@ -140,6 +149,8 @@ class armapw(class_registry.manage_state):
             else:
                 outputs.append(item)
 
+        if return_default_outputs:
+            return outputs, default_outputs
         return outputs
     
     # Marshall method for saving the hydrology.armapw parameters
@@ -312,7 +323,7 @@ class dc(class_registry.manage_state):
         Returns a detailed string representation of the dc parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md)
+    process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file.
@@ -418,7 +429,9 @@ class dc(class_registry.manage_state):
         return s
     
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self, md = None):
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
         """
         Process requested outputs, expanding 'default' to appropriate outputs.
 
@@ -426,38 +439,44 @@ class dc(class_registry.manage_state):
         ----------
         md : ISSM model object, optional
             Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
             
         Returns
         -------
-        outputs
+        outputs : list
             List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
         """
 
         outputs = []
+
+        ## Set default_outputs
         default_outputs = ['SedimentHead', 'SedimentHeadResidual', 'EffectivePressure']
+
+        if self.isefficientlayer == 1:
+            default_outputs.extend(['EplHead', 'HydrologydcMaskEplactiveNode', 'HydrologydcMaskEplactiveElt', 'EplHeadSlopeX', 'EplHeadSlopeY', 'HydrologydcEplThickness'])
+        if self.steps_per_step > 1 or self.step_adapt:
+            default_outputs.extend(['EffectivePressureSubstep', 'SedimentHeadSubstep'])
+            if self.isefficientlayer == 1:
+                default_outputs.extend(['EplHeadSubstep', 'HydrologydcEplThicknessSubstep'])
 
         ## Loop through all requested outputs
         for item in self.requested_outputs:
             
             ## Process default outputs
             if item == 'default':
-                    
-                    ## Conditionally adjust the default_outputs
-                    if self.isefficientlayer == 1:
-                        default_outputs.extend(['EplHead', 'HydrologydcMaskEplactiveNode', 'HydrologydcMaskEplactiveElt', 'EplHeadSlopeX', 'EplHeadSlopeY', 'HydrologydcEplThickness'])
-                    if self.steps_per_step > 1 or self.step_adapt:
-                        default_outputs.extend(['EffectivePressureSubstep', 'SedimentHeadSubstep'])
-                        if self.isefficientlayer == 1:
-                            default_outputs.extend(['EplHeadSubstep', 'HydrologydcEplThicknessSubstep'])
-
                     outputs.extend(default_outputs)
 
             ## Append other requested outputs (not defaults)
             else:
                 outputs.append(item)
 
+        if return_default_outputs:
+            return outputs, default_outputs
         return outputs
-        
+
     # Marshall method for saving the hydrology.dc parameters
     def marshall_class(self, fid, prefix, md = None):
         """
@@ -594,7 +613,7 @@ class glads(class_registry.manage_state):
         Returns a detailed string representation of the glads parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md)
+    process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file.
@@ -675,7 +694,9 @@ class glads(class_registry.manage_state):
         return s
 
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self, md = None):
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
         """
         Process requested outputs, expanding 'default' to appropriate outputs.
 
@@ -683,14 +704,20 @@ class glads(class_registry.manage_state):
         ----------
         md : ISSM model object, optional
             Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
             
         Returns
         -------
-        outputs
+        outputs : list
             List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
         """
 
         outputs = []
+
+        ## Set default_outputs
         default_outputs = ['EffectivePressure', 'HydraulicPotential', 'HydrologySheetThickness', 'ChannelArea', 'ChannelDischarge']
 
         ## Loop through all requested outputs
@@ -704,6 +731,8 @@ class glads(class_registry.manage_state):
             else:
                 outputs.append(item)
 
+        if return_default_outputs:
+            return outputs, default_outputs
         return outputs
         
     # Marshall method for saving the hydrology.glads parameters
@@ -784,7 +813,7 @@ class pism(class_registry.manage_state):
         Returns a detailed string representation of the pism parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md)
+    process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file.
@@ -818,7 +847,9 @@ class pism(class_registry.manage_state):
         return s
 
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self, md = None):
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
         """
         Process requested outputs, expanding 'default' to appropriate outputs.
 
@@ -826,14 +857,20 @@ class pism(class_registry.manage_state):
         ----------
         md : ISSM model object, optional
             Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
             
         Returns
         -------
-        outputs
+        outputs : list
             List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
         """
 
         outputs = []
+
+        ## Set default_outputs
         default_outputs = ['Watercolumn']
 
         ## Loop through all requested outputs
@@ -847,6 +884,8 @@ class pism(class_registry.manage_state):
             else:
                 outputs.append(item)
 
+        if return_default_outputs:
+            return outputs, default_outputs
         return outputs
         
     # Marshall method for saving the hydrology.pism parameters
@@ -931,7 +970,7 @@ class shakti(class_registry.manage_state):
         Returns a detailed string representation of the shakti parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md)
+    process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -987,7 +1026,9 @@ class shakti(class_registry.manage_state):
         return s
     
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self, md = None):
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
         """
         Process requested outputs, expanding 'default' to appropriate outputs.
 
@@ -995,14 +1036,20 @@ class shakti(class_registry.manage_state):
         ----------
         md : ISSM model object, optional
             Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
             
         Returns
         -------
-        outputs
+        outputs : list
             List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
         """
 
         outputs = []
+
+        ## Set default_outputs
         default_outputs = ['HydrologyHead', 'HydrologyGapHeight', 'EffectivePressure', 'HydrologyBasalFlux', 'DegreeOfChannelization']
 
         ## Loop through all requested outputs
@@ -1016,6 +1063,8 @@ class shakti(class_registry.manage_state):
             else:
                 outputs.append(item)
 
+        if return_default_outputs:
+            return outputs, default_outputs
         return outputs
         
     # Marshall method for saving the hydrology.shakti parameters
@@ -1102,7 +1151,7 @@ class shreve(class_registry.manage_state):
         Returns a detailed string representation of the shreve parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md)
+    process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -1136,7 +1185,9 @@ class shreve(class_registry.manage_state):
         return s
 
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self, md = None):
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
         """
         Process requested outputs, expanding 'default' to appropriate outputs.
 
@@ -1144,14 +1195,20 @@ class shreve(class_registry.manage_state):
         ----------
         md : ISSM model object, optional
             Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
             
         Returns
         -------
-        outputs
+        outputs : list
             List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
         """
 
         outputs = []
+
+        ## Set default_outputs
         default_outputs = ['Watercolumn', 'HydrologyWaterVx', 'HydrologyWaterVy']
 
         ## Loop through all requested outputs
@@ -1165,6 +1222,8 @@ class shreve(class_registry.manage_state):
             else:
                 outputs.append(item)
 
+        if return_default_outputs:
+            return outputs, default_outputs
         return outputs
         
     # Marshall method for saving the hydrology.shreve parameters
@@ -1225,7 +1284,7 @@ class tws(class_registry.manage_state):
         Returns a detailed string representation of the tws parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md)
+    process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -1257,7 +1316,9 @@ class tws(class_registry.manage_state):
         return s
     
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self, md = None):
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
         """
         Process requested outputs, expanding 'default' to appropriate outputs.
 
@@ -1265,14 +1326,20 @@ class tws(class_registry.manage_state):
         ----------
         md : ISSM model object, optional
             Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
             
         Returns
         -------
-        outputs
+        outputs : list
             List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
         """
 
         outputs = []
+
+        ## Set default_outputs
         default_outputs = ['']
 
         ## Loop through all requested outputs
@@ -1286,6 +1353,8 @@ class tws(class_registry.manage_state):
             else:
                 outputs.append(item)
 
+        if return_default_outputs:
+            return outputs, default_outputs
         return outputs
         
     # Marshall method for saving the hydrology.tws parameters
