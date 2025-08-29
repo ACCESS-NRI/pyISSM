@@ -96,7 +96,7 @@ class steadystate(class_registry.manage_state):
         ## Set default_outputs
         _, stressbalance_defaults = md.stressbalance.process_outputs(md, return_default_outputs = True)
         _, thermal_defaults = md.thermal.process_outputs(md, return_default_outputs = True)
-        default_outputs = [stressbalance_defaults + thermal_defaults]
+        default_outputs = stressbalance_defaults + thermal_defaults
 
         ## Loop through all requested outputs
         for item in self.requested_outputs:

@@ -60,7 +60,11 @@ class regionaloutput(class_registry.manage_state):
 
     # Define repr
     def __repr__(self):
-        s = '   regionaloutput parameters:\n'
+        s = '---------------------------------------\n'
+        s += '****      NOT YET IMPLEMENTED      ****\n'
+        s += '****   Awaiting Python Wrappers    ****\n'
+        s += '---------------------------------------\n\n'
+        s += '   regionaloutput parameters:\n'
 
         s += '{}\n'.format(param_utils.fielddisplay(self, 'name', 'identifier for this regional response'))
         s += '{}\n'.format(param_utils.fielddisplay(self, 'definitionstring', 'string that identifies this output definition uniquely, from Outputdefinition[1 - 100]'))

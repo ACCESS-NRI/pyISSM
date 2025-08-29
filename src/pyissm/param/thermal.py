@@ -82,7 +82,7 @@ class thermal(class_registry.manage_state):
         self.isdrainicecolumn = 1
         self.watercolumn_upperlimit = 1000
         self.fe = 'P1'
-        self.requested_outputs = 'List of requested outputs' # Default = ['default'] - Default varies depending on isenthalpy
+        self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
         super().__init__(other)

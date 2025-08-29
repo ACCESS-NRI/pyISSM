@@ -1,5 +1,6 @@
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 ## ------------------------------------------------------
 ## love.default
@@ -87,6 +88,8 @@ class default(class_registry.manage_state):
         Returns a detailed string representation of the Love number parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -180,7 +183,52 @@ class default(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - love Class'
         return s
+    
+    # Marshall method for saving the love.default parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [love.default] parameters to a binary file.
 
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write Integer fields
+        fieldnames = ['nfreq', 'sh_nmax', 'sh_nmin', 'min_integration_steps', 'integration_scheme',
+                      'n_temporal_iterations', 'forcing_type', 'inner_core_boundary', 'core_mantle_boundary',
+                      'hypergeom_nalpha', 'hypergeom_nz']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj=self, fieldname=field, format='Integer')
+
+        ## Write Double fields
+        fieldnames = ['g0', 'r0', 'mu0', 'Gravitational_Constant', 'underflow_tol', 'pw_threshold',
+                      'max_integration_dr']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj=self, fieldname=field, format='Double')
+
+        ## Write Boolean fields
+        fieldnames = ['chandler_wobble', 'allow_layer_deletion', 'istemporal', 'complex_computation',
+                      'quad_precision', 'love_kernels', 'debug']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj=self, fieldname=field, format='Boolean')
+
+        ## Write DoubleMat fields
+        execute.WriteData(fid, prefix, obj=self, fieldname='frequencies', format='DoubleMat', mattype = 3)
+        execute.WriteData(fid, prefix, obj=self, fieldname='hypergeom_table1', format='DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj=self, fieldname='hypergeom_table2', format='DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj=self, fieldname='hypergeom_z', format='DoubleMat', mattype = 3)
+
+        
 ## ------------------------------------------------------
 ## love.fourier
 ## ------------------------------------------------------
@@ -249,6 +297,8 @@ class fourier(class_registry.manage_state):
         Returns a detailed string representation of the Fourier Love number parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -325,3 +375,42 @@ class fourier(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - love.fourier Class'
         return s
+    
+    # Marshall method for saving the love.fourier parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [love.fourier] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write Integer fields
+        fieldnames = ['nfreq', 'sh_nmax', 'sh_nmin', 'integration_steps_per_layer', 'n_temporal_iterations',
+                      'forcing_type', 'inner_core_boundary', 'core_mantle_boundary']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj=self, fieldname=field, format='Integer')
+
+        ## Write Double fields
+        fieldnames = ['g0', 'r0', 'mu0', 'Gravitational_Constant', 'underflow_tol', 'pw_threshold']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj=self, fieldname=field, format='Double')
+
+        ## Write Boolean fields
+        fieldnames = ['chandler_wobble', 'allow_layer_deletion', 'istemporal', 'complex_computation',
+                      'love_kernels']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj=self, fieldname=field, format='Boolean')
+
+        ## Write DoubleMat fields
+        execute.WriteData(fid, prefix, obj=self, fieldname='frequencies', format='DoubleMat', mattype = 3)

@@ -1,5 +1,6 @@
 import numpy as np
 import collections
+import warnings
 from . import param_utils
 from . import class_registry
 from .. import execute
@@ -56,25 +57,30 @@ class default(class_registry.manage_state):
         return s
 
     # Marshall method for saving the qmu parameters
-    def marshall_class(self, prefix, md, fid):
+    def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall the qmu parameters to a binary file.
+        Marshall [qmu] parameters to a binary file.
 
         Parameters
         ----------
         fid : file object
             The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
 
         Returns
         -------
         None
         """
 
-        ## Fields to fils
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'isdakota', format = 'Boolean')
+        ## Write fields (Turn off)
+        execute.WriteData(fid, prefix, name = 'md.qmu.isdakota', data = False, format = 'Boolean')
+        execute.WriteData(fid, prefix, name = 'md.qmu.mass_flux_segments_present', data = False, format = 'Boolean')
 
-        ## Temporary fix for output (turn off for now)
-        execute.WriteData(fid, prefix, data = False, name = 'md.qmu.mass_flux_segments_present', format = 'Boolean')
+        warnings.warn('pyissm.param.qmu::qmu not yet implemented. Turning off qmu.')
+
 
 ## ------------------------------------------------------
 ## qmu.statistics
