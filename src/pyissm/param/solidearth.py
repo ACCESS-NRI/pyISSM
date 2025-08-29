@@ -207,9 +207,9 @@ class earth(class_registry.manage_state):
         execute.WriteData(fid, prefix, name = 'md.solidearth.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
         ## Marshall sub-objects
-        self.settings.marshall_class(prefix, md, fid)
-        self.lovenumbers.marshall_class(prefix, md, fid)
-        self.rotational.marshall_class(prefix, md, fid)
+        self.settings.marshall_class(fid, prefix, md)
+        self.lovenumbers.marshall_class(fid, prefix, md)
+        self.rotational.marshall_class(fid, prefix, md)
 
         ## Write conditional fields
         if self.external:
@@ -597,21 +597,21 @@ class settings(class_registry.manage_state):
 
         ## Write Double fields
         fieldnames = ['reltol', 'abstol', 'degacc']
-        for fieldname in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'Double', name = 'md.solidearth.settings.' + fieldname)
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, name = 'md.solidearth.settings.' + field, data = getattr(self, field), format = 'Double')
 
         ## Write Integer fields
         fieldnames = ['maxiter', 'runfrequency', 'horiz', 'sealevelloading', 'isgrd', 'compute_bp_grd', 'grdmodel', 'cross_section_shape']
-        for fieldname in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'Integer', name = 'md.solidearth.settings.' + fieldname)
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, name = 'md.solidearth.settings.' + field, data = getattr(self, field), format = 'Integer')
 
         ## Write Boolean fields
         fieldnames = ['selfattraction', 'elastic', 'viscous', 'rotation', 'grdocean', 'ocean_area_scaling']
-        for fieldname in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'Boolean', name = 'md.solidearth.settings.' + fieldname)
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, name = 'md.solidearth.settings.' + field, data = getattr(self, field), format = 'Boolean')
         
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'timeacc', format = 'Double', name = 'md.solidearth.settings.timeacc', scale = md.constants.yts)
+        execute.WriteData(fid, prefix, name = 'md.solidearth.settings.timeacc', data = getattr(self, 'timeacc'), format = 'Double', scale = md.constants.yts)
 
 ## ------------------------------------------------------
 ## solidearth.solution

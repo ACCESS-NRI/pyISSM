@@ -56,7 +56,11 @@ class massfluxatgate(class_registry.manage_state):
 
     # Define repr
     def __repr__(self):
-        s = '   Massfluxatgate:\n'
+        s = '---------------------------------------\n'
+        s += '****      NOT YET IMPLEMENTED      ****\n'
+        s += '****   Awaiting Python Wrappers    ****\n'
+        s += '---------------------------------------\n\n'
+        s += '   massfluxatgate parameters:\n'
 
         s += '{}\n'.format(param_utils.fielddisplay(self, 'name', 'identifier for this massfluxatgate response'))
         s += '{}\n'.format(param_utils.fielddisplay(self, 'definitionstring', 'string that identifies this output definition uniquely, from Outputdefinition[1 - 100]'))
