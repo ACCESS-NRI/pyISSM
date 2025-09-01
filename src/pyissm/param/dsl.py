@@ -141,9 +141,9 @@ class mme(class_registry.manage_state):
     # Initialise with default parameters
     def __init__(self, other = None):
         self.modelid = 0
-        self.global_average_thermosteric_sea_level = np.nan
-        self.sea_surface_height_above_geoid = np.nan
-        self.sea_water_pressure_at_sea_floor = np.nan
+        self.global_average_thermosteric_sea_level = []
+        self.sea_surface_height_above_geoid = []
+        self.sea_water_pressure_at_sea_floor = []
 
         # Inherit matching fields from provided class
         super().__init__(other)

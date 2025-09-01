@@ -173,26 +173,26 @@ class armapw(class_registry.manage_state):
         """
 
         # Scale the parameters #
-        polyParams_Scaled   = np.copy(md.hydrology.polynomialparams)
-        polyParams_Scaled_2d = np.zeros((md.hydrology.num_basins, md.hydrology.num_breaks + 1 * md.hydrology.num_params))
-        if(md.hydrology.num_params>1):
+        polyParams_Scaled   = np.copy(self.polynomialparams)
+        polyParams_Scaled_2d = np.zeros((self.num_basins, self.num_breaks + 1 * self.num_params))
+        if(self.num_params>1):
             # Case 3D #
-            if(md.hydrology.num_basins > 1 and md.hydrology.num_breaks + 1 > 1):
-                for ii in range(md.hydrology.num_params):
+            if(self.num_basins > 1 and self.num_breaks + 1 > 1):
+                for ii in range(self.num_params):
                     polyParams_Scaled[:, :, ii] = polyParams_Scaled[:, :, ii] * (1. / md.constants.yts) ** (ii)
                 # Fit in 2D array #
-                for ii in range(md.hydrology.num_params):
-                    polyParams_Scaled_2d[:, ii * md.hydrology.num_breaks + 1:(ii + 1) * md.hydrology.num_breaks + 1] = 1 * polyParams_Scaled[:, :, ii]
+                for ii in range(self.num_params):
+                    polyParams_Scaled_2d[:, ii * self.num_breaks + 1:(ii + 1) * self.num_breaks + 1] = 1 * polyParams_Scaled[:, :, ii]
             # Case 2D and higher-order params at increasing row index #
-            elif(md.hydrology.num_basins==1):
-                for ii in range(md.hydrology.num_params):
+            elif(self.num_basins==1):
+                for ii in range(self.num_params):
                     polyParams_Scaled[ii, :] = polyParams_Scaled[ii, :] * (1. / md.constants.yts) ** (ii)
                 # Fit in row array #
-                for ii in range(md.hydrology.num_params):
-                    polyParams_Scaled_2d[0, ii * md.hydrology.num_breaks + 1 : (ii + 1) * md.hydrology.num_breaks + 1] = 1 * polyParams_Scaled[ii, :]
+                for ii in range(self.num_params):
+                    polyParams_Scaled_2d[0, ii * self.num_breaks + 1 : (ii + 1) * self.num_breaks + 1] = 1 * polyParams_Scaled[ii, :]
             # Case 2D and higher-order params at incrasing column index #
-            elif(md.hydrology.num_breaks + 1 == 1):
-                for ii in range(md.hydrology.num_params):
+            elif(self.num_breaks + 1 == 1):
+                for ii in range(self.num_params):
                     polyParams_Scaled[:, ii] = polyParams_Scaled[:, ii] * (1. / md.constants.yts) ** (ii)
                 # 2D array is already in correct format #
                 polyParams_Scaled_2d = np.copy(polyParams_Scaled)
@@ -200,16 +200,16 @@ class armapw(class_registry.manage_state):
             # 2D array is already in correct format and no need for scaling#
             polyParams_Scaled_2d = np.copy(polyParams_Scaled)
 
-        if(md.hydrology.num_breaks + 1 == 1):
-            dbreaks = np.zeros((md.hydrology.num_basins, 1))
+        if(self.num_breaks + 1 == 1):
+            dbreaks = np.zeros((self.num_basins, 1))
         else:
-            dbreaks = np.copy(md.hydrology.datebreaks)
+            dbreaks = np.copy(self.datebreaks)
 
         # If no monthlyfactors provided: set them all to 1 #
-        if(np.size(md.hydrology.monthlyfactors) == 1):
-            tempmonthlyfactors = np.ones((md.hydrology.num_basins, 12))
+        if(np.size(self.monthlyfactors) == 1):
+            tempmonthlyfactors = np.ones((self.num_basins, 12))
         else:
-            tempmonthlyfactors = np.copy(md.hydrology.monthlyfactors)
+            tempmonthlyfactors = np.copy(self.monthlyfactors)
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
@@ -1098,7 +1098,7 @@ class shakti(class_registry.manage_state):
         execute.WriteData(fid, prefix, obj = self, fieldname = 'reynolds', format = 'DoubleMat', mattype = 2)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'englacial_input', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'moulin_input', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'scphead', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'spchead', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'neumannflux', format = 'DoubleMat', mattype = 2, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         
         ## Write Double fields

@@ -367,97 +367,95 @@ class rignotarma(class_registry.manage_state):
 
         ## Scale parameters
         ## NOTE: Scaling logic here taken from $ISSM_DIR/src/m/classes/frontalforcingsrignotarma.py
-        polyParams_scaled = np.copy(md.frontalforcings.polynomialparams)
-        polyParams_scaled_2d = np.zeros((md.frontalforcings.num_basins, md.frontalforcings.num_breaks + 1 * md.frontalforcings.num_params))
+        polyParams_scaled = np.copy(self.polynomialparams)
+        polyParams_scaled_2d = np.zeros((self.num_basins, self.num_breaks + 1 * self.num_params))
 
-        if(md.frontalforcings.num_params > 1):
+        if(self.num_params > 1):
             # Case 3D #
-            if(md.frontalforcings.num_basins > 1 and md.frontalforcings.num_breaks + 1 > 1):
-                for ii in range(md.frontalforcings.num_params):
+            if(self.num_basins > 1 and self.num_breaks + 1 > 1):
+                for ii in range(self.num_params):
                     polyParams_scaled[:,:,ii] = polyParams_scaled[:, :, ii] * (1 / md.constants.yts) ** ii
                 # Fit in 2D array #
-                for ii in range(md.frontalforcings.num_params):
-                    polyParams_scaled_2d[:, ii * (md.frontalforcings.num_breaks + 1):(ii + 1) * (md.frontalforcings.num_breaks + 1)] = 1 * polyParams_scaled[:, :, ii]
+                for ii in range(self.num_params):
+                    polyParams_scaled_2d[:, ii * (self.num_breaks + 1):(ii + 1) * (self.num_breaks + 1)] = 1 * polyParams_scaled[:, :, ii]
             # Case 2D and higher-order params at increasing row index #
-            elif(md.frontalforcings.num_basins == 1):
-                for ii in range(md.frontalforcings.num_params):
+            elif(self.num_basins == 1):
+                for ii in range(self.num_params):
                     polyParams_scaled[ii, :] = polyParams_scaled[ii, :] * (1 / md.constants.yts) ** ii
                 # Fit in row array #
-                for ii in range(md.frontalforcings.num_params):
-                    polyParams_scaled_2d[0, ii * (md.frontalforcings.num_breaks + 1):(ii + 1) * (md.frontalforcings.num_breaks + 1)] = 1 * polyParams_scaled[ii, :]
+                for ii in range(self.num_params):
+                    polyParams_scaled_2d[0, ii * (self.num_breaks + 1):(ii + 1) * (self.num_breaks + 1)] = 1 * polyParams_scaled[ii, :]
             # Case 2D and higher-order params at increasing column index #
-            elif(md.frontalforcings.num_breaks + 1 == 1):
-                for ii in range(md.frontalforcings.num_params):
+            elif(self.num_breaks + 1 == 1):
+                for ii in range(self.num_params):
                     polyParams_scaled[:, ii] = polyParams_scaled[:, ii] * (1 / md.constants.yts) ** ii
                 # 2D array is already in correct format #
                 polyParams_scaled_2d = np.copy(polyParams_scaled)
         else:
             # 2D array is already in correct format and no need for scaling #
             polyParams_scaled_2d = np.copy(polyParams_scaled)
-        if(md.frontalforcings.num_breaks + 1 == 1):
-            dbreaks = np.zeros((md.frontalforcings.num_basins, 1))
+        if(self.num_breaks + 1 == 1):
+            dbreaks = np.zeros((self.num_basins, 1))
         else:
-            dbreaks = np.copy(md.frontalforcings.datebreaks)
+            dbreaks = np.copy(self.datebreaks)
 
         ### Deal with monthly effects ###
-        if(np.any(np.isnan(md.frontalforcings.monthlyvals_intercepts))):
-            interceptsM = np.zeros((md.frontalforcings.num_basins,12)) #monthly intercepts not provided, set to 0
-            trendsM     = np.zeros((md.frontalforcings.num_basins,12)) #set monthly trends also to 0
+        if(np.any(np.isnan(self.monthlyvals_intercepts))):
+            interceptsM = np.zeros((self.num_basins,12)) #monthly intercepts not provided, set to 0
+            trendsM     = np.zeros((self.num_basins,12)) #set monthly trends also to 0
         else:
-            interceptsM3d = md.frontalforcings.monthlyvals_intercepts
-            if(np.any(np.isnan(md.frontalforcings.monthlyvals_trends))):
+            interceptsM3d = self.monthlyvals_intercepts
+            if(np.any(np.isnan(self.monthlyvals_trends))):
                 trendsM3d = 0*interceptsM3d #monthly trends not provided, set to 0
             else:
-                trendsM3d = md.frontalforcings.monthlyvals_trends
+                trendsM3d = self.monthlyvals_trends
         # Create 2D arrays from 3D arrays if needed #
-        if(md.frontalforcings.monthlyvals_numbreaks + 1 > 1 and np.all(np.isnan(md.frontalforcings.monthlyvals_intercepts))==False):
-            interceptsM = np.zeros((md.frontalforcings.num_basins, 12 * md.frontalforcings.monthlyvals_numbreaks + 1)) 
-            trendsM     = np.zeros((md.frontalforcings.num_basins, 12 * md.frontalforcings.monthlyvals_numbreaks + 1))
-            for ii in range(md.frontalforcings.monthlyvals_numbreaks + 1):
+        if(self.monthlyvals_numbreaks + 1 > 1 and np.all(np.isnan(self.monthlyvals_intercepts))==False):
+            interceptsM = np.zeros((self.num_basins, 12 * self.monthlyvals_numbreaks + 1)) 
+            trendsM     = np.zeros((self.num_basins, 12 * self.monthlyvals_numbreaks + 1))
+            for ii in range(self.monthlyvals_numbreaks + 1):
                 interceptsM[:, ii * 12 : (ii + 1) * 12] = 1 * interceptsM3d[:,:,ii]
                 trendsM[:, ii * 12 : (ii + 1) * 12] = 1 * trendsM3d[:,:,ii]
-        elif(md.frontalforcings.monthlyvals_numbreaks + 1 == 1 and np.all(np.isnan(md.frontalforcings.monthlyvals_intercepts)) == False):
+        elif(self.monthlyvals_numbreaks + 1 == 1 and np.all(np.isnan(self.monthlyvals_intercepts)) == False):
             interceptsM = 1 * interceptsM3d
             trendsM     = 1 * trendsM3d
-        if(md.frontalforcings.monthlyvals_numbreaks + 1 == 1):
-            dMbreaks = np.zeros((md.frontalforcings.num_basins, 1))
+        if(self.monthlyvals_numbreaks + 1 == 1):
+            dMbreaks = np.zeros((self.num_basins, 1))
         else:
-            dMbreaks = np.copy(md.frontalforcings.monthlyvals_datebreaks)
+            dMbreaks = np.copy(self.monthlyvals_datebreaks)
 
         ### Deal with the subglacial discharge polynomial ###
         if(self.isdischargearma):
-            sdnprm  = md.frontalforcings.sd_num_params
-            sdnper  = md.frontalforcings.sd_num_breaks+1
-            sdpolyParams_scaled   = np.copy(md.frontalforcings.sd_polynomialparams)
-            sdpolyParams_scaled_2d = np.zeros((md.frontalforcings.num_basins, md.frontalforcings.sd_num_breaks + 1 * md.frontalforcings.sd_num_params))
-            if(md.frontalforcings.sd_num_params > 1):
+            sdpolyParams_scaled   = np.copy(self.sd_polynomialparams)
+            sdpolyParams_scaled_2d = np.zeros((self.num_basins, self.sd_num_breaks + 1 * self.sd_num_params))
+            if(self.sd_num_params > 1):
                 # Case 3D #
-                if(nbas>1 and md.frontalforcings.sd_num_breaks + 1 > 1):
-                    for ii in range(md.frontalforcings.sd_num_params):
+                if(self.num_basins>1 and self.sd_num_breaks + 1 > 1):
+                    for ii in range(self.sd_num_params):
                         sdpolyParams_scaled[:, :, ii] = sdpolyParams_scaled[:, :, ii] * (1 / md.constants.yts) ** ii
                     # Fit in 2D array #
-                    for ii in range(md.frontalforcings.sd_num_params):
-                        sdpolyParams_scaled_2d[:, ii * md.frontalforcings.sd_num_breaks + 1 : (ii + 1) * md.frontalforcings.sd_num_breaks + 1] = 1 * sdpolyParams_scaled[:, :, ii]
+                    for ii in range(self.sd_num_params):
+                        sdpolyParams_scaled_2d[:, ii * self.sd_num_breaks + 1 : (ii + 1) * self.sd_num_breaks + 1] = 1 * sdpolyParams_scaled[:, :, ii]
                 # Case 2D and higher-order params at increasing row index #
-                elif(nbas == 1):
-                    for ii in range(md.frontalforcings.sd_num_params):
+                elif(self.num_basins == 1):
+                    for ii in range(self.sd_num_params):
                         sdpolyParams_scaled[ii, :] = sdpolyParams_scaled[ii, :] * (1 / md.constants.yts) ** ii
                     # Fit in row array #
-                    for ii in range(nprm):
-                        sdpolyParams_scaled_2d[0, ii * md.frontalforcings.sd_num_breaks + 1 : (ii + 1) * md.frontalforcings.sd_num_breaks + 1] = 1 * sdpolyParams_scaled[ii, :]
+                    for ii in range(self.num_params):
+                        sdpolyParams_scaled_2d[0, ii * self.sd_num_breaks + 1 : (ii + 1) * self.sd_num_breaks + 1] = 1 * sdpolyParams_scaled[ii, :]
                 # Case 2D and higher-order params at incrasing column index #
-                elif(md.frontalforcings.sd_num_breaks + 1 == 1):
-                    for ii in range(md.frontalforcings.sd_num_params):
+                elif(self.sd_num_breaks + 1 == 1):
+                    for ii in range(self.sd_num_params):
                         sdpolyParams_scaled[:, ii] = sdpolyParams_scaled[:, ii] * (1 / md.constants.yts) ** ii
                     # 2D array is already in correct format #
                     sdpolyParams_scaled_2d = np.copy(sdpolyParams_scaled)
             else:
                 # 2D array is already in correct format and no need for scaling #
                 sdpolyParams_scaled_2d = np.copy(sdpolyParams_scaled)
-            if(md.frontalforcings.sd_num_breaks + 1 == 1):
-                sd_dbreaks = np.zeros((md.frontalforcings.num_basins, 1))
+            if(self.sd_num_breaks + 1 == 1):
+                sd_dbreaks = np.zeros((self.num_basins, 1))
             else:
-                sd_dbreaks = np.copy(md.frontalforcings.sd_datebreaks)
+                sd_dbreaks = np.copy(self.sd_datebreaks)
 
 
         ## Write headers to file
@@ -470,9 +468,9 @@ class rignotarma(class_registry.manage_state):
             execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
 
         ## Write DoubleMat fields
-        execute.WriteData(fid, prefix, name = 'md.frontalforcings.polynomialparams', data = polyparams2dScaled, format = 'DoubleMat')
-        execute.WriteData(fid, prefix, 'object', self, fieldname = 'arlag_coefs', format = 'DoubleMat', yts = md.constants.yts)
-        execute.WriteData(fid, prefix, 'object', self, fieldname = 'malag_coefs', format = 'DoubleMat', yts = md.constants.yts)
+        execute.WriteData(fid, prefix, name = 'md.frontalforcings.polynomialparams', data = polyParams_scaled_2d, format = 'DoubleMat')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'arlag_coefs', format = 'DoubleMat', yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'malag_coefs', format = 'DoubleMat', yts = md.constants.yts)
         execute.WriteData(fid, prefix, name = 'md.frontalforcings.datebreaks', data = dbreaks, format = 'DoubleMat', scale = md.constants.yts)
         execute.WriteData(fid, prefix, name = 'md.frontalforcings.monthlyvals_datebreaks', data = dMbreaks, format = 'DoubleMat', scale = md.constants.yts)
         execute.WriteData(fid, prefix, name = 'md.frontalforcings.monthlyvals_intercepts', data = interceptsM, format = 'DoubleMat')
@@ -490,7 +488,7 @@ class rignotarma(class_registry.manage_state):
             ## Write Integer fields
             fieldnames = ['sd_num_breaks', 'sd_num_params', 'sd_ar_order', 'sd_ma_order']
             for field in fieldnames:
-                WriteData(fid,prefix,'object',self,'class','frontalforcings','fieldname',field,'format','Integer')
+                execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
             
             ## Write DoubleMat fields
             execute.WriteData(fid, prefix, obj = self, fieldname = 'sd_arma_timestep', format = 'Double', scale = md.constants.yts)

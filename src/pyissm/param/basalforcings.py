@@ -233,8 +233,8 @@ class pico(class_registry.manage_state):
 
         ## Write DoubleMat fields
         execute.WriteData(fid, prefix, obj = self, fieldname = 'overturning_coeff', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'farocean_temperature', format = 'DoubleMat', timeserieslength = md.basalforcings.num_basins + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'farocean_salinity', format = 'DoubleMat', timeserieslength = md.basalforcings.num_basins + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'farocean_temperature', format = 'DoubleMat', timeserieslength = self.num_basins + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'farocean_salinity', format = 'DoubleMat', timeserieslength = self.num_basins + 1, yts = md.constants.yts)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'geothermalflux', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'groundedice_melting_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
@@ -498,27 +498,27 @@ class lineararma(class_registry.manage_state):
 
         ## Scale parameters
         ## NOTE: Scaling logic here taken from $ISSM_DIR/src/m/classes/linearbasalforcingsarma.py
-        polyParams_scaled = np.copy(md.basalforcings.polynomialparams)
-        polyParams_scaled_2d = np.zeros((md.basalforcings.num_basins, md.basalforcings.num_breaks + 1 * md.basalforcings.num_params))
+        polyParams_scaled = np.copy(self.polynomialparams)
+        polyParams_scaled_2d = np.zeros((self.num_basins, self.num_breaks + self.num_params))
 
-        if(md.basalforcings.num_params > 1):
+        if(self.num_params > 1):
             # Case 3D
-            if(md.basalforcings.num_basins > 1 and md.basalforcings.num_breaks + 1 > 1):
-                for ii in range(md.basalforcings.num_params):
+            if(self.num_basins > 1 and self.num_breaks + 1 > 1):
+                for ii in range(self.num_params):
                     polyParams_scaled[:, :, ii] = polyParams_scaled[:, :, ii] * (1. / md.constants.yts) ** (ii + 1)
                 ## Fit in 2D array
-                for ii in range(md.basalforcings.num_params):
-                    polyParams_scaled_2d[:, ii * (md.basalforcings.num_breaks + 1):(ii + 1) * (md.basalforcings.num_breaks + 1)] = 1 * polyParams_scaled[:, :, ii]
+                for ii in range(self.num_params):
+                    polyParams_scaled_2d[:, ii * (self.num_breaks + 1):(ii + 1) * (self.num_breaks + 1)] = 1 * polyParams_scaled[:, :, ii]
             # Case 2D and higher-order params at increasing row index #
-            elif(md.basalforcings.num_basins == 1):
-                for ii in range(md.basalforcings.num_params):
+            elif(self.num_basins == 1):
+                for ii in range(self.num_params):
                     polyParams_scaled[ii, :] = polyParams_scaled[ii,:] * (1. / md.constants.yts) ** (ii + 1)
                 ## Fit in row array
-                for ii in range(md.basalforcings.num_params):
-                    polyParams_scaled_2d[0, ii * (md.basalforcings.num_breaks + 1):(ii + 1) * (md.basalforcings.num_breaks + 1)] = 1 * polyParams_scaled[ii, :]
+                for ii in range(self.num_params):
+                    polyParams_scaled_2d[0, ii * (self.num_breaks + 1):(ii + 1) * (self.num_breaks + 1)] = 1 * polyParams_scaled[ii, :]
             # Case 2D and higher-order params at incrasing column index #
-            elif(md.basalforcings.num_breaks + 1 == 1):
-                for ii in range(md.basalforcings.num_params):
+            elif(self.num_breaks + 1 == 1):
+                for ii in range(self.num_params):
                     polyParams_scaled[:, ii] = polyParams_scaled[:, ii] * (1. / md.constants.yts) ** (ii + 1)
                 # 2D array is already in correct format #
                 polyParams_scaled_2d = np.copy(polyParams_scaled)
@@ -527,10 +527,10 @@ class lineararma(class_registry.manage_state):
             # 2D array is already in correct format #
             polyParams_scaled_2d = np.copy(polyParams_scaled)
 
-        if(md.basalforcings.num_breaks + 1 == 1):
-            dbreaks = np.zeros((md.basalforcings.num_basins, 1))
+        if(self.num_breaks + 1 == 1):
+            dbreaks = np.zeros((self.num_basins, 1))
         else:
-            dbreaks = np.copy(md.basalforcings.datebreaks)
+            dbreaks = np.copy(self.datebreaks)
 
 
         ## Write header field

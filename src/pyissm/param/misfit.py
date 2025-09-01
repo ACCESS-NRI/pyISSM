@@ -116,7 +116,7 @@ class misfit(class_registry.manage_state):
         """
 
         ## Write String fields
-        fieldnames = ['name', 'definitionstring', 'model_string', 'observation_string', 'interpolation',
+        fieldnames = ['name', 'definitionstring', 'model_string', 'observation_string', 'timeinterpolation',
                       'weights_string']
         for field in fieldnames:
             execute.WriteData(fid, prefix, obj=self, fieldname=field, format='String')

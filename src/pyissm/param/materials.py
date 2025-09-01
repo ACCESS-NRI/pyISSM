@@ -319,7 +319,7 @@ class litho(class_registry.manage_state):
 
     # Initialise with default parameters
     def __init__(self, other = None):
-        self.numlayers = 2.
+        self.numlayers = 2
         self.radius = [1e3, 6278e3, 6378e3]
         self.viscosity = [1e21, 1e40]
         self.lame_mu = [1.45e11, 6.7e10]
@@ -557,7 +557,6 @@ class damageice(class_registry.manage_state):
         
         ## Write other fields
         execute.WriteData(fid, prefix, obj = self, fieldname = 'effectiveconductivity_averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_E', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_B', format = 'DoubleMat', mattype = 1, timeserieslength =  md.mesh.numberofvertices + 1, yts = md.constants.yts)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_n', format = 'DoubleMat', mattype = 2)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_law', format = 'String')

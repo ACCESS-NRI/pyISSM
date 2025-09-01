@@ -109,7 +109,7 @@ class default(class_registry.manage_state):
         execute.WriteData(fid, prefix, data = 1, name = 'md.friction.law', format = 'Integer')
 
         ## Write coefficient field
-        if isinstance(self.coefficient, np.ndarray) and ((self.coefficient.shape[0] == md.mesh.numberofvertices) or self.coefficient.shape[0] == md.mesh.numberofvertices + 1):
+        if isinstance(self.coefficient, np.ndarray) and ((self.coefficient.shape[0] == md.mesh.numberofvertices) or (self.coefficient.shape[0] == md.mesh.numberofvertices + 1)):
             execute.WriteData(fid, prefix, obj = self, fieldname = 'coefficient', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         elif isinstance(self.coefficient, np.ndarray) and ((self.coefficient.shape[0] == md.mesh.numberofelements) or (self.coefficient.shape[0] == md.mesh.numberofelements + 1)):
             execute.WriteData(fid, prefix, obj = self, fieldname = 'coefficient', format = 'DoubleMat', mattype = 2, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)

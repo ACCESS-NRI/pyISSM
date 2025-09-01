@@ -342,47 +342,47 @@ class arma(class_registry.manage_state):
 
         ## Scale parameters & set elevation bins
         ## NOTE: Taken from $ISSM_DIR/src/m/classes/SMBarma.py
-        if(np.any(np.isnan(md.smb.lapserates))):
-            temp_lapse_rates = np.zeros((md.smb.num_basins, 2, 12))
+        if(np.any(np.isnan(self.lapserates))):
+            temp_lapse_rates = np.zeros((self.num_basins, 2, 12))
             print('      smb.lapserates not specified: set to 0')
-            temp_elevation_bins = np.zeros((md.smb.num_basins, 1, 12)) # Dummy elevation bins
+            temp_elevation_bins = np.zeros((self.num_basins, 1, 12)) # Dummy elevation bins
             nbins    = 2
             ntmlapse = 12
         else:
-            if len(np.shape(md.smb.lapserates)) == 1:
+            if len(np.shape(self.lapserates)) == 1:
                 nbins    = 1
                 ntmlapse = 1
-            elif len(np.shape(md.smb.lapserates)) == 2:
-                nbins    = np.shape(md.smb.lapserates)[1]
+            elif len(np.shape(self.lapserates)) == 2:
+                nbins    = np.shape(self.lapserates)[1]
                 ntmlapse = 1
-            elif len(np.shape(md.smb.lapserates)) == 3:
-                nbins    = np.shape(md.smb.lapserates)[1]
-                ntmlapse = np.shape(md.smb.lapserates)[2]
-            temp_lapse_rates    = np.reshape(md.smb.lapserates,[md.smb.num_basins, nbins, ntmlapse])
-            temp_elevation_bins = np.reshape(md.smb.elevationbins, [md.smb.num_basins, max(1, nbins - 1), ntmlapse])
-        temp_ref_elevation  = np.copy(md.smb.refelevation)
+            elif len(np.shape(self.lapserates)) == 3:
+                nbins    = np.shape(self.lapserates)[1]
+                ntmlapse = np.shape(self.lapserates)[2]
+            temp_lapse_rates    = np.reshape(self.lapserates,[self.num_basins, nbins, ntmlapse])
+            temp_elevation_bins = np.reshape(self.elevationbins, [self.num_basins, max(1, nbins - 1), ntmlapse])
+        temp_ref_elevation  = np.copy(self.refelevation)
         
         # Scale the parameters
-        polyParams_scaled   = np.copy(md.smb.polynomialparams)
-        polyParams_scaled_2d = np.zeros((md.smb.num_basins, md.smb.num_breaks + 1 * md.smb.num_params))
-        if md.smb.num_params > 1:
+        polyParams_scaled   = np.copy(self.polynomialparams)
+        polyParams_scaled_2d = np.zeros((self.num_basins, self.num_breaks + 1 * self.num_params))
+        if self.num_params > 1:
             # Case 3D
-            if md.smb.num_basins > 1 and md.smb.num_breaks + 1 > 1:
-                for ii in range(md.smb.num_params):
+            if self.num_basins > 1 and self.num_breaks + 1 > 1:
+                for ii in range(self.num_params):
                     polyParams_scaled[:, :, ii] = polyParams_scaled[:, :, ii] * (1 / md.constants.yts) ** (ii + 1)
                 # Fit in 2D array
-                for ii in range(md.smb.num_params):
-                    polyParams_scaled_2d[:, ii * md.smb.num_breaks + 1:(ii + 1) * md.smb.num_breaks + 1] = 1 * polyParams_scaled[:, :, ii]
+                for ii in range(self.num_params):
+                    polyParams_scaled_2d[:, ii * self.num_breaks + 1:(ii + 1) * self.num_breaks + 1] = 1 * polyParams_scaled[:, :, ii]
             # Case 2D and higher-order params at increasing row index
-            elif md.smb.num_basins == 1:
-                for ii in range(md.smb.num_params):
+            elif self.num_basins == 1:
+                for ii in range(self.num_params):
                     polyParams_scaled[ii, :] = polyParams_scaled[ii, :] * (1 / md.constants.yts) ** (ii + 1)
                 # Fit in row array
-                for ii in range(md.smb.num_params):
-                    polyParams_scaled_2d[0, ii * md.smb.num_breaks + 1:(ii + 1) * md.smb.num_breaks + 1] = 1 * polyParams_scaled[ii, :]
+                for ii in range(self.num_params):
+                    polyParams_scaled_2d[0, ii * self.num_breaks + 1:(ii + 1) * self.num_breaks + 1] = 1 * polyParams_scaled[ii, :]
             # Case 2D and higher-order params at increasing column index
-            elif md.smb.num_breaks + 1 == 1:
-                for ii in range(md.smb.num_params):
+            elif self.num_breaks + 1 == 1:
+                for ii in range(self.num_params):
                     polyParams_scaled[:, ii] = polyParams_scaled[:, ii] * (1 / md.constants.yts) ** (ii + 1)
                 # 2D array is already in correct format
                 polyParams_scaled_2d = np.copy(polyParams_scaled)
@@ -391,19 +391,19 @@ class arma(class_registry.manage_state):
             # 2D array is already in correct format
             polyParams_scaled_2d = np.copy(polyParams_scaled)
 
-        if md.smb.num_breaks + 1 == 1:
-            dbreaks = np.zeros((md.smb.num_basins, 1))
+        if self.num_breaks + 1 == 1:
+            dbreaks = np.zeros((self.num_basins, 1))
         else:
-            dbreaks = np.copy(md.smb.datebreaks)
+            dbreaks = np.copy(self.datebreaks)
 
         if ntmlapse == 1:
             temp_lapse_rates    = np.repeat(temp_lapse_rates, 12, axis = 2)
             temp_elevation_bins = np.repeat(temp_elevation_bins, 12, axis = 2)
-        if np.any(np.isnan(md.smb.refelevation)):
-            temp_ref_elevation = np.zeros((md.smb.num_basins)).reshape(1, md.smb.num_basins)
+        if np.any(np.isnan(self.refelevation)):
+            temp_ref_elevation = np.zeros((self.num_basins)).reshape(1, self.num_basins)
             areas = GetAreas(md.mesh.elements, md.mesh.x, md.mesh.y)
-            for ii, bid in enumerate(np.unique(md.smb.basin_id)):
-                indices = np.where(md.smb.basin_id == bid)[0]
+            for ii, bid in enumerate(np.unique(self.basin_id)):
+                indices = np.where(self.basin_id == bid)[0]
                 elemsh = np.zeros((len(indices)))
                 for jj in range(len(indices)):
                     elemsh[jj] = np.mean(md.geometry.surface[md.mesh.elements[indices[jj], :] - 1])
@@ -411,8 +411,8 @@ class arma(class_registry.manage_state):
             if(np.any(temp_lapse_rates != 0)):
                 print('      smb.refelevation not specified: Reference elevations set to mean surface elevation of basins')
         nbins = np.shape(temp_lapse_rates)[1]
-        temp_lapse_rates_2d    = np.zeros((md.smb.num_basins, nbins * 12))
-        temp_elevation_bins_2d = np.zeros((md.smb.num_basins, max(12, (nbins - 1) * 12)))
+        temp_lapse_rates_2d    = np.zeros((self.num_basins, nbins * 12))
+        temp_elevation_bins_2d = np.zeros((self.num_basins, max(12, (nbins - 1) * 12)))
         for ii in range(12):
             temp_lapse_rates_2d[:, ii * nbins:(ii + 1) * nbins] = temp_lapse_rates[:, :, ii]
             temp_elevation_bins_2d[:, ii * (nbins - 1):(ii + 1) * (nbins - 1)] = temp_elevation_bins[:, :, ii]
