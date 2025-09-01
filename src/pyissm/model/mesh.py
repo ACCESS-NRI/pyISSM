@@ -89,7 +89,7 @@ def process_mesh(md):
     is3d = False
 
     ## Process a 3D model
-    if utils.has_nested_attr(md, 'mesh', 'elements2d'):
+    if utils.general.has_nested_attr(md, 'mesh', 'elements2d'):
 
         # Create mesh object
         mesh = get_mesh(md.mesh.x2d, md.mesh.y2d, md.mesh.elements2d)
