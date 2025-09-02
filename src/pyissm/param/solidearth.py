@@ -36,7 +36,7 @@ class earth(class_registry.manage_state):
     rotational : rotational
         Rotational parameters object for polar motion calculations.
     planetradius : float
-        Earth's radius [m]. Automatically set using utils.planetradius('earth').
+        Earth's radius [m]. Automatically set using utils.general.planetradius('earth').
     requested_outputs : ilst, default=['default']
         Additional outputs requested from the solid earth model.
     transfercount : str, default='List of transfer count'
@@ -87,7 +87,7 @@ class earth(class_registry.manage_state):
         self.external          = None
         self.lovenumbers       = lovenumbers()
         self.rotational        = rotational()
-        self.planetradius      = utils.planetradius('earth')
+        self.planetradius      = utils.general.planetradius('earth')
         self.requested_outputs = []
         self.transfercount     = []
         self.transitions       = []
@@ -250,7 +250,7 @@ class europa(class_registry.manage_state):
     rotational : rotational
         Rotational parameters object for Europa's rotation and tidal effects.
     planetradius : float
-        Europa's radius [m]. Automatically set using utils.planetradius('europa').
+        Europa's radius [m]. Automatically set using utils.general.planetradius('europa').
     requested_outputs : str, default='List of requested outputs'
         Additional outputs requested from the solid body model.
     transfercount : str, default='List of transfer count'
@@ -302,7 +302,7 @@ class europa(class_registry.manage_state):
         self.external          = None
         self.lovenumbers       = lovenumbers()
         self.rotational        = rotational()
-        self.planetradius      = utils.planetradius('europa')
+        self.planetradius      = utils.general.planetradius('europa')
         self.requested_outputs = 'List of requested outputs'
         self.transfercount     = 'List of transfer count'
         self.transitions       = 'List of transitions'

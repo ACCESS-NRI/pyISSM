@@ -117,5 +117,94 @@ class stochasticforcing(class_registry.manage_state):
         None
         """
 
-        ## Write placeholder field
+        ## Write fields
         execute.WriteData(fid, prefix, obj = self, fieldname = 'isstochasticforcing', format = 'Boolean')
+
+        ## Conditional writing
+        ## NOTE: Taken from $ISSM_DIR/src/classes/stochasticforcing.py
+        if self.isstochasticforcing:
+            
+            ## Initalise
+            num_fields = len(self.fields)
+
+            ## Set default timestep
+            if self.stochastictimestep == 0:
+                self.stochastictimestep = md.timestepping.time_step
+            
+            if ((type(md.hydrology).__name__ == 'armapw') and md.transient.ishydrology == 1):
+                ispwHydroarma = 1
+            else:
+                ispwHydroarma = 0
+            
+            ## Get dimensionality of each field
+            dimensions = self.defaultdimension * np.ones((num_fields))
+            for ind, field in enumerate(self.fields):
+                
+                ## Check for specific dimensions
+                if field == 'SMBarma':
+                    dimensions[ind] = md.smb.num_basins
+                elif field == 'FrontalForcingsRignotarma':
+                    dimensions[ind] = md.frontalforcings.num_basins
+                elif field == 'FrontalForcingsSubglacialDischargearma':
+                    dimensions[ind] = md.frontalforcings.num_basins
+                elif field == 'BasalforcingsDeepwaterMeltingRatearma':
+                    dimensions[ind] = md.basalforcings.num_basins
+                elif field == 'FrictionWaterPressure' and ispwHydroarma:
+                    dimensions[ind] = md.hydrology.num_basins
+
+            if(len(np.shape(self.covariance)) == 3):
+                nrow, ncol, numtcovmat = np.shape(self.covariance)
+                lsCovmats = []
+                for ii in range(numtcovmat):
+                    lsCovmats.append(self.covariance[:, :, ii])
+                if(md.timestepping.interp_forcing == 1):
+                    print('WARNING: md.timestepping.interp_forcing is 1, but be aware that there is no interpolation between covariance matrices')
+                    print('         the changes between covariance matrices occur at the time steps specified in md.stochasticforcing.timecovariance')
+            elif(len(np.shape(self.covariance)) == 2):
+                nrow, ncol = np.shape(self.covariance)
+                numtcovmat = 1
+                lsCovmats = [self.covariance]
+            
+            ## Scaling covariance matrix (scale column-by-column and row-by-row)
+                ## list of fields that need scaling * 1 / yts
+            scaledfields = ['BasalforcingsDeepwaterMeltingRatearma','BasalforcingsSpatialDeepwaterMeltingRate','DefaultCalving', 'FloatingMeltRate', 'SMBarma', 'SMBforcing']
+            tempcovariance2d = np.zeros((numtcovmat,nrow*ncol))
+            
+            ## Loop over covariance matrices
+            for kk in range(numtcovmat):
+                kkcov = lsCovmats[kk]
+                ## Loop over the fields
+                for i in range(num_fields):
+                    if self.fields[i] in scaledfields:
+                        inds = range(int(np.sum(dimensions[0:i])), int(np.sum(dimensions[0:i + 1])))
+                        for row in inds:  # scale rows corresponding to scaled field
+                            kkcov[row, :] = 1 / md.constants.yts * kkcov[row, :]
+                        for col in inds:  # scale columns corresponding to scaled field
+                            kkcov[:, col] = 1 / md.constants.yts * kkcov[:, col]
+                ## Save scaled covariance
+                for rr in range(nrow):
+                    ind0 = rr*ncol
+                    tempcovariance2d[kk,ind0:ind0+ncol] = np.copy(kkcov[rr,:])
+            
+            ## Set dummy default_id vector if defaults not used
+            if np.any(np.isnan(self.default_id)):
+                self.default_id = np.zeros(md.mesh.numberofelements)
+
+            ## Set dummy timecovariance vector if a single covariance matrix is used
+            if(numtcovmat==1):
+                self.timecovariance = np.array([md.timestepping.start_time])
+
+            ## Reshape dimensions as column array for marshalling
+            dimensions = dimensions.reshape(1, len(dimensions))
+
+            ## Write fields
+            execute.WriteData(fid, prefix, name = 'md.stochasticforcing.num_fields', data = num_fields, format = 'Integer')
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'fields', format = 'StringArray')
+            execute.WriteData(fid, prefix, name = 'md.stochasticforcing.dimensions', data = dimensions, format = 'IntMat', mattype = 2)
+            execute.WriteData(fid, prefix, name = 'md.stochasticforcing.default_id', data = self.default_id - 1, format = 'IntMat', mattype = 2) # 0-indexed
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'defaultdimension', format = 'Integer')
+            execute.WriteData(fid, prefix, name = 'md.stochasticforcing.num_timescovariance', data = numtcovmat, format = 'Integer')
+            execute.WriteData(fid, prefix, name = 'md.stochasticforcing.covariance', data = tempcovariance2d, format = 'DoubleMat')
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'timecovariance', format = 'DoubleMat', scale = md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'stochastictimestep', format = 'Double', scale = md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'randomflag', format = 'Boolean')
