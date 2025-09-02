@@ -2,6 +2,7 @@ import numpy as np
 from . import param_utils
 from . import class_registry
 from .. import execute
+from .. import model
 
 ## ------------------------------------------------------
 ## smb.default
@@ -401,7 +402,7 @@ class arma(class_registry.manage_state):
             temp_elevation_bins = np.repeat(temp_elevation_bins, 12, axis = 2)
         if np.any(np.isnan(self.refelevation)):
             temp_ref_elevation = np.zeros((self.num_basins)).reshape(1, self.num_basins)
-            areas = GetAreas(md.mesh.elements, md.mesh.x, md.mesh.y)
+            areas = model.mesh.get_element_areas_volumes(md.mesh.elements, md.mesh.x, md.mesh.y)
             for ii, bid in enumerate(np.unique(self.basin_id)):
                 indices = np.where(self.basin_id == bid)[0]
                 elemsh = np.zeros((len(indices)))
