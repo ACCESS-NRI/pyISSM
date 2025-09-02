@@ -126,7 +126,7 @@ class Model():
         self.debug = param.debug()
         self.verbose = param.verbose()
         self.settings = param.issmsettings()
-        self.toolkits = None
+        self.toolkits = param.toolkits()
         self.cluster = None
         self.balancethickness = param.balancethickness()
         self.stressbalance = param.stressbalance()
