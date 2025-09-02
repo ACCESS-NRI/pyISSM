@@ -1,6 +1,10 @@
 import numpy as np
+
+from pyissm.execute import WriteData
 from . import param_utils
 from . import class_registry
+from .. import execute
+from .. import utils
 
 @class_registry.register_class
 class massfluxatgate(class_registry.manage_state):
@@ -35,6 +39,8 @@ class massfluxatgate(class_registry.manage_state):
         Returns a detailed string representation of the massfluxatgate parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -56,12 +62,8 @@ class massfluxatgate(class_registry.manage_state):
 
     # Define repr
     def __repr__(self):
-        s = '---------------------------------------\n'
-        s += '****      NOT YET IMPLEMENTED      ****\n'
-        s += '****   Awaiting Python Wrappers    ****\n'
-        s += '---------------------------------------\n\n'
-        s += '   massfluxatgate parameters:\n'
-
+        s = '   massfluxatgate parameters:\n'
+        
         s += '{}\n'.format(param_utils.fielddisplay(self, 'name', 'identifier for this massfluxatgate response'))
         s += '{}\n'.format(param_utils.fielddisplay(self, 'definitionstring', 'string that identifies this output definition uniquely, from Outputdefinition[1 - 100]'))
         s += '{}\n'.format(param_utils.fielddisplay(self, 'profilename', 'name of file (shapefile or argus file) defining a profile (or gate)'))
@@ -71,4 +73,34 @@ class massfluxatgate(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - massfluxatgate Class'
         return s
+    
+    # Marshall method for saving the massfluxatgate parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [massfluxatgate] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Create segments from the profilename
+        self.segments = utils.wrappers.MeshProfileIntersection(index = md.mesh.elements,
+                                                               x = md.mesh.x,
+                                                               y = md.mesh.y,
+                                                               profile_name = self.profilename)[0]
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'name', format = 'String')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'definitionstring', format = 'String')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'segments', format = 'DoubleMat', mattype = 1)
 

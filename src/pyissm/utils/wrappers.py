@@ -225,3 +225,126 @@ def BamgTriangulate(x, y):
 
     # Call the loaded _python function
     return BamgTriangulate._func(x, y)
+
+## MeshProfileIntersection_python
+@load_issm_wrapper
+def MeshProfileIntersection(index,
+                            x,
+                            y,
+                            filename):
+    """
+    Intersection of mesh with profile segments from an Argus .exp file.
+
+    Takes a .exp file (made of several profiles) and figures out its 
+    intersection with a triangular mesh.
+
+    Parameters
+    ----------
+    index : array_like
+        Indices of the mesh elements defining the triangulation connectivity.
+    x : array_like
+        X coordinates of the mesh nodes.
+    y : array_like
+        Y coordinates of the mesh nodes.
+    filename : str
+        Path to an Argus-style .exp file containing the segments. Can contain
+        groups of disconnected segments.
+
+    Returns
+    -------
+    segments : ndarray
+        Array where each row represents a segment intersection with the mesh.
+        Each row contains [x1, y1, x2, y2, element_id] where (x1, y1) and
+        (x2, y2) are the segment extremities and element_id is the ID of the
+        element containing the segment. The number of rows equals the number
+        of segments intersecting the mesh.
+
+    Examples
+    --------
+    >>> segments = MeshProfileIntersection(md.mesh.elements, md.mesh.x, md.mesh.y, "profiles.exp")
+    """
+    
+    # Call the loaded _python function
+    return MeshProfileIntersection._func(index, x, y, filename)
+
+# CountourToMesh_python
+@load_issm_wrapper
+def ContourToMesh(index,
+                  x,
+                  y,
+                  contour_name,
+                  interp_type,
+                  edge_value):
+    
+    """
+    Flag the elements or nodes inside a contour.
+
+    Parameters
+    ----------
+    index : array_like
+        Mesh triangulation connectivity (element indices).
+    x : array_like
+        X coordinates of the mesh nodes.
+    y : array_like
+        Y coordinates of the mesh nodes.
+    contour_name : str
+        Name of .exp file containing the contours.
+    interp_type : str
+        Type of interpolation. Must be one of 'element', 'node', or 'element and node'.
+    edge_value : int
+        Value (0, 1 or 2) associated to the nodes on the edges of the polygons.
+
+    Returns
+    -------
+    in_nod : ndarray or tuple
+        If `interp_type` is 'node': vector of flags (0 or 1) of size nel.
+        If `interp_type` is 'element and node': tuple containing (in_nod, in_elem).
+        Otherwise: not returned.
+    in_elem : ndarray
+        If `interp_type` is 'element': vector of flags (0 or 1) of size nel.
+        If `interp_type` is 'element and node': returned as second element of tuple.
+        Otherwise: not returned.
+
+    Examples
+    --------
+    >>> in_nod = ContourToMesh(md.elements, md.x, md.y, 'Contour.exp', 'node', 1)
+    >>> in_elements = ContourToMesh(md.elements, md.x, md.y, 'Contour.exp', 'element', 0)
+    >>> in_nodes, in_elements = ContourToMesh(md.elements, md.x, md.y, 'Contour.exp', 'element and node', 0)
+    """
+
+    # Call the loaded _python function
+    in_nod, in_elem = ContourToMesh._func(index, x, y, contour_name, interp_type, edge_value)
+
+    # Conditionally return the appropriate values
+    if interp_type == 'element':
+        return in_elem
+    elif interp_type == 'node':
+        return in_nod
+    elif interp_type == 'element and node':
+        return in_nod, in_elem
+    else:
+        raise TypeError('interpolation type "{}" not supported yet'.format(interp_type))
+    
+## IssmConfig_python
+@load_issm_wrapper
+def IssmConfig(string):
+    """
+    Get ISSM configuration value for a specified parameter.
+
+    Parameters
+    ----------
+    string : str
+        The configuration parameter name to retrieve.
+
+    Returns
+    -------
+    value
+        The configuration value associated with the specified parameter string.
+
+    Examples
+    --------
+    >>> value = IssmConfig('parameter_name')
+    >>> print(value)
+    """
+
+    return IssmConfig._func(string)

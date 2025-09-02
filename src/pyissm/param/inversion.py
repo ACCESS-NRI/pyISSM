@@ -2,6 +2,7 @@ import numpy as np
 from . import param_utils
 from . import class_registry
 from .. import execute
+from .. import utils
 
 ## ------------------------------------------------------
 ## inversion.default
@@ -462,7 +463,7 @@ class tao(class_registry.manage_state):
         self.gatol = 0
         self.grtol = 0
         self.gttol = 1e-4
-        self.algorithm = 'blmvm' # TODO: Add check for PETSC version from IssmConfig
+        self.algorithm = self._get_algorithm()
         self.cost_functions = 101
         self.cost_functions_coefficients = np.nan
         self.min_parameters = np.nan
@@ -517,6 +518,17 @@ class tao(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - inversion.tao Class'
         return s
+    
+    # Determine appropriate algorithm based on PETSc version
+    def _get_algorithm(self):
+        petsc_major = utils.wrappers.IssmConfig('_PETSC_MAJOR_')[0]
+        petsc_minor = utils.wrappers.IssmConfig('_PETSC_MINOR_')[0]
+
+        if petsc_major > 3 or (petsc_major == 3 and petsc_minor >= 5):
+            algorithm = 'blmvm'
+        else:
+            algorithm = 'tao_blmvm'
+        return algorithm
     
     # Marshall method for saving the inversion.tao parameters
     def marshall_class(self, fid, prefix, md = None):
