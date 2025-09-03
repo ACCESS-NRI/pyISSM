@@ -78,3 +78,63 @@ class toolkits(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - toolkits Class'
         return s
+    
+    def write_toolkits_file(self, filename):
+        """
+        Build a PETSc compatible options file from the toolkits model field.
+
+        This method creates a PETSc compatible options file from the current toolkits configuration.
+        The generated file can be used with both 'petsc' and 'issm' toolkit types for solver
+        configuration in ISSM simulations.
+
+        Parameters
+        ----------
+        filename : str
+            Path and name of the output file to write the toolkit options to.
+
+        Raises
+        ------
+        IOError
+            If the specified file cannot be opened for writing.
+        TypeError
+            If any option value is not a supported type (bool, int, float, or str).
+
+        Examples
+        --------
+        >>> md.toolkits.write_toolkits_file('solver_options.toolkits')
+        """
+
+        # Open file for writing
+        try:
+            fid = open(filename, 'w')
+        except IOError as e:
+            raise IOError(f'write_toolkits_file: could not open {filename} for writing: {e}')
+
+        # Write header
+        fid.write('{}{}{}\n'.format('%Toolkits options file: ', filename, ' written from Python toolkits array'))
+
+        # Start writing options
+        for analysis in list(vars(self).keys()):
+            options = getattr(self, analysis)
+
+            # Write analysis
+            ## NOTE: Append a + to recognize it's an analysis enum
+            fid.write('\n+{}\n'.format(analysis))
+
+            # Write options
+            for optionname, optionvalue in list(options.items()):
+                
+                ## If the option has no value, write the option name only
+                if not optionvalue:
+                    fid.write('-{}\n'.format(optionname))
+                ## If the option has a name and a value, write both
+                else:
+                    ## optionvalue can be string or scalar
+                    if isinstance(optionvalue, (bool, int, float, str)):
+                        fid.write('-{} {}\n'.format(optionname, optionvalue))
+                    else:
+                        raise TypeError(f'write_toolkits_file: option {optionname} is not formatted correctly. Values must be string or scalar.')
+
+        fid.close()
+
+        
