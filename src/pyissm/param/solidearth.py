@@ -251,7 +251,7 @@ class europa(class_registry.manage_state):
         Rotational parameters object for Europa's rotation and tidal effects.
     planetradius : float
         Europa's radius [m]. Automatically set using utils.general.planetradius('europa').
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested from the solid body model.
     transfercount : str, default='List of transfer count'
         Number of ice caps that vertices are part of.
@@ -303,12 +303,12 @@ class europa(class_registry.manage_state):
         self.lovenumbers       = lovenumbers()
         self.rotational        = rotational()
         self.planetradius      = utils.general.planetradius('europa')
-        self.requested_outputs = 'List of requested outputs'
-        self.transfercount     = 'List of transfer count'
-        self.transitions       = 'List of transitions'
-        self.partitionice      = 'List of partionice'
-        self.partitionhydro    = 'List of partitionhydro'
-        self.partitionocean    = 'List of partitionocean'
+        self.requested_outputs = ['default']
+        self.transfercount     = []
+        self.transitions       = []
+        self.partitionice      = []
+        self.partitionhydro    = []
+        self.partitionocean    = []
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -422,9 +422,9 @@ class europa(class_registry.manage_state):
         execute.WriteData(fid, prefix, name = 'md.solidearth.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
         ## Marshall sub-objects
-        self.settings.marshall_class(prefix, md, fid)
-        self.lovenumbers.marshall_class(prefix, md, fid)
-        self.rotational.marshall_class(prefix, md, fid)
+        self.settings.marshall_class(fid, prefix, md)
+        self.lovenumbers.marshall_class(fid, prefix, md)
+        self.rotational.marshall_class(fid, prefix, md)
 
         ## Write conditional fields
         if self.external:

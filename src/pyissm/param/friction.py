@@ -606,8 +606,6 @@ class pism(class_registry.manage_state):
         Till friction angle [deg], recommended default: 30 deg.
     sediment_compressibility_coefficient : float, default=np.nan
         Coefficient of compressibility of the sediment [dimensionless], recommended default: 0.12.
-    requested_outputs : str, default='List of requested outputs'
-        List of requested outputs.
 
     Methods
     -------
@@ -633,7 +631,6 @@ class pism(class_registry.manage_state):
         self.void_ratio = 0.69
         self.till_friction_angle = np.nan
         self.sediment_compressibility_coefficient = np.nan
-        self.requested_outputs = 'List of requested outputs'
 
         # Inherit matching fields from provided class
         super().__init__(other)

@@ -37,6 +37,8 @@ class verbose(class_registry.manage_state):
         Returns a detailed string representation of the geometry parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -50,11 +52,11 @@ class verbose(class_registry.manage_state):
     def __init__(self, other = None):
         self.mprocessor = False
         self.module = False
-        self.solution = False
+        self.solution = True
         self.solver = False
         self.convergence = False
-        self.control = False
-        self.qmu = False
+        self.control = True
+        self.qmu = True
         self.autodiff = False
         self.smb = False
 
@@ -81,8 +83,29 @@ class verbose(class_registry.manage_state):
         s = 'ISSM - verbose Class'
         return s
     
-    def VerboseToBinary(self):  # {{{
-        #BEGINVERB2BIN
+    def VerboseToBinary(self):
+        """
+        Convert current verbosity settings to integer bitmask.
+
+        This method converts the boolean verbosity flags into a single integer
+        where each bit represents a different verbosity option according to
+        the field mapping defined in the class.
+
+        Returns
+        -------
+        int
+            Integer bitmask representing the current verbosity settings.
+            Each bit corresponds to a verbosity flag as defined in _fields.
+
+        Examples
+        --------
+        >>> verbose_obj = verbose()
+        >>> verbose_obj.solution = True
+        >>> verbose_obj.control = True
+        >>> binary_value = verbose_obj.VerboseToBinary()
+        >>> print(binary_value)  # Will print 36 (4 + 32)
+        """
+        
         binary = 0
         if self.mprocessor:
             binary = binary | 1
@@ -102,23 +125,27 @@ class verbose(class_registry.manage_state):
             binary = binary | 128
         if self.smb:
             binary = binary | 256
-        #ENDVERB2BIN
 
         return binary
 
     # Marshall method for saving the verbose parameters
-    def marshall_class(self, prefix, md, fid):
+    def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall the verbose parameters to a binary file.
+        Marshall [verbose] parameters to a binary file.
 
         Parameters
         ----------
         fid : file object
             The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
 
         Returns
         -------
         None
         """
 
+        ## Write fields
         execute.WriteData(fid, prefix, name = 'md.verbose', data = self.VerboseToBinary(), format = 'Integer')

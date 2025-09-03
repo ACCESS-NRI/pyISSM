@@ -97,7 +97,7 @@ class massfluxatgate(class_registry.manage_state):
         self.segments = utils.wrappers.MeshProfileIntersection(index = md.mesh.elements,
                                                                x = md.mesh.x,
                                                                y = md.mesh.y,
-                                                               profile_name = self.profilename)[0]
+                                                               filename = self.profilename)[0]
 
         ## Write fields
         execute.WriteData(fid, prefix, obj = self, fieldname = 'name', format = 'String')

@@ -120,8 +120,8 @@ class rifts(class_registry.manage_state):
                 data[count:count + numpairsforthisrift, 10] = rift['fractionincrement']
                 data[count:count + numpairsforthisrift, 11] = rift['state'].reshape(-1)
                 count += numpairsforthisrift
-            else:
-                data = np.zeros((numpairs, 12))
+        else:
+            data = np.zeros((numpairs, 12))
         
         ## Write fields
         execute.WriteData(fid, prefix, name = 'md.rifts.numrifts', data = numrifts, format = 'Integer')

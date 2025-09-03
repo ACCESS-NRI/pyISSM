@@ -1273,7 +1273,7 @@ class tws(class_registry.manage_state):
     ----------
     spcwatercolumn : ndarray, default=np.nan
         Water thickness constraints (NaN means no constraint) [m].
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested.
 
     Methods

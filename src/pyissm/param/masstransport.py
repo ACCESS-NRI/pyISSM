@@ -33,7 +33,7 @@ class masstransport(class_registry.manage_state):
         Vertex pairing parameter. Used during consistency checks.
     penalty_factor : float, default=3
         Penalty factor for constraint enforcement.
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested.
 
     Methods
@@ -66,7 +66,7 @@ class masstransport(class_registry.manage_state):
         self.stabilization = 1
         self.vertex_pairing = np.nan
         self.penalty_factor = 3
-        self.requested_outputs = 'List of requested outputs' # Default = ['default'] (Thickness, surface, base)
+        self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
         super().__init__(other)

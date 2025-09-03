@@ -724,7 +724,7 @@ class d18opdd(class_registry.manage_state):
         self.pddfac_ice = np.nan
         self.steps_per_step = 1
         self.averaging = 0
-        self.requested_outputs = 'List of requested outputs'
+        self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -974,7 +974,7 @@ class gemb(class_registry.manage_state):
     Methods
     -------
     __init__(self, md=None, other=None)
-        Initializes the GEMB SMB parameters, requires model object for mesh information.
+        Initializes the GEMB SMB parameters, requires model object for mesh information. Optionally inherits from another instance.
     __repr__(self)
         Returns a detailed string representation of the GEMB SMB parameters.
     __str__(self)
@@ -1438,7 +1438,7 @@ class gradients(class_registry.manage_state):
         self.b_neg = np.nan
         self.steps_per_step = 1
         self.averaging = 0
-        self.requested_outputs = 'List of requested outputs'
+        self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -1966,7 +1966,7 @@ class henning(class_registry.manage_state):
     def __repr__(self):
         s = '   surface forcings parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'mass_balance', 'surface mass balance [m/yr ice eq]'))
+        s += '{}\n'.format(param_utils.fielddisplay(self, 'smbref', 'reference smb from which deviation is calculated [m/yr ice eq]'))
         s += '{}\n'.format(param_utils.fielddisplay(self, 'steps_per_step', 'number of smb steps per time step'))
         s += '{}\n'.format(param_utils.fielddisplay(self, 'averaging', 'averaging methods from short to long steps'))
         s += '\t\t{}\n'.format('0: Arithmetic (default)')
@@ -2043,10 +2043,10 @@ class henning(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 1, format = 'Integer')
+        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 7, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'mass_balance', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'smbref', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
         execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
         execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
@@ -2344,7 +2344,7 @@ class pdd(class_registry.manage_state):
         self.pddfac_ice = np.nan
         self.steps_per_step = 1
         self.averaging = 0
-        self.requested_outputs = 'List of requested outputs'
+        self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
         super().__init__(other)
