@@ -346,5 +346,61 @@ def IssmConfig(string):
     >>> value = IssmConfig('parameter_name')
     >>> print(value)
     """
-
+    # Call the loaded _python function
     return IssmConfig._func(string)
+
+## ElementConnectivity_python
+@load_issm_wrapper
+def ElementConnectivity(elements, node_connectivity):
+    """
+    Build element connectivity using node connectivity and elements.
+
+    Wrapper function for $ISSM_DIR/lib/ElementConnectivity_python.
+
+    Parameters
+    ----------
+    elements : array_like
+        Mesh triangulation connectivity (element indices).
+    node_connectivity : array_like
+        Node connectivity information.
+
+    Returns
+    -------
+    element_connectivity : ndarray
+        Element connectivity matrix.
+
+    Examples
+    --------
+    >>> element_connectivity = ElementConnectivity(elements, node_connectivity)
+    """
+    # Call the loaded _python function
+    ## NOTE: Value returned from wrapper function is a tuple, the first element of which being the result we actually want
+    return ElementConnectivity._func(elements, node_connectivity)[0]
+
+## NodeConnectivity_python
+@load_issm_wrapper
+def NodeConnectivity(elements, num_nodes):
+    """
+    Build node connectivity using element connectivity and nodes.
+
+    Wrapper function for $ISSM_DIR/lib/NodeConnectivity_python.
+
+    Parameters
+    ----------
+    elements : array_like
+        Mesh triangulation connectivity (element indices).
+    num_nodes : int
+        Number of nodes in the mesh.
+
+    Returns
+    -------
+    node_connectivity : ndarray
+        Node connectivity matrix.
+
+    Examples
+    --------
+    >>> node_connectivity = NodeConnectivity(elements, num_nodes)
+    """
+    # Call the loaded _python function
+    ## NOTE: Value returned from wrapper function is a tuple, the first element of which being the result we actually want
+    return NodeConnectivity._func(elements, num_nodes)[0]
