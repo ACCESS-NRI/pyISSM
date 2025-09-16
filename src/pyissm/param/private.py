@@ -18,7 +18,7 @@ class private(class_registry.manage_state):
 
     Attributes
     ----------
-    isconsistent : bool, default=True
+    isconsistent : bool, default=1
         Indicates whether the model is self-consistent.
     runtimename : str, default=''
         Name of the run launched.
@@ -45,7 +45,7 @@ class private(class_registry.manage_state):
 
     # Initialise with default parameters
     def __init__(self, other = None):
-        self.isconsistent = True
+        self.isconsistent = 1
         self.runtimename = ''
         self.bamg = collections.OrderedDict()
         self.solution = ''

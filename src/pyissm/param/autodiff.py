@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class autodiff(class_registry.manage_state):
@@ -55,6 +56,8 @@ class autodiff(class_registry.manage_state):
         Returns a detailed string representation of the autodiff parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -108,3 +111,149 @@ class autodiff(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - autodiff Class'
         return s
+
+    # Marshall method for saving the autodiff parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [autodiff] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write control fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'isautodiff', format = 'Boolean')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'driver', format = 'String')
+
+        if self.isautodiff:
+
+            ## Write Double fields
+            fieldnames = ['obufsize', 'lbufsize', 'cbufsize', 'tbufsize', 'gcTriggerRatio', 'gcTriggerMaxSize']
+            for fieldname in fieldnames:
+                execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'Double')
+
+            ## Write other fields
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'tapeAlloc', format = 'Integer')
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'outputTapeMemory', format = 'Boolean')
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'outputTime', format = 'Boolean')
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'enablePreaccumulation', format = 'Boolean')
+
+            ## Write conditional fields
+            ## NOTE: Conditional writing taken from $ISSM_DIR/src/m/classes/autodiff.py
+            ## 1 - dependent variables
+            num_dependent_objects = len(self.dependents)
+            execute.WriteData(fid, prefix, name = 'md.autodiff.num_dependent_objects', data = num_dependent_objects, format = 'Integer')
+
+            if num_dependent_objects:
+                names = []
+                for i, dep in enumerate(self.dependents):
+                    names.append(dep.name)
+
+            execute.WriteData(fid, prefix, name = 'md.autodiff.dependent_object_names', data = names, format = 'StringArray')
+
+            ## 2 - independent variables
+            num_independent_objects = len(self.independents)
+            execute.WriteData(fid, prefix, name = 'md.autodiff.num_independent_objects', data = num_independent_objects, format = 'Integer')
+
+            for indep in self.independents:
+                execute.WriteData(fid, prefix, name = 'md.autodiff.independent_name', data = indep.name, format = 'String')
+                execute.WriteData(fid, prefix, name = 'md.autodiff.independent_min_parameters', data = indep.min_parameters, format = 'DoubleMat', mattype = 3)
+                execute.WriteData(fid, prefix, name = 'md.autodiff.independent_max_parameters', data = indep.max_parameters, format = 'DoubleMat', mattype = 3)
+                execute.WriteData(fid, prefix, name = 'md.autodiff.independent_scaling_factor', data = indep.control_scaling_factor, format = 'Double')
+                execute.WriteData(fid, prefix, name = 'md.autodiff.independent_control_size', data = indep.control_size, format = 'Integer')
+
+            ## 3 - build index for fos_forward driver
+            if self.driver.lower() == 'fos_forward':
+                index = 0
+
+            for indep in self.independents:
+                if not np.isnan(indep.fos_forward_index):
+                    index += indep.fos_forward_index
+                    break
+                else:
+                    if indep.type == 'scalar':
+                        index += 1
+                    else:
+                        index += indep.nods
+
+            index -= 1  # Convert to c-index numbering
+            execute.WriteData(fid, prefix, name = 'md.autodiff.fos_forward_index', data = index, format = 'Integer')
+
+            ## 4 - build index for fos_reverse driver
+            if self.driver.lower() == 'fos_reverse':
+                index = 0
+
+                for dep in self.dependents:
+                    if not np.isnan(dep.fos_reverse_index):
+                        index += dep.fos_reverse_index
+                        break
+                    else:
+                        index += 1
+
+                index -= 1  # Convert to c-index numbering
+                execute.WriteData(fid, prefix, name = 'md.autodiff.fos_reverse_index', data = index, format = 'Integer')
+
+
+            ## 5 - build index for fov_forward driver
+            if self.driver.lower() == 'fov_forward':
+                indices = 0
+
+                for indep in self.independents:
+                    if indep.fos_forward_index:
+                        indices += indep.fov_forward_indices
+                        break
+                    else:
+                        if indep.type == 'scalar':
+                            indices += 1
+                        else:
+                            indices += indep.nods
+
+                index -= 1  # Convert to c-index numbering
+                execute.WriteData(fid, prefix, name = 'md.autodiff.fov_forward_indices', data = indices, format = 'IntMat', mattype = 3)
+
+            ## 6 - Deal with mass fluxes
+            mass_flux_segments = []
+            for dep in self.dependents:
+                if dep.name.lower() == 'massflux':
+                    mass_flux_segments.append(dep.segments)
+
+            if mass_flux_segments:
+                execute.WriteData(fid, prefix, name = 'md.autodiff.mass_flux_segments', data = mass_flux_segments, format = 'MatArray')
+                flag = True
+            else:
+                flag = False
+            execute.WriteData(fid, prefix, name = 'md.autodiff.mass_flux_segments_present', data = flag, format = 'Boolean')
+
+            ## Deal with trace keep on
+            keep = False
+
+            ## 7 -  From ADOLC userdoc:
+            # The optional integer argument keep of trace on determines whether the 
+            # numerical values of all active variables are recorded in a buffered 
+            # temporary array or file called the taylor stack. This option takes 
+            # effect if keep = 1 and prepares the scene for an immediately 
+            # following gradient evaluation by a call to a routine implementing the 
+            # reverse mode as described in the Section 4 and Section 5.
+            #
+            if len(self.driver) <= 3:
+                keep = False  # there is no "_reverse" string within the driver string
+            else:
+                if self.driver[3:].lower().startswith("_reverse"):
+                    keep = True
+                else:
+                    keep = False
+            execute.WriteData(fid, prefix, name = 'md.autodiff.keep', data = keep, format ='Boolean')
+
+        else:
+            execute.WriteData(fid, prefix, name = 'md.autodiff.mass_flux_segments_present', data = False, format = 'Boolean')
+            execute.WriteData(fid, prefix, name = 'md.autodiff.keep', data = False, format = 'Boolean')

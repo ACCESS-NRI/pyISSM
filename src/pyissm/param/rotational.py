@@ -1,5 +1,6 @@
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class rotational(class_registry.manage_state):
@@ -31,6 +32,8 @@ class rotational(class_registry.manage_state):
         Returns a detailed string representation of the rotational parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -60,3 +63,26 @@ class rotational(class_registry.manage_state):
         s = 'ISSM - rotational Class'
         return s
 
+    # Marshall method for saving the rotational parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [rotational] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'equatorialmoi', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'polarmoi', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'angularvelocity', format = 'Double')

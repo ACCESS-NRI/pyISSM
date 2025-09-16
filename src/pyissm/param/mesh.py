@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 ## --------------------------------------------------------
 ## mesh.mesh2d
@@ -66,6 +67,14 @@ class mesh2d(class_registry.manage_state):
         Returns a detailed string representation of the mesh2d object.
     __str__(self)
         Returns a short string identifying the class.
+    domain_type(self)
+        Returns the domain type of the mesh.
+    dimension(self)
+        Returns the dimension of the mesh.
+    element_type(self)
+        Returns the element type of the mesh.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -134,6 +143,61 @@ class mesh2d(class_registry.manage_state):
         s = 'ISSM - mesh.mesh2d Class'
         return s
 
+    # Define domain type
+    def domain_type(self):
+        return '2Dhorizontal'
+    
+    # Define mesh dimension
+    def dimension(self):
+        return 2
+
+    # Define mesh element type
+    def element_type(self):
+        return 'Tria'
+
+    # Marshall method for saving the mesh.mesh2d parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [mesh.mesh2d] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write headers to file
+        execute.WriteData(fid, prefix, name = 'md.mesh.domain_type', data = 'Domain' + self.domain_type(), format = 'String')
+        execute.WriteData(fid, prefix, name = 'md.mesh.domain_dimension', data = self.dimension(), format = 'Integer')
+        execute.WriteData(fid, prefix, name = 'md.mesh.elementtype', data = self.element_type(), format = 'String')
+
+        ## Write Integer fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'numberofelements', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'numberofvertices', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'average_vertex_connectivity', format = 'Integer')
+
+        ## Write DoubleMat fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'x', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'y', format = 'DoubleMat', mattype = 1 )
+        execute.WriteData(fid, prefix, name = 'md.mesh.z', data = np.zeros(self.numberofvertices), format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'elements', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'vertexonboundary', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'segments', format = 'DoubleMat', mattype = 3)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'scale_factor', format = 'DoubleMat', mattype = 1)
+        
+        ## Write conditional fields
+        if md.transient.isoceancoupling:
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'lat', format = 'DoubleMat', mattype = 1)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'long', format = 'DoubleMat', mattype = 1)
+
 ## --------------------------------------------------------
 ## mesh.mesh2dvertical
 ## --------------------------------------------------------
@@ -198,6 +262,14 @@ class mesh2dvertical(class_registry.manage_state):
         Returns a detailed string representation of the mesh2dvertical object.
     __str__(self)
         Returns a short string identifying the class.
+    domain_type(self)
+        Returns the domain type of the mesh.
+    dimension(self)
+        Returns the dimension of the mesh.
+    element_type(self)
+        Returns the element type of the mesh.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -263,6 +335,56 @@ class mesh2dvertical(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - mesh.mesh2dvertical Class'
         return s
+
+    # Define domain type
+    def domain_type(self):
+        return '2Dvertical'
+    
+    # Define mesh dimension
+    def dimension(self):
+        return 2
+
+    # Define mesh element type
+    def element_type(self):
+        return 'Tria'
+    
+    # Marshall method for saving the mesh.mesh2dvertical parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [mesh.mesh2dvertical] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write headers to file
+        execute.WriteData(fid, prefix, name = 'md.mesh.domain_type', data = 'Domain' + self.domain_type(), format = 'String')
+        execute.WriteData(fid, prefix, name = 'md.mesh.domain_dimension', data = self.dimension(), format = 'Integer')
+        execute.WriteData(fid, prefix, name = 'md.mesh.elementtype', data = self.element_type(), format = 'String')
+
+        ## Write Integer fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'numberofelements', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'numberofvertices', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'average_vertex_connectivity', format = 'Integer')
+
+        ## Write DoubleMat & BooleanMat fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'x', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'y', format = 'DoubleMat', mattype = 1 )
+        execute.WriteData(fid, prefix, name = 'md.mesh.z', data = np.zeros(self.numberofvertices), format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'elements', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'vertexonbase', format = 'BooleanMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'vertexonsurface', format = 'BooleanMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'scale_factor', format = 'DoubleMat', mattype = 1)
 
 ## --------------------------------------------------------
 ## mesh.mesh3dprisms
@@ -346,6 +468,14 @@ class mesh3dprisms(class_registry.manage_state):
         Returns a detailed string representation of the mesh3dprisms object.
     __str__(self)
         Returns a short string identifying the class.
+    domain_type(self)
+        Returns the domain type of the mesh.
+    dimension(self)
+        Returns the dimension of the mesh.
+    element_type(self)
+        Returns the element type of the mesh.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -436,6 +566,63 @@ class mesh3dprisms(class_registry.manage_state):
         s = 'ISSM - mesh.mesh3dprisms Class'
         return s
 
+    # Define domain type
+    def domain_type(self):
+        return '3D'
+
+    # Define mesh dimension
+    def dimension(self):
+        return 3
+
+    # Define mesh element type
+    def element_type(self):
+        return 'Penta'
+
+    # Marshall method for saving the mesh.mesh3dprisms parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [mesh.mesh3dprisms] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write headers to file
+        execute.WriteData(fid, prefix, name = 'md.mesh.domain_type', data = 'Domain' + self.domain_type(), format = 'String')
+        execute.WriteData(fid, prefix, name = 'md.mesh.domain_dimension', data = self.dimension(), format = 'Integer')
+        execute.WriteData(fid, prefix, name = 'md.mesh.elementtype', data = self.element_type(), format = 'String')
+
+        ## Write Integer fields
+        fieldnames = ['numberoflayers', 'numberofelements', 'numberofvertices', 'average_vertex_connectivity', 'numberofvertices2d', 'numberofelements2d']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+
+        ## Write DoubleMat & BooleanMat fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'x', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'y', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'z', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'elements', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'vertexonbase', format = 'BooleanMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'vertexonsurface', format = 'BooleanMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'lowerelements', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'upperelements', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'elements2d', format = 'DoubleMat', mattype = 3)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'scale_factor', format = 'DoubleMat', mattype = 1)
+
+        ## Write conditional fields
+        if md.transient.isoceancoupling:
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'lat', format = 'DoubleMat', mattype = 1)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'long', format = 'DoubleMat', mattype = 1)
 
 ## --------------------------------------------------------
 ## mesh.mesh3dsurface
@@ -501,6 +688,14 @@ class mesh3dsurface(class_registry.manage_state):
         Returns a detailed string representation of the mesh3dsurface object.
     __str__(self)
         Returns a short string identifying the class.
+    domain_type(self)
+        Returns the domain type of the mesh.
+    dimension(self)
+        Returns the dimension of the mesh.
+    element_type(self)
+        Returns the element type of the mesh.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -567,3 +762,52 @@ class mesh3dsurface(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - mesh.mesh3dsurface Class'
         return s
+
+    # Define domain type
+    def domain_type(self):
+        return '3Dsurface'
+    
+    # Define mesh dimension
+    def dimension(self):
+        return 2
+
+    # Define mesh element type
+    def element_type(self):
+        return 'Tria'
+    
+    # Marshall method for saving the mesh.mesh3dsurface parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [mesh.mesh3dsurface] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write headers to file
+        execute.WriteData(fid, prefix, name = 'md.mesh.domain_type', data = 'Domain' + self.domain_type(), format = 'String')
+        execute.WriteData(fid, prefix, name = 'md.mesh.domain_dimension', data = self.dimension(), format = 'Integer')
+        execute.WriteData(fid, prefix, name = 'md.mesh.elementtype', data = self.element_type(), format = 'String')
+
+        ## Write Integer fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'numberofelements', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'numberofvertices', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'average_vertex_connectivity', format = 'Integer')
+
+        ## Write DoubleMat fields
+        fieldnames = ['x', 'y', 'z', 'lat', 'long', 'r', 'vertexonboundary']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
+        
+        execute.WriteData(fid, prefix, name = 'md.mesh.z', data = np.zeros(self.numberofvertices), format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'elements', format = 'DoubleMat', mattype = 2)

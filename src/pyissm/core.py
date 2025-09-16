@@ -13,102 +13,99 @@ class Model():
 
     Parameters
     ----------
-    args : optional
-        Optional arguments passed to the model.
+    None.
 
     Attributes
     ----------
-    mesh : SimpleNamespace or None
+    mesh : param.mesh.mesh2d()
         Mesh properties.
-    mask : SimpleNamespace or None
+    mask : param.mask.mask2d()
         Defines grounded and floating elements.
-    geometry : SimpleNamespace or None
+    geometry : param.geometry.geometry2d()
         Surface elevation, bedrock topography, ice thickness, etc.
-    constants : SimpleNamespace or None
+    constants : param.constants()
         Physical constants.
-    smb : SimpleNamespace or None
+    smb : param.smb.default()
         Surface mass balance.
-    basalforcings : SimpleNamespace or None
+    basalforcings : param.basalforcings.default()
         Bed forcings.
-    materials : SimpleNamespace or None
+    materials : param.materials.ice()
         Material properties.
-    damage : SimpleNamespace or None
+    damage : param.damage()
         Damage propagation laws.
-    friction : SimpleNamespace or None
+    friction : param.friction.default()
         Basal friction / drag properties.
-    flowequation : SimpleNamespace or None
+    flowequation : param.flowequation()
         Flow equations.
-    timestepping : SimpleNamespace or None
+    timestepping : param.timestepping.default()
         Timestepping for transient models.
-    initialization : SimpleNamespace or None
+    initialization : param.initialization()
         Initial guess / state.
-    rifts : SimpleNamespace or None
+    rifts : param.rifts()
         Rifts properties.
-    solidearth : SimpleNamespace or None
+    solidearth : param.solidearth.earth()
         Solidearth inputs and settings.
-    dsl : SimpleNamespace or None
+    dsl : param.dsl.default()
         Dynamic sea level.
-    debug : SimpleNamespace or None
+    debug : param.debug()
         Debugging tools (valgrind, gprof).
-    verbose : SimpleNamespace or None
+    verbose : param.verbose()
         Verbosity level in solve.
-    settings : SimpleNamespace or None
+    settings : param.issmsettings()
         Settings properties.
-    toolkits : SimpleNamespace or None
+    toolkits : None
         PETSc options for each solution.
-    cluster : SimpleNamespace or None
+    cluster : None
         Cluster parameters (number of CPUs, etc.).
-    balancethickness : SimpleNamespace or None
+    balancethickness : param.balancethickness()
         Parameters for balancethickness solution.
-    stressbalance : SimpleNamespace or None
+    stressbalance : param.stressbalance()
         Parameters for stressbalance solution.
-    groundingline : SimpleNamespace or None
+    groundingline : param.groundingline()
         Parameters for groundingline solution.
-    hydrology : SimpleNamespace or None
+    hydrology : param.hydrology.shreve()
         Parameters for hydrology solution.
-    masstransport : SimpleNamespace or None
+    masstransport : param.masstransport()
         Parameters for masstransport solution.
-    thermal : SimpleNamespace or None
+    thermal : param.thermal()
         Parameters for thermal solution.
-    steadystate : SimpleNamespace or None
+    steadystate : param.steadystate()
         Parameters for steadystate solution.
-    transient : SimpleNamespace or None
+    transient : param.transient()
         Parameters for transient solution.
-    levelset : SimpleNamespace or None
+    levelset : param.levelset()
         Parameters for moving boundaries (level-set method).
-    calving : SimpleNamespace or None
+    calving : param.calving.default()
         Parameters for calving.
-    frontalforcings : SimpleNamespace or None
+    frontalforcings : param.frontalforcings.default()
         Parameters for frontalforcings.
-    esa : SimpleNamespace or None
-        Parameters for elastic adjustment solution.
-    sampling : SimpleNamespace or None
-        Parameters for stochastic sampler.
-    love : SimpleNamespace or None
+    love : param.love.default()
         Parameters for love solution.
-    autodiff : SimpleNamespace or None
+    esa : param.esa()
+        Parameters for elastic adjustment solution.
+    sampling : param.sampling()
+        Parameters for stochastic sampler.
+    autodiff : param.autodiff()
         Automatic differentiation parameters.
-    inversion : SimpleNamespace or None
+    inversion : param.inversion.default()
         Parameters for inverse methods.
-    qmu : SimpleNamespace or None
+    qmu : param.qmu.default()
         Dakota properties.
-    amr : SimpleNamespace or None
+    amr : param.amr()
         Adaptive mesh refinement properties.
-    results : SimpleNamespace or None
+    results : param.results.default()
         Model results.
-    outputdefinition : SimpleNamespace or None
+    outputdefinition : param.outputdefinition()
         Output definition.
-    radaroverlay : SimpleNamespace or None
+    radaroverlay : param.radaroverlay()
         Radar image for plot overlay.
-    miscellaneous : SimpleNamespace or None
+    miscellaneous : param.miscellaneous()
         Miscellaneous fields.
-    stochasticforcing : SimpleNamespace or None
+    stochasticforcing : param.stochasticforcing()
         Stochasticity applied to model forcings.
     """
 
-    def __init__(self, args=None):
-
-        self.args = args
+    def __init__(self):
 
         ## Initialise all as None
         self.mesh = param.mesh.mesh2d()
@@ -127,9 +124,9 @@ class Model():
         self.dsl = param.dsl.default()
         self.solidearth = param.solidearth.earth()
         self.debug = param.debug()
-        self.verbose = None
+        self.verbose = param.verbose()
         self.settings = param.issmsettings()
-        self.toolkits = None
+        self.toolkits = param.toolkits()
         self.cluster = None
         self.balancethickness = param.balancethickness()
         self.stressbalance = param.stressbalance()

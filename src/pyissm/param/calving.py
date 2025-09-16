@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 ## ------------------------------------------------------
 ## calving.default
@@ -31,6 +32,8 @@ class default(class_registry.manage_state):
         Returns a detailed string representation of the calving parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -56,6 +59,32 @@ class default(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - calving.default Class'
         return s
+
+    # Marshall method for saving the calving.default parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [calving.default] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.calving.law', data = 1, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'calvingrate', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts, scale = 1. / md.constants.yts)
 
 ## ------------------------------------------------------
 ## calving.crevassedepth
@@ -90,6 +119,8 @@ class crevassedepth(class_registry.manage_state):
         Returns a detailed string representation of the crevasse depth calving parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -122,6 +153,34 @@ class crevassedepth(class_registry.manage_state):
         s = 'ISSM - calving.crevassedepth Class'
         return s
 
+    # Marshall method for saving the calving.crevassedepth parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [calving.crevassedepth] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.calving.law', data = 6, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'crevasse_opening_stress', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'crevasse_threshold', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'water_height', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+
 ## ------------------------------------------------------
 ## calving.dev
 ## ------------------------------------------------------
@@ -153,6 +212,9 @@ class dev(class_registry.manage_state):
         Returns a detailed string representation of the development calving parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
+
 
     Examples
     --------
@@ -181,6 +243,33 @@ class dev(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - calving.dev Class'
         return s
+
+    # Marshall method for saving the calving.dev parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [calving.dev] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.calving.law', data = 2, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'stress_threshold_groundedice', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'stress_threshold_floatingice', format = 'DoubleMat', mattype = 1)
 
 ## ------------------------------------------------------
 ## calving.levermann
@@ -211,6 +300,9 @@ class levermann(class_registry.manage_state):
         Returns a detailed string representation of the Levermann calving parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
+
 
     Examples
     --------
@@ -235,6 +327,32 @@ class levermann(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - calving.levermann Class'
         return s
+
+    # Marshall method for saving the calving.levermann parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [calving.levermann] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.calving.law', data = 3, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'coeff', format = 'DoubleMat', mattype = 1)
 
 ## ------------------------------------------------------
 ## calving.minthickness
@@ -265,6 +383,9 @@ class minthickness(class_registry.manage_state):
         Returns a detailed string representation of the minimum thickness calving parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
+
 
     Examples
     --------
@@ -289,6 +410,32 @@ class minthickness(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - calving.minthickness Class'
         return s
+    
+    # Marshall method for saving the calving.minthickness parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [calving.minthickness] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.calving.law', data = 4, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'min_thickness', format = 'Double')
 
 ## ------------------------------------------------------
 ## calving.parameterization
@@ -342,6 +489,8 @@ class parameterization(class_registry.manage_state):
         Returns a detailed string representation of the parameterization calving parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -391,6 +540,38 @@ class parameterization(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - calving.parameterization Class'
         return s
+    
+    # Marshall method for saving the calving.parameterization parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [calving.parameterization] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.calving.law', data = 9, format = 'Integer')
+
+        ## Write Double fields
+        fieldnames = ['min_thickness', 'use_param', 'theta', 'alpha', 'xoffset', 'yoffset']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'vel_lowerbound', format = 'Double', scale = 1. / md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'vel_threshold', format = 'Double', scale = 1. / md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'vel_upperbound', format = 'Double', scale = 1. / md.constants.yts)
 
 ## ------------------------------------------------------
 ## calving.vonmises
@@ -425,7 +606,9 @@ class vonmises(class_registry.manage_state):
         Returns a detailed string representation of the Von Mises calving parameters.
     __str__(self)
         Returns a short string identifying the class.
-
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
+        
     Examples
     --------
     md.calving = pyissm.param.calving.vonmises()
@@ -456,3 +639,31 @@ class vonmises(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - calving.vonmises Class'
         return s
+    
+    # Marshall method for saving the calving.vonmises parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [calving.vonmises] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.calving.law', data = 2, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'stress_threshold_groundedice', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'stress_threshold_floatingice', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'min_thickness', format = 'Double')

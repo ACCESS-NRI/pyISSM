@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import utils
 
 @class_registry.register_class
 class dependent(class_registry.manage_state):
@@ -33,8 +34,8 @@ class dependent(class_registry.manage_state):
 
     Methods
     -------
-    __init__(self, other=None)
-        Initializes the dependent parameters, optionally inheriting from another instance.
+    __init__(self, md=None, other=None)
+        Initializes the dependent parameters, requires model object for mesh information, if name = 'MassFlux' is used. Optionally inherits from another instance.
     __repr__(self)
         Returns a detailed string representation of the dependent parameters.
     __str__(self)
@@ -52,25 +53,39 @@ class dependent(class_registry.manage_state):
     """
 
     # Initialise with default parameters
-    def __init__(self, other = None):
+    def __init__(self,
+                 md = None,
+                 other = None):
+        
         self.name = ''
         self.fos_reverse_index = np.nan
         self.exp = ''
-        self.segments = 'List of segments'
+        self.segments = []
         self.index = -1
         self.nods = 0
 
         # Inherit matching fields from provided class
         super().__init__(other)
 
+        if self.name.lower() == 'massflux':
+
+            ## Check that the supplied *.exp file exists
+            if not os.path.exists(self.exp):
+                raise IOError(f'dependent: the supplied *.exp file {self.exp} does not exist!')
+
+            ## Check that a model object is provided to extract mesh information from
+            if md is None:
+                raise ValueError('dependent: md must be provided when using massflux as dependent variable!')
+            
+            ## Get segments that intersect with the supplied *.exp file.
+            self.segments = utils.wrappers.MeshProfileIntersection(md.mesh.elements, md.mesh.x, md.mesh.y, self.exp)[0]
+
+
         # TODO: Implement check and adjustment for mass flux variable
 
     # Define repr
     def __repr__(self):
-        s = '---------------------------------------\n'
-        s += '****      NOT YET IMPLEMENTED      ****\n'
-        s += '---------------------------------------\n\n'
-        s += '   dependent variable:\n'
+        s = '   dependent variable:\n'
 
         s += '{}\n'.format(param_utils.fielddisplay(self, 'name', 'variable name (must match corresponding String)'))
         s += '{}\n'.format(param_utils.fielddisplay(self, 'fos_reverse_index', 'index for fos_reverse driver of ADOLC'))

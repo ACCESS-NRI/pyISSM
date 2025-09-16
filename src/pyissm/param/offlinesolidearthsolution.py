@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class offlinesolidearthsolution(class_registry.manage_state):
@@ -33,6 +34,8 @@ class offlinesolidearthsolution(class_registry.manage_state):
         Returns a detailed string representation of the object.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -57,8 +60,57 @@ class offlinesolidearthsolution(class_registry.manage_state):
         s += '{}\n'.format(param_utils.fielddisplay(self, 'geoid', 'solid-Earth geoid time series (m)'))
         return s
 
-    ## Define class string
+    # Define class string
     def __str__(self):
         s = 'ISSM - offlinesolidearthsolution Class'
         return s
+
+    # Marshall method for saving the offlinesolidearthsolution parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [offlinesolidearthsolution] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        # Transform time series into time series rates
+        # NOTE: Taken from $ISSM_DIR/src/m/classes/offlinesolidearthsolution.py
+        if len(np.shape(self.displacementeast)) == 1:
+            print('Warning: offlinesolidearthsolution::marshall_class: only one time step provided, assuming the values are rates per year')
+            displacementeast_rate = np.append(np.array(self.displacementeast).reshape(-1, 1), 0)
+            displacementnorth_rate = np.append(np.array(self.displacementnorth).reshape(-1, 1), 0)
+            displacementup_rate = np.append(np.array(self.displacementup).reshape(-1, 1), 0)
+            geoid_rate = np.append(np.array(self.geoid).reshape(-1, 1), 0)
+        else:
+            time = self.displacementeast[-1, :]
+            dt = np.diff(time, axis=0)
+            displacementeast_rate = np.diff(self.displacementeast[0:-2, :], 1, 1) / dt
+            displacementeast_rate = np.append(displacementeast_rate,time[:-1].reshape(1,-1),axis=0)
+            displacementnorth_rate = np.diff(self.displacementnorth[0:-2, :], 1, 1) / dt
+            displacementnorth_rate = np.append(displacementnorth_rate,time[:-1].reshape(1,-1),axis=0)
+            displacementup_rate = np.diff(self.displacementup[0:-2, :], 1, 1) / dt
+            displacementup_rate = np.append(displacementup_rate,time[:-1].reshape(1,-1),axis=0)
+            geoid_rate = np.diff(self.geoid[0:-2, :], 1, 1) / dt
+            geoid_rate = np.append(geoid_rate,time[:-1].reshape(1,-1),axis=0)
+
+        ## Write headers to file
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.solidearth.external.nature', data = 2, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, name =  'md.solidearth.external.displacementeast', data = displacementeast_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, name = 'md.solidearth.external.displacementup', data = displacementup_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, name = 'md.solidearth.external.displacementnorth', data = displacementnorth_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, name = 'md.solidearth.external.geoid', data = geoid_rate, format = 'DoubleMat',  mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 

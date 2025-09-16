@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class surfaceload(class_registry.manage_state):
@@ -33,6 +34,8 @@ class surfaceload(class_registry.manage_state):
         Returns a detailed string representation of the surfaceload parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -46,7 +49,7 @@ class surfaceload(class_registry.manage_state):
     def __init__(self, other = None):
         self.icethicknesschange = np.nan
         self.waterheightchange = np.nan
-        self.other = np.nan
+        self.otherchange = np.nan
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -56,11 +59,45 @@ class surfaceload(class_registry.manage_state):
         s = '   surfaceload:\n'
         s += '{}\n'.format(param_utils.fielddisplay(self, 'icethicknesschange', 'thickness change: ice height equivalent [mIce/yr]'))
         s += '{}\n'.format(param_utils.fielddisplay(self, 'waterheightchange', 'water height change: water height equivalent [mWater/yr]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'other', 'other loads (sediments) [kg/m^2/yr]'))
+        s += '{}\n'.format(param_utils.fielddisplay(self, 'otherchange', 'other loads (sediments) [kg/m^2/yr]'))
         return s
 
     # Define class string
     def __str__(self):
         s = 'ISSM - surfaceload Class'
         return s
+    
+    # Marshall method for saving the surfaceload parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [surfaceload] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Check fields
+        if np.isnan(self.icethicknesschange):
+            self.icethicknesschange = np.zeros((md.mesh.numberofelements + 1, ))
+
+        if np.isnan(self.waterheightchange):
+            self.waterheightchange = np.zeros((md.mesh.numberofelements + 1, ))
+
+        if np.isnan(self.otherchange):
+            self.otherchange = np.zeros((md.mesh.numberofelements + 1, ))
+
+        ## Write fields
+        execute.WriteData(fid, prefix, name = 'md.solidearth.surfaceload.icethicknesschange', data = self.icethicknesschange, format = 'MatArray', timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts, scale = 1 / md.constants.yts)
+        execute.WriteData(fid, prefix, name = 'md.solidearth.surfaceload.waterheightchange', data = self.waterheightchange, format = 'MatArray', timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts, scale = 1 / md.constants.yts)
+        execute.WriteData(fid, prefix, name = 'md.solidearth.surfaceload.otherchange', data = self.otherchange, format = 'MatArray', timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts, scale = 1 / md.constants.yts)
 

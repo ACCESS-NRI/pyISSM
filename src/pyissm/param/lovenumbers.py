@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class lovenumbers(class_registry.manage_state):
@@ -49,6 +50,8 @@ class lovenumbers(class_registry.manage_state):
         Returns a detailed string representation of the lovenumbers parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Notes
     -----
@@ -109,4 +112,39 @@ class lovenumbers(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - lovenumbers Class'
         return s
+    
+    # Marshall method for saving the lovenumbers parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [lovenumbers] parameters to a binary file.
 
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write DoubleMat fields
+        fieldname = ['h', 'k', 'l', 'th', 'tk', 'tl', 'pmtf_colinear', 'pmtf_ortho']
+        for field in fieldname:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
+
+        ## Write conditional fields
+        if (self.istime):
+            scale = md.constants.yts
+        else:
+            scale = 1.0 / md.constants.yts
+
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'timefreq', format = 'DoubleMat', mattype = 1, scale = scale)
+
+        ## Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'tk2secular', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'istime', format = 'Boolean')

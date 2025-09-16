@@ -46,4 +46,6 @@ from .stressbalance import stressbalance
 from .surfaceload import surfaceload
 from .thermal import thermal
 from .timestepping import default, adaptive
+from .toolkits import toolkits
 from .transient import transient
+from .verbose import verbose

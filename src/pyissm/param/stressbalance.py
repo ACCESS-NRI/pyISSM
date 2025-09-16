@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class stressbalance(class_registry.manage_state):
@@ -60,7 +61,7 @@ class stressbalance(class_registry.manage_state):
         Referential parameter.
     loadingforce : float, default=nan
         Loading force parameter.
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested.
 
     Methods
@@ -71,6 +72,10 @@ class stressbalance(class_registry.manage_state):
         Returns a detailed string representation of the stressbalance parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md=None, return_default_outputs=False)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -104,7 +109,7 @@ class stressbalance(class_registry.manage_state):
         self.rift_penalty_threshold = 0
         self.referential = np.nan
         self.loadingforce = np.nan
-        self.requested_outputs = 'List of requested outputs' # Default = ['default'] (Vx, Vy, Vel, Pressure)
+        self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -154,4 +159,102 @@ class stressbalance(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - stressbalance Class'
         return s
+    
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
 
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+            
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        if md.mesh.dimension() == 3:
+            default_outputs = ['Vx', 'Vy', 'Vz', 'Vel', 'Pressure']
+        else:
+            default_outputs = ['Vx', 'Vy', 'Vel', 'Pressure']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+    
+    # Marshall method for saving the stressbalance parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [stressbalance] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write DoubleMat fields (all consistent formats)
+        fieldnames = ['spcvx', 'spcvy', 'spcvz']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+
+        ## Write Double fields
+        fieldnames = ['restol', 'reltol', 'FSreconditioning', 'penalty_factor']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+
+        ## Write Integer fields
+        fieldnames = ['isnewton', 'maxiter', 'shelf_dampening', 'rift_penalty_lock', 'rift_penalty_threshold']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+
+        ## Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'abstol', format = 'Double', scale = 1. / md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'ishydrologylayer', format = 'Boolean')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'referential', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'vertex_pairing', format = 'DoubleMat', mattype = 3)
+        execute.WriteData(fid, prefix, name = 'md.stressbalance.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+
+        ## Write conditional fields
+        ## Loading force
+        if isinstance(self.loadingforce, (list, tuple, np.ndarray)) and np.size(self.loadingforce, 1) == 3:
+            execute.WriteData(fid, prefix, name = 'md.stressbalance.loadingforcex', data = self.loadingforce[:, 0], format = 'DoubleMat', mattype = 1)
+            execute.WriteData(fid, prefix, name = 'md.stressbalance.loadingforcey', data = self.loadingforce[:, 1], format = 'DoubleMat', mattype = 1)
+            execute.WriteData(fid, prefix, name = 'md.stressbalance.loadingforcez', data = self.loadingforce[:, 2], format = 'DoubleMat', mattype = 1)
+        
+        ## MOLHO
+        if md.flowequation.isMOLHO:
+            fieldnames = ['spcvx_base', 'spcvy_base', 'spcvx_shear', 'spcvy_shear']
+            for field in fieldnames:
+                execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)

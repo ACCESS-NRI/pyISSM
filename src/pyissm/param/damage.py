@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class damage(class_registry.manage_state):
@@ -52,7 +53,7 @@ class damage(class_registry.manage_state):
         Healing parameter.
     equiv_stress : float, default=0
         Equivalent stress parameter.
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested.
 
     Methods
@@ -63,6 +64,10 @@ class damage(class_registry.manage_state):
         Returns a detailed string representation of the damage parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md=None, return_default_outputs=False)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -89,7 +94,7 @@ class damage(class_registry.manage_state):
         self.c4 = 0
         self.healing = 0
         self.equiv_stress = 0
-        self.requested_outputs = 'List of requested outputs'
+        self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -121,4 +126,93 @@ class damage(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - damage Class'
         return s
+    
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
 
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+            
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        if md.mesh.domain_type() == '2Dhorizontal':
+            default_outputs = ['DamageDbar']
+        else:
+            default_outputs = ['DamageD']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':                
+                outputs.extend(default_outputs)
+            else:
+                outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+        else:
+            outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+
+    # Marshall method for saving the damage parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [damage] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+        
+        ## Write Boolean fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'isdamage', format = 'Boolean')
+
+        ## If damage is enabled, write additional fields
+        if self.isdamage:
+            ## Write Integer fields
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'law', format = 'Integer')
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'stabilization', format = 'Integer')
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'maxiter', format = 'Integer')
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'equiv_stress', format = 'Integer')
+
+            ## Write DoubleMat fields
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'D', format = 'DoubleMat', mattype = 1)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'spcdamage', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+
+            ## Write Double fields
+            fieldnames = ['max_damage', 'stress_threshold', 'stress_ubound', 'kappa', 'c1', 'c2', 'c3', 'c4', 'healing']
+            for fieldname in fieldnames:
+                execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'Double')
+
+            ## Write other fields
+            execute.WriteData(fid, prefix, name = 'md.damage.elementinterp', data = self.elementinterp, format = 'String')
+            execute.WriteData(fid, prefix, name = 'md.damage.requested_outputs', data = self.process_outputs(md), format = 'StringArray')

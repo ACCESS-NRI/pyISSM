@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 ## ------------------------------------------------------
 ## dsl.default
@@ -35,6 +36,8 @@ class default(class_registry.manage_state):
         Returns a detailed string representation of the DSL parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -62,6 +65,35 @@ class default(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - dsl Class'
         return s
+
+    # Marshall method for saving the dsl.default parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [dsl.default] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.dsl.model', data = 1, format = 'Integer')
+
+        ## Write DoubleMat fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'global_average_thermosteric_sea_level', format = 'DoubleMat', mattype = 2, timeserieslength = 2, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'sea_surface_height_above_geoid', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'sea_water_pressure_at_sea_floor', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+
 
 ## ------------------------------------------------------
 ## dsl.mme
@@ -98,6 +130,8 @@ class mme(class_registry.manage_state):
         Returns a detailed string representation of the MME DSL parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -107,9 +141,9 @@ class mme(class_registry.manage_state):
     # Initialise with default parameters
     def __init__(self, other = None):
         self.modelid = 0
-        self.global_average_thermosteric_sea_level = np.nan
-        self.sea_surface_height_above_geoid = np.nan
-        self.sea_water_pressure_at_sea_floor = np.nan
+        self.global_average_thermosteric_sea_level = []
+        self.sea_surface_height_above_geoid = []
+        self.sea_water_pressure_at_sea_floor = []
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -127,3 +161,35 @@ class mme(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - dsl mme Class'
         return s
+    
+    # Marshall method for saving the dsl.default parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [dsl.default] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.dsl.model', data = 2, format = 'Integer')
+
+        ## Write DoubleMat fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'global_average_thermosteric_sea_level', format = 'MatArray', timeserieslength = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'sea_surface_height_above_geoid', format = 'MatArray', timeserieslength = md.mesh.numberofvertices + 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'sea_water_pressure_at_sea_floor', format = 'MatArray', timeserieslength = md.mesh.numberofvertices + 1)
+
+        ## Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'modelid', format = 'Double')
+        execute.WriteData(fid, prefix, name = 'md.dsl.nummodels', data = len(self.global_average_thermosteric_sea_level), format = 'Integer')

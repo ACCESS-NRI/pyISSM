@@ -1,6 +1,8 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
+from .. import utils
 
 @class_registry.register_class
 class regionaloutput(class_registry.manage_state):
@@ -74,3 +76,35 @@ class regionaloutput(class_registry.manage_state):
         s = 'ISSM - regionaloutput Class'
         return s
 
+    # Marshall method for saving the regionaloutput parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [regionaloutput] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Create mask from exp
+        self.mask = utils.wrappers.ContourToMesh(index = md.mesh.elements,
+                                                 x = md.mesh.x,
+                                                 y = md.mesh.y,
+                                                 contour_name = self.maskexpstring,
+                                                 interp_type = 'node',
+                                                 edge_value = 1)
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'name', format = 'String')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'definitionstring', format = 'String')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'outputnamestring', format = 'String')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'mask', format = 'DoubleMat', mattype = 1)

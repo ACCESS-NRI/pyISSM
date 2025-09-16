@@ -355,3 +355,61 @@ def getlongestfieldname(self):
             maxlength = length
 
     return maxlength
+
+def marshall_inversion_cost_functions(cost_functions):
+    """
+    Map inversion cost function codes to their corresponding string names.
+    
+    This function converts integer cost function codes used in ISSM inversion
+    routines to their human-readable string representations. It supports both
+    single cost function codes and lists of multiple codes.
+    
+    Parameters
+    ----------
+    cost_functions : int or list of int
+        Cost function code(s) to be mapped. Supported codes include:
+        - 101: SurfaceAbsVelMisfit
+        - 102: SurfaceRelVelMisfit  
+        - 103: SurfaceLogVelMisfit
+        - 104: SurfaceLogVxVyMisfit
+        - 105: SurfaceAverageVelMisfit
+        - 201: ThicknessAbsMisfit
+        - 501: DragCoefficientAbsGradient
+        - 502: RheologyBbarAbsGradient
+        - 503: ThicknessAbsGradient
+        - 504: ThicknessAlongGradient
+        - 505: ThicknessAcrossGradient
+    
+    Returns
+    -------
+    list of str
+        List containing the string name(s) corresponding to the input cost
+        function code(s).
+    
+    Examples
+    --------
+    >>> map_inversion_cost_functions(101)
+    ['SurfaceAbsVelMisfit']
+    
+    >>> map_inversion_cost_functions([101, 201, 501])
+    ['SurfaceAbsVelMisfit', 'ThicknessAbsMisfit', 'DragCoefficientAbsGradient']
+    """
+
+    ## Define dictionary of cost functions
+    cfDict = {101: 'SurfaceAbsVelMisfit',
+            102: 'SurfaceRelVelMisfit',
+            103: 'SurfaceLogVelMisfit',
+            104: 'SurfaceLogVxVyMisfit',
+            105: 'SurfaceAverageVelMisfit',
+            201: 'ThicknessAbsMisfit',
+            501: 'DragCoefficientAbsGradient',
+            502: 'RheologyBbarAbsGradient',
+            503: 'ThicknessAbsGradient',
+            504: 'ThicknessAlongGradient',
+            505: 'ThicknessAcrossGradient'}
+
+    ## Marshall cost functions
+    if isinstance(cost_functions, int):
+        return [cfDict[cost_functions]]
+    else:
+        return [cfDict[cf] for cf in cost_functions]

@@ -1,7 +1,9 @@
 import numpy as np
 import collections
+import warnings
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 ## ------------------------------------------------------
 ## qmu.default
@@ -34,7 +36,7 @@ class default(class_registry.manage_state):
         self.responsepartitions_nt = 'List of response partitions (nt)'
         self.mass_flux_profile_directory = np.nan
         self.mass_flux_profiles = np.nan
-        self.mass_flux_segments = 'List of mass flux segments'
+        self.mass_flux_segments = [] # List of mass flux segments
         self.adjacency = np.nan
         self.vertex_weight = np.nan
 
@@ -53,6 +55,32 @@ class default(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - qmu.default Class'
         return s
+
+    # Marshall method for saving the qmu parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [qmu] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write fields (Turn off)
+        execute.WriteData(fid, prefix, name = 'md.qmu.isdakota', data = False, format = 'Boolean')
+        execute.WriteData(fid, prefix, name = 'md.qmu.mass_flux_segments_present', data = False, format = 'Boolean')
+
+        warnings.warn('pyissm.param.qmu::qmu not yet implemented. Turning off qmu.')
+
 
 ## ------------------------------------------------------
 ## qmu.statistics

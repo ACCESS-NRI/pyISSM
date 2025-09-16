@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class misfit(class_registry.manage_state):
@@ -47,6 +48,8 @@ class misfit(class_registry.manage_state):
         Returns a detailed string representation of the misfit parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -69,7 +72,6 @@ class misfit(class_registry.manage_state):
         self.local = 1
         self.weights = np.nan
         self.weights_string = ''
-        self.cumulated = None
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -93,4 +95,35 @@ class misfit(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - misfit Class'
         return s
+
+    # Marshall method for saving the misfit parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [misfit] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write String fields
+        fieldnames = ['name', 'definitionstring', 'model_string', 'observation_string', 'timeinterpolation',
+                      'weights_string']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj=self, fieldname=field, format='String')
+
+        ## Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'observation', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'local', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'weights', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        
 

@@ -1,3 +1,904 @@
 """
-Functions to execute ISSM commands and manage the execution environment.
+ISSM execution commands to handle model marshalling and execution.
 """
+
+from copy import copy
+import numpy as np
+
+
+def marshall(md):
+    """
+    Marshall the model data for execution.
+
+    Parameters
+    ----------
+    md : object
+        The model data object to be marshalled. Must contain miscellaneous.name
+        attribute and model classes with marshall_class methods.
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------
+    IOError
+        If the binary output file cannot be opened or closed.
+    RuntimeError
+        If an error occurs while marshalling a model class.
+
+    Notes
+    -----
+    This function iterates through all model classes in the md object and
+    calls their marshall_class methods to serialize the data to a binary file.
+    Certain classes ('results', 'radaroverlay', 'toolkits', 'cluster', 'private')
+    are skipped during marshalling. The function writes an EOF marker at the
+    end of the file to ensure data integrity.
+    """
+
+    # If verbose solution is enabled, print the name of the model being marshalled
+    if md.verbose.solution:
+        print(f'Marshalling for {md.miscellaneous.name}.bin')
+
+    # Open file for binary writing
+    try:
+        fid = open(md.miscellaneous.name + '.bin', 'wb')
+    except IOError as e:
+        raise IOError(f"Could not open file {md.miscellaneous.name}.bin for writing: {e}")
+    
+    # List (and sort) all model classes. Sort simply makes it easier to compare binary files
+    model_classes = list(vars(md).keys())
+    model_classes.sort()
+    
+    # Iterate over all model classes and marshall them
+    for model_class in model_classes:
+        ## Skip certain classes that do not need marshalling
+        if model_class in ['results', 'radaroverlay', 'toolkits', 'cluster', 'private']:
+            continue
+        
+        ## Check if the model class has a marshall method
+        try:
+            callable(getattr(md, model_class).marshall_class)
+        except Exception as e:
+            print(f"Skipping {model_class} due to error: {e}")
+            continue
+
+        ## Marshall the model class
+        try:
+            getattr(md, model_class).marshall_class(fid = fid,
+                                                    prefix = f'md.{model_class}',
+                                                    md = md)
+        except Exception as e:
+            raise RuntimeError(f"Error marshalling model class {model_class}: {e}")
+        
+    # Write "md.EOF" to make sure that the binary file is not corrupt
+    WriteData(fid,
+              prefix = 'XXX',
+              name = 'md.EOF', 
+              data = True, 
+              format = 'Boolean')
+
+    # Close file
+    try:
+        fid.close()
+
+    except IOError as e:
+        print(f'marshall error message: could not close \'{md.miscellaneous.name}.bin\' file for binary writing due to: {e}')
+
+
+def WriteData(fid, 
+              prefix, 
+              *, 
+              obj = None,
+              fieldname = None,
+              data = None,
+              name = None,
+              format = None,
+              mattype = 0,
+              timeserieslength = -1,
+              scale = None,
+              yts = None
+              ):
+    """
+    Write model field in binary file.
+
+    Parameters
+    ----------
+    fid : file object
+        File identifier for binary output file.
+    prefix : str
+        Prefix string for field naming.
+    obj : object, optional
+        Object containing the field to write. If provided, fieldname must also be specified.
+    fieldname : str, optional
+        Name of the field attribute in obj. Required when obj is provided.
+    data : array_like, optional
+        Data to write directly. Required when obj is not provided.
+    name : str, optional
+        Custom name for the field. If not provided, defaults to "{prefix}.{fieldname}" 
+        when using obj, or must be specified when using data directly.
+    format : str
+        Data format specification for binary writing. Required parameter.
+    mattype : int, optional
+        Matrix type identifier, by default 0.
+    timeserieslength : int, optional
+        Length of time series data, by default -1.
+    scale : float, optional
+        Scaling factor to apply to data before writing, by default None.
+    yts : float, optional
+        Years to seconds conversion factor, by default None.
+
+    Raises
+    ------
+    ValueError
+        If format is not provided.
+        If obj is provided but fieldname is missing.
+        If neither obj+fieldname nor data is provided.
+        If data is provided directly but name is missing.
+        
+    Notes
+    -----
+    The function validates input parameters, extracts data from either an object 
+    attribute or direct data input, applies optional scaling and time series 
+    transformations, and writes the field to a binary file with appropriate 
+    formatting.
+    """
+
+    # Validate and extract data
+    if format is None:
+        raise ValueError(f"'format' parameter is required")
+
+    if obj is not None:
+        if fieldname is None:
+            raise ValueError(f"'fieldname' is required when 'obj' is provided")
+        if name is None:
+            name = f"{prefix}.{fieldname}"
+        if data is None:
+            data = getattr(obj, fieldname)
+    else:
+        if data is None:
+            raise ValueError(f"Either 'obj'+'fieldname' or 'data' must be provided")
+        if name is None:
+            raise ValueError(f"'name' is required when using 'data' directly")
+    
+    # Make copy and apply scaling
+    data = copy(data)
+    data = _apply_scaling_and_time_series(data, format, timeserieslength, scale, yts)
+    
+    # Write field identifier
+    _write_field_name(fid, name)
+    
+    # Write data based on format
+    _write_data(fid, data, format, mattype, name)
+
+def _write_field_name(fid, name):
+    """
+    Write a field name identifier to a binary file.
+
+    This function writes a field name to a binary file by first writing the
+    length of the name as a 32-bit integer, followed by the name itself as
+    bytes.
+
+    Parameters
+    ----------
+    fid : file object
+        File descriptor or file-like object opened in binary write mode.
+    name : str
+        The field name to write to the file.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    The function encodes the name as bytes and writes:
+    1. The length of the encoded name as a 32-bit integer
+    2. The encoded name bytes
+    """
+
+    name_bytes = name.encode()
+    np.array([len(name_bytes)], dtype=np.int32).tofile(fid)
+    fid.write(name_bytes)
+
+def _write_data(fid, data, format, mattype, name):
+    """
+    Write data to file using efficient numpy methods based on format type.
+
+    This function acts as a dispatcher that routes data writing operations
+    to appropriate specialized functions based on the specified format.
+    
+    Parameters
+    ----------
+    fid : file object
+        File identifier or file object to write data to.
+    data : array_like
+        The data to be written to the file.
+    format : str
+        Format specification that determines how data should be written.
+        Supported formats include: 'Boolean', 'Integer', 'Double', 'String',
+        'IntMat', 'BooleanMat', 'DoubleMat', 'CompressedMat', 'MatArray',
+        'StringArray'.
+    mattype : str
+        Matrix type specification used for matrix formats.
+    name : str
+        Field name associated with the data being written.
+
+    Raises
+    ------
+    TypeError
+        If the specified format is not supported.
+
+    Notes
+    -----
+    This function uses numpy methods for efficient data writing operations.
+    Different data formats are handled by specialized helper functions.
+    """
+    
+    if format == 'Boolean':
+        _write_boolean(fid, data, name)
+    elif format == 'Integer':
+        _write_integer(fid, data, name)
+    elif format == 'Double':
+        _write_double(fid, data, name)
+    elif format == 'String':
+        _write_string(fid, data)
+    elif format in ['IntMat', 'BooleanMat']:
+        _write_int_matrix(fid, data, format, mattype)
+    elif format == 'DoubleMat':
+        _write_double_matrix(fid, data, mattype, name)
+    elif format == 'CompressedMat':
+        _write_compressed_matrix(fid, data, mattype, name)
+    elif format == 'MatArray':
+        _write_matrix_array(fid, data)
+    elif format == 'StringArray':
+        _write_string_array(fid, data)
+    else:
+        raise TypeError(f'WriteData error: format "{format}" not supported! (field: {name})')
+
+def _write_boolean(fid, data, name):
+    """
+    Write a boolean value to a binary file in ISSM format.
+    
+    This function writes a boolean value to a binary file in ISSM 
+    format with record length, type code, and the boolean data converted
+    to integer representation.
+    
+    Parameters
+    ----------
+    fid : file object
+        File descriptor opened in binary write mode where the data will be written.
+    data : bool
+        Boolean value to be written to the file.
+    name : str
+        Name of the field being written, used for error reporting.
+        
+    Raises
+    ------
+    ValueError
+        If the boolean data cannot be marshaled or written to the file.
+        
+    Notes
+    -----
+    The function writes data in the following binary format:
+    - Record length (8 bytes, int64)
+    - Format code (4 bytes, int32) 
+    - Boolean data as integer (4 bytes, int32)
+    
+    The total record length is 8 bytes (4 bytes for code + 4 bytes for data).
+    """
+
+    try:
+        # Write record length and code
+        record_info = np.array([4 + 4, format_to_code('Boolean'), int(data)], dtype=np.int64)
+        record_info[:1].astype(np.int64).tofile(fid)  # record length as int64
+        record_info[1:].astype(np.int32).tofile(fid)  # code and data as int32
+    except Exception as err:
+        raise ValueError(f'field {name} cannot be marshaled: {err}')
+
+def _write_integer(fid, data, name):
+    """
+    Write an integer value to a binary file in ISSM format.
+
+    This function writes an integer value to a binary file using a structured format
+    that includes record length, type code, and the actual integer data.
+
+    Parameters
+    ----------
+    fid : file object
+        File identifier/handle opened in binary write mode where the integer
+        data will be written.
+    data : int or int-like
+        The integer value to be written to the file. Will be converted to int
+        if not already an integer type.
+    name : str
+        Name or identifier of the field being written, used for error reporting
+        and debugging purposes.
+
+    Raises
+    ------
+    ValueError
+        If the field cannot be marshaled due to data conversion issues or
+        file writing errors. The original exception is included in the error message.
+
+    Notes
+    -----
+    The function writes data in the following binary format:
+    1. Record length (8 bytes, int64): Total size of the following data (8 bytes)
+    2. Type code (4 bytes, int32): Format code for 'Integer' type
+    3. Integer value (4 bytes, int32): The actual integer data
+    """
+
+    try:
+        # Write record length and code
+        np.array([4 + 4], dtype=np.int64).tofile(fid)
+        record_data = np.array([format_to_code('Integer'), int(data)], dtype=np.int32)
+        record_data.tofile(fid)
+    except Exception as err:
+        raise ValueError(f'field {name} cannot be marshaled: {err}')
+
+def _write_double(fid, data, name):
+    """
+    Write a double precision floating point value to a binary file.
+
+    This function writes a double precision value to a binary file in ISSM
+    format that includes a record length, format code, and the actual data value.
+
+    Parameters
+    ----------
+    fid : file object
+        File handle opened in binary write mode where the data will be written.
+    data : float or numeric
+        The numeric value to be written as a double precision float.
+    name : str
+        Name identifier for the field being written, used for error reporting.
+
+    Raises
+    ------
+    ValueError
+        If the data cannot be marshaled or written to the file, with details
+        about which field caused the error.
+
+    Notes
+    -----
+    The function writes data in the following binary format:
+    1. Record length (8 + 4 bytes) as int64
+    2. Format code for 'Double' type as int32  
+    3. The actual data value as float64
+    """
+
+    try:
+        # Write record length and code
+        np.array([8 + 4], dtype=np.int64).tofile(fid)
+        np.array([format_to_code('Double')], dtype=np.int32).tofile(fid)
+        np.array([float(data)], dtype=np.float64).tofile(fid)
+    except Exception as err:
+        raise ValueError(f'field {name} cannot be marshaled: {err}')
+
+def _write_string(fid, data):
+    """
+    Write string data to a binary file in a structured format.
+
+    This function writes string data to a binary file in ISSM format that includes
+    record length, format code, string length, and the actual string data as bytes.
+
+    Parameters
+    ----------
+    fid : file-like object
+        File identifier or file handle opened in binary write mode.
+    data : str
+        The string data to be written to the file.
+
+    Notes
+    -----
+    The function writes data in the following binary format:
+    1. Record length (8 bytes, int64): Total length of code + string length + string data
+    2. Format code (4 bytes, int32): Code identifying this as a string type
+    3. String length (4 bytes, int32): Length of the encoded string in bytes
+    4. String data (variable length): UTF-8 encoded string bytes
+
+    The record length is calculated as: len(encoded_string) + 4 + 4 bytes.
+    """
+
+    data_bytes = data.encode()
+    # Write record length, code, and string length
+    np.array([len(data_bytes) + 4 + 4], dtype=np.int64).tofile(fid)
+    np.array([format_to_code('String'), len(data_bytes)], dtype=np.int32).tofile(fid)
+    fid.write(data_bytes)
+
+def _preprocess_matrix(data):
+    """
+    Preprocess matrix data ensuring numpy array output.
+
+    This function converts various input data types into a standardized numpy array
+    format suitable for matrix operations. Scalar values are converted to 2D arrays,
+    1D arrays are reshaped to column vectors, and existing arrays are converted to
+    float64 dtype.
+    
+    Parameters
+    ----------
+    data : bool, int, float, list, tuple, or array-like
+        Input data to be preprocessed. Can be:
+        - Scalar values (bool, int, float): converted to 2D array
+        - Sequences (list, tuple): converted to numpy array
+        - Array-like objects: converted to numpy array with float64 dtype
+
+    Returns
+    -------
+    numpy.ndarray
+        Preprocessed data as a numpy array with dtype float64.
+        - Scalars become 1x1 arrays
+        - 1D arrays with size > 0 become column vectors (n, 1)
+        - Empty 1D arrays become (0, 0) arrays
+        - Higher dimensional arrays preserve their shape
+
+    Notes
+    -----
+    All output arrays have dtype numpy.float64 regardless of input type.
+    One-dimensional arrays are always reshaped to ensure proper matrix dimensions.
+    """
+
+    if isinstance(data, (bool, int, float)):
+        data = np.array([[data]], dtype=np.float64)
+    elif isinstance(data, (list, tuple)):
+        data = np.array(data, dtype=np.float64)
+        if data.ndim == 1:
+            data = data.reshape(-1, 1)
+    else:
+        data = np.asarray(data, dtype=np.float64)
+        if data.ndim == 1:
+            if data.size > 0:
+                data = data.reshape(-1, 1)
+            else:
+                data = data.reshape(0, 0)
+    
+    return data
+
+def _write_double_matrix(fid, data, mattype, name):
+    """
+    Write double matrix to binary file.
+
+    This function writes a double-precision matrix to a binary file in a specific
+    format that includes header information and matrix data. It handles special
+    cases like NaN matrices and ensures optimal performance through efficient
+    memory layout.
+
+    Parameters
+    ----------
+    fid : file-like object
+        File handle opened in binary write mode where the matrix will be written.
+    data : array_like
+        Input matrix data to be written. Will be converted to numpy array and
+        cast to float64 precision.
+    mattype : int
+        Matrix type identifier used in the binary format header.
+    name : str
+        Name of the matrix field, used for error reporting purposes.
+
+    Raises
+    ------
+    ValueError
+        If the matrix data cannot be marshaled to the binary format, with
+        details about the specific error encountered.
+
+    Notes
+    -----
+    The binary format written includes:
+    - Record length (8 bytes, int64)
+    - Format code for 'DoubleMat' (4 bytes, int32)  
+    - Matrix type (4 bytes, int32)
+    - Number of rows (4 bytes, int32)
+    - Number of columns (4 bytes, int32)
+    - Matrix data in row-major order (8*rows*cols bytes, float64)
+    Special handling is performed for NaN matrices, which are written as
+    empty (0x0) matrices. Data is automatically converted to C-contiguous
+    layout for optimal write performance.
+    """
+
+    data = _preprocess_matrix(data)
+
+    # Handle NaN matrices
+    if data.size == 1 and np.all(np.isnan(data)):
+        shape = (0, 0)
+        data = np.array([], dtype=np.float64).reshape(0, 0)
+    else:
+        shape = data.shape
+    
+    # Calculate record length
+    recordlength = 4 + 4 + 8 * np.prod(shape) + 4 + 4
+    
+    try:
+        # Write header information
+        header = np.array([recordlength], dtype=np.int64)
+        header.tofile(fid)
+        
+        meta_info = np.array([format_to_code('DoubleMat'), mattype, shape[0], 
+                             shape[1] if len(shape) > 1 else 1], dtype=np.int32)
+        meta_info.tofile(fid)
+        
+        # Write matrix data
+        if data.size > 0:
+            # Ensure C-contiguous for efficient writing
+            if not data.flags.c_contiguous:
+                data = np.ascontiguousarray(data)
+            data.astype(np.float64).tofile(fid)
+            
+    except Exception as err:
+        raise ValueError(f'Field {name} cannot be marshaled: {err}')
+
+def _write_int_matrix(fid, data, format, mattype):
+    """
+    Write integer/boolean matrix to a binary file.
+
+    This function handles the writing of integer or boolean matrices
+    to a binary file with a specific format including headers and metadata.
+    Matrices containing NaN values are handled as empty matrices.
+
+    Parameters
+    ----------
+    fid : file object
+        File descriptor or file-like object opened in binary write mode.
+    data : array_like
+        Input matrix data to be written. Can be integer or boolean type.
+        NaN matrices are converted to empty arrays.
+    format : str or int
+        Format specification that will be converted to a format code.
+    mattype : int
+        Matrix type identifier to be written in the metadata.
+
+    Notes
+    -----
+    The function writes data in the following binary format:
+    1. Record length (int64)
+    2. Format code (int32)
+    3. Matrix type (int32) 
+    4. Number of rows (int32)
+    5. Number of columns (int32)
+    6. Matrix data as float64 values
+    Data is converted to C-contiguous layout if necessary and cast to float64
+    for consistency with the original format specification.
+    For matrices containing only NaN values, an empty (0,0) matrix is written
+    instead of the NaN data.
+    """
+
+    data = _preprocess_matrix(data)
+
+    # Handle NaN matrices
+    if data.size == 1 and np.all(np.isnan(data)):
+        shape = (0, 0)
+        data = np.array([], dtype=np.float64).reshape(0, 0)
+    else:
+        shape = data.shape
+    
+    # Calculate record length
+    recordlength = 4 + 4 + 8 * np.prod(shape) + 4 + 4
+    
+    # Write header
+    header = np.array([recordlength], dtype=np.int64)
+    header.tofile(fid)
+    
+    meta_info = np.array([format_to_code(format), mattype, shape[0], 
+                         shape[1] if len(shape) > 1 else 1], dtype=np.int32)
+    meta_info.tofile(fid)
+    
+    # Write data
+    if data.size > 0:
+        if not data.flags.c_contiguous:
+            data = np.ascontiguousarray(data)
+        data.astype(np.float64).tofile(fid)
+
+def _write_compressed_matrix(fid, data, mattype, name):
+    """Write a matrix to file using compressed format.
+    This function writes a matrix to a binary file using a custom compressed format.
+    The compression scheme stores all rows except the last as compressed uint8 values,
+    while the last row is stored as uncompressed float64 values. NaN matrices are
+    handled as special empty cases.
+
+    Parameters
+    ----------
+    fid : file object
+        File descriptor opened in binary write mode where the matrix will be written.
+    data : array_like
+        Input matrix data to be compressed and written. Can be any array-like structure
+        that can be converted to a numpy array.
+    mattype : int
+        Matrix type identifier used in the file format header.
+    name : str
+        Name of the matrix field, used for error reporting.
+
+    Raises
+    ------
+    ValueError
+        If the matrix cannot be marshaled or written to file, with details about
+        the specific field that failed.
+
+    Notes
+    -----
+    The compressed format uses the following structure:
+    - Record length (int64)
+    - Format code and matrix type (2x int32)
+    - Matrix dimensions (2x int32)
+    - Compression parameters: offset and range (2x float64)
+    - Compressed matrix data excluding last row (uint8)
+    - Last row as uncompressed doubles (float64)
+    The compression algorithm normalizes values to 0-255 range using:
+    compressed = (original - offset) / range * 255
+    Special handling is provided for NaN matrices, which are written as empty
+    matrices with zero dimensions.
+    """
+
+    data = _preprocess_matrix(data)
+
+    # Handle NaN matrices
+    if data.size == 1 and np.all(np.isnan(data)):
+        shape = (0, 0)
+        n2 = 0
+        data = np.array([], dtype=np.float64).reshape(0, 0)
+    else:
+        shape = data.shape
+        n2 = shape[1] if len(shape) > 1 else 1
+    
+    # Calculate record length for compressed format
+    recordlength = 4 + 4 + 8 + 8 + 1 * (shape[0] - 1) * n2 + 8 * n2 + 4 + 4
+    
+    try:
+        # Write header
+        np.array([recordlength], dtype=np.int64).tofile(fid)
+        np.array([format_to_code('CompressedMat'), mattype], dtype=np.int32).tofile(fid)
+        
+        if shape[0] > 0:
+            # Compression logic
+            A = data[0:shape[0] - 1]
+            offsetA = A.min()
+            rangeA = A.max() - offsetA
+            
+            if rangeA == 0:
+                A = A * 0
+            else:
+                A = (A - offsetA) / rangeA * 255.0
+            
+            # Write dimensions and compression parameters
+            dims_and_params = np.array([shape[0], n2], dtype=np.int32)
+            dims_and_params.tofile(fid)
+            
+            compression_params = np.array([offsetA, rangeA], dtype=np.float64)
+            compression_params.tofile(fid)
+            
+            # Write compressed data
+            if A.size > 0:
+                A.astype(np.uint8).tofile(fid)
+            
+            # Write last row as doubles
+            if shape[0] > 0:
+                last_row = data[shape[0] - 1:shape[0], :]
+                last_row.astype(np.float64).tofile(fid)
+        else:
+            # Empty matrix
+            np.array([0, 0], dtype=np.int32).tofile(fid)
+            np.array([0.0, 0.0], dtype=np.float64).tofile(fid)
+            
+    except Exception as err:
+        raise ValueError(f'Field {name} cannot be marshaled: {err}')
+
+def _write_matrix_array(fid, data):
+    """
+    Write an array of matrices to a binary file in ISSM format.
+
+    This function efficiently writes multiple matrices to a binary file using
+    the ISSM binary format. Each matrix is preprocessed and written with its
+    dimensions and data in a contiguous format.
+
+    Parameters
+    ----------
+    fid : file object
+        Binary file object opened for writing where the matrix array will be written.
+    data : array_like
+        Sequence of matrices to write. Each matrix will be preprocessed and converted
+        to float64 format before writing.
+
+    Notes
+    -----
+    The binary format includes:
+    - Header with total record length (int64)
+    - Format code and number of matrices (int32)
+    - For each matrix: dimensions (2 int32 values) followed by data (float64)
+    All matrices are converted to C-contiguous arrays and float64 dtype before
+    writing to ensure consistent binary format.
+
+    See Also
+    --------
+    _preprocess_matrix : Function used to preprocess each matrix before writing
+    format_to_code : Function to convert format string to numeric code
+    """
+
+    # Calculate total record length
+    recordlength = 4 + 4  # number of records + code
+    processed_matrices = []
+    
+    for matrix in data:
+        matrix = _preprocess_matrix(matrix)
+        processed_matrices.append(matrix)
+        shape = matrix.shape
+        recordlength += 4 * 2 + np.prod(shape) * 8  # dimensions + data
+    
+    # Write header
+    np.array([recordlength], dtype=np.int64).tofile(fid)
+    np.array([format_to_code('MatArray'), len(data)], dtype=np.int32).tofile(fid)
+    
+    # Write each matrix
+    for matrix in processed_matrices:
+        shape = matrix.shape
+        # Write dimensions
+        dims = np.array([shape[0], shape[1] if len(shape) > 1 else 1], dtype=np.int32)
+        dims.tofile(fid)
+        # Write data
+        if matrix.size > 0:
+            if not matrix.flags.c_contiguous:
+                matrix = np.ascontiguousarray(matrix)
+            matrix.astype(np.float64).tofile(fid)
+
+def _write_string_array(fid, data):
+    """
+    Write string array to binary file in ISSM format.
+
+    This function writes an array of strings to a binary file using the ISSM
+    binary format. Each string is encoded and written with its length prefix.
+
+    Parameters
+    ----------
+    fid : file-like object
+        File descriptor or file-like object opened in binary write mode.
+    data : array-like of str
+        Array or list of strings to write to the file.
+
+    Notes
+    -----
+    The binary format consists of:
+    - Record length (int64): Total size of the record in bytes
+    - Format code (int32): Identifier for StringArray format
+    - Array length (int32): Number of strings in the array
+    - For each string:
+        - String length (int32): Number of bytes in the encoded string
+        - String data (bytes): UTF-8 encoded string content
+    The record length includes the format code, array length, all string
+    length prefixes, and the encoded string data.
+    """
+
+    # Calculate record length
+    recordlength = 4 + 4  # array length + code
+    encoded_strings = []
+    
+    for string in data:
+        encoded = string.encode()
+        encoded_strings.append(encoded)
+        recordlength += 4 + len(encoded)
+    
+    # Write header
+    np.array([recordlength], dtype=np.int64).tofile(fid)
+    np.array([format_to_code('StringArray'), len(data)], dtype=np.int32).tofile(fid)
+    
+    # Write each string
+    for encoded_string in encoded_strings:
+        np.array([len(encoded_string)], dtype=np.int32).tofile(fid)
+        fid.write(encoded_string)
+
+def _apply_scaling_and_time_series(data, datatype, timeserieslength, scale, yts):
+    """
+    Apply scaling and time series transformations to data arrays.
+
+    This function applies scaling factors and year-to-second (yts) conversions
+    to input data, handling both single arrays and MatArray collections. For
+    time series data, scaling is applied to all but the last row, while yts
+    conversion is applied only to the last row (where the time variable is located).
+
+    Parameters
+    ----------
+    data : array_like or list
+        Input data to be scaled. Can be a numpy array, list, or collection
+        of arrays when datatype is 'MatArray'.
+    datatype : str
+        Type of data structure. If 'MatArray', data is treated as a collection
+        of arrays; otherwise as a single data structure.
+    timeserieslength : int
+        Expected length of time series dimension. Used to identify time series
+        data for special handling.
+    scale : float or None
+        Scaling factor to apply to data. If None, no scaling is performed.
+        For time series data, applied to all rows except the last.
+    yts : float or None
+        Year-to-second conversion factor. If None, no conversion is performed.
+        For time series data, applied only to the last row (where the time variable is located).
+
+    Returns
+    -------
+    data : array_like or list
+        Transformed data with scaling and time series conversions applied.
+        Type matches the input data type.
+
+    Notes
+    -----
+    - For MatArray datatype, each element in the collection is processed
+      independently
+    - Time series data is identified by having more than 1 dimension and
+      first dimension equal to timeserieslength
+    - Scaling is applied element-wise using numpy broadcasting rules
+    - The function modifies data in-place for arrays but returns new objects
+      for lists
+    """
+
+    if datatype == 'MatArray':
+        for i in range(len(data)):
+            if scale is not None:
+                if np.ndim(data[i]) > 1 and data[i].shape[0] == timeserieslength:
+                    data[i][:-1, :] = scale * data[i][:-1, :]
+                else:
+                    data[i] = scale * data[i]
+            if (yts is not None and 
+                np.ndim(data[i]) > 1 and data[i].shape[0] == timeserieslength):
+                data[i][-1, :] = yts * data[i][-1, :]
+    else:
+        if scale is not None:
+            if np.ndim(data) > 1 and data.shape[0] == timeserieslength:
+                data[:-1, :] = scale * data[:-1, :]
+            elif isinstance(data, list):
+                data = [scale * item for item in data]
+            else:
+                data = scale * data
+        
+        if (yts is not None and 
+            np.ndim(data) > 1 and data.shape[0] == timeserieslength):
+            data[-1, :] = yts * data[-1, :]
+    
+    return data
+
+def format_to_code(datatype):
+    """
+    Convert format string to integer code.
+
+    This function maps data type strings to their corresponding integer codes
+    used for data serialization and format identification.
+
+    Parameters
+    ----------
+    datatype : str
+        The data type string to convert. Supported types are:
+        'Boolean', 'Integer', 'Double', 'String', 'BooleanMat', 
+        'IntMat', 'DoubleMat', 'MatArray', 'StringArray', 'CompressedMat'.
+
+    Returns
+    -------
+    int
+        The integer code corresponding to the input data type.
+
+    Raises
+    ------
+    IOError
+        If the provided datatype is not supported.
+
+    Examples
+    --------
+    >>> format_to_code('Double')
+    3
+    >>> format_to_code('StringArray')
+    9
+    """
+
+    format_codes = {
+        'Boolean': 1,
+        'Integer': 2,
+        'Double': 3,
+        'String': 4,
+        'BooleanMat': 5,
+        'IntMat': 6,
+        'DoubleMat': 7,
+        'MatArray': 8,
+        'StringArray': 9,
+        'CompressedMat': 10
+    }
+    
+    if datatype not in format_codes:
+        raise IOError(f'format_to_code error: data type "{datatype}" not supported!')
+    
+    return format_codes[datatype]
+
+    

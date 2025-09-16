@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class initialization(class_registry.manage_state):
@@ -69,6 +70,8 @@ class initialization(class_registry.manage_state):
         Returns a detailed string representation of the initialization parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -83,7 +86,7 @@ class initialization(class_registry.manage_state):
         self.vx = np.nan
         self.vy = np.nan
         self.vz = np.nan
-        self.vel = np.nan
+        self.vel = np.nan # NOTE: This is not used/written to file.
         self.pressure = np.nan
         self.temperature = np.nan
         self.enthalpy = np.nan
@@ -133,3 +136,46 @@ class initialization(class_registry.manage_state):
         s = 'ISSM - initialization Class'
         return s
 
+    # Marshall method for saving the initialization parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [initialization] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+        
+        ## Write DoubleMat fields (consistent mattype)
+        fieldnames = ['pressure', 'bottompressure', 'str', 'dsl', 'temperature',
+            'waterfraction', 'sediment_head', 'epl_head', 'epl_thickness',
+            'watercolumn', 'channelarea', 'hydraulic_potential', 'sample', 'debris']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
+
+        # Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'vx', format = 'DoubleMat', mattype = 1, scale = 1 / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'vy', format = 'DoubleMat', mattype = 1, scale = 1 / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'vz', format = 'DoubleMat', mattype = 1, scale = 1 / md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'sealevel', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'age', format = 'DoubleMat', mattype = 1, scale = md.constants.yts)
+
+        # Write conditional fields
+        if md.thermal.isenthalpy:
+            if (np.size(self.enthalpy) <= 1):
+                # Reconstruct enthalpy
+                tpmp = md.materials.meltingpoint - md.materials.beta * md.initialization.pressure
+                pos = np.where(md.initialization.waterfraction > 0)[0]
+                self.enthalpy = md.materials.heatcapacity * (md.initialization.temperature - md.constants.referencetemperature)
+                self.enthalpy[pos] = md.materials.heatcapacity * (tpmp[pos].reshape(-1,) - md.constants.referencetemperature) + md.materials.latentheat * md.initialization.waterfraction[pos].reshape(-1,)
+
+            execute.WriteData(fid, prefix, name = 'md.initialization.enthalpy', data = self.enthalpy, format = 'DoubleMat', mattype = 1)

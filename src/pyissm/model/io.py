@@ -384,7 +384,7 @@ def export_gridded_model(md,
         var_y[:] = grid_y[:,0]
 
         # If TransientSolution is in the request and exists in the model, create the time dimension
-        if 'TransientSolution' in var_map['issmModelSubgroup'].values and utils.has_nested_attr(md, 'results', 'TransientSolution'):
+        if 'TransientSolution' in var_map['issmModelSubgroup'].values and utils.general.has_nested_attr(md, 'results', 'TransientSolution'):
             time = getattr(md.results.TransientSolution, 'time')
             nc_file.createDimension('time', len(time))
             var_time = nc_file.createVariable('time', 'f4', ('time'), fill_value=fill_value)
@@ -457,7 +457,7 @@ def export_gridded_model(md,
                 elif row['issmVariableUnit'] == row['outputVariableUnit']:
                     pass
                 else:
-                    variable = utils.convert_units(row['issmVariableUnit'], row['outputVariableUnit'], variable)
+                    variable = utils.general.convert_units(row['issmVariableUnit'], row['outputVariableUnit'], variable)
 
 
             ## ------------------------------------------------

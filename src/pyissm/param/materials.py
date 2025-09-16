@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 ## ------------------------------------------------------
 ## materials.ice
@@ -62,6 +63,8 @@ class ice(class_registry.manage_state):
         Returns a detailed string representation of the ice material parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -116,6 +119,43 @@ class ice(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - materials.ice Class'
         return s
+    
+    # Marshall method for saving the materials.ice parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [materials.ice] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write headers to file
+        # NOTE: data types must match the expected types in the ISSM code. These come from naturetointeger in $ISSM_DIR/src/m/materials.py
+        execute.WriteData(fid, prefix, data = 3, name = 'md.materials.nature', format = 'IntMat', mattype = 3)
+        execute.WriteData(fid, prefix, data = 5, name = 'md.materials.type', format = 'Integer')
+
+        ## Write Double fields
+        fieldnames = ['rho_ice', 'rho_water', 'rho_freshwater', 'mu_water', 'heatcapacity',
+                      'latentheat', 'thermalconductivity', 'temperateiceconductivity', 'meltingpoint', 'beta',
+                      'mixed_layer_capacity', 'thermal_exchange_velocity', 'earth_density']
+        for fieldname in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'Double')
+
+        ## Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'effectiveconductivity_averaging', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_B', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_n', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_law', format = 'String')
 
 ## ------------------------------------------------------
 ## materials.hydro
@@ -151,6 +191,8 @@ class hydro(class_registry.manage_state):
         Returns a detailed string representation of the hydro material parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -181,6 +223,35 @@ class hydro(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - materials.hydro Class'
         return s
+    
+    # Marshall method for saving the materials.hydro parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [materials.hydro] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write headers to file
+        # NOTE: data types must match the expected types in the ISSM code. These come from naturetointeger in $ISSM_DIR/src/m/materials.py
+        execute.WriteData(fid, prefix, data = 7, name = 'md.materials.nature', format = 'IntMat', mattype = 3)
+        execute.WriteData(fid, prefix, data = 5, name = 'md.materials.type', format = 'Integer')
+
+        ## Write fields (all consistent format)
+        fieldnames = ['rho_ice', 'rho_water', 'rho_freshwater', 'earth_density']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
 
 ## ------------------------------------------------------
 ## materials.litho
@@ -238,6 +309,8 @@ class litho(class_registry.manage_state):
         Returns a detailed string representation of the lithosphere material parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -246,7 +319,7 @@ class litho(class_registry.manage_state):
 
     # Initialise with default parameters
     def __init__(self, other = None):
-        self.numlayers = 2.
+        self.numlayers = 2
         self.radius = [1e3, 6278e3, 6378e3]
         self.viscosity = [1e21, 1e40]
         self.lame_mu = [1.45e11, 6.7e10]
@@ -290,6 +363,47 @@ class litho(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - materials.litho Class'
         return s
+
+    # Marshall method for saving the materials.litho parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [materials.litho] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Compute earth density compatible with our layer density distribution
+        earth_density = 0
+        for i in range(self.numlayers):
+            earth_density = earth_density + (pow(self.radius[i + 1], 3) - pow(self.radius[i], 3)) * self.density[i]
+        earth_density = earth_density / pow(self.radius[self.numlayers], 3)
+        self.earth_density = earth_density
+
+        ## Write headers to file
+        # NOTE: data types must match the expected types in the ISSM code. These come from naturetointeger in $ISSM_DIR/src/m/materials.py
+        execute.WriteData(fid, prefix, data = 6, name = 'md.materials.nature', format = 'IntMat', mattype = 3)
+        execute.WriteData(fid, prefix, data = 5, name = 'md.materials.type', format = 'Integer')
+
+        ## Write DoubleMat fields
+        fieldnames = ['radius', 'lame_mu', 'lame_lambda', 'issolid', 'density', 'viscosity', 'rheologymodel',
+                      'burgers_viscosity', 'burgers_mu', 'ebm_alpha', 'ebm_delta', 'ebm_taul', 'ebm_tauh']
+        for field in fieldnames:
+                execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 3)
+        
+        ## Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'numlayers', format = 'Integer')
+        execute.WriteData(fid, prefix, name = 'md.materials.earth_density', data = self.earth_density, format = 'Double')
 
 ## ------------------------------------------------------
 ## materials.damageice
@@ -351,6 +465,8 @@ class damageice(class_registry.manage_state):
         Returns a detailed string representation of the damage ice material parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -407,6 +523,43 @@ class damageice(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - materials.damageice Class'
         return s
+    
+    # Marshall method for saving the materials.damageice parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [materials.damageice] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write headers to file
+        # NOTE: data types must match the expected types in the ISSM code. These come from naturetointeger in $ISSM_DIR/src/m/materials.py
+        execute.WriteData(fid, prefix, data = 1, name = 'md.materials.nature', format = 'IntMat', mattype = 3)
+        execute.WriteData(fid, prefix, data = 1, name = 'md.materials.type', format = 'Integer')
+
+        ## Write Double fields
+        fieldnames = ['rho_ice', 'rho_water', 'rho_freshwater', 'mu_water', 'heatcapacity', 'thermalconductivity',
+                      'temperateiceconductivity', 'meltingpoint', 'latentheat',
+                      'beta', 'mixed_layer_capacity', 'thermal_exchange_velocity', 'earth_density']
+        for field in fieldnames:
+                execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+        
+        ## Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'effectiveconductivity_averaging', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_B', format = 'DoubleMat', mattype = 1, timeserieslength =  md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_n', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_law', format = 'String')
 
 ## ------------------------------------------------------
 ## materials.enhancedice
@@ -470,6 +623,8 @@ class enhancedice(class_registry.manage_state):
         Returns a detailed string representation of the enhanced ice material parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -528,6 +683,44 @@ class enhancedice(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - materials.enhancedice Class'
         return s
+    
+    # Marshall method for saving the materials.enhancedice parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [materials.enhancedice] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write headers to file
+        # NOTE: data types must match the expected types in the ISSM code. These come from naturetointeger in $ISSM_DIR/src/m/materials.py
+        execute.WriteData(fid, prefix, data = 4, name = 'md.materials.nature', format = 'IntMat', mattype = 3)
+        execute.WriteData(fid, prefix, data = 4, name = 'md.materials.type', format = 'Integer')
+
+        ## Write Double fields
+        fieldnames = ['rho_ice', 'rho_water', 'rho_freshwater', 'mu_water', 'heatcapacity', 'thermalconductivity',
+                      'temperateiceconductivity', 'meltingpoint', 'latentheat',
+                      'beta', 'mixed_layer_capacity', 'thermal_exchange_velocity', 'earth_density']
+        for field in fieldnames:
+                execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+        
+        ## Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'effectiveconductivity_averaging', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_E', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_B', format = 'DoubleMat', mattype = 1, timeserieslength =  md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_n', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_law', format = 'String')
 
 ## ------------------------------------------------------
 ## materials.estar
@@ -591,6 +784,8 @@ class estar(class_registry.manage_state):
         Returns a detailed string representation of the E* ice material parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -649,3 +844,41 @@ class estar(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - materials.estar Class'
         return s
+
+    # Marshall method for saving the materials.estar parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [materials.estar] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write headers to file
+        # NOTE: data types must match the expected types in the ISSM code. These come from naturetointeger in $ISSM_DIR/src/m/materials.py
+        execute.WriteData(fid, prefix, data = 2, name = 'md.materials.nature', format = 'IntMat', mattype = 3)
+        execute.WriteData(fid, prefix, data = 2, name = 'md.materials.type', format = 'Integer')
+
+        ## Write Double fields
+        fieldnames = ['rho_ice', 'rho_water', 'rho_freshwater', 'mu_water', 'heatcapacity', 'thermalconductivity',
+                      'temperateiceconductivity', 'meltingpoint', 'latentheat',
+                      'beta', 'mixed_layer_capacity', 'thermal_exchange_velocity', 'earth_density']
+        for field in fieldnames:
+                execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+        
+        ## Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'effectiveconductivity_averaging', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_B', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_Ec', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_Es', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_law', format = 'String')

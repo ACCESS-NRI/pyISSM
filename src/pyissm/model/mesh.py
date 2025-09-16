@@ -89,7 +89,7 @@ def process_mesh(md):
     is3d = False
 
     ## Process a 3D model
-    if utils.has_nested_attr(md, 'mesh', 'elements2d'):
+    if utils.general.has_nested_attr(md, 'mesh', 'elements2d'):
 
         # Create mesh object
         mesh = get_mesh(md.mesh.x2d, md.mesh.y2d, md.mesh.elements2d)
@@ -487,3 +487,83 @@ def grid_model_field(md,
     gridded_model_field = gridded_model_field.squeeze()
 
     return gridded_model_field
+
+def get_element_areas_volumes(index,
+                              x,
+                              y,
+                              z = np.array([])):
+    """
+    Computes areas of triangular elements or volumes of pentahedrons.
+
+    Parameters
+    ----------
+    index : ndarray
+        Element connectivity array. For 2D meshes, should have 3 columns.
+        For 3D meshes, should have 6 columns.
+    x : ndarray
+        1D array of x-coordinates of mesh nodes.
+    y : ndarray
+        1D array of y-coordinates of mesh nodes.
+    z : ndarray, optional
+        1D array of z-coordinates of mesh nodes. If provided, volumes are computed.
+        Default is empty array (areas computed).
+
+    Returns
+    -------
+    areas : ndarray
+        1D array of element areas (2D) or volumes (3D).
+
+    Raises
+    ------
+    TypeError
+        If x, y, and z arrays don't have the same length.
+        If index contains values above the number of nodes.
+        If index doesn't have the correct number of columns for the mesh type.
+
+    Examples
+    --------
+    Compute areas of triangular elements:
+
+    >>> areas = get_element_areas(md.mesh.elements, md.mesh.x, md.mesh.y)
+
+    Compute volumes of pentahedral elements:
+
+    >>> volumes = get_element_areas(md.mesh.elements, md.mesh.x, md.mesh.y, md.mesh.z)
+    """
+
+    ## Convert to 0-based indexing
+    index = index - 1
+
+    ## Get number of elements and number of nodes
+    num_elements = np.shape(index)[0]
+    num_nodes = np.shape(x)[0]
+
+    ## Check dimensions of inputs
+    if (np.shape(y)[0] != num_nodes) or (z.size > 0 and np.shape(z)[0] != num_nodes):
+        raise TypeError('get_element_areas: x, y and z do not have the same length.')
+    if np.max(index) > num_nodes:
+        raise TypeError('get_element_areas: index should not have values above {}.'.format(num_nodes))
+    if z.size == 0 and np.shape(index)[1] != 3:
+        raise TypeError('get_element_areas: index should have 3 columns for 2D meshes.')
+    if z.size > 0 and np.shape(index)[1] != 6:
+        raise TypeError('get_element_areas: index should have 6 columns for 3D meshes.')
+
+    ## Initialise x/y points
+    areas = np.zeros(num_elements)
+    x1 = x[index[:, 0]]
+    x2 = x[index[:, 1]]
+    x3 = x[index[:, 2]]
+    y1 = y[index[:, 0]]
+    y2 = y[index[:, 1]]
+    y3 = y[index[:, 2]]
+
+    ## Compute areas of each element (surface of the triangle)
+    if z.size == 0:
+        output = (0.5 * ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)))
+
+    ## Compute volumes of each element (surface of the triangle * thickness)
+    else:
+        thickness = np.mean(z[index[:, 3:6]]) - np.mean(z[index[:, 0:3]])
+        output = (0.5 * ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1))) * thickness
+
+    return output

@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class masstransport(class_registry.manage_state):
@@ -32,7 +33,7 @@ class masstransport(class_registry.manage_state):
         Vertex pairing parameter. Used during consistency checks.
     penalty_factor : float, default=3
         Penalty factor for constraint enforcement.
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested.
 
     Methods
@@ -43,6 +44,10 @@ class masstransport(class_registry.manage_state):
         Returns a detailed string representation of the masstransport parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md=None, return_default_outputs=False)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Examples
     --------
@@ -61,7 +66,7 @@ class masstransport(class_registry.manage_state):
         self.stabilization = 1
         self.vertex_pairing = np.nan
         self.penalty_factor = 3
-        self.requested_outputs = 'List of requested outputs' # Default = ['default'] (Thickness, surface, base)
+        self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -82,4 +87,76 @@ class masstransport(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - masstransport Class'
         return s
+    
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+            
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['Thickness', 'Surface', 'Base']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+        
+    # Marshall method for saving the masstransport parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [masstransport] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'spcthickness', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'isfreesurface', format = 'Boolean')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'min_thickness', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'hydrostatic_adjustment', format = 'String')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'stabilization', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'vertex_pairing', format = 'DoubleMat', mattype = 3)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'penalty_factor', format = 'Double')
+        execute.WriteData(fid, prefix, name = 'md.masstransport.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 

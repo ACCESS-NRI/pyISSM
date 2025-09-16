@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class geometry(class_registry.manage_state):
@@ -72,3 +73,43 @@ class geometry(class_registry.manage_state):
         s = 'ISSM - geometry Class'
         return s
 
+    # Marshall method for saving the geometry parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [geometry] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## 1. Handle thickness field
+        # Determine the length of the thickness array (could be list or ndarray)
+        if isinstance(self.thickness, (list, np.ndarray)):
+            length_thickness = len(self.thickness)
+        else:
+            length_thickness = 1
+
+        # Write thickness data depending on whether it matches number of vertices or elements
+        if (length_thickness == md.mesh.numberofvertices) or (length_thickness == md.mesh.numberofvertices + 1):
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'thickness', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        elif (length_thickness == md.mesh.numberofelements) or (length_thickness == md.mesh.numberofelements + 1):
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'thickness', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
+        else:
+            # Raise error if thickness does not match expected sizes
+            raise RuntimeError('geometry thickness time series should be a vertex or element time series')
+
+        ## 2. Write other geometry fields to file (all fields are of the same type/format)
+        fieldnames = list(self.__dict__.keys())
+        fieldnames.remove('thickness') # Remove thickness as it is handled separately above
+        for fieldname in fieldnames:
+                execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'DoubleMat', mattype = 1)

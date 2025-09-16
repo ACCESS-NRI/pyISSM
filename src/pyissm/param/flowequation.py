@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class flowequation(class_registry.manage_state):
@@ -69,6 +70,8 @@ class flowequation(class_registry.manage_state):
         Returns a detailed string representation of the flowequation parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -132,3 +135,47 @@ class flowequation(class_registry.manage_state):
         s = 'ISSM - flowequation Class'
         return s
 
+    # Marshall method for saving the flowequation parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [flowequation] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+        
+        ## Write Boolean fields
+        fieldnames = ['isSIA', 'isSSA', 'isL1L2', 'isMOLHO', 'isHO', 'isFS', 'isNitscheBC']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Boolean')
+
+        ## Write Double fields
+        fieldnames = ['FSNitscheGamma', 'augmented_lagrangian_r', 'augmented_lagrangian_rhop',
+                  'augmented_lagrangian_rlambda', 'augmented_lagrangian_rholambda']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+
+        ## Write String fields
+        fieldnames = ['fe_SSA', 'fe_HO', 'fe_FS']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, data = getattr(self, field), format = 'String')
+        
+        ## Write DoubleMat fields (mattype 1)
+        fieldnames = ['borderSSA', 'borderHO', 'borderFS']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
+
+        ## Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'XTH_theta', data = self.XTH_theta, format = 'Double')
+        execute.WriteData(fid, prefix, name = 'md.flowequation.vertex_equation', data = self.vertex_equation, format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, name = 'md.flowequation.element_equation', data = self.element_equation, format = 'DoubleMat', mattype = 2)

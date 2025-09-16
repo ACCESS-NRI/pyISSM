@@ -1,5 +1,6 @@
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class groundingline(class_registry.manage_state):
@@ -25,7 +26,7 @@ class groundingline(class_registry.manage_state):
         Type of melt interpolation on partially floating elements: 'SubelementMelt1', 'SubelementMelt2', 'IntrusionMelt', 'NoMeltOnPartiallyFloating', 'FullMeltOnPartiallyFloating'.
     intrusion_distance : float, default=0
         Distance of seawater intrusion from grounding line [m].
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested for grounding line analysis.
 
     Methods
@@ -36,6 +37,10 @@ class groundingline(class_registry.manage_state):
         Returns a detailed string representation of the groundingline parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md=None, return_default_outputs=False)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -51,7 +56,7 @@ class groundingline(class_registry.manage_state):
         self.friction_interpolation = 'SubelementFriction1'
         self.melt_interpolation = 'NoMeltOnPartiallyFloating'
         self.intrusion_distance = 0
-        self.requested_outputs = 'List of requested outputs'
+        self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -71,4 +76,73 @@ class groundingline(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - groundingline Class'
         return s
+    
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
 
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+            
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['Surface', 'Base','MaskOceanLevelset']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+
+    # Marshall method for saving the groundingline parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [groundingline] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write String fields
+        fieldnames = ['migration', 'friction_interpolation', 'melt_interpolation']
+        for fieldname in fieldnames:
+            execute.WriteData(fid, prefix, name = 'md.groundingline.' + fieldname, data = getattr(self, fieldname), format = 'String')
+        
+        ## Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'intrusion_distance', format = 'Double')
+        execute.WriteData(fid, prefix, name = 'md.groundingline.requested_outputs', data = self.process_outputs(md), format = 'StringArray')

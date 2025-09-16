@@ -1,5 +1,6 @@
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class amr(class_registry.manage_state):
@@ -64,6 +65,8 @@ class amr(class_registry.manage_state):
         Returns a detailed string representation of the AMR parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     -------
@@ -124,4 +127,41 @@ class amr(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - amr Class'
         return s
+    
+    # Marshall method for saving the amr parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [amr] parameters to a binary file.
 
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+            
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.amr.type', data = 1, format = 'Integer')
+        
+        ## Write double fields
+        fieldnames = ['hmin', 'hmax', 'err', 'gradation', 'groundingline_resolution', 'groundingline_distance', 'icefront_resolution',
+                      'icefront_distance', 'thicknesserror_resolution', 'thicknesserror_threshold', 'thicknesserror_groupthreshold',
+                      'thicknesserror_maximum', 'deviatoricerror_resolution', 'deviatoricerror_threshold', 'deviatoricerror_groupthreshold',
+                      'deviatoricerror_maximum']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+
+        ## Write integer fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'keepmetric', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'restart', format = 'Integer')
+
+        ## Write string fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'fieldname', format = 'String')

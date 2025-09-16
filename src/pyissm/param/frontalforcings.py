@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 ## ------------------------------------------------------
 ## frontalforcings.default
@@ -33,6 +34,8 @@ class default(class_registry.manage_state):
         Returns a detailed string representation of the frontalforcings parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -59,6 +62,36 @@ class default(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - frontalforcings.default Class'
         return s
+    
+    # Marshall method for saving the frontalforcings.default parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [frontalforcings.default] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write headers to file
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.frontalforcings.parameterization', data = 1, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'meltingrate', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts, scale = 1. / md.constants.yts)
+
+        ## Write conditional field
+        if not np.isnan(self.ablationrate).all():
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'ablationrate', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts, scale = 1. / md.constants.yts)
 
 ## ------------------------------------------------------
 ## frontalforcings.rignot
@@ -95,6 +128,8 @@ class rignot(class_registry.manage_state):
         Returns a detailed string representation of the Rignot frontalforcings parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -125,6 +160,35 @@ class rignot(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - frontalforcings.rignot Class'
         return s
+    
+    # Marshall method for saving the frontalforcings.rignot parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [frontalforcings.rignot] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write headers to file
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.frontalforcings.parameterization', data = 2, format = 'Integer')
+
+        ## Write fields
+        execute.WriteData(fid, prefix, name = 'md.frontalforcings.basin_id', data = self.basin_id - 0, format = 'IntMat', mattype = 2) # 0-indexed
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'num_basins', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'subglacial_discharge', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'thermalforcing', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
 ## ------------------------------------------------------
 ## frontalforcings.rignotarma
@@ -207,6 +271,8 @@ class rignotarma(class_registry.manage_state):
         Returns a detailed string representation of the RignotARMA frontalforcings parameters.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -279,3 +345,155 @@ class rignotarma(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - frontalforcings.rignotarma Class'
         return s
+    
+    # Marshall method for saving the frontalforcings.rignotarma parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [frontalforcings.rignotarma] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Scale parameters
+        ## NOTE: Scaling logic here taken from $ISSM_DIR/src/m/classes/frontalforcingsrignotarma.py
+        polyParams_scaled = np.copy(self.polynomialparams)
+        polyParams_scaled_2d = np.zeros((self.num_basins, self.num_breaks + 1 * self.num_params))
+
+        if(self.num_params > 1):
+            # Case 3D #
+            if(self.num_basins > 1 and self.num_breaks + 1 > 1):
+                for ii in range(self.num_params):
+                    polyParams_scaled[:,:,ii] = polyParams_scaled[:, :, ii] * (1 / md.constants.yts) ** ii
+                # Fit in 2D array #
+                for ii in range(self.num_params):
+                    polyParams_scaled_2d[:, ii * (self.num_breaks + 1):(ii + 1) * (self.num_breaks + 1)] = 1 * polyParams_scaled[:, :, ii]
+            # Case 2D and higher-order params at increasing row index #
+            elif(self.num_basins == 1):
+                for ii in range(self.num_params):
+                    polyParams_scaled[ii, :] = polyParams_scaled[ii, :] * (1 / md.constants.yts) ** ii
+                # Fit in row array #
+                for ii in range(self.num_params):
+                    polyParams_scaled_2d[0, ii * (self.num_breaks + 1):(ii + 1) * (self.num_breaks + 1)] = 1 * polyParams_scaled[ii, :]
+            # Case 2D and higher-order params at increasing column index #
+            elif(self.num_breaks + 1 == 1):
+                for ii in range(self.num_params):
+                    polyParams_scaled[:, ii] = polyParams_scaled[:, ii] * (1 / md.constants.yts) ** ii
+                # 2D array is already in correct format #
+                polyParams_scaled_2d = np.copy(polyParams_scaled)
+        else:
+            # 2D array is already in correct format and no need for scaling #
+            polyParams_scaled_2d = np.copy(polyParams_scaled)
+        if(self.num_breaks + 1 == 1):
+            dbreaks = np.zeros((self.num_basins, 1))
+        else:
+            dbreaks = np.copy(self.datebreaks)
+
+        ### Deal with monthly effects ###
+        if(np.any(np.isnan(self.monthlyvals_intercepts))):
+            interceptsM = np.zeros((self.num_basins,12)) #monthly intercepts not provided, set to 0
+            trendsM     = np.zeros((self.num_basins,12)) #set monthly trends also to 0
+        else:
+            interceptsM3d = self.monthlyvals_intercepts
+            if(np.any(np.isnan(self.monthlyvals_trends))):
+                trendsM3d = 0*interceptsM3d #monthly trends not provided, set to 0
+            else:
+                trendsM3d = self.monthlyvals_trends
+        # Create 2D arrays from 3D arrays if needed #
+        if(self.monthlyvals_numbreaks + 1 > 1 and np.all(np.isnan(self.monthlyvals_intercepts))==False):
+            interceptsM = np.zeros((self.num_basins, 12 * self.monthlyvals_numbreaks + 1)) 
+            trendsM     = np.zeros((self.num_basins, 12 * self.monthlyvals_numbreaks + 1))
+            for ii in range(self.monthlyvals_numbreaks + 1):
+                interceptsM[:, ii * 12 : (ii + 1) * 12] = 1 * interceptsM3d[:,:,ii]
+                trendsM[:, ii * 12 : (ii + 1) * 12] = 1 * trendsM3d[:,:,ii]
+        elif(self.monthlyvals_numbreaks + 1 == 1 and np.all(np.isnan(self.monthlyvals_intercepts)) == False):
+            interceptsM = 1 * interceptsM3d
+            trendsM     = 1 * trendsM3d
+        if(self.monthlyvals_numbreaks + 1 == 1):
+            dMbreaks = np.zeros((self.num_basins, 1))
+        else:
+            dMbreaks = np.copy(self.monthlyvals_datebreaks)
+
+        ### Deal with the subglacial discharge polynomial ###
+        if(self.isdischargearma):
+            sdpolyParams_scaled   = np.copy(self.sd_polynomialparams)
+            sdpolyParams_scaled_2d = np.zeros((self.num_basins, self.sd_num_breaks + 1 * self.sd_num_params))
+            if(self.sd_num_params > 1):
+                # Case 3D #
+                if(self.num_basins>1 and self.sd_num_breaks + 1 > 1):
+                    for ii in range(self.sd_num_params):
+                        sdpolyParams_scaled[:, :, ii] = sdpolyParams_scaled[:, :, ii] * (1 / md.constants.yts) ** ii
+                    # Fit in 2D array #
+                    for ii in range(self.sd_num_params):
+                        sdpolyParams_scaled_2d[:, ii * self.sd_num_breaks + 1 : (ii + 1) * self.sd_num_breaks + 1] = 1 * sdpolyParams_scaled[:, :, ii]
+                # Case 2D and higher-order params at increasing row index #
+                elif(self.num_basins == 1):
+                    for ii in range(self.sd_num_params):
+                        sdpolyParams_scaled[ii, :] = sdpolyParams_scaled[ii, :] * (1 / md.constants.yts) ** ii
+                    # Fit in row array #
+                    for ii in range(self.num_params):
+                        sdpolyParams_scaled_2d[0, ii * self.sd_num_breaks + 1 : (ii + 1) * self.sd_num_breaks + 1] = 1 * sdpolyParams_scaled[ii, :]
+                # Case 2D and higher-order params at incrasing column index #
+                elif(self.sd_num_breaks + 1 == 1):
+                    for ii in range(self.sd_num_params):
+                        sdpolyParams_scaled[:, ii] = sdpolyParams_scaled[:, ii] * (1 / md.constants.yts) ** ii
+                    # 2D array is already in correct format #
+                    sdpolyParams_scaled_2d = np.copy(sdpolyParams_scaled)
+            else:
+                # 2D array is already in correct format and no need for scaling #
+                sdpolyParams_scaled_2d = np.copy(sdpolyParams_scaled)
+            if(self.sd_num_breaks + 1 == 1):
+                sd_dbreaks = np.zeros((self.num_basins, 1))
+            else:
+                sd_dbreaks = np.copy(self.sd_datebreaks)
+
+
+        ## Write headers to file
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.frontalforcings.parameterization', data = 3, format = 'Integer')
+
+        ## Write Integer fields
+        fieldnames = ['num_basins', 'num_breaks', 'num_params', 'ar_order', 'ma_order', 'monthlyvals_numbreaks']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+
+        ## Write DoubleMat fields
+        execute.WriteData(fid, prefix, name = 'md.frontalforcings.polynomialparams', data = polyParams_scaled_2d, format = 'DoubleMat')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'arlag_coefs', format = 'DoubleMat', yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'malag_coefs', format = 'DoubleMat', yts = md.constants.yts)
+        execute.WriteData(fid, prefix, name = 'md.frontalforcings.datebreaks', data = dbreaks, format = 'DoubleMat', scale = md.constants.yts)
+        execute.WriteData(fid, prefix, name = 'md.frontalforcings.monthlyvals_datebreaks', data = dMbreaks, format = 'DoubleMat', scale = md.constants.yts)
+        execute.WriteData(fid, prefix, name = 'md.frontalforcings.monthlyvals_intercepts', data = interceptsM, format = 'DoubleMat')
+        execute.WriteData(fid, prefix, name = 'md.frontalforcings.monthlyvals_trends', data = trendsM, format = 'DoubleMat', scale = 1. / md.constants.yts)
+
+        ## Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'isdischargearma', format = 'Boolean')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'arma_timestep', format = 'Double', scale = md.constants.yts)
+        execute.WriteData(fid, prefix, name = 'md.frontalforcings.basin_id', data =  self.basin_id - 1, format = 'IntMat', mattype = 2)  # 0-indexed
+
+        ## Write conditional fields
+        if(self.isdischargearma == 0):
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'subglacial_discharge', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        else:
+            ## Write Integer fields
+            fieldnames = ['sd_num_breaks', 'sd_num_params', 'sd_ar_order', 'sd_ma_order']
+            for field in fieldnames:
+                execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+            
+            ## Write DoubleMat fields
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'sd_arma_timestep', format = 'Double', scale = md.constants.yts)
+            execute.WriteData(fid, prefix, name = 'md.frontalforcings.sd_polynomialparams', data = sdpolyParams_scaled_2d, format = 'DoubleMat')
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'sd_arlag_coefs',format = 'DoubleMat', yts = md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname ='sd_malag_coefs', format = 'DoubleMat', yts = md.constants.yts)
+            execute.WriteData(fid, prefix, name = 'md.frontalforcings.sd_datebreaks', data = sd_dbreaks, format = 'DoubleMat',scale = md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'sd_monthlyfrac',format = 'DoubleMat', yts = md.constants.yts)

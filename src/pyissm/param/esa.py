@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class esa(class_registry.manage_state):
@@ -28,9 +29,9 @@ class esa(class_registry.manage_state):
         North-south, East-west components of 2-D horizontal displacement vector: -1 south, 1 north.
     degacc : float, default=0.01
         Accuracy (default 0.01 deg) for numerical discretization of the Green's functions.
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested (default: EsaUmotion).
-    transitions : str, default='List of transitions'
+    transitions : list, default=[]
         Indices into parts of the mesh that will be icecaps.
 
     Methods
@@ -41,6 +42,10 @@ class esa(class_registry.manage_state):
         Returns a detailed string representation of the esa parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md=None, return_default_outputs=False)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -58,8 +63,8 @@ class esa(class_registry.manage_state):
         self.love_l = 0.
         self.hemisphere = 0.
         self.degacc = 0.01
-        self.requested_outputs = 'List of requested outputs'
-        self.transitions = 'List of transitions'
+        self.requested_outputs = ['default']
+        self.transitions = []
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -82,3 +87,72 @@ class esa(class_registry.manage_state):
         s = 'ISSM - esa Class'
         return s
 
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+            
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['EsaUmotion']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+
+    # Marshall method for saving the esa parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [esa] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+                
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'deltathickness', format = 'DoubleMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'love_h', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'love_l', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'hemisphere', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'degacc', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'transitions', format = 'MatArray')
+        execute.WriteData(fid, prefix, name = 'md.esa.requested_outputs', data = self.process_outputs(md), format = 'StringArray')

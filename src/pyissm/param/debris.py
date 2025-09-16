@@ -1,6 +1,7 @@
 import numpy as np
 from . import param_utils
 from . import class_registry
+from .. import execute
 
 @class_registry.register_class
 class debris(class_registry.manage_state):
@@ -38,7 +39,7 @@ class debris(class_registry.manage_state):
         Critical stress [Pa] for removalmodel (2).
     vertex_pairing : float, default=nan
         Pairs of vertices that are penalized.
-    requested_outputs : str, default='List of requested outputs'
+    requested_outputs : list, default=['default']
         Additional outputs requested.
 
     Methods
@@ -49,6 +50,10 @@ class debris(class_registry.manage_state):
         Returns a detailed string representation of the debris parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md=None, return_default_outputs=False)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file.
 
     Examples
     --------
@@ -70,7 +75,7 @@ class debris(class_registry.manage_state):
         self.removal_slope_threshold = 0.
         self.removal_stress_threshold = 0.
         self.vertex_pairing = np.nan
-        self.requested_outputs = 'List of requested outputs'
+        self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -98,4 +103,80 @@ class debris(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - debris Class'
         return s
+
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+            
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['DebrisThickness', 'DebrisMaskNodeActivation', 'VxDebris', 'VyDebris']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+    
+    # Marshall method for saving the debris parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [debris] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+        
+        ## Write Integer fields
+        fieldnames = ['stabilization', 'removalmodel', 'displacementmodel']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+        
+        ## Write Double fields
+        fieldnames = ['max_displacementvelocity', 'removal_slope_threshold', 'removal_stress_threshold', 'packingfraction']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+    
+        ## Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'spcthickness', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'vertex_pairing', format = 'DoubleMat', mattype = 3)
+        execute.WriteData(fid, prefix, name = 'md.debris.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 

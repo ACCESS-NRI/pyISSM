@@ -1,8 +1,10 @@
+import numpy as np
 from .. import utils
 from . import param_utils
 from . import class_registry
 from . import rotational
 from . import lovenumbers
+from .. import execute
 
 ## ------------------------------------------------------
 ## solidearth.earth
@@ -34,8 +36,8 @@ class earth(class_registry.manage_state):
     rotational : rotational
         Rotational parameters object for polar motion calculations.
     planetradius : float
-        Earth's radius [m]. Automatically set using utils.planetradius('earth').
-    requested_outputs : str, default='List of requested outputs'
+        Earth's radius [m]. Automatically set using utils.general.planetradius('earth').
+    requested_outputs : ilst, default=['default']
         Additional outputs requested from the solid earth model.
     transfercount : str, default='List of transfer count'
         Number of ice caps that vertices are part of.
@@ -56,6 +58,10 @@ class earth(class_registry.manage_state):
         Returns a detailed string representation of the solid earth parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md=None, return_default_outputs=False)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Notes
     -----
@@ -81,13 +87,13 @@ class earth(class_registry.manage_state):
         self.external          = None
         self.lovenumbers       = lovenumbers()
         self.rotational        = rotational()
-        self.planetradius      = utils.planetradius('earth')
-        self.requested_outputs = 'List of requested outputs'
-        self.transfercount     = 'List of transfer count'
-        self.transitions       = 'List of transitions'
-        self.partitionice      = 'List of partionice'
-        self.partitionhydro    = 'List of partitionhydro'
-        self.partitionocean    = 'List of partitionocean'
+        self.planetradius      = utils.general.planetradius('earth')
+        self.requested_outputs = []
+        self.transfercount     = []
+        self.transitions       = []
+        self.partitionice      = []
+        self.partitionhydro    = []
+        self.partitionocean    = []
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -110,6 +116,109 @@ class earth(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - solidearth.earth Class'
         return s
+
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+            
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['Sealevel']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+        
+    # Marshall method for saving the solidearth.earth parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [solidearth.earth] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Calculate conditional fields
+        if len(self.partitionice):
+            npartice = np.max(self.partitionice) + 2
+        else:
+            npartice = 0
+
+        if len(self.partitionhydro):
+            nparthydro = np.max(self.partitionhydro) + 2
+        else:
+            nparthydro = 0
+
+        if len(self.partitionocean):
+            npartocean = np.max(self.partitionocean) + 2
+        else:
+            npartocean = 0
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'planetradius', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'transitions', format = 'MatArray')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'transfercount', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'partitionice', mattype = 1, format = 'DoubleMat')
+        execute.WriteData(fid, prefix, name = 'md.solidearth.npartice', data = npartice, format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'partitionhydro', mattype = 1, format = 'DoubleMat')
+        execute.WriteData(fid, prefix, name = 'md.solidearth.nparthydro', data = nparthydro, format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'partitionocean', mattype = 1, format = 'DoubleMat')
+        execute.WriteData(fid, prefix, name = 'md.solidearth.npartocean', data = npartocean, format = 'Integer')
+        execute.WriteData(fid, prefix, name = 'md.solidearth.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+
+        ## Marshall sub-objects
+        self.settings.marshall_class(fid, prefix, md)
+        self.lovenumbers.marshall_class(fid, prefix, md)
+        self.rotational.marshall_class(fid, prefix, md)
+
+        ## Write conditional fields
+        if self.external:
+            execute.WriteData(fid, prefix, name = 'md.solidearth.isexternal', data = 1, format = 'Integer')
+
+            ## If external exists, it will contain a marshall_class() function.
+            self.external.marshall_class(prefix, md, fid)
+        else:
+            execute.WriteData(fid, prefix, name = 'md.solidearth.isexternal', data = 0, format = 'Integer')
 
 ## ------------------------------------------------------
 ## solidearth.europa
@@ -141,8 +250,8 @@ class europa(class_registry.manage_state):
     rotational : rotational
         Rotational parameters object for Europa's rotation and tidal effects.
     planetradius : float
-        Europa's radius [m]. Automatically set using utils.planetradius('europa').
-    requested_outputs : str, default='List of requested outputs'
+        Europa's radius [m]. Automatically set using utils.general.planetradius('europa').
+    requested_outputs : list, default=['default']
         Additional outputs requested from the solid body model.
     transfercount : str, default='List of transfer count'
         Number of ice caps that vertices are part of.
@@ -163,6 +272,10 @@ class europa(class_registry.manage_state):
         Returns a detailed string representation of the solid body parameters.
     __str__(self)
         Returns a short string identifying the class.
+    process_outputs(self, md=None, return_default_outputs=False)
+        Process requested outputs, expanding 'default' to appropriate outputs.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Notes
     -----
@@ -189,13 +302,13 @@ class europa(class_registry.manage_state):
         self.external          = None
         self.lovenumbers       = lovenumbers()
         self.rotational        = rotational()
-        self.planetradius      = utils.planetradius('europa')
-        self.requested_outputs = 'List of requested outputs'
-        self.transfercount     = 'List of transfer count'
-        self.transitions       = 'List of transitions'
-        self.partitionice      = 'List of partionice'
-        self.partitionhydro    = 'List of partitionhydro'
-        self.partitionocean    = 'List of partitionocean'
+        self.planetradius      = utils.general.planetradius('europa')
+        self.requested_outputs = ['default']
+        self.transfercount     = []
+        self.transitions       = []
+        self.partitionice      = []
+        self.partitionhydro    = []
+        self.partitionocean    = []
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -218,6 +331,109 @@ class europa(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - solidearth.europa Class'
         return s
+    
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+            
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['Sealevel']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+
+    # Marshall method for saving the solidearth.europa parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [solidearth.europa] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Calculate conditional fields
+        if len(self.partitionice):
+            npartice = np.max(self.partitionice) + 2
+        else:
+            npartice = 0
+
+        if len(self.partitionhydro):
+            nparthydro = np.max(self.partitionhydro) + 2
+        else:
+            nparthydro = 0
+
+        if len(self.partitionocean):
+            npartocean = np.max(self.partitionocean) + 2
+        else:
+            npartocean = 0
+
+        ## Write fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'planetradius', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'transitions', format = 'MatArray')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'transfercount', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'partitionice', mattype = 1, format = 'DoubleMat')
+        execute.WriteData(fid, prefix, name = 'md.solidearth.npartice', data = npartice, format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'partitionhydro', mattype = 1, format = 'DoubleMat')
+        execute.WriteData(fid, prefix, name = 'md.solidearth.nparthydro', data = nparthydro, format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'partitionocean', mattype = 1, format = 'DoubleMat')
+        execute.WriteData(fid, prefix, name = 'md.solidearth.npartocean', data = npartocean, format = 'Integer')
+        execute.WriteData(fid, prefix, name = 'md.solidearth.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+
+        ## Marshall sub-objects
+        self.settings.marshall_class(fid, prefix, md)
+        self.lovenumbers.marshall_class(fid, prefix, md)
+        self.rotational.marshall_class(fid, prefix, md)
+
+        ## Write conditional fields
+        if self.external:
+            execute.WriteData(fid, prefix, name = 'md.solidearth.isexternal', data = 1, format = 'Integer')
+
+            ## If external exists, it will contain a marshall_class() function.
+            self.external.marshall_class(prefix, md, fid)
+        else:
+            execute.WriteData(fid, prefix, name = 'md.solidearth.isexternal', data = 0, format = 'Integer')
 
 ## ------------------------------------------------------
 ## solidearth.settings
@@ -284,6 +500,8 @@ class settings(class_registry.manage_state):
         Returns a detailed string representation of the solid earth settings.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Notes
     -----
@@ -358,6 +576,43 @@ class settings(class_registry.manage_state):
         s = 'ISSM - solidearth.settings Class'
         return s
 
+    # Marshall method for saving the solidearth.settings parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [solidearth.settings] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write Double fields
+        fieldnames = ['reltol', 'abstol', 'degacc']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, name = 'md.solidearth.settings.' + field, data = getattr(self, field), format = 'Double')
+
+        ## Write Integer fields
+        fieldnames = ['maxiter', 'runfrequency', 'horiz', 'sealevelloading', 'isgrd', 'compute_bp_grd', 'grdmodel', 'cross_section_shape']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, name = 'md.solidearth.settings.' + field, data = getattr(self, field), format = 'Integer')
+
+        ## Write Boolean fields
+        fieldnames = ['selfattraction', 'elastic', 'viscous', 'rotation', 'grdocean', 'ocean_area_scaling']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, name = 'md.solidearth.settings.' + field, data = getattr(self, field), format = 'Boolean')
+        
+        ## Write other fields
+        execute.WriteData(fid, prefix, name = 'md.solidearth.settings.timeacc', data = getattr(self, 'timeacc'), format = 'Double', scale = md.constants.yts)
+
 ## ------------------------------------------------------
 ## solidearth.solution
 ## ------------------------------------------------------
@@ -395,6 +650,8 @@ class solution(class_registry.manage_state):
         Returns a detailed string representation of the solution fields.
     __str__(self)
         Returns a short string identifying the class.
+    marshall_class(self, fid, prefix, md=None)
+        Marshall parameters to a binary file
 
     Notes
     -----
@@ -441,3 +698,50 @@ class solution(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - solidearth.solution Class'
         return s
+
+    # Marshall method for saving the solidearth.solution parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [solidearth.solution] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Transform time series into time series rates
+        # NOTE: Taken from $ISSM_DIR/src/classes/solidearthsolution.py
+        if np.shape(self.displacementeast)[1] == 1:
+            print('solidearth.solution::marshall_class -- Warning: only one time step provided, assuming the values are rates per year')
+            displacementeast_rate = np.append(np.array(self.displacementeast).reshape(-1, 1), 0)
+            displacementnorth_rate = np.append(np.array(self.displacementnorth).reshape(-1, 1), 0)
+            displacementup_rate = np.append(np.array(self.displacementup).reshape(-1, 1), 0)
+            geoid_rate = np.append(np.array(self.geoid).reshape(-1, 1), 0)
+        else:
+            time = self.displacementeast[-1, :]
+            dt = np.diff(time, axis = 0)
+            displacementeast_rate = np.diff(self.displacementeast[0:-2, :], 1, 1) / dt
+            displacementeast_rate = np.append(displacementeast_rate,time[:-1].reshape(1,-1),axis = 0)
+            displacementnorth_rate = np.diff(self.displacementnorth[0:-2, :], 1, 1) / dt
+            displacementnorth_rate = np.append(displacementnorth_rate,time[:-1].reshape(1,-1),axis = 0)
+            displacementup_rate = np.diff(self.displacementup[0:-2, :], 1, 1) / dt
+            displacementup_rate = np.append(displacementup_rate,time[:-1].reshape(1,-1),axis = 0)
+            geoid_rate = np.diff(self.geoid[0:-2, :], 1, 1) / dt
+            geoid_rate = np.append(geoid_rate,time[:-1].reshape(1,-1),axis = 0)
+
+        ## Write fields
+        execute.WriteData(fid, prefix, name = 'md.solidearth.external.nature', data = 0, format = 'Integer')
+        execute.WriteData(fid, prefix, name = 'md.solidearth.external.displacementeast', data = displacementeast_rate, format = 'DoubleMat',  mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, name = 'md.solidearth.external.displacementup', data = displacementup_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, name = 'md.solidearth.external.displacementnorth', data = displacementnorth_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, name = 'md.solidearth.external.geoid', data = geoid_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+
