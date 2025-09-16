@@ -17,7 +17,7 @@ import pyissm
 
 def build_base_model():
     """
-    Create a base md model with required sub-classes and optional custom values.
+    Create a base md model with default sub-classes.
 
     Returns
     -------
@@ -29,7 +29,7 @@ def build_base_model():
     md = pyissm.Model()
 
     ## Define mesh information
-    domain_name = '/Users/lawrence.bird/ISSM/examples/SquareIceShelf/DomainOutline.exp'
+    domain_name = os.path.join(os.path.dirname(__file__), 'assets/SquareIceShelf/DomainOutline.exp')
     rift_name = ''
     resolution = 100000
     area = resolution ** 2
