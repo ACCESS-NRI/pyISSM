@@ -186,6 +186,9 @@ def save_model(path: str, md):
 
             # Handle scalars
             if isinstance(value, (int, float, str, bool)):
+                ## If it's a boolean, convert to int for NetCDF writing
+                if isinstance(value, (bool)):
+                    value = int(value)
                 group.setncattr(attr_name, value)
 
             # Handle arrays and lists (convert lists to arrays)
