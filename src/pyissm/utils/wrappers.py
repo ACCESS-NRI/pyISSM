@@ -11,6 +11,8 @@ NOTE: Functionality here requires the following:
 import os
 import importlib
 import sys
+import numpy as np
+from .. import param
 
 def load_issm_wrapper(func):
     """
@@ -151,7 +153,7 @@ def BamgConvertMesh(index,
 
     Examples
     --------
-    >>> bamggeom, bamgmesh = BamgConvertMesh_python(md.mesh.elements, md.mesh.x, md.mesh.y)
+    >>> bamggeom, bamgmesh = BamgConvertMesh(md.mesh.elements, md.mesh.x, md.mesh.y)
     """
 
     # Call the loaded _python function
@@ -192,7 +194,7 @@ def BamgMesher(bamgmesh,
 
     Examples
     --------
-    >>> bamggeom, bamgmesh = BamgMesher_python(bamgmesh, bamggeom, bamgoptions)
+    >>> bamggeom, bamgmesh = BamgMesher(bamgmesh, bamggeom, bamgoptions)
     """
 
     # Call the loaded _python function
@@ -235,6 +237,8 @@ def MeshProfileIntersection(index,
     """
     Intersection of mesh with profile segments from an Argus .exp file.
 
+    Wrapper function for $ISSM_DIR/lib/MeshProfileIntersection_python.
+
     Takes a .exp file (made of several profiles) and figures out its 
     intersection with a triangular mesh.
 
@@ -267,7 +271,7 @@ def MeshProfileIntersection(index,
     # Call the loaded _python function
     return MeshProfileIntersection._func(index, x, y, filename)
 
-# CountourToMesh_python
+## CountourToMesh_python
 @load_issm_wrapper
 def ContourToMesh(index,
                   x,
@@ -278,6 +282,8 @@ def ContourToMesh(index,
     
     """
     Flag the elements or nodes inside a contour.
+
+    Wrapper function for $ISSM_DIR/lib/ContourToMesh_python.
 
     Parameters
     ----------
@@ -331,6 +337,8 @@ def IssmConfig(string):
     """
     Get ISSM configuration value for a specified parameter.
 
+    Wrapper function for $ISSM_DIR/lib/IssmConfig_python.
+
     Parameters
     ----------
     string : str
@@ -346,6 +354,7 @@ def IssmConfig(string):
     >>> value = IssmConfig('parameter_name')
     >>> print(value)
     """
+
     # Call the loaded _python function
     return IssmConfig._func(string)
 
@@ -373,6 +382,7 @@ def ElementConnectivity(elements, node_connectivity):
     --------
     >>> element_connectivity = ElementConnectivity(elements, node_connectivity)
     """
+
     # Call the loaded _python function
     ## NOTE: Value returned from wrapper function is a tuple, the first element of which being the result we actually want
     return ElementConnectivity._func(elements, node_connectivity)[0]
@@ -404,3 +414,422 @@ def NodeConnectivity(elements, num_nodes):
     # Call the loaded _python function
     ## NOTE: Value returned from wrapper function is a tuple, the first element of which being the result we actually want
     return NodeConnectivity._func(elements, num_nodes)[0]
+
+## ContourToNodes_python
+@load_issm_wrapper
+def ContourToNodes(x,
+                   y,
+                   contourname,
+                   edgevalue):
+    """
+    Flag vertices inside contour.
+
+    Wrapper function for $ISSM_DIR/lib/ContourToNodes_python.
+
+    Parameters
+    ----------
+    x : array_like
+        X coordinates of the nodes.
+    y : array_like
+        Y coordinates of the nodes.
+    contourname : str
+        Name of .exp/.shp file containing the contours, or resulting structure 
+        from call to expread/shpread.
+    edgevalue : int
+        Value (0, 1 or 2) defining the value associated to the nodes on the 
+        edges of the polygons.
+
+    Returns
+    -------
+    flags : ndarray
+        Vector of flags (0 or 1) of size equal to the number of nodes.
+
+    Examples
+    --------
+    >>> flags = ContourToNodes(x, y, 'contour.exp', 1)
+    """
+
+    # Call the loaded _python function
+    return np.squeeze(ContourToNodes._func(x, y, contourname, edgevalue))
+
+## InterpFromGridToMesh_python
+@load_issm_wrapper
+def InterpFromGridToMesh(x,
+                         y,
+                         data,
+                         x_mesh,
+                         y_mesh,
+                         default_value):
+    """
+    Interpolation from a grid onto a list of points.
+
+    Wrapper function for $ISSM_DIR/lib/InterpFromGridToMesh_python.
+
+    Parameters
+    ----------
+    x : array_like
+        X coordinates of the grid data (must be in increasing order).
+    y : array_like
+        Y coordinates of the grid data (must be in increasing order).
+    data : array_like
+        Matrix holding the data to be interpolated onto the mesh.
+    x_mesh : array_like
+        X coordinates of the points onto which we interpolate.
+    y_mesh : array_like
+        Y coordinates of the points onto which we interpolate.
+    default_value : float
+        Default value to use for points outside the grid.
+
+    Returns
+    -------
+    data_mesh : ndarray
+        Vector of mesh interpolated data.
+
+    Examples
+    --------
+    >>> data_mesh = InterpFromGridToMesh(x_grid, y_grid, Vel, md.mesh.x, md.mesh.y, 0)
+    """
+
+    # Call the loaded _python function
+    return np.squeeze(InterpFromGridToMesh._func(x, y, data, x_mesh, y_mesh, default_value))
+
+## InterpFromMesh2d_python
+@load_issm_wrapper
+def InterpFromMesh2d(index,
+                     x,
+                     y,
+                     data,
+                     x_prime,
+                     y_prime,
+                     default_value = None,
+                     contourname = None):
+    """
+    Interpolate data from a 2D mesh onto a set of points.
+
+    Wrapper function for $ISSM_DIR/lib/InterpFromMesh2d_python.
+
+    Parameters
+    ----------
+    index : array_like
+        Index of the mesh where data is defined (triangulation connectivity).
+    x : array_like
+        X coordinates of the nodes where data is defined.
+    y : array_like
+        Y coordinates of the nodes where data is defined.
+    data : array_like
+        Vector holding the data to be interpolated onto the points.
+    x_prime : array_like
+        X coordinates of the mesh vertices onto which we interpolate.
+    y_prime : array_like
+        Y coordinates of the mesh vertices onto which we interpolate.
+    default_value : float or array_like, optional
+        Default value(s) to use for interpolation. Can be a scalar or vector 
+        of size len(x_prime).
+    contourname : str, optional
+        Name of contour file. Linear interpolation will happen on all x_prime, 
+        y_prime inside the contour, default value will be adopted on the rest 
+        of the mesh.
+
+    Returns
+    -------
+    data_prime : ndarray
+        Vector of interpolated data at the target points.
+
+    Examples
+    --------
+    >>> data_prime = InterpFromMesh2d(md.mesh.elements, md.mesh.x, md.mesh.y, data, x_new, y_new)
+    >>> data_prime = InterpFromMesh2d(md.mesh.elements, md.mesh.x, md.mesh.y, data, x_new, y_new, default_value=0.0)
+    >>> data_prime = InterpFromMesh2d(md.mesh.elements, md.mesh.x, md.mesh.y, data, x_new, y_new, default_value=0.0, contourname='contour.exp')
+    """
+
+    # Call the loaded _python function
+    if default_value is None and contourname is None:
+        data_prime = InterpFromMesh2d._func(index, x, y, data, x_prime, y_prime)
+    elif not default_value is None and contourname is None:
+        data_prime = InterpFromMesh2d._func(index, x, y, data, x_prime, y_prime, default_value)
+    elif not default_value is None and not contourname is None:
+        data_prime = InterpFromMesh2d._func(index, x, y, data, x_prime, y_prime, default_value, contourname)
+    else:
+        raise Exception('utils.wrappers.InterpFromMesh2d:: When defining a contourname, default_value must also be defined.')
+
+    ## NOTE: Value returned from wrapper function is a tuple, the first element of which being the result we actually want
+    return data_prime[0]
+
+## InterpFromMeshToGrid_python
+@load_issm_wrapper
+def InterpFromMeshToGrid(index,
+                         x,
+                         y,
+                         data,
+                         xgrid,
+                         ygrid,
+                         default_value):
+    """
+    Interpolate data from a mesh onto a regular grid.
+
+    Wrapper function for $ISSM_DIR/lib/InterpFromMeshToGrid_python.
+
+    Parameters
+    ----------
+    index : array_like
+        Index of the mesh where data is defined (triangulation connectivity).
+    x : array_like
+        X coordinates of the nodes where data is defined.
+    y : array_like
+        Y coordinates of the nodes where data is defined.
+    data : array_like
+        Vertex values of data to be interpolated onto the grid.
+    xgrid : array_like
+        X coordinates defining the grid.
+    ygrid : array_like
+        Y coordinates defining the grid.
+    default_value : float
+        Value assigned to points located outside the mesh.
+
+    Returns
+    -------
+    grid_data : ndarray
+        Interpolated data on the regular grid.
+
+    Examples
+    --------
+    >>> grid_data = InterpFromMeshToGrid(md.mesh.elements, md.mesh.x, md.mesh.y, data, xgrid, ygrid, default_value=0.0)
+    """
+
+    # Call the loaded _python function
+    return np.squeeze(InterpFromMeshToGrid._func(index, x, y, data, xgrid, ygrid, default_value))
+
+## InterpFromMeshToMesh2d_python
+@load_issm_wrapper
+def InterpFromMeshToMesh2d(index,
+                           x,
+                           y,
+                           data,
+                           x_interp,
+                           y_interp,
+                           default_value = None):
+    """
+    Interpolate from a 2D triangular mesh onto a list of points.
+
+    Wrapper function for $ISSM_DIR/lib/InterpFromMeshToMesh2d_python.
+
+    Parameters
+    ----------
+    index : array_like
+        Index of the mesh where data is defined (triangulation connectivity).
+    x : array_like
+        X coordinates of the nodes where data is defined.
+    y : array_like
+        Y coordinates of the nodes where data is defined.
+    data : array_like
+        Matrix holding the data to be interpolated onto the mesh (one column per field).
+    x_interp : array_like
+        X coordinates of the points onto which we interpolate.
+    y_interp : array_like
+        Y coordinates of the points onto which we interpolate.
+    default_value : float, optional
+        Default value if point is outside of triangulation (instead of linear interpolation).
+
+    Returns
+    -------
+    data_prime : ndarray
+        Vector of interpolated data at the target points.
+
+    Examples
+    --------
+    >>> interpolated_temp = InterpFromMeshToMesh2d(index, x, y, temperature, md.mesh.x, md.mesh.y)
+    >>> interpolated_temp = InterpFromMeshToMesh2d(index, x, y, temperature, md.mesh.x, md.mesh.y, default_value = 253)
+    """
+
+    # Call the loaded _python function
+    if default_value is None:
+        data_prime = InterpFromMeshToMesh2d._func(index, x, y, data, x_interp, y_interp)
+    elif not default_value is None:
+        data_prime = InterpFromMeshToMesh2d._func(index, x, y, data, x_interp, y_interp, default_value)
+    else:
+        raise Exception('utils.wrappers.InterpFromMeshToMesh2d:: Something went wrong! Make sure you have provided all required arguments.')
+
+    ## NOTE: Value returned from wrapper function is a tuple, the first element of which being the result we actually want
+    return data_prime[0]
+
+## InterpFromMeshToMesh3d_python
+@load_issm_wrapper
+def InterpFromMeshToMesh3d(index,
+                           x,
+                           y,
+                           z,
+                           data,
+                           x_prime,
+                           y_prime,
+                           z_prime,
+                           default_value):
+    """
+    Interpolate from a 3D hexahedron mesh onto a list of points.
+
+    Wrapper function for $ISSM_DIR/lib/InterpFromMeshToMesh3d_python.
+
+    Parameters
+    ----------
+    index : array_like
+        Index of the mesh where data is defined (hexahedron connectivity).
+    x : array_like
+        X coordinates of the nodes where data is defined.
+    y : array_like
+        Y coordinates of the nodes where data is defined.
+    z : array_like
+        Z coordinates of the nodes where data is defined.
+    data : array_like
+        Matrix holding the data to be interpolated onto the mesh.
+    x_prime : array_like
+        X coordinates of the points onto which we interpolate.
+    y_prime : array_like
+        Y coordinates of the points onto which we interpolate.
+    z_prime : array_like
+        Z coordinates of the points onto which we interpolate.
+    default_value : float, optional
+        Default value if no data is found (holes).
+
+    Returns
+    -------
+    data_prime : ndarray
+        Vector of interpolated data at the target points.
+
+    Examples
+    --------
+    >>> interpolated_temp = InterpFromMeshToMesh3d(index, x, y, z, temperature, md.mesh.x, md.mesh.y, md.mesh.z, 253)
+    """
+
+    # Call the loaded _python function
+    return InterpFromMeshToMesh3d._func(index, x, y, z, data, x_prime, y_prime, z_prime, default_value)
+
+## MeshPartition_python
+@load_issm_wrapper
+def MeshPartition(md,
+                  n_partitions):
+    """
+    Partition mesh according to the number of areas, using Metis library.
+
+    Wrapper function for $ISSM_DIR/lib/MeshPartition_python.
+
+    Parameters
+    ----------
+    md : object
+        ISSM model object containing the mesh to be partitioned.
+    n_partitions : int
+        Number of partitions to divide the mesh into.
+
+    Returns
+    -------
+    element_partitioning : ndarray
+        Vector of partitioning area numbers, for every element.
+    node_partitioning : ndarray
+        Vector of partitioning area numbers, for every node.
+
+    Examples
+    --------
+    >>> element_partitioning, node_partitioning = MeshPartition(md, 4)
+    """
+
+    # Get mesh info from md.mesh
+    n_vertices = md.mesh.numberofvertices
+    elements = md.mesh.elements
+    n_vertices_2d = 0
+    n_layers = 1
+    elements_2d = []
+
+    # Conditional handling for different mesh types
+    if isinstance(md.mesh, param.mesh.mesh3dprisms):
+        element_type = md.mesh.element_type()
+        n_vertices_2d = md.mesh.numberofvertices2d
+        n_layers = md.mesh.numberoflayers
+        elements_2d = md.mesh.elements2d
+    elif isinstance(md.mesh, param.mesh.mesh2d):
+        element_type = md.mesh.element_type()
+    elif isinstance(md.mesh, param.mesh.mesh2dvertical):
+        element_type = md.mesh.element_type()
+
+    # Call the loaded _python function
+    [element_partitioning, node_partitioning] = MeshPartition._func(n_vertices, elements, n_vertices_2d, elements_2d, n_layers, element_type, n_partitions)
+
+    return [element_partitioning, node_partitioning]
+
+## ProcessRifts_python
+@load_issm_wrapper
+def ProcessRifts(index,
+                 x,
+                 y,
+                 segments,
+                 segmentmarkers):
+    """
+    Split a mesh where a rift (or fault) is present.
+
+    Wrapper function for $ISSM_DIR/lib/ProcessRifts_python.
+
+    Parameters
+    ----------
+    index : array_like
+        Initial triangulation connectivity (element indices).
+    x : array_like
+        X coordinates of the initial mesh nodes.
+    y : array_like
+        Y coordinates of the initial mesh nodes.
+    segments : array_like
+        Initial array of exterior segments defining the domain outline.
+    segmentmarkers : array_like
+        Initial array of flags marking each segment.
+
+    Returns
+    -------
+    index_prime : ndarray
+        Resulting triangulation connectivity after rift processing.
+    x_prime : ndarray
+        X coordinates of the resulting mesh nodes.
+    y_prime : ndarray
+        Y coordinates of the resulting mesh nodes.
+    segments_prime : ndarray
+        Resulting array of exterior segments.
+    segmentmarkers_prime : ndarray
+        Resulting array of flags marking each segment.
+    rifts : ndarray
+        Array containing the processed rift information.
+
+    Examples
+    --------
+    >>> index_prime, x_prime, y_prime, segments_prime, segmentmarkers_prime, rifts = ProcessRifts(index, x, y, segments, segmentmarkers)
+    """
+    
+    # Call the loaded _python function
+    index_prime, x_prime, y_prime, segments_prime, segmentmarkers_prime, rifts = ProcessRifts._func(index, x, y, segments, segmentmarkers)
+
+    return index_prime, x_prime, y_prime, segments_prime, segmentmarkers_prime, rifts
+
+## ExpToLevelSet_python
+@load_issm_wrapper
+def ExpToLevelSet(x, y, contourname):
+    """
+    Determine levelset distance between a contour and a cloud of points.
+
+    Wrapper function for $ISSM_DIR/lib/ExpToLevelSet_python.
+
+    Parameters
+    ----------
+    x : array_like
+        X coordinates of the cloud points.
+    y : array_like
+        Y coordinates of the cloud points.
+    contourname : str
+        Name of .exp file containing the contours.
+
+    Returns
+    -------
+    distance : ndarray
+        Distance vector representing a levelset where the 0 level is one 
+        of the contour segments.
+
+    Examples
+    --------
+    >>> distance = ExpToLevelSet(md.mesh.x, md.mesh.y, 'Contour.exp')
+    """
+    
+    # Call the loaded _python function
+    return ExpToLevelSet._func(x, y, contourname)
