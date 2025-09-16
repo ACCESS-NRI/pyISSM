@@ -16,68 +16,86 @@ from .. import param
 
 def load_issm_wrapper(func):
     """
-    Decorator for ISSM Python wrapper functions that ensures the corresponding 
-    compiled `_python` module exists and is loaded.
+    Decorator for ISSM Python wrapper functions that enables lazy loading of 
+    corresponding compiled C++ `_python` modules.
 
     This decorator:
-    1. Checks that the environment variable `ISSM_DIR` is set.
-    2. Adds the ISSM `lib` directory to `sys.path`.
-    3. Checks that the shared library (`.so`) for the function exists.
-    4. Imports the `_python` module.
-    5. Attaches the `_python` function as an attribute (`_func`) to the wrapper.
-    6. Returns the original wrapper function without calling it.
+    1. Creates a `_load_func` method that performs lazy loading when first called.
+    2. The `_load_func` method checks that `ISSM_DIR` environment variable is set.
+    3. Adds the ISSM `lib` directory to `sys.path`.
+    4. Verifies that the shared library (`.so`) for the function exists.
+    5. Imports the `_python` module and caches it as `func._func`.
+    6. Returns the cached `_python` function on subsequent calls.
 
     Parameters
     ----------
     func : function
-        The Python wrapper function to decorate. The decorator will attach 
-        the corresponding compiled `_python` function as `func._func`.
+        The Python wrapper function to decorate. The decorator will create 
+        a `_load_func` method that loads and caches the corresponding 
+        compiled `_python` function as `func._func`.
 
     Returns
     -------
     function
-        The original wrapper function with the `_python` function attached 
-        as an attribute `_func`.
+        The original wrapper function with a `_load_func` method attached 
+        that handles lazy loading of the `_python` function.
 
     Raises
     ------
     RuntimeError
         If `ISSM_DIR` is not set or if the corresponding `.so` file does not exist.
+    ImportError
+        If the `_python` module cannot be imported.
 
     Notes
     -----
-    - The wrapper function itself is not executed when decorated.
-    - The `_python` function can be called later via `func._func(*args, **kwargs)`.
-    - This decorator assumes the `_python` module is named as `func.__name__ + '_python'`.
+    - The `_python` function is loaded lazily only when `_load_func()` is first called.
+    - Subsequent calls to `_load_func()` return the cached function without reloading.
+    - The `_python` module is assumed to be named as `func.__name__ + '_python'`.
+    - Wrapper functions must call `func._load_func()` before accessing `func._func`.
     """
 
-    # 1. Ensure $ISSM_DIR is set
-    issm_dir = os.environ.get("ISSM_DIR")
-    if not issm_dir:
-        raise RuntimeError(f"load_issm_wrapper: Environment variable ISSM_DIR is not set.\n\n"
-                            "Ensure that ISSM is installed and the environment is properly configured.\n\n"
-                            "add 'export ISSM_DIR=\"<path_to_issm_directory>\"'\n"
-                            "     source $ISSM_DIR/etc/environment.sh\n\n"
-                            "to your .bash_profile or .zprofile")
+    def _load_func():
 
-    # 1.1 Add to sys.path
-    sys.path.append(os.path.join(issm_dir, "lib"))
+        # If already loaded, return the cached function
+        if hasattr(func, '_func'):
+            return func._func
 
-    # 2. Determine module name and path
-    module_name = f"{func.__name__}_python"
-    so_path = os.path.join(issm_dir, "lib", f"{module_name}.so")
+        # 1. Ensure $ISSM_DIR is set
+        issm_dir = os.environ.get("ISSM_DIR")
+        if not issm_dir:
+            raise RuntimeError(f"load_issm_wrapper: Environment variable ISSM_DIR is not set.\n\n"
+                                "Ensure that ISSM is installed and the environment is properly configured.\n\n"
+                                "add 'export ISSM_DIR=\"<path_to_issm_directory>\"'\n"
+                                "     source $ISSM_DIR/etc/environment.sh\n\n"
+                                "to your .bash_profile or .zprofile")
 
-    # 3. Check that the .so exists
-    if not os.path.exists(so_path):
-        raise RuntimeError(f"load_issm_wrapper: Shared library '{so_path}' does not exist")
+        # 1.1 Add to sys.path
+        sys.path.append(os.path.join(issm_dir, "lib"))
 
-    # 4. Import the module
-    module = importlib.import_module(module_name)
+        # 2. Determine module name and path
+        module_name = f"{func.__name__}_python"
+        so_path = os.path.join(issm_dir, "lib", f"{module_name}.so")
 
-    # 5. Attach the loaded _python function to the wrapper
-    func._func = getattr(module, module_name)
+        # 3. Check that the .so exists
+        if not os.path.exists(so_path):
+            raise RuntimeError(f"load_issm_wrapper: Shared library '{so_path}' does not exist.\n"
+                               "Ensure ISSM is correctly installed with Python wrappers.")
 
-    # 6. Return the original wrapper function without calling it
+        # 4. Import the module
+        try:
+            module = importlib.import_module(module_name)
+        except ImportError as e:
+            raise ImportError(f"load_issm_wrapper: Could not load ISSM wrapper '{module_name}': {e}")
+
+        # 5. Attach the loaded _python function to the wrapper
+        func._func = getattr(module, module_name)
+
+        # 6. Return the original wrapper function without calling it
+        return func._func
+
+    # Attach _load_func to wrapper function 
+    func._load_func = _load_func
     return func
 
 
@@ -118,6 +136,10 @@ def Triangle(domain_outline_filename,
     --------
     >>> index, x, y, segments, segmentmarkers = Triangle("domain.exp", rifts=None, area=1000.0)
     """
+
+    # Load the _python function
+    Triangle._load_func()
+
     # Handle optional argument
     if rifts_filename is None:
         rifts_filename = ''
@@ -155,6 +177,9 @@ def BamgConvertMesh(index,
     --------
     >>> bamggeom, bamgmesh = BamgConvertMesh(md.mesh.elements, md.mesh.x, md.mesh.y)
     """
+
+    # Load the _python function
+    BamgConvertMesh._load_func()
 
     # Call the loaded _python function
     return BamgConvertMesh._func(index, x, y)
@@ -197,6 +222,9 @@ def BamgMesher(bamgmesh,
     >>> bamggeom, bamgmesh = BamgMesher(bamgmesh, bamggeom, bamgoptions)
     """
 
+    # Load the _python function
+    BamgMesher._load_func()
+
     # Call the loaded _python function
     return BamgMesher._func(bamgmesh, bamggeom, bamgoptions)
 
@@ -224,6 +252,9 @@ def BamgTriangulate(x, y):
     --------
     >>> indices = BamgTriangulate(x, y)
     """
+
+    # Load the _python function
+    BamgTriangulate._load_func()
 
     # Call the loaded _python function
     return BamgTriangulate._func(x, y)
@@ -267,7 +298,10 @@ def MeshProfileIntersection(index,
     --------
     >>> segments = MeshProfileIntersection(md.mesh.elements, md.mesh.x, md.mesh.y, "profiles.exp")
     """
-    
+
+    # Load the _python function
+    MeshProfileIntersection._load_func()
+
     # Call the loaded _python function
     return MeshProfileIntersection._func(index, x, y, filename)
 
@@ -318,6 +352,9 @@ def ContourToMesh(index,
     >>> in_nodes, in_elements = ContourToMesh(md.elements, md.x, md.y, 'Contour.exp', 'element and node', 0)
     """
 
+    # Load the _python function
+    ContourToMesh._load_func()
+
     # Call the loaded _python function
     in_nod, in_elem = ContourToMesh._func(index, x, y, contour_name, interp_type, edge_value)
 
@@ -355,6 +392,9 @@ def IssmConfig(string):
     >>> print(value)
     """
 
+    # Load the _python function
+    IssmConfig._load_func()
+
     # Call the loaded _python function
     return IssmConfig._func(string)
 
@@ -382,6 +422,9 @@ def ElementConnectivity(elements, node_connectivity):
     --------
     >>> element_connectivity = ElementConnectivity(elements, node_connectivity)
     """
+
+    # Load the _python function
+    ElementConnectivity._load_func()
 
     # Call the loaded _python function
     ## NOTE: Value returned from wrapper function is a tuple, the first element of which being the result we actually want
@@ -411,6 +454,9 @@ def NodeConnectivity(elements, num_nodes):
     --------
     >>> node_connectivity = NodeConnectivity(elements, num_nodes)
     """
+    # Load the _python function
+    NodeConnectivity._load_func()
+
     # Call the loaded _python function
     ## NOTE: Value returned from wrapper function is a tuple, the first element of which being the result we actually want
     return NodeConnectivity._func(elements, num_nodes)[0]
@@ -448,6 +494,9 @@ def ContourToNodes(x,
     --------
     >>> flags = ContourToNodes(x, y, 'contour.exp', 1)
     """
+
+    # Load the _python function
+    ContourToNodes._load_func()
 
     # Call the loaded _python function
     return np.squeeze(ContourToNodes._func(x, y, contourname, edgevalue))
@@ -489,6 +538,9 @@ def InterpFromGridToMesh(x,
     --------
     >>> data_mesh = InterpFromGridToMesh(x_grid, y_grid, Vel, md.mesh.x, md.mesh.y, 0)
     """
+
+    # Load the _python function
+    InterpFromGridToMesh._load_func()
 
     # Call the loaded _python function
     return np.squeeze(InterpFromGridToMesh._func(x, y, data, x_mesh, y_mesh, default_value))
@@ -541,6 +593,9 @@ def InterpFromMesh2d(index,
     >>> data_prime = InterpFromMesh2d(md.mesh.elements, md.mesh.x, md.mesh.y, data, x_new, y_new, default_value=0.0)
     >>> data_prime = InterpFromMesh2d(md.mesh.elements, md.mesh.x, md.mesh.y, data, x_new, y_new, default_value=0.0, contourname='contour.exp')
     """
+
+    # Load the _python function
+    InterpFromMesh2d._load_func()
 
     # Call the loaded _python function
     if default_value is None and contourname is None:
@@ -596,6 +651,9 @@ def InterpFromMeshToGrid(index,
     >>> grid_data = InterpFromMeshToGrid(md.mesh.elements, md.mesh.x, md.mesh.y, data, xgrid, ygrid, default_value=0.0)
     """
 
+    # Load the _python function
+    InterpFromMeshToGrid._load_func()
+
     # Call the loaded _python function
     return np.squeeze(InterpFromMeshToGrid._func(index, x, y, data, xgrid, ygrid, default_value))
 
@@ -640,6 +698,9 @@ def InterpFromMeshToMesh2d(index,
     >>> interpolated_temp = InterpFromMeshToMesh2d(index, x, y, temperature, md.mesh.x, md.mesh.y)
     >>> interpolated_temp = InterpFromMeshToMesh2d(index, x, y, temperature, md.mesh.x, md.mesh.y, default_value = 253)
     """
+
+    # Load the _python function
+    InterpFromMeshToMesh2d._load_func()
 
     # Call the loaded _python function
     if default_value is None:
@@ -699,6 +760,9 @@ def InterpFromMeshToMesh3d(index,
     >>> interpolated_temp = InterpFromMeshToMesh3d(index, x, y, z, temperature, md.mesh.x, md.mesh.y, md.mesh.z, 253)
     """
 
+    # Load the _python function
+    InterpFromMeshToMesh3d._load_func()
+
     # Call the loaded _python function
     return InterpFromMeshToMesh3d._func(index, x, y, z, data, x_prime, y_prime, z_prime, default_value)
 
@@ -729,6 +793,9 @@ def MeshPartition(md,
     --------
     >>> element_partitioning, node_partitioning = MeshPartition(md, 4)
     """
+
+    # Load the _python function
+    MeshPartition._load_func()
 
     # Get mesh info from md.mesh
     n_vertices = md.mesh.numberofvertices
@@ -797,7 +864,10 @@ def ProcessRifts(index,
     --------
     >>> index_prime, x_prime, y_prime, segments_prime, segmentmarkers_prime, rifts = ProcessRifts(index, x, y, segments, segmentmarkers)
     """
-    
+
+    # Load the _python function
+    ProcessRifts._load_func()
+
     # Call the loaded _python function
     index_prime, x_prime, y_prime, segments_prime, segmentmarkers_prime, rifts = ProcessRifts._func(index, x, y, segments, segmentmarkers)
 
@@ -830,6 +900,9 @@ def ExpToLevelSet(x, y, contourname):
     --------
     >>> distance = ExpToLevelSet(md.mesh.x, md.mesh.y, 'Contour.exp')
     """
-    
+
+    # Load the _python function
+    ExpToLevelSet._load_func()
+
     # Call the loaded _python function
     return ExpToLevelSet._func(x, y, contourname)
