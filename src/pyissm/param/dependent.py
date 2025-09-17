@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 from . import param_utils
 from . import class_registry
 from .. import utils
@@ -78,8 +79,13 @@ class dependent(class_registry.manage_state):
                 raise ValueError('dependent: md must be provided when using massflux as dependent variable!')
             
             ## Get segments that intersect with the supplied *.exp file.
-            self.segments = utils.wrappers.MeshProfileIntersection(md.mesh.elements, md.mesh.x, md.mesh.y, self.exp)[0]
-
+            if utils.wrappers.check_wrappers_installed():
+                self.segments = utils.wrappers.MeshProfileIntersection(md.mesh.elements, md.mesh.x, md.mesh.y, self.exp)[0]
+            else:
+                ## If wrappers are not installed, return empty segments list
+                warnings.warn('pyissm.param.dependent: Python wrappers not installed. Unable to compute segments for mass flux variable.\n'
+                              'Returning empty segments list to be defined manually.')
+                self.segments = []
 
         # TODO: Implement check and adjustment for mass flux variable
 

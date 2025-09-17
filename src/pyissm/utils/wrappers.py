@@ -11,8 +11,100 @@ NOTE: Functionality here requires the following:
 import os
 import importlib
 import sys
+import pathlib
+import glob
 import numpy as np
+import warnings
 from .. import param
+
+
+# Check for ISSM_DIR
+def check_issm_dir():
+    """Check that the ISSM_DIR environment variable is set.
+    
+    This function verifies that the ISSM_DIR environment variable is properly
+    configured in the system environment. If the variable is not set, it raises
+    a RuntimeError with detailed instructions on how to properly configure the
+    ISSM environment.
+    
+    Raises
+    ------
+    RuntimeError
+        If the ISSM_DIR environment variable is not set. The error message
+        includes instructions for setting the environment variable and sourcing
+        the ISSM environment configuration script.
+        
+    Notes
+    -----
+    The ISSM_DIR environment variable should point to the root directory of
+    the ISSM (Ice Sheet System Model) installation. This is required for
+    proper functioning of ISSM-related operations.
+    
+    Examples
+    --------
+    >>> check_issm_dir()  # Passes silently if ISSM_DIR is set
+    >>> # If ISSM_DIR is not set, raises RuntimeError with setup instructions
+    """
+
+    if "ISSM_DIR" not in os.environ:
+        raise RuntimeError("utils.wrappers: Environment variable ISSM_DIR is not set.\n\n"
+                           "Ensure that ISSM is installed and the environment is properly configured.\n\n"
+                           "add 'export ISSM_DIR=\"<path_to_issm_directory>\"'\n"
+                           "     source $ISSM_DIR/etc/environment.sh\n\n"
+                           "to your .bash_profile or .zprofile")
+
+# Check for ISSM Python wrappers installation
+def check_wrappers_installed():
+    """
+    Check whether ISSM Python wrappers are installed.
+
+    This function verifies the existence of the $ISSM_DIR/lib directory
+    and checks for the presence of at least one compiled Python wrapper
+    file with the pattern '*_python.*'.
+
+    Returns
+    -------
+    bool
+        True if ISSM Python wrappers are properly installed, False otherwise.
+
+    Raises
+    ------
+    EnvironmentError
+        If $ISSM_DIR environment variable is not set (raised by check_issm_dir()).
+
+    Notes
+    -----
+    This function depends on the $ISSM_DIR environment variable being set
+    and calls check_issm_dir() to verify this requirement.
+    The function looks for compiled Python wrapper files that follow the
+    naming pattern '*_python.*' in the $ISSM_DIR/lib directory.
+
+    Examples
+    --------
+    >>> check_wrappers_installed()
+    True
+    """
+    
+    ## Ensure $ISSM_DIR is set
+    check_issm_dir()
+
+    ## Get the $ISSM_DIR/lib path
+    issm_dir = os.environ["ISSM_DIR"]
+    lib_dir = os.path.join(issm_dir, "lib")
+
+    ## Check lib directory exists
+    if not os.path.exists(lib_dir):
+        return False
+    
+    ## Check for presence of any _python.* files in lib directory
+    python_files = []
+    for path in pathlib.Path(lib_dir).glob("*_python.*"):
+        python_files.append(path.name)
+
+    if not python_files:
+        return False
+    else:
+        return True
 
 def load_issm_wrapper(func):
     """
@@ -23,7 +115,7 @@ def load_issm_wrapper(func):
     1. Creates a `_load_func` method that performs lazy loading when first called.
     2. The `_load_func` method checks that `ISSM_DIR` environment variable is set.
     3. Adds the ISSM `lib` directory to `sys.path`.
-    4. Verifies that the shared library (`.so`) for the function exists.
+    4. Verifies that the shared library (`_python.*`) for the function exists.
     5. Imports the `_python` module and caches it as `func._func`.
     6. Returns the cached `_python` function on subsequent calls.
 
@@ -43,7 +135,7 @@ def load_issm_wrapper(func):
     Raises
     ------
     RuntimeError
-        If `ISSM_DIR` is not set or if the corresponding `.so` file does not exist.
+        If `ISSM_DIR` is not set or if the corresponding `_python.*` file does not exist.
     ImportError
         If the `_python` module cannot be imported.
 
@@ -75,11 +167,11 @@ def load_issm_wrapper(func):
 
         # 2. Determine module name and path
         module_name = f"{func.__name__}_python"
-        so_path = os.path.join(issm_dir, "lib", f"{module_name}.so")
+        module_pattern = os.path.join(issm_dir, "lib", f"{module_name}.*")
 
-        # 3. Check that the .so exists
-        if not os.path.exists(so_path):
-            raise RuntimeError(f"load_issm_wrapper: Shared library '{so_path}' does not exist.\n"
+        # 3. Check that the _python.* file(s) exist
+        if not glob.glob(module_pattern):
+            raise RuntimeError(f"load_issm_wrapper: Shared library '{module_name}' does not exist.\n"
                                "Ensure ISSM is correctly installed with Python wrappers.")
 
         # 4. Import the module
@@ -97,7 +189,6 @@ def load_issm_wrapper(func):
     # Attach _load_func to wrapper function 
     func._load_func = _load_func
     return func
-
 
 ## Triangle_python
 @load_issm_wrapper

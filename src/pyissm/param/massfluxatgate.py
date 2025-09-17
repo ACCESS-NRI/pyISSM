@@ -1,6 +1,4 @@
 import numpy as np
-
-from pyissm.execute import WriteData
 from . import param_utils
 from . import class_registry
 from .. import execute
@@ -94,10 +92,14 @@ class massfluxatgate(class_registry.manage_state):
         """
 
         ## Create segments from the profilename
-        self.segments = utils.wrappers.MeshProfileIntersection(index = md.mesh.elements,
-                                                               x = md.mesh.x,
-                                                               y = md.mesh.y,
-                                                               filename = self.profilename)[0]
+        if utils.wrappers.check_wrappers_installed():
+            self.segments = utils.wrappers.MeshProfileIntersection(index = md.mesh.elements,
+                                                                x = md.mesh.x,
+                                                                y = md.mesh.y,
+                                                                filename = self.profilename)[0]
+        else:
+            ## If wrappers are not installed, raise error as segments are required to marshall class
+            raise RuntimeError('massfluxatgate.marshall_class: Python wrappers not installed. Unable to compute segments for mass flux variable, required to marshall class.')
 
         ## Write fields
         execute.WriteData(fid, prefix, obj = self, fieldname = 'name', format = 'String')

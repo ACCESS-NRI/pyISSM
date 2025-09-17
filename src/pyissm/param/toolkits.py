@@ -1,3 +1,4 @@
+import warnings
 import numpy as np
 from . import class_registry
 from . import param_utils
@@ -43,29 +44,46 @@ class toolkits(class_registry.manage_state):
     # Initialise with default parameters
     def __init__(self, other = None):
 
-        ## Default toolkits
-            ## Check for PETSc
-        if utils.wrappers.IssmConfig('_HAVE_PETSC_')[0]:
+        ## If wrappers are installed, set default toolkits based on available libraries
+        if utils.wrappers.check_wrappers_installed():
             
-            ## Check for toolkit
-            if utils.wrappers.IssmConfig('_HAVE_MUMPS_')[0]:
-                self.DefaultAnalysis = utils.config.mumps_options()
+            ## Check for PETSc
+            if utils.wrappers.IssmConfig('_HAVE_PETSC_')[0]:
+                
+                ## Check for toolkit
+                if utils.wrappers.IssmConfig('_HAVE_MUMPS_')[0]:
+                    self.DefaultAnalysis = utils.config.mumps_options()
+                else:
+                    self.DefaultAnalysis = utils.config.iluasm_options()
+
             else:
-                self.DefaultAnalysis = utils.config.iluasm_options()
+                if utils.wrappers.IssmConfig('_HAVE_MUMPS_')[0]:
+                    self.DefaultAnalysis = utils.config.issm_mumps_solver()
+                elif utils.wrappers.IssmConfig('_HAVE_GSL_')[0]:
+                    self.DefaultAnalysis = utils.config.issm_gsl_solver()
+                else:
+                    raise IOError(f'toolkits: need at least MUMPS or GSL to define ISSM solver type, no default solver assigned')
+
+            ## Recovery mode (same as DefaultAnalysis by default)
+            self.RecoveryAnalysis = self.DefaultAnalysis
+                    
+            # Inherit matching fields from provided class
+            super().__init__(other)
 
         else:
-            if utils.wrappers.IssmConfig('_HAVE_MUMPS_')[0]:
-                self.DefaultAnalysis = utils.config.issm_mumps_solver()
-            elif utils.wrappers.IssmConfig('_HAVE_GSL_')[0]:
-                self.DefaultAnalysis = utils.config.issm_gsl_solver()
-            else:
-                raise IOError(f'toolkits: need at least MUMPS or GSL to define ISSM solver type, no default solver assigned')
-
-        ## Recovery mode (same as DefaultAnalysis by default)
-        self.RecoveryAnalysis = self.DefaultAnalysis
-                
-        # Inherit matching fields from provided class
-        super().__init__(other)
+            ## If wrappers are not installed, return empty toolkits class
+            warnings.warn('pyissm.param.toolkits: Python wrappers not installed. Unable to automatically determine toolkit information.\n'
+                          'Returning empty toolkits class to be defined manually.')
+            self.DefaultAnalysis = {'toolkit': '',         
+                                    'mat_type': '',
+                                    'ksp_type': '',
+                                    'pc_type': '',
+                                    'mat_mumps_icntl_14': '',
+                                    'pc_factor_mat_solver': '',
+                                    'mat_mumps_icntl_28': np.nan,
+                                    'mat_mumps_icntl_29': np.nan
+                                    }
+            self.RecoveryAnalysis = self.DefaultAnalysis
 
     # Define repr
     def __repr__(self):
