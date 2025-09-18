@@ -20,19 +20,18 @@ from .. import param
 
 # Check for ISSM_DIR
 def check_issm_dir():
-    """Check that the ISSM_DIR environment variable is set.
+    """
+    Check that the ISSM_DIR environment variable is set.
     
     This function verifies that the ISSM_DIR environment variable is properly
-    configured in the system environment. If the variable is not set, it raises
-    a RuntimeError with detailed instructions on how to properly configure the
+    configured in the system environment. If the variable is not set, it issues
+    a warning with detailed instructions on how to properly configure the
     ISSM environment.
     
-    Raises
-    ------
-    RuntimeError
-        If the ISSM_DIR environment variable is not set. The error message
-        includes instructions for setting the environment variable and sourcing
-        the ISSM environment configuration script.
+    Returns
+    -------
+    bool
+        True if ISSM_DIR environment variable is set, False otherwise.
         
     Notes
     -----
@@ -42,16 +41,19 @@ def check_issm_dir():
     
     Examples
     --------
-    >>> check_issm_dir()  # Passes silently if ISSM_DIR is set
-    >>> # If ISSM_DIR is not set, raises RuntimeError with setup instructions
+    >>> check_issm_dir()
+    True
+    >>> # If ISSM_DIR is not set, returns False and issues a warning
     """
 
     if "ISSM_DIR" not in os.environ:
-        raise RuntimeError("utils.wrappers: Environment variable ISSM_DIR is not set.\n\n"
-                           "Ensure that ISSM is installed and the environment is properly configured.\n\n"
-                           "add 'export ISSM_DIR=\"<path_to_issm_directory>\"'\n"
-                           "     source $ISSM_DIR/etc/environment.sh\n\n"
-                           "to your .bash_profile or .zprofile")
+        warnings.warn('pyissm.wrappers.check_issm_dir: Environment variable ISSM_DIR is not set. This limits functionality of pyISSM.\n\n'
+                      'Ensure that ISSM is installed with Python wrappers and the environment is properly configured.\n\n'
+                      "add 'export ISSM_DIR=\"<path_to_issm_directory>\"'\n"
+                      "     source $ISSM_DIR/etc/environment.sh\n\n"
+                      "to your .bash_profile or .zprofile")
+        return False
+    return True
 
 # Check for ISSM Python wrappers installation
 def check_wrappers_installed():
@@ -67,15 +69,11 @@ def check_wrappers_installed():
     bool
         True if ISSM Python wrappers are properly installed, False otherwise.
 
-    Raises
-    ------
-    EnvironmentError
-        If $ISSM_DIR environment variable is not set (raised by check_issm_dir()).
-
     Notes
     -----
     This function depends on the $ISSM_DIR environment variable being set
-    and calls check_issm_dir() to verify this requirement.
+    and calls check_issm_dir() to verify this requirement. If ISSM_DIR is
+    not set, this function returns False (it does not raise an exception).
     The function looks for compiled Python wrapper files that follow the
     naming pattern '*_python.*' in the $ISSM_DIR/lib directory.
 
@@ -83,28 +81,33 @@ def check_wrappers_installed():
     --------
     >>> check_wrappers_installed()
     True
+    >>> # If ISSM_DIR is not set or wrappers are missing, returns False
     """
     
     ## Ensure $ISSM_DIR is set
-    check_issm_dir()
+    if check_issm_dir():
 
-    ## Get the $ISSM_DIR/lib path
-    issm_dir = os.environ["ISSM_DIR"]
-    lib_dir = os.path.join(issm_dir, "lib")
+        ## Get the $ISSM_DIR/lib path
+        issm_dir = os.environ["ISSM_DIR"]
+        lib_dir = os.path.join(issm_dir, "lib")
 
-    ## Check lib directory exists
-    if not os.path.exists(lib_dir):
-        return False
+        ## Check lib directory exists
+        if not os.path.exists(lib_dir):
+            return False
     
-    ## Check for presence of any _python.* files in lib directory
-    python_files = []
-    for path in pathlib.Path(lib_dir).glob("*_python.*"):
-        python_files.append(path.name)
-
-    if not python_files:
-        return False
+        ## Check for presence of any _python.* files in lib directory
+        python_files = []
+        for path in pathlib.Path(lib_dir).glob("*_python.*"):
+            python_files.append(path.name)
+        
+        ## If no files exist, return False, otherwise True
+        if not python_files:
+            return False
+        else:
+            return True
     else:
-        return True
+        ## If $ISSM_DIR is not set, return False (cannot check for wrappers)
+        return False
 
 def load_issm_wrapper(func):
     """
