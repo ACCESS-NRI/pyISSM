@@ -676,12 +676,20 @@ def plot_model_bc(md,
                     }
 
     if type == 'hydrology':
-        spc_dict = {'spcwatercolumn': {'data': md.hydrology.spcwatercolumn,
-                                     'label': 'Water column Dirichlet',
-                                     'col': 'red',
-                                     'marker': 'o',
-                                     'size': 5 * scale}
+        if md.hydrology.__class__.__name__.lower() == 'glads':
+            spc_dict = {'spcphi': {'data': md.hydrology.spcphi,
+                    'label': 'phi Dirichlet',
+                    'col': 'green',
+                    'marker': 's',
+                    'size': 8 * scale}
                     }
+        else:
+           spc_dict = {'spcwatercolumn': {'data': md.hydrology.spcwatercolumn,
+                        'label': 'Water column Dirichlet',
+                        'col': 'red',
+                        'marker': 'o',
+                        'size': 5 * scale}
+                        }
 
     if type == 'debris':
         spc_dict = {'spcthickness': {'data': md.debris.spcthickness,

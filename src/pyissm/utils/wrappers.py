@@ -332,6 +332,8 @@ def ContourToMesh(index,
         raise TypeError('interpolation type "{}" not supported yet'.format(interp_type))
     
 ## IssmConfig_python
+#from pyissm.utils import wrappers
+#wrappers.load_issm_wrapper()
 @load_issm_wrapper
 def IssmConfig(string):
     """
@@ -354,7 +356,6 @@ def IssmConfig(string):
     >>> value = IssmConfig('parameter_name')
     >>> print(value)
     """
-
     # Call the loaded _python function
     return IssmConfig._func(string)
 
