@@ -1130,3 +1130,112 @@ def bamg(md, **kwargs):
         raise RuntimeError('Output mesh has orphans. Check your Domain and/or RequiredVertices')
 
     return md
+
+def bamgflowband(md,
+                 x,
+                 surf,
+                 base,
+                 **kwargs):
+    
+    """
+    Create a flowband mesh using BAMG (Bidimensional Anisotropic Mesh Generator).
+
+    This function generates a triangular mesh for a flowband (vertical 2D slice) using 
+    the BAMG mesh generator. The flowband is defined by surface and base profiles 
+    along a specified coordinate path, creating a vertical mesh suitable for ice flow 
+    modeling in the vertical plane.
+
+    Parameters
+    ----------
+    md : object
+        ISSM model object whose mesh fields will be populated with the generated flowband mesh.
+    x : array_like
+        1D array of coordinates along the flowband path. These represent the horizontal
+        positions where the surface and base elevations are defined.
+    surf : array_like
+        1D array of surface elevations corresponding to each x coordinate. Must have
+        the same length as x.
+    base : array_like
+        1D array of base (bed) elevations corresponding to each x coordinate. Must have
+        the same length as x.
+    **kwargs : dict, optional
+        Additional keyword arguments passed to the bamg function. See bamg() documentation
+        for supported options.
+
+    Returns
+    -------
+    md : object
+        A new ISSM model object with a vertical 2D mesh populated, including:
+        - mesh.x, mesh.y: Node coordinates in the flowband coordinate system
+        - mesh.elements: Element connectivity matrix for triangular elements
+        - mesh.edges: Edge connectivity matrix
+        - mesh.segments: Boundary segment definitions with markers
+        - mesh.segmentmarkers: Boundary segment markers (1=base, 2=right, 3=surface, 4=left)
+        - mesh.numberofvertices: Total number of mesh vertices
+        - mesh.numberofelements: Total number of mesh elements
+        - mesh.numberofedges: Total number of mesh edges
+        - mesh.vertexonboundary: Boolean array indicating boundary vertices
+        - mesh.vertexonbase: Boolean array indicating vertices on the base boundary
+        - mesh.vertexonsurface: Boolean array indicating vertices on the surface boundary
+        - mesh.elementconnectivity: Element-to-element connectivity
+
+    Raises
+    ------
+    ValueError
+        If x, surf, and base arrays do not have the same length.
+    RuntimeError
+        If BAMG mesh generation fails or if incompatible meshing options are specified.
+
+    Notes
+    -----
+    This function creates a vertical 2D mesh by:
+    1. Constructing a closed domain from the surface and base profiles
+    2. Assigning boundary markers: 1=base, 2=right side, 3=surface, 4=left side
+    3. Calling the BAMG mesh generator with vertical=1 option (to convert to 2D vertical mesh)
+    4. Post-processing to identify vertices on base and surface boundaries
+
+    The resulting mesh is suitable for flowband modeling where ice flow is assumed
+    to be primarily in the vertical plane defined by the x-coordinate path.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> import pyissm
+    >>> md = pyissm.Model()
+    >>> x = np.arange(1, 3001, 100).T
+    >>> h = np.linspace(1000, 300, np.size(x)).T
+    >>> b = -917. / 1023. * h
+    >>> md = pyissm.tools.mesh.bamgflowband(md, x = x, surf = b + h, base = b, hmax = 80.)
+    """
+
+    # Create domain structure
+    domain = collections.OrderedDict()
+    domain['x'] = np.concatenate((x, np.flipud(x), [x[0]]))
+    domain['y'] = np.concatenate((base, np.flipud(surf), [base[0]]))
+    domain['nods'] = np.size(domain['x'])
+
+    # Create markers (base, right side, top surface, left side)
+    m = np.ones((np.size(domain['x']) - 1, ))
+    m[np.size(x) - 1] = 2
+    m[np.size(x):2 * np.size(x) - 1] = 3
+    m[2 * np.size(x) - 1] = 4
+
+    # Call bamg
+    md = core.Model()
+    md = bamg(md, domain = [domain], Markers = m, vertical = 1, **kwargs)
+
+    # Deal with vertices on bed
+    ## NOTE: vertexonbase and vertexonsurface used to be set using vertexflags() defined in mesh2dvertical.py
+    ## Here, we just do this inline because it's only used here and it's simpler this way.
+    md.mesh.vertexonbase = np.zeros((md.mesh.numberofvertices, ))
+    base_segments = md.mesh.segments[np.where(md.mesh.segmentmarkers == 1), 0:2] - 1
+    md.mesh.vertexonbase[base_segments] = 1
+
+    md.mesh.vertexonsurface = np.zeros((md.mesh.numberofvertices, ))
+    surface_segments = md.mesh.segments[np.where(md.mesh.segmentmarkers == 3), 0:2] - 1
+    md.mesh.vertexonsurface[surface_segments] = 1
+
+    return md
+
+    
+
