@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 from . import param_utils
 from . import class_registry
 from .. import execute
@@ -521,13 +522,22 @@ class tao(class_registry.manage_state):
     
     # Determine appropriate algorithm based on PETSc version
     def _get_algorithm(self):
-        petsc_major = utils.wrappers.IssmConfig('_PETSC_MAJOR_')[0]
-        petsc_minor = utils.wrappers.IssmConfig('_PETSC_MINOR_')[0]
 
-        if petsc_major > 3 or (petsc_major == 3 and petsc_minor >= 5):
-            algorithm = 'blmvm'
+        ## If python wrappers are installed, check PETSc version
+        if utils.wrappers.check_wrappers_installed():
+            petsc_major = utils.wrappers.IssmConfig('_PETSC_MAJOR_')[0]
+            petsc_minor = utils.wrappers.IssmConfig('_PETSC_MINOR_')[0]
+
+            if petsc_major > 3 or (petsc_major == 3 and petsc_minor >= 5):
+                algorithm = 'blmvm'
+            else:
+                algorithm = 'tao_blmvm'
         else:
-            algorithm = 'tao_blmvm'
+            ## If python wrappers are not installed, return empty string and let ISSM decide
+            warnings.warn('pyissm.param.inversion.tao: Python wrappers not installed. Unable to automatically determine algorithm.\n'
+                          'Returning empty algorithm to be defined manually.')
+            algorithm = ''
+        
         return algorithm
     
     # Marshall method for saving the inversion.tao parameters
