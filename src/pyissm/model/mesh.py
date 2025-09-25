@@ -6,6 +6,7 @@ Functions for building and interacting with an ISSM model mesh.
 import numpy as np
 import matplotlib.tri as tri
 from scipy.interpolate import griddata
+import scipy.sparse
 import warnings
 from .. import utils
 
@@ -567,3 +568,378 @@ def get_element_areas_volumes(index,
         output = (0.5 * ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1))) * thickness
 
     return output
+
+def get_nodal_functions_coeff(index, x, y):
+    """
+    Compute the coefficients alpha, beta and gamma of 2D triangular elements.
+    For each triangular element, the nodal functions are defined as:
+        N_i(x, y) = alpha_i * x + beta_i * y + gamma_i
+    
+    Parameters
+    ----------
+    index : numpy.ndarray
+        Element connectivity array of shape (num_elements, 3). Each row contains
+        the indices of the three nodes that form a triangular element. Indices
+        are 1-based.
+    x : numpy.ndarray
+        X-coordinates of mesh nodes. Will be reshaped to column vector.
+    y : numpy.ndarray
+        Y-coordinates of mesh nodes. Will be reshaped to column vector.
+    
+    Returns
+    -------
+    alpha : numpy.ndarray
+        Alpha coefficients of shape (num_elements, 3). Each row contains the
+        alpha coefficients for the three nodal functions of an element.
+    beta : numpy.ndarray
+        Beta coefficients of shape (num_elements, 3). Each row contains the
+        beta coefficients for the three nodal functions of an element.
+    gamma : numpy.ndarray
+        Gamma coefficients of shape (num_elements, 3). Each row contains the
+        gamma coefficients for the three nodal functions of an element.
+    
+    Raises
+    ------
+    TypeError
+        If x and y arrays have different lengths.
+    TypeError
+        If any index value exceeds the number of nodes.
+    TypeError
+        If index array does not have exactly 3 columns (non-triangular elements).
+    
+    Notes
+    -----
+    This function is specifically designed for 2D triangular finite element meshes.
+    The nodal functions form a complete linear basis over each triangular element.
+    """
+    
+    # Convert to columns
+    x = x.reshape(-1)
+    y = y.reshape(-1)
+
+    # Get number of elements and number of nodes
+    num_elements = np.size(index, axis = 0)
+    num_nodes = np.size(x)
+
+    # Check dimensions of inputs
+    if np.size(y) != num_nodes:
+        raise TypeError("pyissm.model.mesh.get_nodal_functions_coeff: x and y do not have the same length.")
+    if np.max(index) > num_nodes:
+        raise TypeError(f"pyissm.model.mesh.get_nodal_functions_coeff: index should not have values above {num_nodes}.")
+    if np.size(index, axis=1) != 3:
+        raise TypeError("pyissm.model.mesh.get_nodal_functions_coeff: only 2d meshes supported. index should have 3 columns.")
+
+    # Initialize output
+    alpha = np.zeros((num_elements, 3))
+    beta = np.zeros((num_elements, 3))
+    gamma = np.zeros((num_elements, 3))
+
+    # Compute nodal functions coefficients N(x, y) = alpha x + beta y + gamma
+    x1 = x[index[:, 0] - 1]
+    x2 = x[index[:, 1] - 1]
+    x3 = x[index[:, 2] - 1]
+    y1 = y[index[:, 0] - 1]
+    y2 = y[index[:, 1] - 1]
+    y3 = y[index[:, 2] - 1]
+    invdet = 1. / (x1 * (y2 - y3) - x2 * (y1 - y3) + x3 * (y1 - y2))
+
+    # Get alpha, beta, and gamma
+    alpha = np.vstack(((invdet * (y2 - y3)).reshape(-1, ), (invdet * (y3 - y1)).reshape(-1, ), (invdet * (y1 - y2)).reshape(-1, ))).T
+    beta = np.vstack(((invdet * (x3 - x2)).reshape(-1, ), (invdet * (x1 - x3)).reshape(-1, ), (invdet * (x2 - x1)).reshape(-1, ))).T
+    gamma = np.vstack(((invdet * (x2 * y3 - x3 * y2)).reshape(-1, ), (invdet * (y1 * x3 - y3 * x1)).reshape(-1, ), (invdet * (x1 * y2 - x2 * y1)).reshape(-1, ))).T
+
+    return alpha, beta, gamma
+
+def compute_hessian(index,
+                    x,
+                    y,
+                    field,
+                    type):
+    """
+    Compute the Hessian matrix from a field.
+
+    Computes the Hessian matrix of a given field and returns the three components 
+    Hxx, Hxy, Hyy for each element or each node.
+
+    Parameters
+    ----------
+    index : ndarray
+        Element connectivity matrix defining the triangular mesh elements.
+        Shape: (num_elements, 3) with 1-based indexing.
+    x : ndarray
+        X-coordinates of the mesh nodes. Shape: (num_nodes,).
+    y : ndarray
+        Y-coordinates of the mesh nodes. Shape: (num_nodes,).
+    field : ndarray
+        Field values defined either on nodes or elements.
+        Shape: (num_nodes,) or (num_elements,).
+    type : str
+        Type of output desired. Must be either 'node' or 'element'.
+
+    Returns
+    -------
+    ndarray
+        Hessian matrix components. Shape depends on `type`:
+        
+        - If type is 'element': (num_elements, 3) with columns [Hxx, Hxy, Hyy] 
+          for each element.
+        - If type is 'node': (num_nodes, 3) with columns [Hxx, Hxy, Hyy] 
+          for each node.
+
+    Raises
+    ------
+    TypeError
+        If the field is not defined on nodes or elements, or if type is not
+        'node' or 'element'.
+
+    Examples
+    --------
+    >>> hessian = compute_hessian(md.mesh.elements, md.mesh.x, md.mesh.y, 
+    ...                          md.inversion.vel_obs, 'node')
+    >>> hessian = compute_hessian(md.mesh.elements, md.mesh.x, md.mesh.y,
+    ...                          md.thermal.temperature, 'element')
+
+    Notes
+    -----
+    The Hessian computation uses finite element nodal functions and area-weighted
+    averaging for nodal values. For element-based fields, values are first
+    interpolated to nodes before computing gradients and Hessian components.
+    
+    The Hessian matrix H has components:
+    H = [[Hxx, Hxy], [Hxy, Hyy]]
+    
+    This function returns the three unique components as [Hxx, Hxy, Hyy].
+    """
+
+    num_nodes = np.size(x)
+    num_elements = np.size(index, axis=0)
+
+    # Error checks
+    if np.size(field) not in [num_nodes, num_elements]:
+        raise TypeError("Field should be defined on nodes or elements.")
+    if type.lower() not in ['node', 'element']:
+        raise TypeError("Type must be one of 'node' or 'element'.")
+
+    # Flatten element connectivity for nodal accumulation
+    line = index.reshape(-1, order='F')
+    line_size = 3 * num_elements
+
+    # Get areas and nodal function coefficients
+    alpha, beta, gamma = get_nodal_functions_coeff(index, x, y)
+    areas = get_element_areas_volumes(index, x, y)
+
+    # Compute weights: sum of areas around each node
+    weights = np.zeros(num_nodes)
+    np.add.at(weights, line - 1, np.tile(areas, 3))
+
+    # If field is element-based, interpolate to nodes
+    if field.size == num_elements:
+        node_field = np.zeros(num_nodes)
+        np.add.at(node_field, line - 1, np.tile(areas * field, 3))
+        field = node_field / weights
+
+    # Compute gradient for each element
+    grad_elx = np.sum(field[index - 1] * alpha, axis=1)
+    grad_ely = np.sum(field[index - 1] * beta, axis=1)
+
+    # Compute gradient for each node (average of surrounding elements)
+    gradx = np.zeros(num_nodes)
+    grady = np.zeros(num_nodes)
+    np.add.at(gradx, line - 1, np.tile(areas * grad_elx, 3))
+    np.add.at(grady, line - 1, np.tile(areas * grad_ely, 3))
+
+    gradx /= weights
+    grady /= weights
+
+    # Compute Hessian for each element
+    hessian = np.vstack((
+        np.sum(gradx[index - 1] * alpha, axis=1),
+        np.sum(grady[index - 1] * alpha, axis=1),
+        np.sum(grady[index - 1] * beta, axis=1)
+    )).T
+
+    # If type is 'node', average Hessian over surrounding elements
+    if type.lower() == 'node':
+        hessian_node = np.zeros((num_nodes, 3))
+        np.add.at(hessian_node[:, 0], line - 1, np.tile(areas * hessian[:, 0], 3))
+        np.add.at(hessian_node[:, 1], line - 1, np.tile(areas * hessian[:, 1], 3))
+        np.add.at(hessian_node[:, 2], line - 1, np.tile(areas * hessian[:, 2], 3))
+        hessian = hessian_node / weights[:, None]
+
+    return hessian
+
+def compute_metric(hessian,
+                   scale,
+                   epsilon,
+                   hmin,
+                   hmax,
+                   pos):
+    """
+    Calculates anisotropic metric tensors used for adaptive mesh 
+    generation based on Hessian matrices. The metric tensor controls element 
+    size and orientation in the mesh by analyzing eigenvalues and eigenvectors
+    of the Hessian matrix.
+
+    Parameters
+    ----------
+    hessian : numpy.ndarray
+        Array of shape (n, 3) containing Hessian matrix components for each node.
+        Columns represent [H11, H12, H22] where H is the 2x2 Hessian matrix.
+    scale : float
+        Scaling factor for the metric computation.
+    epsilon : float
+        Tolerance parameter used in the metric scaling calculation.
+    hmin : float
+        Minimum allowed element size in the mesh.
+    hmax : float
+        Maximum allowed element size in the mesh.
+    pos : numpy.ndarray
+        Array of indices corresponding to water elements or special boundary 
+        conditions that require uniform metric treatment.
+
+    Returns
+    -------
+    numpy.ndarray
+        Array of shape (n, 3) containing the computed metric tensor components
+        [M11, M12, M22] for each node, where M is the 2x2 symmetric metric tensor.
+
+    Raises
+    ------
+    RuntimeError
+        If NaN values persist in the metric tensor after all correction attempts.
+
+    Notes
+    -----
+    The function performs the following key operations:
+    1. Computes eigenvalues and eigenvectors of the Hessian matrix
+    2. Applies size constraints using hmin and hmax parameters
+    3. Handles special cases (zero eigenvalues, water elements)
+    4. Uses numpy.linalg.eig as a fallback for numerical issues
+    5. Ensures the resulting metric is free of NaN values
+    The metric tensor M is used in adaptive mesh generation where element
+    sizes are controlled by the relationship: h^T * M * h = 1, where h
+    represents the edge vector in the mesh.
+
+    Examples
+    --------
+    >>> hessian = compute_hessian(md.mesh.elements, md.mesh.x, md.mesh.y, 
+    ...                          md.inversion.vel_obs, 'node')
+    >>> metric = compute_metric(hessian, 1.0, 0.01, 0.1, 10.0, np.array([]))
+    """
+
+    # Find the eigen values of each line of H = [hessian(i, 1) hessian(i, 2); hessian(i, 2) hessian(i, 3)]
+    a = hessian[:, 0]
+    b = hessian[:, 1]
+    d = hessian[:, 2]
+    lambda1 = 0.5 * ((a + d) + np.sqrt(4. * b**2 + (a - d)**2))
+    lambda2 = 0.5 * ((a + d) - np.sqrt(4. * b**2 + (a - d)**2))
+    pos1 = np.nonzero(lambda1 == 0.)[0]
+    pos2 = np.nonzero(lambda2 == 0.)[0]
+    pos3 = np.nonzero(np.logical_and(b == 0., lambda1 == lambda2))[0]
+
+    # Modify eigen values to control the shape of the elements
+    lambda1 = np.minimum(np.maximum(np.abs(lambda1) * scale / epsilon, 1. / hmax**2), 1. / hmin**2)
+    lambda2 = np.minimum(np.maximum(np.abs(lambda2) * scale / epsilon, 1. / hmax**2), 1. / hmin**2)
+
+    # Compute eigen vectors
+    norm1 = np.sqrt(8. * b**2 + 2. * (d - a)**2 + 2. * (d - a) * np.sqrt((a - d)**2 + 4. * b**2))
+    v1x = 2. * b / norm1
+    v1y = ((d - a) + np.sqrt((a - d)**2 + 4. * b**2)) / norm1
+    norm2 = np.sqrt(8. * b**2 + 2. * (d - a)**2 - 2. * (d - a) * np.sqrt((a - d)**2 + 4. * b**2))
+    v2x = 2. * b / norm2
+    v2y = ((d - a) - np.sqrt((a - d)**2 + 4. * b**2)) / norm2
+
+    v1x[pos3] = 1.
+    v1y[pos3] = 0.
+    v2x[pos3] = 0.
+    v2y[pos3] = 1.
+
+    # Compute new metric (for each node M = V * Lambda * V^-1)
+    metric = np.vstack((((v1x * v2y - v1y * v2x)**(-1) * (lambda1 * v2y * v1x - lambda2 * v1y * v2x)).reshape(-1, ),
+                        ((v1x * v2y - v1y * v2x)**(-1) * (lambda1 * v1y * v2y - lambda2 * v1y * v2y)).reshape(-1, ),
+                        ((v1x * v2y - v1y * v2x)**(-1) * (-lambda1 * v2x * v1y + lambda2 * v1x * v2y)).reshape(-1, ))).T
+
+    # Corrections for 0 eigen values
+    metric[pos1, :] = np.tile(np.array([[1. / hmax**2, 0., 1. / hmax**2]]), (np.size(pos1), 1))
+    metric[pos2, :] = np.tile(np.array([[1. / hmax**2, 0., 1. / hmax**2]]), (np.size(pos2), 1))
+
+    # Handle water elements
+    metric[pos, :] = np.tile(np.array([[1. / hmax**2, 0., 1. / hmax**2]]), (np.size(pos), 1))
+
+    # Handle NaNs if any (use Numpy eig in a loop)
+    pos = np.nonzero(np.isnan(metric))[0]
+    if np.size(pos):
+        print((f"pyissm.model.mesh.compute_metric: {np.size(pos)} NaNs found in the metric. Use Numpy routine to fix them."))
+        for posi in pos:
+            H = np.array([[hessian[posi, 0], hessian[posi, 1]], [hessian[posi, 1], hessian[posi, 2]]])
+            [v, u] = np.linalg.eig(H)
+            v = np.diag(v)
+            lambda1 = v[0, 0]
+            lambda2 = v[1, 1]
+            v[0, 0] = np.minimum(np.maximum(np.abs(lambda1) * scale / epsilon, 1. / hmax**2), 1. / hmin**2)
+            v[1, 1] = np.minimum(np.maximum(np.abs(lambda2) * scale / epsilon, 1. / hmax**2), 1. / hmin**2)
+
+            metricTria = np.dot(np.dot(u, v), np.linalg.inv(u))
+            metric[posi, :] = np.array([metricTria[0, 0], metricTria[0, 1], metricTria[1, 1]])
+
+    if np.any(np.isnan(metric)):
+        raise RuntimeError("pyissm.model.mesh.compute_metric: NaN in the metric despite our efforts...")
+    
+    return metric
+
+def elements_from_edge(elements, A, B):
+    """
+    Find elements connected to one edge defined by nodes A and B.
+
+    Parameters
+    ----------
+    elements : array_like
+        Array of element connectivity information where each row represents 
+        an element and columns represent the nodes that define the element.
+    A : int
+        First node ID defining the edge.
+    B : int
+        Second node ID defining the edge.
+
+    Returns
+    -------
+    ndarray
+        1D array of element IDs (1-based indexing) that contain the edge 
+        defined by nodes A and B.
+
+    Examples
+    --------
+    >>> edgeelements = elements_from_edge(md.mesh.elements, node1, node2)
+    """
+
+    # Broadcast A vs B to all 3 combinations of node pairs in each triangle
+    mask = ((elements == A)[:, :, None] & (elements == B)[:, None, :]).any(axis=(1, 2))
+
+    # Convert to 1-based indexing
+    edgeelements = np.nonzero(mask)[0] + 1
+
+    return edgeelements
+
+def export_gmsh():
+    """
+    Export the model mesh to a Gmsh .msh file.
+    
+    Raises
+    ------
+    NotImplementedError
+        Function is not yet implemented.
+    """
+    raise NotImplementedError("pyissm.model.mesh.export_gmsh: This functionality is not yet implemented. Please contact ACCESS-NRI for support.")
+
+def find_segments():
+    """
+    Build segments model field
+
+    Raises
+    ------
+    NotImplementedError
+        Function is not yet implemented.
+    """
+
+    raise NotImplementedError("pyissm.model.mesh.find_segments: This functionality is not yet implemented. Please contact ACCESS-NRI for support.")
+
