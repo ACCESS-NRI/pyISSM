@@ -9,6 +9,7 @@ import collections
 
 from .. import utils
 from .. import param
+from .. import core
 from . import exp
 
 def triangle(md,
@@ -392,6 +393,153 @@ def round_mesh(md,
 
     return md
 
+def _bamg_geom(**kwargs):
+    """
+    Initialize a BAMG geometry dictionary with default empty numpy arrays.
+
+    This function initializes a geometry dictionary with default empty numpy arrays
+    for various BAMG (Bidimensional Anisotropic Mesh Generator) geometry components
+    and allows users to override any of these defaults through keyword arguments.
+
+    NOTE: Intended for internal used within BAMG meshing functions here only.
+
+    Parameters
+    ----------
+    **kwargs : dict, optional
+        User-specified geometry options to override defaults. Valid keys include:
+        
+        - 'Vertices' : array_like, shape (n, 3)
+            Vertex coordinates [x, y, marker]
+        - 'Edges' : array_like, shape (n, 3) 
+            Edge definitions [vertex1, vertex2, marker]
+        - 'TangentAtEdges' : array_like, shape (n, 4)
+            Tangent vectors at edges [edge_id, tx, ty, marker]
+        - 'Corners' : array_like, shape (n, 1)
+            Corner vertex indices
+        - 'RequiredVertices' : array_like, shape (n, 1)
+            Indices of vertices that must be preserved
+        - 'RequiredEdges' : array_like, shape (n, 1)
+            Indices of edges that must be preserved
+        - 'CrackedEdges' : array_like, shape (n, 0)
+            Cracked edge definitions
+        - 'SubDomains' : array_like, shape (n, 4)
+            Subdomain specifications [x, y, marker, area_constraint]
+
+    Returns
+    -------
+    dict
+        BAMG geometry dictionary with default empty arrays updated by user options.
+        
+    Examples
+    --------
+    >>> # Create default geometry
+    >>> geom = _bamg_geom()
+    >>> 
+    >>> # Create geometry with custom vertices
+    >>> vertices = np.array([[0, 0, 1], [1, 0, 1], [0, 1, 1]])
+    >>> geom = _bamg_geom(Vertices=vertices)
+    """
+
+    geom = {
+        'Vertices': np.empty((0, 3)),
+        'Edges': np.empty((0, 3)),
+        'TangentAtEdges': np.empty((0, 4)),
+        'Corners': np.empty((0, 1)),
+        'RequiredVertices': np.empty((0, 1)),
+        'RequiredEdges': np.empty((0, 1)),
+        'CrackedEdges': np.empty((0, 0)),
+        'SubDomains': np.empty((0, 4)),
+    }
+
+    # Update defaults with user-specified options
+    geom.update(kwargs)
+
+    return geom
+
+def _bamg_mesh(**kwargs):
+    """
+    Initialize a BAMG mesh dictionary with default empty numpy arrays.
+
+    This function initializes a mesh dictionary with default empty numpy arrays
+    for various BAMG (Bidimensional Anisotropic Mesh Generator) mesh components
+    and allows users to override any of these defaults through keyword arguments.
+
+    NOTE: Intended for internal use within BAMG meshing functions here only.
+
+    Parameters
+    ----------
+    **kwargs : dict, optional
+        User-specified mesh options to override defaults. Valid keys include:
+        
+        - 'Vertices' : array_like, shape (n, 3)
+            Vertex coordinates [x, y, marker]
+        - 'Edges' : array_like, shape (n, 3) 
+            Edge definitions [vertex1, vertex2, marker]
+        - 'Triangles' : array_like, shape (n, 0)
+            Triangle element definitions
+        - 'IssmEdges' : array_like, shape (n, 0)
+            ISSM-specific edge data
+        - 'IssmSegments' : array_like, shape (n, 0)
+            ISSM-specific boundary segment data
+        - 'VerticesOnGeomVertex' : array_like, shape (n, 0)
+            Vertices located on geometry vertices
+        - 'VerticesOnGeomEdge' : array_like, shape (n, 0)
+            Vertices located on geometry edges
+        - 'EdgesOnGeomEdge' : array_like, shape (n, 0)
+            Edges located on geometry edges
+        - 'SubDomains' : array_like, shape (n, 4)
+            Subdomain specifications [x, y, marker, area_constraint]
+        - 'SubDomainsFromGeom' : array_like, shape (n, 0)
+            Subdomains derived from geometry
+        - 'ElementConnectivity' : array_like, shape (n, 0)
+            Element-to-element connectivity matrix
+        - 'NodalConnectivity' : array_like, shape (n, 0)
+            Node-to-node connectivity matrix
+        - 'NodalElementConnectivity' : array_like, shape (n, 0)
+            Node-to-element connectivity matrix
+        - 'CrackedVertices' : array_like, shape (n, 0)
+            Vertices involved in crack features
+        - 'CrackedEdges' : array_like, shape (n, 0)
+            Edges involved in crack features
+
+    Returns
+    -------
+    dict
+        BAMG mesh dictionary with default empty arrays updated by user options.
+        
+    Examples
+    --------
+    >>> # Create default mesh dictionary
+    >>> mesh = _bamg_mesh()
+    >>> 
+    >>> # Create mesh dictionary with custom vertices
+    >>> vertices = np.array([[0, 0, 1], [1, 0, 1], [0, 1, 1]])
+    >>> mesh = _bamg_mesh(Vertices=vertices)
+    """
+
+    mesh = {
+        'Vertices': np.empty((0, 3)),
+        'Edges': np.empty((0, 3)),
+        'Triangles': np.empty((0, 0)),
+        'IssmEdges': np.empty((0, 0)),
+        'IssmSegments': np.empty((0, 0)),
+        'VerticesOnGeomVertex': np.empty((0, 0)),
+        'VerticesOnGeomEdge': np.empty((0, 0)),
+        'EdgesOnGeomEdge': np.empty((0, 0)),
+        'SubDomains': np.empty((0, 4)),
+        'SubDomainsFromGeom': np.empty((0, 0)),
+        'ElementConnectivity': np.empty((0, 0)),
+        'NodalConnectivity': np.empty((0, 0)),
+        'NodalElementConnectivity': np.empty((0, 0)),
+        'CrackedVertices': np.empty((0, 0)),
+        'CrackedEdges': np.empty((0, 0))
+    }
+
+    # Update defaults with user-specified options
+    mesh.update(kwargs)
+
+    return mesh
+
 def bamg(md, **kwargs):
     """
     Create a triangular mesh using the BAMG (Bidimensional Anisotropic Mesh Generator) algorithm.
@@ -535,53 +683,6 @@ def bamg(md, **kwargs):
     }
 
     # Define helper functions
-    def _bamg_geom(**kwargs):
-        """
-        Create a default BAMG geometry dictionary and update with user options.
-        """
-        geom = {
-            'Vertices': np.empty((0, 3)),
-            'Edges': np.empty((0, 3)),
-            'TangentAtEdges': np.empty((0, 4)),
-            'Corners': np.empty((0, 1)),
-            'RequiredVertices': np.empty((0, 1)),
-            'RequiredEdges': np.empty((0, 1)),
-            'CrackedEdges': np.empty((0, 0)),
-            'SubDomains': np.empty((0, 4)),
-        }
-
-        # Update defaults with user-specified options
-        geom.update(kwargs)
-
-        return geom
-
-    def _bamg_mesh(**kwargs):
-        """
-        Create a default BAMG mesh dictionary and update with user options.
-        """
-        mesh = {
-            'Vertices': np.empty((0, 3)),
-            'Edges': np.empty((0, 3)),
-            'Triangles': np.empty((0, 0)),
-            'IssmEdges': np.empty((0, 0)),
-            'IssmSegments': np.empty((0, 0)),
-            'VerticesOnGeomVertex': np.empty((0, 0)),
-            'VerticesOnGeomEdge': np.empty((0, 0)),
-            'EdgesOnGeomEdge': np.empty((0, 0)),
-            'SubDomains': np.empty((0, 4)),
-            'SubDomainsFromGeom': np.empty((0, 0)),
-            'ElementConnectivity': np.empty((0, 0)),
-            'NodalConnectivity': np.empty((0, 0)),
-            'NodalElementConnectivity': np.empty((0, 0)),
-            'CrackedVertices': np.empty((0, 0)),
-            'CrackedEdges': np.empty((0, 0))
-        }
-
-        # Update defaults with user-specified options
-        mesh.update(kwargs)
-
-        return mesh
-
     def _load_spatial_components(component):
         """
         Load spatial components from file or directly from input.
@@ -1131,7 +1232,7 @@ def bamg(md, **kwargs):
 
     return md
 
-def bamgflowband(md,
+def bamg_flowband(md,
                  x,
                  surf,
                  base,
@@ -1199,13 +1300,11 @@ def bamgflowband(md,
 
     Examples
     --------
-    >>> import numpy as np
-    >>> import pyissm
     >>> md = pyissm.Model()
     >>> x = np.arange(1, 3001, 100).T
     >>> h = np.linspace(1000, 300, np.size(x)).T
     >>> b = -917. / 1023. * h
-    >>> md = pyissm.tools.mesh.bamgflowband(md, x = x, surf = b + h, base = b, hmax = 80.)
+    >>> md = pyissm.tools.mesh.bamg_flowband(md, x = x, surf = b + h, base = b, hmax = 80.)
     """
 
     # Create domain structure
@@ -1237,5 +1336,133 @@ def bamgflowband(md,
 
     return md
 
-    
+def mesh_convert(md, **kwargs):
+    """
+    Convert mesh to BAMG format for advanced mesh operations.
 
+    This function converts an existing mesh to BAMG (Bidimensional Anisotropic Mesh Generator)
+    format, enabling access to BAMG's advanced mesh manipulation capabilities. The conversion
+    creates internal BAMG data structures while preserving the original mesh geometry and
+    connectivity.
+
+    Parameters
+    ----------
+    md : object
+        ISSM model object containing the mesh to be converted. The mesh should have valid
+        elements, coordinates, and connectivity information.
+    **kwargs : dict, optional
+        Additional keyword arguments to customize the conversion:
+        - index : array_like, optional
+            Element connectivity matrix. Defaults to md.mesh.elements.
+        - x : array_like, optional
+            X-coordinates of mesh vertices. Defaults to md.mesh.x.
+        - y : array_like, optional
+            Y-coordinates of mesh vertices. Defaults to md.mesh.y.
+
+    Returns
+    -------
+    md : object
+        The input ISSM model object with updated mesh properties and BAMG data structures:
+        - mesh.x, mesh.y: Node coordinates
+        - mesh.elements: Element connectivity matrix
+        - mesh.edges: Edge connectivity matrix
+        - mesh.segments: Boundary segment definitions
+        - mesh.segmentmarkers: Boundary segment markers
+        - mesh.numberofvertices: Total number of mesh vertices
+        - mesh.numberofelements: Total number of mesh elements
+        - mesh.numberofedges: Total number of mesh edges
+        - mesh.vertexonboundary: Boolean array indicating boundary vertices
+        - mesh.elementconnectivity: Element-to-element connectivity
+        - private.bamg: BAMG-specific mesh and geometry data structures
+
+    Notes
+    -----
+    This function is primarily used to prepare existing meshes for advanced BAMG operations
+    such as mesh adaptation, refinement, or anisotropic meshing. The conversion creates
+    internal BAMG data structures that enable seamless integration with other BAMG-based
+    mesh operations.
+
+    The function preserves all original mesh properties while adding BAMG-specific data
+    structures to the model's private fields. This allows subsequent BAMG operations
+    to work efficiently without data conversion overhead.
+
+    Examples
+    --------
+    >>> md = pyissm.Model()
+    >>> md = pyissm.tools.mesh.triangle(md, 'domain.exp', 1000.0)
+    >>> md = pyissm.tools.mesh.meshconvert(md)
+    >>> md = pyissm.tools.mesh.meshconvert(md, x=custom_x, y=custom_y)
+    """
+
+    # Default arguments
+    options = {
+        'index': md.mesh.elements,
+        'x': md.mesh.x,
+        'y': md.mesh.y,
+    }
+
+    # Update options with any user-specified arguments
+    options.update(kwargs)
+
+    # Call the BAMG mesh converter
+    bamg_mesh_out, bamg_geom_out = utils.wrappers.BamgConvertMesh(options['index'],
+                                                                  options['x'],
+                                                                  options['y'])
+    
+    # Populate md structure
+    md.private.bamg = collections.OrderedDict()
+    md.private.bamg['mesh'] = _bamg_mesh(**bamg_mesh_out)
+    md.private.bamg['geometry'] = _bamg_geom(**bamg_geom_out)
+    md.mesh = param.mesh.mesh2d()
+    md.mesh.x = bamg_mesh_out['Vertices'][:, 0].copy()
+    md.mesh.y = bamg_mesh_out['Vertices'][:, 1].copy()
+    md.mesh.elements = bamg_mesh_out['Triangles'][:, 0:3].astype(int)
+    md.mesh.edges = bamg_mesh_out['IssmEdges'].astype(int)
+    md.mesh.segments = bamg_mesh_out['IssmSegments'][:, 0:3].astype(int)
+    md.mesh.segmentmarkers = bamg_mesh_out['IssmSegments'][:, 3].astype(int)
+
+    md.mesh.numberofelements = np.size(md.mesh.elements, axis=0)
+    md.mesh.numberofvertices = np.size(md.mesh.x)
+    md.mesh.numberofedges = np.size(md.mesh.edges, axis=0)
+    md.mesh.vertexonboundary = np.zeros(md.mesh.numberofvertices, int)
+    md.mesh.vertexonboundary[md.mesh.segments[:, 0:1] - 1] = 1
+    md.mesh.elementconnectivity = md.private.bamg['mesh']['ElementConnectivity']
+    md.mesh.elementconnectivity[np.where(np.isnan(md.mesh.elementconnectivity))[0]] = 0
+
+    return md
+
+def model_intersect_3d():
+    """
+    Intersect a 3D model with a plane defined by points (xs, ys, zs).
+
+    Raises
+    ------
+    NotImplementedError
+        Function is not yet implemented.
+    """
+
+    raise NotImplementedError('pyissm.tools.mesh.model_intersect_3d:  This functionality is not yet implemented. Please contact ACCESS-NRI for support.')
+
+def model_merge_3d():
+    """
+    Merge two 3D models into a single model.
+
+    Raises
+    ------
+    NotImplementedError
+        Function is not yet implemented.
+    """
+
+    raise NotImplementedError('pyissm.tools.mesh.model_merge_3d:  This functionality is not yet implemented. Please contact ACCESS-NRI for support.')
+
+def twod_to_3d():
+    """
+    Convert 2D mesh to 3D surface mesh.
+
+    Raises
+    ------
+    NotImplementedError
+        Function is not yet implemented.
+    """
+
+    raise NotImplementedError('pyissm.tools.mesh.twod_to_3d:  This functionality is not yet implemented. Please contact ACCESS-NRI for support.')
