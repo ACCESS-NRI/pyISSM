@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 from . import param_utils
 from . import class_registry
 from .. import execute
@@ -76,6 +77,18 @@ class default(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - smb.default Class'
         return s
+    
+    # Initialise empty fields of correct dimensions
+    def initialise(self, md):
+        """
+        Initialise empty fields in smb.default.
+        """
+
+        if np.all(np.isnan(self.mass_balance)):
+            self.mass_balance = np.zeros((md.mesh.numberofvertices))
+            warnings.warn('pyissm.param.smb.default: smb.mass_balance not specified -- set to 0.')
+
+        return self
     
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,
@@ -279,6 +292,36 @@ class arma(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - smb.arma Class'
         return s
+    
+    # Initialise empty fields of correct dimensions
+    def initialise(self, md):
+        """
+        Initialise empty fields in smb.arma.
+        """
+                
+        if self.ar_order == 0:
+            self.ar_order = 1 # Dummy 1 value for autoregression
+            self.arlag_coefs = np.zeros((self.num_basins, self.ar_order)) # Autoregression coefficients all set to 0
+            warnings.warn('pyissm.param.smb.arma: smb.ar_order (order of autoregressive model) not specified -- order of autoregressive model set to 0.')
+
+        if self.ma_order == 0:
+            self.ma_order = 1 # Dummy 1 value for moving-average
+            self.malag_coefs = np.zeros((self.num_basins, self.ma_order)) # Moving-average coefficients all set to 0
+            warnings.warn('pyissm.param.smb.arma: smb.ma_order (order of moving-average model) not specified -- order of moving-average model set to 0.')
+
+        if self.arma_timestep == 0:
+            self.arma_timestep = md.timestepping.time_step # ARMA model has no prescribed time step
+            warnings.warn('pyissm.param.smb.arma: smb.arma_timestep (timestep of ARMA model) not specified -- set to md.timestepping.time_step.')
+
+        if np.all(np.isnan(self.arlag_coefs)):
+            self.arlag_coefs = np.zeros((self.num_basins, self.ar_order)) # Autoregression model of order 0
+            warnings.warn('pyissm.param.smb.arma: smb.arlag_coefs (AR lag coefficients) not specified -- order of autoregressive model set to 0.')
+
+        if np.all(np.isnan(self.malag_coefs)):
+            self.malag_coefs = np.zeros((self.num_basins, self.ma_order)) # Moving-average model of order 0
+            warnings.warn('pyissm.param.smb.arma: smb.malag_coefs (MA lag coefficients) not specified -- order of moving-average model set to 0.')
+
+        return self
 
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,
@@ -533,6 +576,26 @@ class components(class_registry.manage_state):
         s = 'ISSM - smb.components Class'
         return s
     
+    # Initialise empty fields of correct dimensions
+    def initialise(self, md):
+        """
+        Initialise empty fields in smb.components.
+        """
+
+        if np.all(np.isnan(self.accumulation)):
+            self.accumulation = np.zeros((md.mesh.numberofvertices))
+            warnings.warn('pyissm.param.smb.components: no SMB.accumulation specified -- values set as 0.')
+
+        if np.all(np.isnan(self.evaporation)):
+            self.evaporation = np.zeros((md.mesh.numberofvertices))
+            warnings.warn('pyissm.param.smb.components: no SMB.evaporation specified -- values set as 0.')
+
+        if np.all(np.isnan(self.runoff)):
+            self.runoff = np.zeros((md.mesh.numberofvertices))
+            warnings.warn('pyissm.param.smb.components: no SMB.runoff specified -- values set as 0.')
+
+        return self
+    
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,
                         md = None,
@@ -762,6 +825,22 @@ class d18opdd(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - smb.d18opdd Class'
         return s
+    
+    # Initialise empty fields of correct dimensions
+    def initialise(self, md):
+        """
+        Initialise empty fields in smb.d18opdd.
+        """
+
+        if np.all(np.isnan(self.s0p)):
+            self.s0p = np.zeros((md.mesh.numberofvertices))
+            warnings.warn('pyissm.param.smb.d18opdd: no SMBd18opdd.s0p specified -- values set as 0.')
+
+        if np.all(np.isnan(self.s0t)):
+            self.s0t = np.zeros((md.mesh.numberofvertices))
+            warnings.warn('pyissm.param.smb.d18opdd: no SMBd18opdd.s0t specified -- values set as 0.')
+
+        return self
     
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,
@@ -1209,6 +1288,15 @@ class gemb(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - smb.gemb Class'
         return s
+    
+    # Initialise empty fields of correct dimensions
+    def initialise(self, md):
+        """
+        Initialise empty fields in smb.gemb.
+        """
+
+        warnings.warn('pyissm.param.smb.gemb: No automatic initialisation possible for smb.gemb class. Ensure all fields are set correctly.')
+        return self
 
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,
@@ -1465,6 +1553,15 @@ class gradients(class_registry.manage_state):
         s = 'ISSM - smb.gradients Class'
         return s
     
+    # Initialise empty fields of correct dimensions
+    def initialise(self, md):
+        """
+        Initialise empty fields in smb.gradients.
+        """
+
+        warnings.warn('pyissm.param.smb.gradients: No automatic initialisation possible for smb.gradients class. Ensure all fields are set correctly.')
+        return self
+    
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,
                         md = None,
@@ -1642,6 +1739,15 @@ class gradientscomponents(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - smb.gradientscomponents Class'
         return s
+    
+    # Initialise empty fields of correct dimensions
+    def initialise(self, md):
+        """
+        Initialise empty fields in smb.gradientscomponents.
+        """
+
+        warnings.warn('pyissm.param.smb.gradientscomponents: No automatic initialisation possible for smb.gradientscomponents class. Ensure all fields are set correctly.')
+        return self
     
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,
@@ -1828,6 +1934,15 @@ class gradientsela(class_registry.manage_state):
         s = 'ISSM - smb.gradientsela Class'
         return s
     
+    # Initialise empty fields of correct dimensions
+    def initialise(self, md):   
+        """
+        Initialise empty fields in smb.gradientsela.
+        """
+
+        warnings.warn('pyissm.param.smb.gradientsela: No automatic initialisation possible for smb.gradientsela class. Ensure all fields are set correctly.')
+        return self
+    
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,
                         md = None,
@@ -1979,6 +2094,18 @@ class henning(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - smb.henning Class'
         return s
+    
+    # Initialise empty fields of correct dimensions
+    def initialise(self, md):
+        """
+        Initialise empty fields in smb.henning.
+        """
+
+        if np.all(np.isnan(self.smbref)):
+            self.smbref = np.zeros((md.mesh.numberofvertices))
+            warnings.warn('pyissm.param.smb.henning: no smb.smbref specified -- values set as 0.')
+
+        return self
 
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,
@@ -2148,6 +2275,30 @@ class meltcomponents(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - smb.meltcomponents Class'
         return s
+    
+    # Initialise empty fields of correct dimensions
+    def initialise(self, md):
+        """
+        Initialise empty fields in smb.meltcomponents.
+        """
+        
+        if np.all(np.isnan(self.accumulation)):
+            self.accumulation = np.zeros((md.mesh.numberofvertices))
+            warnings.warn('pyissm.param.smb.meltcomponents: no smb.accumulation specified -- values set as 0.')
+
+        if np.all(np.isnan(self.evaporation)):
+            self.evaporation = np.zeros((md.mesh.numberofvertices))
+            warnings.warn('pyissm.param.smb.meltcomponents: no smb.evaporation specified -- values set as 0.')
+
+        if np.all(np.isnan(self.refreeze)):
+            self.refreeze = np.zeros((md.mesh.numberofvertices))
+            warnings.warn('pyissm.param.smb.meltcomponents: no smb.refreeze specified -- values set as 0.')
+
+        if np.all(np.isnan(self.melt)):
+            self.melt = np.zeros((md.mesh.numberofvertices))
+            warnings.warn('pyissm.param.smb.meltcomponents: no smb.melt specified -- values set as 0.')
+
+        return self
 
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,
@@ -2390,6 +2541,22 @@ class pdd(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - smb.pdd Class'
         return s
+    
+    # Initialise empty fields of correct dimensions
+    def initialize(self, md):
+        """
+        Initialise empty fields in smb.pdd.
+        """
+        
+        if np.all(np.isnan(self.s0p)):
+            self.s0p = np.zeros((md.mesh.numberofvertices))
+            warnings.warn('pyissm.param.smb.pdd: no SMBpdd.s0p specified -- values set as 0.')
+
+        if np.all(np.isnan(self.s0t)):
+            self.s0t = np.zeros((md.mesh.numberofvertices))
+            warnings.warn('pyissm.param.smb.pdd: no SMBpdd.s0t specified -- values set as 0.')
+
+        return self
 
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,
@@ -2619,6 +2786,34 @@ class pddSicopolis(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - smb.pddSicopolis Class'
         return s
+    
+    # Initialise empty fields of correct dimensions
+    def initialise(self, md):
+        """
+        Initialise empty fields in smb.pddSicopolis.
+        """
+
+        if np.isnan(self.s0p):
+            self.s0p = np.zeros((md.mesh.numberofvertices, ))
+            warnings.warn('pyissm.param.smb.pddSicopolis: no SMBpddSicopolis.s0p specified -- values set as 0.')
+
+        if np.isnan(self.s0t):
+            self.s0t = np.zeros((md.mesh.numberofvertices, ))
+            warnings.warn('pyissm.param.smb.pddSicopolis: no SMBpddSicopolis.s0t specified -- values set as 0.')
+
+        if np.isnan(self.temperature_anomaly):
+            self.temperature_anomaly = np.zeros((md.mesh.numberofvertices, ))
+            warnings.warn('pyissm.param.smb.pddSicopolis: no SMBpddSicopolis.temperature_anomaly specified -- values set as 0.')
+
+        if np.isnan(self.precipitation_anomaly):
+            self.precipitation_anomaly = np.ones((md.mesh.numberofvertices, ))
+            warnings.warn('pyissm.param.smb.pddSicopolis: no SMBpddSicopolis.precipitation_anomaly specified -- values set as 1.')
+
+        if np.isnan(self.smb_corr):
+            self.smb_corr = np.zeros((md.mesh.numberofvertices, ))
+            warnings.warn('pyissm.param.smb.pddSicopolis: no SMBpddSicopolis.smb_corr specified -- values set as 0.')
+
+        return self
 
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,
