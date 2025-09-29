@@ -6,7 +6,6 @@ Functions for building and interacting with an ISSM model mesh.
 import numpy as np
 import matplotlib.tri as tri
 from scipy.interpolate import griddata
-import scipy.sparse
 import warnings
 from .. import utils
 
@@ -943,3 +942,107 @@ def find_segments():
 
     raise NotImplementedError("pyissm.model.mesh.find_segments: This functionality is not yet implemented. Please contact ACCESS-NRI for support.")
 
+def flag_elements(md, region = 'all', inside = True):
+    """
+    Flag elements based on their location within the model domain.
+
+    This function allows users to flag elements in the mesh based on whether they
+    are inside or outside a specified domain. The region can be the entire mesh,
+    no elements, a region specified by a provided *.exp file, or defined by boolean arrays.
+
+    Parameters
+    ----------
+    md : ISSM Model object
+        ISSM Model object containing the mesh
+    region : str or ndarray, optional
+        Region specification. Options are:
+        
+        - 'all' (default): Flag all elements in the mesh.
+        - '': Flag no elements.
+        - Path to a *.exp file: Flag elements inside or outside the polygon defined in the file.
+        - ndarray: Boolean array of size (numberofelements,) or (numberofvertices,).
+          If vertices array, elements are flagged when all vertices are flagged.
+    inside : bool, optional
+        If `region` is a polygon file or array, this parameter specifies whether to flag
+        elements inside (`True`, default) or outside (`False`) the region.
+        Default is True.
+
+    Returns
+    -------
+    ndarray of bool
+        Boolean array of length `md.mesh.numberofelements` where `True` indicates
+        flagged elements and `False` indicates unflagged elements.
+
+    Raises
+    ------
+    RuntimeError
+        If python wrappers are not installed and a *.exp file is provided.
+    ValueError
+        If region array does not match number of elements or vertices.
+    TypeError
+        If region is neither a string nor an array.
+
+    Examples
+    --------
+    Flag all elements in the mesh:
+
+    >>> flags = flag_elements(md)
+    >>> flags = flag_elements(md, region='all')
+
+    Flag no elements:
+
+    >>> flags = flag_elements(md, region='')
+
+    Flag elements inside a polygon:
+
+    >>> flags = flag_elements(md, region='path/to/polygon.exp')
+
+    Flag elements outside a polygon:
+
+    >>> flags = flag_elements(md, region='path/to/polygon.exp', inside=False)
+    """
+
+    # If region is a string, check if it's empty (''), 'all', or a file path
+    if isinstance(region, str):
+        ## If empty string, flag no elements
+        if region == '':
+            flag = np.zeros(md.mesh.numberofelements, dtype=bool)
+            invert = 0
+
+        ## If 'all', flag all elements
+        elif region.lower() == 'all':
+            flag = np.ones(md.mesh.numberofelements, dtype=bool)
+            invert = 0
+
+        ## If a file path, load polygon and flag elements inside or outside
+        elif region.endswith('.exp'):
+            if utils.wrappers.check_wrappers_installed():
+                flag = utils.wrappers.ContourToMesh(md.mesh.elements, md.mesh.x, md.mesh.y, region, 'element', 1).astype(bool)
+            else:
+                raise RuntimeError('pyissm.model.mesh.flag_elements: Python wrappers not installed. Cannot flag elements from *.exp file.')
+
+        ## If inside if False, invert the flag to get outside elements
+        if not inside:
+            flag = np.logical_not(flag)
+
+    # If region is an array, it must the same size as number of elements or vertices
+    elif isinstance(region, np.ndarray):
+        ## If region is an array of elements, use it directly
+        if region.shape[0] == md.mesh.numberofelements:
+            flag = region.astype(bool)
+        
+        ## If region is an array of vertices, flag elements where all vertices are in the region
+        elif region.shape[0] == md.mesh.numberofvertices:
+            flag = (np.sum(region[md.mesh.elements -1] > 0, axis=1) == md.mesh.elements.shape[1]).astype(bool)
+        else:
+            raise ValueError("Flag list for region must be of same size as number of elements or vertices.")
+        
+        ## If inside is False, invert the flag to get outside elements
+        if not inside:
+            flag = np.logical_not(flag)
+    
+    # If region is neither a string nor an array, raise an error
+    else:
+        raise TypeError("Region must be a string ('' or 'all' or path to *.exp file) or a boolean array.")
+
+    return flag
