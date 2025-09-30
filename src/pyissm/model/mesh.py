@@ -1002,17 +1002,15 @@ def flag_elements(md, region = 'all', inside = True):
     >>> flags = flag_elements(md, region='path/to/polygon.exp', inside=False)
     """
 
-    # If region is a string, check if it's empty (''), 'all', or a file path
-    if isinstance(region, str):
-        ## If empty string, flag no elements
-        if region == '':
-            flag = np.zeros(md.mesh.numberofelements, dtype=bool)
-            invert = 0
+    # If region is None, flag no elements
+    if region is None:
+        flag = np.zeros(md.mesh.numberofelements, dtype=bool)    
 
+    # If region is a string, check if it's 'all', or a file path
+    elif isinstance(region, str):
         ## If 'all', flag all elements
-        elif region.lower() == 'all':
+        if region.lower() == 'all':
             flag = np.ones(md.mesh.numberofelements, dtype=bool)
-            invert = 0
 
         ## If a file path, load polygon and flag elements inside or outside
         elif region.endswith('.exp'):
@@ -1021,7 +1019,7 @@ def flag_elements(md, region = 'all', inside = True):
             else:
                 raise RuntimeError('pyissm.model.mesh.flag_elements: Python wrappers not installed. Cannot flag elements from *.exp file.')
 
-        ## If inside if False, invert the flag to get outside elements
+        ## If inside is False, invert the flag to get outside elements
         if not inside:
             flag = np.logical_not(flag)
 
@@ -1043,6 +1041,6 @@ def flag_elements(md, region = 'all', inside = True):
     
     # If region is neither a string nor an array, raise an error
     else:
-        raise TypeError("Region must be a string ('' or 'all' or path to *.exp file) or a boolean array.")
+        raise TypeError("Region must be None, a string ('all' or path to *.exp file), or a boolean array.")
 
     return flag

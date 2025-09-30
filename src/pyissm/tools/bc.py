@@ -39,13 +39,12 @@ def set_neumann_bc(md, node_on_ice_front):
     """Set Neumann boundary conditions for the ice front."""
 
     # Find indices of nodes on the ice front
-    ice_front_node_indices = np.nonzero(node_on_ice_front)[0]
+    ice_front_nodes = np.nonzero(node_on_ice_front)[0]
 
     # Mark ice front position in the level set
-    md.mask.ice_levelset[ice_front_node_indices] = 0
+    md.mask.ice_levelset[ice_front_nodes] = 0
 
-def set_sb_dirichlet_bc(md,
-                     node_on_ice_front):
+def set_sb_dirichlet_bc(md):
     """Set Dirichlet boundary conditions on boundary (excluding ice front)."""
 
     # Set empty spc arrays
@@ -126,13 +125,14 @@ def set_ice_shelf_bc(md,
         node_on_ice_front = get_ice_front_nodes(md, ice_front_exp)
     else: 
         ## If no ice front file is provided, assume no ice front
+        warnings.warn('pyissm.tools.bc.set_ice_shelf_bc: No ice front file provided. Assuming no ice front.')
         node_on_ice_front = np.zeros((md.mesh.numberofvertices), bool)
 
     # Set neumann BC on ice front
     set_neumann_bc(md, node_on_ice_front)
 
     # Set dirichlet BC on boundary (excluding ice front)
-    set_sb_dirichlet_bc(md, node_on_ice_front)
+    set_sb_dirichlet_bc(md)
 
     # Define other boundary conditions
     ## Initialize smb and basalforcings
