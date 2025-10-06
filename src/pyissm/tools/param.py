@@ -134,35 +134,30 @@ def set_flow_equation(md,
             ho_flag = ~sia_flag & ~ssa_flag & ~fs_flag
     
     # Check that all elements only have one (compatible) flow equation assigned
-    flag = sia_flag + ssa_flag + ho_flag + l1l2_flag + molho_flag + fs_flag
+    flag = [sia_flag, ssa_flag, ho_flag, l1l2_flag, molho_flag, fs_flag]
     
     ## Check all elements have been assigned a flow equation
-    if not np.any(flag):
-        raise ValueError('pyissm.tools.param.set_flow_equation: One or more elements have not been assigned flow equation.')
+    if not np.all(np.logical_or.reduce(flag)):
+        raise ValueError("pyissm.tools.param.set_flow_equation: One or more elements have not been assigned a flow equation.")    
     
     ## Check no elements have been assigned multiple flow equations
-    if np.any(flag > 1):
-        warnings.warn('pyissm.tools.param.set_flow_equation: One or more elements have been assigned multiple flow equations. HO is used for these cases.')
-        sia_flag[np.where(np.logical_and(sia_flag, ssa_flag))] = False
-        sia_flag[np.where(np.logical_and(sia_flag, ho_flag))] = False
-        ssa_flag[np.where(np.logical_and(ssa_flag, ho_flag))] = False
+    if np.any(np.sum(flag, axis=0) > 1):
+        raise ValueError("pyissm.tools.param.set_flow_equation: One or more elements have been assigned multiple flow equations.")
 
-        ### Check that L1L2 and MOLHO are not couples to any other model for now
-        if np.any(l1l2_flag) and np.any(sia_flag + ssa_flag + ho_flag + fs_flag):
-            raise ValueError('pyissm.tools.param.set_flow_equation: L1L2 cannot be coupled to other flow equations.')
-        if np.any(molho_flag) and np.any(sia_flag + ssa_flag + ho_flag + fs_flag):
-            raise ValueError('pyissm.tools.param.set_flow_equation: MOLHO cannot be coupled to other flow equations.')
+    ## Check that L1L2, MOLHO, and FS are not coupled to any other model for now
+    if np.any(l1l2_flag) and np.any(sia_flag | ssa_flag | ho_flag | fs_flag | molho_flag):
+        raise ValueError('pyissm.tools.param.set_flow_equation: L1L2 cannot be coupled to other flow equations.')
+    if np.any(molho_flag) and np.any(sia_flag | ssa_flag | ho_flag | fs_flag | l1l2_flag):
+        raise ValueError('pyissm.tools.param.set_flow_equation: MOLHO cannot be coupled to other flow equations.')
+    if np.any(fs_flag) & np.any(sia_flag | ssa_flag | ho_flag | l1l2_flag | molho_flag):
+        raise ValueError('pyissm.tools.param.set_flow_equation: FS cannot be coupled to other flow equations.')
         
-        ###  Check HO or FS are not used for a 2D mesh
-        if md.mesh.domain_type() == '2Dhorizontal':
-            if np.any(ho_flag):
-                raise ValueError('pyissm.tools.param.set_flow_equation: HO cannot be used for a 2D mesh. Extrude it first.')
-            if np.any(fs_flag):
-                raise ValueError('pyissm.tools.param.set_flow_equation: FS cannot be used for a 2D mesh. Extrude it first.')
-
-    ## Check FS is not coupled to any other flow equation
-    if np.any(fs_flag) & np.any(sia_flag):
-        raise TypeError('pyissm.tools.param.set_flow_equation: FS cannot be coupled to other flow equations.')
+    ##  Check HO or FS are not used for a 2D mesh
+    if md.mesh.domain_type() == '2Dhorizontal':
+        if np.any(ho_flag):
+            raise ValueError('pyissm.tools.param.set_flow_equation: HO cannot be used for a 2D mesh. Extrude it first.')
+        if np.any(fs_flag):
+            raise ValueError('pyissm.tools.param.set_flow_equation: FS cannot be used for a 2D mesh. Extrude it first.')
     
     # Initialize flow equation fields
     sia_node = np.zeros(md.mesh.numberofvertices, dtype = bool)
