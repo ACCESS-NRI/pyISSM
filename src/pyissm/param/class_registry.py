@@ -117,6 +117,7 @@ def map_classtype(classtype: str) -> str:
         'frontalforcings.frontalforcings': 'frontalforcings.default',
         'frontalforcingsrignot.frontalforcingsrignot': 'frontalforcings.rignot',
         'frontalforcingsrignotarma.frontalforcingsrignotarma': 'frontalforcings.rignotarma',
+        'generic.generic': 'cluster.generic',
         'hydrologyarmapw.hydrologyarmapw': 'hydrology.armapw',
         'hydrologydc.hydrologydc': 'hydrology.dc',
         'hydrologyglads.hydrologyglads': 'hydrology.glads',
