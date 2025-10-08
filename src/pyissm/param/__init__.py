@@ -4,6 +4,7 @@ from .balancethickness import balancethickness
 from .basalforcings import default, pico, linear, lineararma, mismip
 from .calving import default, crevassedepth, dev, levermann, minthickness, parameterization, vonmises
 from .constants import constants
+from .cluster import generic
 from .damage import damage
 from .debris import debris
 from .debug import debug

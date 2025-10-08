@@ -9,6 +9,10 @@ import numpy as np
 import pandas as pd
 import os
 import math
+import subprocess
+import warnings
+import sys
+import shutil
 
 from .. import core, analysis, model, param, utils
 
@@ -537,3 +541,307 @@ def export_gridded_model(md,
             os.remove(out_file)
         print(f"export_grided_model: Export failed -- {e}\n\033[91mModel not written to file.\033[0m")
         raise
+
+def issm_scp_out(host,
+                 path,
+                 login,
+                 port,
+                 packages):
+    """
+    Copy files to a remote host using SCP or create symbolic links for local transfers.
+    This function transfers files either by creating symbolic links (for local transfers 
+    where host matches hostname) or by using the SCP protocol for remote transfers. 
+    For remote transfers, it attempts standard SCP first and falls back to legacy SSH 
+    options if the initial attempt fails.
+
+    Parameters
+    ----------
+    host : str
+        Target hostname or IP address for file transfer.
+    path : str
+        Destination directory path on the target host.
+    login : str
+        Username for authentication on the remote host.
+    port : int or None
+        SSH port number for connection. If None, uses default port 22.
+    packages : list of str
+        List of file/package names to transfer from current working directory.
+
+    Raises
+    ------
+    Exception
+        If SCP transfer fails after attempting both standard and legacy options.
+
+    Warnings
+    --------
+    UserWarning
+        When a package file does not exist and will be skipped during local transfer.
+
+    Notes
+    -----
+    For local transfers (same hostname), the function:
+    - Creates symbolic links in the destination path
+    - Removes existing files with same names before linking
+    - Skips non-existent packages with warnings
+    For remote transfers, the function:
+    - Attempts standard SCP first
+    - Falls back to SCP with legacy SSH options (-OT) if standard fails
+    - Supports custom port specification with -P flag
+    Examples
+    --------
+    >>> # Local transfer
+    >>> issm_scp_out('localhost', '/tmp/dest', 'user', None, ['file1.txt', 'file2.dat'])
+    >>> # Remote transfer with custom port
+    >>> issm_scp_out('remote.server.com', '/home/user/data', 'username', 2222, ['data.bin'])
+    """
+    
+    # Get hostname
+    hostname = utils.config.get_hostname()
+
+    # If host and hostname are the same, do a simple copy
+    if host.lower() == hostname.lower():
+        for package in packages:
+            
+            ## Check package exists
+            if os.path.exists(package):
+
+                ### Get current working directory
+                pwd = os.getcwd()
+                
+                ### Change the current working directory to the target path
+                os.chdir(path)
+                try:
+                    ### Remove any existing file with the same name in the target directory
+                    os.remove(package)
+                except OSError:
+                    ### Ignore errors if the file doesn't exist or can't be removed
+                    pass
+                ### Create a symbolic link from the package in the original directory to the target path
+                subprocess.call('ln -s %s %s' % (os.path.join(pwd, package), path), shell=True)
+                ### Change back to the original working directory
+                os.chdir(pwd)
+
+            else:
+                ## If the package does not exist, print a warning
+                warnings.warn(f'pyissm.model.io.issm_scp_out: {package} does not exist and will be skipped')
+
+    # If this is not a local machine, use scp to transfer the files
+    else:
+        ## Get current working directory and build full paths to package files
+        pwd = os.getcwd()
+        file_list = [os.path.join(pwd, x) for x in packages]
+        file_list_str = ' '.join([str(x) for x in file_list])
+        
+        ## Handle scp with custom port
+        if port:
+            ## First attempt: try scp with custom port
+            subproc_cmd = 'scp -P {} {} {}@{}:{}'.format(port, file_list_str, login, host, path)
+            subproc = subprocess.Popen(subproc_cmd, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE, universal_newlines = True)
+            outs, errs = subproc.communicate()
+            
+            ## If first attempt failed, try with legacy SSH options
+            if errs != '':
+                subproc_cmd = 'scp -OT -P {} {} {}@{}:{}'.format(port, file_list_str, login, host, path)
+                subproc = subprocess.Popen(subproc_cmd, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE, universal_newlines = True)
+                outs, errs = subproc.communicate()
+        else:
+            ## Handle scp with default port (22)
+            ## First attempt: try standard scp
+            subproc_cmd = 'scp {} {}@{}:{}'.format(file_list_str, login, host, path)
+            subproc = subprocess.Popen(subproc_cmd, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE, universal_newlines = True)
+            outs, errs = subproc.communicate()
+            
+            ## If first attempt failed, try with legacy SSH options
+            if errs != '':
+                subproc_cmd = 'scp -OT {} {}@{}:{}'.format(file_list_str, login, host, path)
+                subproc = subprocess.Popen(subproc_cmd, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE, universal_newlines = True)
+                outs, errs = subproc.communicate()
+            
+        ## Check scp worked
+        if errs != '':
+            raise Exception(f'pyissm.model.io.issm_scp_out: scp failed with the following error: {errs}')
+
+def issm_ssh(host,
+             login,
+             port,
+             command):
+
+    """
+    Execute a command on a remote host via SSH or locally if on the same machine.
+    
+    This function determines whether to run a command locally or remotely based on
+    hostname comparison. For remote execution, it uses platform-specific SSH clients:
+    plink.exe on Windows and standard ssh on Mac/Linux. Includes a workaround for
+    macOS file descriptor blocking issues.
+    
+    Parameters
+    ----------
+    host : str
+        The hostname or IP address of the target machine.
+    login : str
+        The username for SSH authentication.
+    port : int or None
+        The SSH port number. If None, uses default SSH port (22).
+    command : str
+        The command to execute on the target machine.
+    
+    Notes
+    -----
+    - On Windows, requires plink.exe in the ISSM external packages directory
+    - Prompts for username and password interactively on Windows
+    - On macOS, applies file descriptor flags to prevent "Resource temporarily 
+      unavailable" errors
+    - Uses shell=True for subprocess calls, which may have security implications
+    """
+        
+    # Get hostname
+    hostname = utils.config.get_hostname()
+
+    # If host and hostname are the same, just run the command
+    if host.lower() == hostname.lower():
+        subprocess.call(command, shell = True)
+    
+    # If this is not a local machine, use ssh to run the command
+    else:
+        ## Windows requires plink.exe for ssh
+        if utils.config.is_pc():
+            issm_dir = utils.config.get_issm_dir()
+
+            username = eval(input('Enter your username: '))
+            key = eval(input('Enter your key: '))
+
+            subprocess.call('%s/externalpackages/ssh/plink.exe-ssh -l "%s" -pw "%s" %s "%s"' % (issm_dir, username, key, host, command), shell = True)
+        ## Mac/Linux use standard ssh
+        else:
+            if port:
+                subprocess.call('ssh -l %s -p %d localhost "%s"' % (login, port, command), shell=True)
+            else:
+                subprocess.call('ssh -l {} {} "{}"'.format(login, host, command), shell=True)
+
+    # "IOError: [Errno 35] Resource temporarily unavailable"
+    # on the Mac when trying to display md after the solution.
+    # (from http://code.google.com/p/robotframework/issues/detail?id=995)
+    if sys.platform == 'darwin':
+        import fcntl
+
+        fd = sys.stdin.fileno()
+        flags = fcntl.fcntl(fd, fcntl.F_GETFL)
+        fcntl.fcntl(fd, fcntl.F_SETFL, flags & ~os.O_NONBLOCK)
+
+        fd = sys.stdout.fileno()
+        flags = fcntl.fcntl(fd, fcntl.F_GETFL)
+        fcntl.fcntl(fd, fcntl.F_SETFL, flags & ~os.O_NONBLOCK)
+
+def issm_scp_in(host,
+                login,
+                port,
+                path,
+                packages):
+    """
+    Transfer files from a remote host to the current working directory using SCP or local copy.
+
+    This function transfers specified packages (files) from a remote path to the current
+    working directory. If the host is the same as the local hostname, it performs a local
+    copy operation. Otherwise, it uses SCP (Secure Copy Protocol) to transfer files from
+    the remote host.
+    
+    Parameters
+    ----------
+    host : str
+        The hostname or IP address of the remote host.
+    login : str
+        The username for authentication on the remote host.
+    port : int or None
+        The SSH port number for the remote connection. If None, uses default port 22.
+    path : str
+        The remote directory path where the packages are located.
+    packages : list of str
+        List of filenames to transfer from the remote host.
+    
+    Raises
+    ------
+    Exception
+        If the SCP command fails with an error.
+    OSError
+        If a package does not exist after the transfer operation.
+    
+    Warnings
+    --------
+    UserWarning
+        If a package does not exist on the local host during local copy operation.
+    
+    Notes
+    -----
+    The function first attempts standard SCP commands. If those fail, it retries with
+    legacy SSH options (-OT flags) to handle compatibility issues with different SSH
+    configurations.
+    For local transfers (when host matches local hostname), the function uses shutil.copy
+    and ignores any OSError exceptions that may occur during the copy operation.
+    """
+      
+    # Get hostname
+    hostname = utils.config.get_hostname()
+
+    # If host and hostname are the same, do a simple copy
+    if host.lower() == hostname.lower():
+        
+        for package in packages:
+
+            ## Check package exists
+            if os.path.exists(package):
+
+                ### Get current working directory
+                pwd = os.getcwd()
+                
+                try:
+                    shutil.copy(os.path.join(path, package), pwd)
+                except OSError:
+                    # Ignore errors
+                    pass
+
+            else:
+                ## If the package does not exist, print a warning
+                warnings.warn(f'pyissm.model.io.issm_scp_out: {package} does not exist and will be skipped')
+
+    # If this is not a local machine, use scp to transfer the files
+    else:
+
+        ## Get current working directory and build full paths to package files
+        pwd = os.getcwd()
+        file_list = [os.path.join(path, x) for x in packages]
+        file_list_str = ' '.join([str(x) for x in file_list])
+        
+        ## Handle scp with custom port
+        if port:
+            ## First attempt: try scp with custom port
+            subproc_cmd = 'scp -P {} {}@{}: {} {}'.format(port, login, host, file_list_str, pwd)
+            subproc = subprocess.Popen(subproc_cmd, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE, universal_newlines = True)
+            outs, errs = subproc.communicate()
+            
+            ## If first attempt failed, try with legacy SSH options
+            if errs != '':
+                subproc_cmd = 'scp -OT -P {} {}@{}: {} {}'.format(port, login, host, file_list_str, pwd)
+                subproc = subprocess.Popen(subproc_cmd, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE, universal_newlines = True)
+                outs, errs = subproc.communicate()
+        else:
+            ## Handle scp with default port (22)
+            ## First attempt: try standard scp
+            subproc_cmd = 'scp {}@{}:{} {}'.format(login, host, file_list_str, pwd)
+            subproc = subprocess.Popen(subproc_cmd, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE, universal_newlines = True)
+            outs, errs = subproc.communicate()
+            
+            ## If first attempt failed, try with legacy SSH options
+            if errs != '':
+                subproc_cmd = 'scp -OT {}@{}: {} {}'.format(login, host, file_list_str, pwd)
+                subproc = subprocess.Popen(subproc_cmd, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE, universal_newlines = True)
+                outs, errs = subproc.communicate()
+            
+        ## Check scp worked
+        if errs != '':
+            raise Exception(f'pyissm.model.io.issm_scp_in: scp failed with the following error: {errs}')
+        
+        ## Check that files were transferred
+        for package in packages:
+            ### Check package exists
+            if not os.path.exists(os.path.join('.', package)):
+                raise OSError(f'pyissm.model.io.issm_scp_in: {package} does not exist after transfer')
