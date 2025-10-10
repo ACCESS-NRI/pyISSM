@@ -4,6 +4,12 @@ ISSM execution commands to handle model marshalling and execution.
 
 from copy import copy
 import numpy as np
+import os
+import datetime
+import warnings
+import collections
+
+from . import utils, param
 
 
 def marshall(md):
@@ -901,4 +907,539 @@ def format_to_code(datatype):
     
     return format_codes[datatype]
 
+def solve(md,
+          solution_string,
+          batch = False,
+          check_consistency = True,
+          restart = None,
+          load_only = False,
+          runtime_name = True):
+    """
+    Solve an ISSM model with the specified solution type.
+
+    This function configures and executes a solution for an ISSM Model.
+    It maps solution strings to their corresponding solution classes, performs model
+    consistency checks, and manages runtime naming conventions.
+
+    Parameters
+    ----------
+    md : object
+        Model data structure containing the ISSM model configuration.
+    solution_string : str
+        String identifier for the solution type. Supported values include:
+        - 'sb', 'stressbalance' : Stress balance solution
+        - 'mt', 'masstransport' : Mass transport solution  
+        - 'oceant', 'oceantransport' : Ocean transport solution
+        - 'th', 'thermal' : Thermal solution
+        - 'st', 'steadystate' : Steady state solution
+        - 'tr', 'transient' : Transient solution
+        - 'mc', 'balancethickness' : Balance thickness solution
+        - 'mcsoft' : Balance thickness soft solution
+        - 'bv', 'balancevelocity' : Balance velocity solution
+        - 'bsl', 'bedslope' : Bed slope solution
+        - 'ssl', 'surfaceslope' : Surface slope solution
+        - 'hy', 'hydrology' : Hydrology solution
+        - 'da', 'damageevolution' : Damage evolution solution
+        - 'gia' : GIA solution
+        - 'lv', 'love' : Love solution
+        - 'esa' : ESA solution
+        - 'smp', 'sampling' : Sampling solution
+    batch : bool, optional
+        Whether to run in batch mode, by default False.
+    check_consistency : bool, optional
+        Whether to perform model consistency checks before solving, by default True.
+    restart : str, optional
+        Directory name (relative to execution directory) where restart file is located, by default None.
+    load_only : bool, optional
+        Whether to only load the solution without executing, by default False.
+    runtime_name : bool, optional
+        Whether to generate a unique runtime name based on timestamp and process ID,
+        by default True. If False, uses md.miscellaneous.name as runtime name.
+
+    Raises
+    ------
+    ValueError
+        If the provided solution_string is not recognized or supported.
+
+    Notes
+    -----
+    The function modifies the model structure in-place by setting the solution type
+    and runtime name. When runtime_name is True, a unique identifier is generated
+    using the current timestamp and process ID to avoid clobbering existing runs.
+
+    Examples
+    --------
+    >>> solve(md, 'stressbalance')
+    >>> solve(md, 'transient', check_consistency = False)
+    >>> solve(md, 'thermal', runtime_name = False)
+    """
+
+    # Map solution string to solution names
+    solution_map = {
+        'sb': 'StressbalanceSolution', 'stressbalance': 'StressbalanceSolution',
+        'mt': 'MasstransportSolution', 'masstransport': 'MasstransportSolution',
+        'oceant': 'OceantransportSolution', 'oceantransport': 'OceantransportSolution',
+        'th': 'ThermalSolution', 'thermal': 'ThermalSolution',
+        'st': 'SteadystateSolution', 'steadystate': 'SteadystateSolution',
+        'tr': 'TransientSolution', 'transient': 'TransientSolution',
+        'mc': 'BalancethicknessSolution', 'balancethickness': 'BalancethicknessSolution',
+        'mcsoft': 'BalancethicknessSoftSolution',
+        'bv': 'BalancevelocitySolution', 'balancevelocity': 'BalancevelocitySolution',
+        'bsl': 'BedSlopeSolution', 'bedslope': 'BedSlopeSolution',
+        'ssl': 'SurfaceSlopeSolution', 'surfaceslope': 'SurfaceSlopeSolution',
+        'hy': 'HydrologySolution', 'hydrology': 'HydrologySolution',
+        'da': 'DamageEvolutionSolution', 'damageevolution': 'DamageEvolutionSolution',
+        'gia': 'GiaSolution',
+        'lv': 'LoveSolution', 'love': 'LoveSolution',
+        'esa': 'EsaSolution',
+        'smp': 'SamplingSolution', 'sampling': 'SamplingSolution',
+    }
+
+    ## Check that solution string is valid and extract solution name
+    key = solution_string.lower()
+    if key not in solution_map:
+        raise ValueError(f'solve error: solution "{solution_string}" not recognized!')
+    solution = solution_map[key]
     
+    # Parse options and fields
+    ## Set solution in model structure
+    md.private.solution = solution
+
+    ## Check model consistency
+    if check_consistency:
+        if md.verbose.solution:
+            print('Checking model consistency...')
+        is_model_consistent(md)
+    
+    ## If using restart, use the provided runtime name
+    if restart is not None:
+        md.private.runtimename = restart
+
+    ## If runtime_name is true, generate a unique runtime name
+    if runtime_name:
+        now = datetime.datetime.now()
+        md.private.runtimename = (
+            f"{md.miscellaneous.name}-{now.month:02d}-{now.day:02d}-"
+            f"{now.year:04d}-{now.hour:02d}-{now.minute:02d}-"
+            f"{now.second:02d}-{os.getpid()}"
+        )
+    else:
+        ### Otherwise use the model name as runtime name
+        md.private.runtimename = md.miscellaneous.name
+
+    ## Error when using md.settings.io_gather = 0
+    ## NOTE: parse_results_from_disk_io_split is not yet implemented in pyISSM.
+    if md.settings.io_gather == 0:
+        raise NotImplementedError('pyissm.execute.solve: Reading model results when using md.settings.io_gather = 0 is not yet supported.')
+
+    ## If running QMU analysis, some preprocessing of Dakota files is needed
+    if md.qmu.isdakota:
+        if md.verbose.solution:
+            print('Preprocessing dakota files...')
+        preprocess_qmu(md)
+
+    ## If load_only is true, skip the actual solve
+    if load_only:
+        if md.verbose.solution:
+            print('Loading results from cluster...')
+        md = load_results_from_cluster(md)
+        return md
+    
+    # Write all input files (.bin, .toolkits, build queue script)
+    ## Extract model_name
+    model_name = md.miscellaneous.name
+
+    ## Marshall model (write .bin file)
+    marshall(md)
+
+    ## Write toolkits file
+    md.toolkits.write_toolkits_file(model_name + '.toolkits')
+
+    ## Build queue script (and associated logs, if necessary)
+    md.cluster.build_queue_script(
+        dir_name = md.private.runtimename,
+        model_name = model_name,
+        solution = md.private.solution,
+        io_gather = md.settings.io_gather,
+        is_valgrind = md.debug.valgrind,
+        is_gprof = md.debug.gprof,
+        is_dakota = md.qmu.isdakota,
+        is_ocean_coupling = md.transient.isoceancoupling
+    )
+    
+    # Upload all required files (if no restart is provided)
+    if restart is None:
+        ## Create list of files to upload
+        file_list = [model_name + ext for ext in ['.bin', '.toolkits']]
+    
+        ## Append appropriate queue script to file_list
+        if utils.config.is_pc():
+            file_list.append(model_name + '.bat')
+        else:
+            file_list.append(model_name + '.queue')
+
+        ## If using dakota, append dakota input file to file_list
+        if md.qmu.isdakota:
+            file_list.append('qmu.in')
+
+        ## Upload all files to cluster
+        print('Uploading files to cluster...')
+        md.cluster.upload_queue_job(model_name, md.private.runtimename, file_list)
+
+    # Launch job
+    md.cluster.launch_queue_job(
+        model_name,
+        md.private.runtimename,
+        restart,
+        batch
+        )
+    
+    # Early return if using batch
+    if batch:
+        if md.verbose.solution:
+            print('batch mode: not launching job interactively')
+            print('launch solution sequence on remote cluster by hand')
+        return md
+    
+    # Wait for job to finish
+    if md.settings.waitonlock > 0:
+        if md.verbose.solution:
+            print('Waiting for job to complete...')
+        done = wait_on_lock(md)
+        if md.verbose.solution:
+            print('Job completed -- loading results from cluster...')
+            md = load_results_from_cluster(md)
+    else:
+        print('Model results must be loaded manually with md = load_results_from_cluster(md)')
+
+    return md
+    
+
+def is_model_consistent(md):
+    print('is_model_consistent not implemented yet')
+    return
+
+def preprocess_qmu(md):
+    print('preprocess_qmu not implemented yet')
+    return
+
+def wait_on_lock(md):
+    print('wait_on_lock not implemented yet')
+    return
+
+def load_results_from_cluster(md,
+                              nolog = False,
+                              runtime_name = None):
+
+    # Set default runtime_name
+    if runtime_name is None:
+        runtime_name = md.private.runtimename
+    
+    # Create list of files to download
+    if nolog:
+        file_list = []
+    else:
+        file_list = [md.miscellaneous.name + '.outlog', md.miscellaneous.name + '.errlog']
+
+    ## If using dakota, append dakota output files to file_list
+    if md.qmu.isdakota:
+        file_list.append('qmu.err')
+        file_list.append('qmu.out')
+        if 'tabular_graphics_data' in list(vars(md.qmu).keys()):
+            file_list.append('dakota_tabular.dat')
+        if md.qmu.output and md.qmu.statistics.method[0]['name'] == 'None':
+            if md.qmu.method.method == 'nond_sampling':
+                for i in range(md.qmu.method.params.samples):
+                    file_list.append(md.miscellaneous.name + '.outbin.' + str(i + 1))
+        if md.qmu.statistics.method[0]['name'] != 'None':
+            file_list.append(md.miscellaneous.name + '.stats')
+    else:
+        ## Otherwise, append standard output binary file
+        file_list.append(md.miscellaneous.name + '.outbin')
+    
+    # Download all files from cluster
+    md.cluster.download(md.private.runtimename, file_list)
+
+    # Load results from downloaded files
+    md = load_results_from_disk(md, md.miscellaneous.name + '.outbin')
+
+    # Erase log and output files
+    for i in range(len(file_list)):
+        try:
+            os.remove(file_list[i])
+        except OSError:
+            warnings.warn(f'pyissm.execute.load_results_from_cluster: File {file_list[i]} not found.')
+    
+    ## Remove initial tar.gz file
+    if not utils.config.is_pc() and os.path.exists(md.private.runtimename + '.tar.gz'):
+        os.remove(md.private.runtimename + '.tar.gz')
+    
+    # Erase all input files if run was carried out on same platform
+    hostname = utils.config.get_hostname()
+
+    if hostname.lower() == md.cluster.name.lower():
+        
+        ## Remove bin and toolkits files
+        os.remove(md.miscellaneous.name + '.bin')
+        os.remove(md.miscellaneous.name + '.toolkits')
+        
+        ## If using dakota, remove dakota input file
+        if md.qmu.isdakota and os.path.exists('qmu.in'):
+            os.remove('.qmu.in')
+
+        ## Remove queue script
+        if not utils.config.is_pc():
+            if os.path.exists(md.miscellaneous.name + '.queue'):
+                os.remove(md.miscellaneous.name + '.queue')
+        else:
+            if os.path.exists(md.miscellaneous.name + '.bat'):
+                os.remove(md.miscellaneous.name + '.bat')
+
+    return md
+
+
+    ## Define helper functions to read int and double
+def _read_int(fid):
+    return np.frombuffer(fid.read(4), dtype=np.int32)[0]
+
+def _read_double(fid):
+    return np.frombuffer(fid.read(8), dtype=np.float64)[0]
+
+
+def _read_data_dimensions(fid):
+    """
+    Read data dimensions from binary file.
+    """
+       
+    try:
+        
+        ## Read field name
+        length = _read_int(fid)
+        field_name = fid.read(length).rstrip(b'\x00').decode('utf-8', errors='ignore')
+        
+        ## Read metadata
+        time = _read_double(fid)
+        step = _read_int(fid)
+        data_type = _read_int(fid)
+        M = _read_int(fid)
+        N = 1
+
+        ## Skip data based on type
+        if data_type == 1:
+            fid.seek(M * 8, 1)
+        elif data_type == 2:
+            fid.seek(M, 1)
+        elif data_type == 3:
+            N = _read_int()
+            fid.seek(N * M * 8, 1)
+        else:
+            raise ValueError(f'parse_results_from_disk error: data type {data_type} not supported!')
+        
+        results = collections.OrderedDict(fieldname = field_name,
+                                            time = time,
+                                            step = step,
+                                            M = M,
+                                            N = N)
+        return results
+    
+    except Exception as err:
+        warnings.warn(f'parse_results_from_disk error: {err}')
+        return None
+
+
+def _read_data(fid, md):
+
+    try:
+        
+        # Read header
+        length = _read_int(fid)
+        field_name = fid.read(length).rstrip(b'\x00').decode('utf-8', errors='ignore')
+        time = _read_double(fid)
+        step = _read_int(fid)
+        data_type = _read_int(fid)
+        M = _read_int(fid)
+        N = _read_int(fid)
+
+        # Red data based on type
+        if data_type == 1:
+            data = np.frombuffer(fid.read(M * 8), dtype=np.float64)
+        elif data_type == 2:
+            field = fid.read(M).rstrip(b'\x00').decode('utf-8', errors='ignore')
+        elif data_type == 3:
+            field = np.frombuffer(fid.read(M * N * 8), dtype=np.float64).reshape(M, N)
+        elif data_type == 4:
+            field = np.frombuffer(fid.read(M * N * 4), dtype=np.int32).reshape(M, N)
+        else:
+            raise TypeError(f'parse_results_from_disk error: data type {data_type} not supported!')
+        
+        results = collections.OrderedDict(fieldname = field_name,
+                                            time = time,
+                                            step = step,
+                                            field = field
+                                            )
+        
+        return results
+    
+    except Exception as err:
+        warnings.warn(f'parse_results_from_disk error: {err}')
+        return None
+    
+def _process_love_kernels(field_name, field, md):
+    """
+    Process Love kernels to convert from ISSM format to standard format.
+    """
+
+    nlayer = md.materials.numlayers
+    degmax = md.love.sh_nmax
+    nfreq = md.love.nfreq
+    r0 = md.love.r0
+    g0 = md.love.g0
+    mu0 = md.love.mu0
+    rr = md.materials.radius
+    rho = md.materials.density
+    forcing_type = md.love.forcing_type
+
+    # Average density term
+    rho_avg_partial = np.diff(rr**3, n=1, axis=0)
+    rho_avg = np.sum((rho * rho_avg_partial) / rho_avg_partial.sum())
+
+    # Initialize output array: (degree, frequency, layer, components)
+    temp_field = np.zeros((degmax + 1, nfreq, nlayer + 1, 6), dtype=float)
+
+    for ii in range(degmax + 1):
+        for jj in range(nfreq):
+            for kk in range(nlayer + 1):
+
+                if kk < nlayer:
+                    
+                    # Compute base index in flattened array
+                    ll = ii * (nlayer + 1) * 6 + (kk * 6 + 1) + 3
+
+                    temp_field[ii, jj, kk, 0] = field[ll + 0, jj] * r0       # mm = 4
+                    temp_field[ii, jj, kk, 1] = field[ll + 1, jj] * mu0      # mm = 5
+                    temp_field[ii, jj, kk, 2] = field[ll + 2, jj] * r0       # mm = 6
+                    temp_field[ii, jj, kk, 3] = field[ll + 3, jj] * mu0      # mm = 1
+                    temp_field[ii, jj, kk, 4] = field[ll + 4, jj] * r0 * g0  # mm = 2
+                    temp_field[ii, jj, kk, 5] = field[ll + 5, jj] * g0       # mm = 3
+
+                else:
+                    # Surface boundary layer
+                    ll = (ii + 1) * (nlayer + 1) * 6 - 2
+
+                    temp_field[ii, jj, kk, 0] = field[ll + 0, jj] * r0
+                    temp_field[ii, jj, kk, 2] = field[ll + 1, jj] * r0
+                    temp_field[ii, jj, kk, 4] = field[ll + 2, jj] * r0 * g0
+                    temp_field[ii, jj, kk, 3] = 0.0  # surface BC
+
+                    if forcing_type == 9:
+                        temp_field[ii, jj, kk, 1] = 0.0
+                        temp_field[ii, jj, kk, 5] = ((2 * (ii + 1) - 1) / r0
+                            - (ii + 1) * field[ll + 2, jj] * g0)
+
+                    elif forcing_type == 11:
+                        temp_field[ii, jj, kk, 1] = -(2 * ii + 1) * rho_avg / 3
+                        temp_field[ii, jj, kk, 5] = ((2 * (ii + 1) - 1) / r0
+                            - (ii + 1) * field[ll + 2, jj] * g0)
+
+        return temp_field
+
+
+def _unit_conversions(field_name, field, time, md):
+
+    yts = md.constants.yts
+
+    yts_fields = {
+        'BalancethicknessThickeningRate', 'HydrologyWaterVx', 'HydrologyWaterVy',
+        'Vx', 'Vy', 'Vz', 'Vel', 'VxShear', 'VyShear', 'VxBase', 'VyBase',
+        'VxSurface', 'VySurface', 'VxAverage', 'VyAverage', 'VxDebris', 'VyDebris',
+        'BasalforcingsGroundediceMeltingRate', 'BasalforcingsFloatingiceMeltingRate',
+        'BasalforcingsSpatialDeepwaterMeltingRate', 'BasalforcingsSpatialUpperwaterMeltingRate',
+        'SmbMassBalance', 'SmbPrecipitation', 'SmbRain', 'SmbRunoff',
+        'SmbRunoffSubstep', 'SmbEvaporation', 'SmbRefreeze', 'SmbEC',
+        'SmbAccumulation', 'SmbMelt', 'SmbMAdd', 'SmbWAdd', 'CalvingCalvingrate',
+        'Calvingratex', 'Calvingratey', 'CalvingMeltingrate'
+    }
+
+    gt_fields = {
+        'TotalFloatingBmb', 'TotalFloatingBmbScaled', 'TotalGroundedBmb',
+        'TotalGroundedBmbScaled', 'TotalSmb', 'TotalSmbScaled',
+        'TotalSmbMelt', 'TotalSmbRefreeze', 'GroundinglineMassFlux',
+        'IcefrontMassFlux', 'IcefrontMassFluxLevelset'
+    }
+
+    if field_name in yts_fields:
+        field = field * yts
+    elif field_name in gt_fields:
+        field = field / 1e12 * yts
+    elif field_name in ['LoveKernelsReal', 'LoveKernelsImag']:
+        field = _process_love_kernels(field_name, field, md)
+
+    if time != -9999:
+        time = time / yts
+
+    return field, time
+
+
+
+
+
+
+def load_results_from_disk(md, filename):
+    
+    if not md.qmu.isdakota:
+        # Check that file exists
+        if not os.path.exists(filename):
+            err_msg = '==========================================================================\n'
+            err_msg += '   Binary file {} not found                                              \n'.format(filename)
+            err_msg += '                                                                         \n'
+            err_msg += '   This typically results from an error encountered during the simulation\n'
+            err_msg += '   Please check for error messages above or in the outlog                \n'
+            err_msg += '=========================================================================\n'
+            print(err_msg)
+            return
+        
+        # Initialize md.results if it is not a structure yet
+        if not isinstance(md.results, param.results):
+            md.results = param.results()
+
+    return md
+
+
+def parse_results_from_disk(md, filename):
+    """Parse results from a serial (non-split) ISSM binary results file."""
+
+    # Open file and read data
+    try:
+        with open(filename, 'rb') as fid:
+            all_results = []
+            while (res := _read_data(fid, md)) is not None:
+                all_results.append(res)
+    except OSError as e:
+        raise IOError(f"Could not open {filename!r} for binary reading: {e}")
+
+    if not all_results:
+        raise ValueError(f"No results found in binary file {filename!r}")
+
+    # Collect valid step numbers
+    steps = np.array([r['step'] for r in all_results], dtype=int)
+    valid_steps = np.unique(steps[steps != -9999])
+
+    # Preallocate result containers
+    nsteps = len(valid_steps)
+    results = [param.results.solution() for _ in range(nsteps)]
+
+    # Assign data to step objects
+    step_to_idx = {s: i for i, s in enumerate(valid_steps)}
+
+    for r in all_results:
+        step = r['step']
+        idx = step_to_idx.get(step, 0)  # 0 for step = -9999 (metadata/global fields)
+        obj = results[idx]
+
+        if step != -9999:
+            setattr(obj, 'step', step)
+        if r['time'] != -9999:
+            setattr(obj, 'time', r['time'])
+        setattr(obj, r['fieldname'], r['field'])
+
+    return results
