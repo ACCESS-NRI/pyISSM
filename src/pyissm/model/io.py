@@ -801,7 +801,7 @@ def issm_scp_in(host,
 
             else:
                 ## If the package does not exist, print a warning
-                warnings.warn(f'pyissm.model.io.issm_scp_out: {package} does not exist and will be skipped')
+                warnings.warn(f'pyissm.model.io.issm_scp_in: {package} does not exist and will be skipped')
 
     # If this is not a local machine, use scp to transfer the files
     else:
