@@ -16,9 +16,52 @@ import shutil
 
 from .. import core, analysis, model, param, utils
 
-def load_model(path: str) -> core.Model:
+def load_model(path):
+    """
+    Load an ISSM model from a NetCDF file.
+    
+    This function reads an ISSM model that has been saved in NetCDF format,
+    reconstructing all model components including mesh, materials, geometry,
+    boundary conditions, and results. The function handles nested objects
+    and properly deserializes the complete model state.
+    
+    Parameters
+    ----------
+    path : str
+        Path to the NetCDF file containing the ISSM model data.
+    
+    Returns
+    -------
+    core.Model
+        The reconstructed ISSM model object with all components loaded
+        from the NetCDF file.
+    
+    Raises
+    ------
+    FileNotFoundError
+        If the specified NetCDF file does not exist.
+    ValueError
+        If the NetCDF file is corrupted or missing required metadata.
+    
+    Notes
+    -----
+    - The function automatically handles different data types and converts
+      NaN values to numpy.nan for consistency
+    - TransientSolution results are automatically expanded from collapsed
+      format back to individual timesteps
+    - Missing or corrupted groups are skipped with warning messages
+    
+    See Also
+    --------
+    save_model : Save an ISSM model to NetCDF format
+    
+    Examples
+    --------
+    >>> md = load_model('my_model.nc')
+    >>> print(f"Model loaded with {md.mesh.numberofvertices} vertices")
+    """
 
-    ## Helper function to load different variables
+    # Helper function to load different variables
     def get_variables(state, group, group_name):
         for var_name, var in group.variables.items():
             try:
@@ -33,20 +76,20 @@ def load_model(path: str) -> core.Model:
                 continue
         return state
 
-    ## Helper function to load attributes
+    # Helper function to load attributes
     def get_attributes(state, group):
         for attr in group.ncattrs():
             if attr != "classtype":
                 state[attr] = group.getncattr(attr)
         return state
 
-    ## Helper function to retrieve classtype and create new instance object
+    # Helper function to retrieve classtype and create new instance object
     def get_class(group):
         classtype = group.getncattr("classtype")
         obj = param.class_registry.create_instance(classtype)
         return classtype, obj
 
-    ## Helper function to normalise NaN values (convert all NaN to np.nan)
+    # Helper function to normalise NaN values (convert all NaN to np.nan)
     def normalize_nans(obj):
         if isinstance(obj, dict):
             return {k: normalize_nans(v) for k, v in obj.items()}
@@ -63,10 +106,10 @@ def load_model(path: str) -> core.Model:
         else:
             return obj
 
-    ## Initialise empty model class
+    # Initialise empty model class
     md = core.Model()
 
-    ## Open the model netcdf file
+    # Open the model netcdf file
     with nc.Dataset(path, 'r') as ds:
 
         ## Iterate through all top-level groups in the NetCDF file...
@@ -113,7 +156,11 @@ def load_model(path: str) -> core.Model:
                             print(f"⚠️ Failed to set state for '{sub_grp_name}': {e}")
                             continue
 
-                        ## Assign the object to the model (e.g., md.results.TransientSolution)
+                        ## If the object is a collapsed solutionstep from TransientSolution, expand back into solution for consistency
+                        if isinstance(obj, param.results.solutionstep) and sub_grp_name == "TransientSolution":
+                            obj = _expand_step_to_solution(obj)
+
+                        ## Assign the object to the model                        
                         setattr(md.results, sub_grp_name, obj)
 
                     else:
@@ -162,9 +209,52 @@ def load_model(path: str) -> core.Model:
     return md
 
 
-def save_model(path: str, md):
+def save_model(md, path):
+    """
+    Save an ISSM model to a NetCDF file.
 
-    ## Helper function to convert character array to string for NetCDF writing
+    This function serializes an ISSM model and all its components to NetCDF format,
+    including mesh, materials, geometry, boundary conditions, and results. The function
+    handles nested objects and properly serializes the complete model state for later
+    reconstruction.
+
+    Parameters
+    ----------
+    md : core.Model
+        The ISSM model object to be saved, containing all model components
+        such as mesh, geometry, materials, boundary conditions, and results.
+
+    path : str
+        Path to the output NetCDF file where the model will be saved.
+
+    Raises
+    ------
+    OSError
+        If the output file cannot be created or written to.
+    ValueError
+        If the model contains unregistered classes that cannot be serialized.
+
+    Notes
+    -----
+    - The function automatically handles different data types including scalars,
+      arrays, lists, and nested objects
+    - TransientSolution results are automatically collapsed from individual
+      timesteps to a compact format for efficient storage
+    - Boolean values are converted to integers for NetCDF compatibility
+    - Object arrays and string arrays are properly handled with appropriate
+      data type conversions
+    - Compression is enabled for most variables to reduce file size
+
+    See Also
+    --------
+    load_model : Load an ISSM model from NetCDF format
+
+    Examples
+    --------
+    >>> save_model(md, 'my_model.nc')
+    """
+
+    # Helper function to convert character array to string for NetCDF writing
     def char_array_to_strings(arr):
         arr = np.asarray(arr)  # Ensure it's a NumPy array
         if arr.ndim == 1:
@@ -250,49 +340,251 @@ def save_model(path: str, md):
         registered_name = min(matching_keys, key=len)
         return registered_name
 
-    ## Create the NetCDF file
+    # Create the NetCDF file
     with nc.Dataset(path, 'w', format='NETCDF4') as ds:
 
-        # Initialise dictionary to track existing dimension sizes & names
+        ## Initialise dictionary to track existing dimension sizes & names
         defined_dimensions = {}
 
-        # Loop through model attributes (top-level groups)
+        ## Loop through model attributes (top-level groups)
         for name, obj in vars(md).items():
-            # Handle 'results' group specially
+            ## Handle 'results' group specially
             if name == "results":
                 results_group = ds.createGroup("results")
 
-                # Loop through each solution type in md.results
+                ## Loop through each solution type in md.results
                 for solution_name, solution_obj in vars(md.results).items():
                     if solution_obj is None:
                         print(f"⚠️ Skipping solution type: {solution_name})")
                         continue
 
-                    # Create subgroup for this solution (e.g., TransientSolution)
+                    ## Create subgroup for this solution (e.g., TransientSolution)
                     solution_group = results_group.createGroup(solution_name)
 
-                    # Attach class type metadata
+                    ## If it's a TransientSolution, collapse solution to a single step for writing
+                    if isinstance(solution_obj, param.results.solution) and solution_name == "TransientSolution":
+                        solution_obj = _collapse_solution_to_step(solution_obj)
+
+                    ## Attach class type metadata
                     classname = get_registered_name(solution_obj)
                     solution_group.setncattr("classtype", classname)
 
-                    # Serialize the solution state
                     serialize_object(solution_obj, solution_group)
 
             else:
-                # For regular model components (e.g., mesh, materials, geometry)
+                ## For regular model components (e.g., mesh, materials, geometry)
                 if obj is None:
                     continue
 
-                # Create group for the model component
+                ## Create group for the model component
                 group = ds.createGroup(name)
 
-                # Attach class type metadata
+                ## Attach class type metadata
                 classname = get_registered_name(obj)
                 group.setncattr("classtype", classname)
 
-                # Serialize the component state
+                ## Serialize the component state
                 serialize_object(obj, group)
 
+def _collapse_solution_to_step(solution):
+    """
+    Collapse a solution object with multiple timesteps into a single solutionstep for NetCDF storage.
+    
+    This function combines multiple solutionstep objects from a solution into a single
+    solutionstep object with time-stacked arrays and consolidated metadata. This is used
+    to efficiently store transient solutions in NetCDF format by reducing the complexity
+    of nested timestep structures.
+    
+    Parameters
+    ----------
+    solution : param.results.solution
+        A solution object containing a list of solutionstep instances, one for each
+        timestep, with individual arrays and metadata that need to be consolidated.
+    
+    Returns
+    -------
+    param.results.solutionstep
+        A collapsed solutionstep object containing time-stacked arrays and metadata
+        from all timesteps, suitable for NetCDF storage.
+    
+    Notes
+    -----
+    - Arrays from individual timesteps are stacked along axis 0 (time dimension)
+    - Time and step metadata are collected into arrays
+    - Scalar values that are consistent across timesteps are stored as single values
+    - Arrays with consistent shapes across timesteps are stacked into higher-dimensional arrays
+    - Inconsistent data falls back to list storage
+    - Empty solutions return an empty solutionstep
+    - This function is the inverse operation of `_expand_step_to_solution`
+    
+    See Also
+    --------
+    _expand_step_to_solution : The inverse operation that expands a collapsed 
+        solutionstep back into a solution with multiple timesteps
+    """
+    
+    # Create empty solutionstep
+    step = param.results.solutionstep()
+    steps = solution.steps or []
+
+    # Skip if there are no steps
+    if not steps:
+        return step
+
+    # Collect all fields across all steps
+    all_fields = set()
+    for s in steps:
+        all_fields.update(s.__dict__.keys())
+
+    # Loop over all fields and consolidate
+    for field in sorted(all_fields):
+        values = [getattr(s, field, None) for s in steps]
+        non_none = [v for v in values if v is not None]
+
+        # Skip if all values are none
+        if not non_none:
+            continue
+
+        # Handle time and steps
+        if field.lower() in ['time', 'step']:
+            arr = np.array(non_none, dtype = float if field.lower() == 'time' else int)
+            setattr(step, field, arr)
+            continue
+
+        # Handle single consistent scalar value
+        if len(non_none) == 1:
+            setattr(step, field, non_none[0])
+            continue
+
+        # Handle arrays with consistent shapes
+        if all(isinstance(v, np.ndarray) for v in non_none):
+            shapes = {v.shape for v in non_none}
+            if len(shapes) == 1:
+                stacked = np.stack(non_none, axis=0)
+                setattr(step, field, stacked.squeeze())
+                continue
+
+        # Fallback: store as list
+        setattr(step, field, values)
+
+    return step
+
+def _expand_step_to_solution(step_obj):
+    """
+    Expand a collapsed solutionstep back into a solution object with multiple timesteps.
+    
+    This function reverses the collapse operation performed by `_collapse_solution_to_step`,
+    converting a single solutionstep object (with time-stacked arrays) back into a solution
+    object containing a list of individual solutionstep instances for each timestep.
+    
+    Parameters
+    ----------
+    step_obj : param.results.solutionstep
+        A collapsed solutionstep object containing time-stacked arrays and metadata
+        from multiple timesteps that were previously collapsed for NetCDF storage.
+    
+    Returns
+    -------
+    param.results.solution
+        A solution object containing a list of solutionstep instances, one for each
+        timestep, with arrays split along the time axis and metadata appropriately 
+        distributed.
+    
+    Notes
+    -----
+    - Time-varying arrays are split along axis 0 (time dimension)
+    - Scalar values are propagated to all timesteps, except for metadata fields
+      like 'SolutionType' which are assigned only to the first timestep
+    - Arrays with singleton dimensions are flattened to match original format
+    - If no time information is available, creates a single-timestep solution
+    - This function is the inverse operation of `_collapse_solution_to_step`
+    
+    See Also
+    --------
+    _collapse_solution_to_step : The inverse operation that collapses multiple 
+        timesteps into a single solutionstep for NetCDF storage
+    """
+
+    # Determine number of timesteps
+    nt = None
+    if hasattr(step_obj, 'time'):
+        if isinstance(step_obj.time, (np.ndarray, list)):
+            nt = len(step_obj.time)
+        else:
+            # Scalar time -- single step
+            nt = 1
+    else:
+        # Fallback: find first array with first dimension >= 1
+        for v in step_obj.__dict__.values():
+            if isinstance(v, np.ndarray) and v.ndim >= 1:
+                nt = v.shape[0]
+                break
+
+    if nt is None:
+        # No time dimension -- set on step
+        nt = 1
+
+    # Create empty solution and steps
+    sol = param.results.solution([])
+    sol.steps = [param.results.solutionstep() for _ in range(nt)]
+
+    # Loop over all fields in step_obj
+    for field, value in step_obj.__dict__.items():
+        if value is None:
+            continue
+
+        # Handle time / step fields
+        if field.lower() in ['time', 'step']:
+            if isinstance(value, (np.ndarray, list)):
+                for t in range(nt):
+                    val = value[t]
+                    # Flatten single arrays
+                    if isinstance(val, np.ndarray) and val.shape == (1,):
+                        val = val[0]
+                    sol.steps[t].__dict__[field] = val
+            else:
+                # Single value -- assign to first step
+                sol.steps[0].__dict__[field] = value
+            continue
+
+        # Handle arrays of shape (nt, ...)
+        if isinstance(value, np.ndarray):
+            if value.shape[0] == nt:
+                for t in range(nt):
+                    val_t = value[t]
+                    # Flatten single dimensions (0D arrays or [1,] arrays)
+                    if isinstance(val_t, np.ndarray):
+                        if val_t.ndim == 0:
+                            val_t = val_t.item()
+                        elif val_t.shape == (1,):
+                            val_t = val_t[0]
+                    sol.steps[t].__dict__[field] = val_t
+                continue
+
+        # Handle lists of length nt
+        if isinstance(value, list) and len(value) == nt:
+            for t in range(nt):
+                val_t = value[t]
+                # Flatten single arrays
+                if isinstance(val_t, np.ndarray) and val_t.shape == (1,):
+                    val_t = val_t[0]
+                sol.steps[t].__dict__[field] = val_t
+            continue
+
+        # Handle scalar values
+        if isinstance(value, (int, float, str, bool)):
+            # Metadata like SolutionType: assign only to first step
+            if field.lower() == 'solutiontype':
+                sol.steps[0].__dict__[field] = value
+            else:
+                for t in range(nt):
+                    sol.steps[t].__dict__[field] = value
+            continue
+
+        # Fallback: assign entire value to first step
+        sol.steps[0].__dict__[field] = value
+
+    return sol
 
 def export_gridded_model(md,
                          out_file,
@@ -788,7 +1080,7 @@ def issm_scp_in(host,
         for package in packages:
 
             ## Check package exists
-            if os.path.exists(package):
+            if os.path.exists(os.path.join(path, package)):
 
                 ### Get current working directory
                 pwd = os.getcwd()
