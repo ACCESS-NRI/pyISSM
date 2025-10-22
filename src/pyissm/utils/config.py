@@ -5,6 +5,9 @@ This module contains various functions that relate to the configuration of the I
 """
 
 import collections
+import platform
+import os
+import socket
 from . import wrappers
 
 def mumps_options(**kwargs):
@@ -209,3 +212,112 @@ def issm_gsl_solver(**kwargs):
     gsl.update(kwargs)
 
     return gsl
+
+def is_pc():
+    """
+    Check if the current operating system is Windows.
+
+    This function determines whether the code is running on a Windows operating system.
+
+    Returns
+    -------
+    bool
+        True if the operating system is Windows, False otherwise.
+
+    Examples
+    --------
+    >>> is_windows = is_pc()
+    >>> print(is_windows)
+    True
+    """
+
+    return 'Windows' in platform.system()
+
+def get_issm_dir():
+    """
+    Get the root directory of the ISSM installation.
+
+    This function retrieves the root directory path of the Ice Sheet System Model (ISSM)
+    installation by checking the appropriate environment variable based on the operating
+    system (ISSM_DIR_WIN for Windows, ISSM_DIR for other systems).
+
+    Returns
+    -------
+    str
+        The root directory path of the ISSM installation.
+
+    Raises
+    ------
+    EnvironmentError
+        If the ISSM_DIR environment variable is not set or is empty.
+
+    Examples
+    --------
+    >>> issm_dir = get_issm_dir()
+    >>> print(issm_dir)
+    '/usr/local/issm'
+    """
+
+    # Determine ISSM_DIR based on operating system
+    if is_pc():
+        issm_dir = os.environ['ISSM_DIR_WIN']
+        if issm_dir.endswith('/') or issm_dir.endswith('\\'):
+            issm_dir = issm_dir[:-1]
+    else:
+        issm_dir = os.environ['ISSM_DIR']
+
+    # Raise error if ISSM_DIR is not set
+    if not issm_dir:
+        raise EnvironmentError("ISSM_DIR environment variable is not set. Please ensure ISSM is properly installed and configured.")
+
+    return issm_dir
+
+def get_hostname():
+    """
+    Get the hostname of the current machine.
+
+    This function retrieves the hostname of the machine on which the code is running.
+
+    Returns
+    -------
+    str
+        The hostname of the current machine.
+
+    Examples
+    --------
+    >>> hostname = get_hostname()
+    """
+
+    return socket.gethostname().lower()
+
+def get_username():
+    """
+    Get the username of the current user.
+
+    This function retrieves the username of the user currently logged into the system
+    by querying the appropriate environment variable based on the operating system.
+
+    Returns
+    -------
+    str
+        The username of the current user. Returns an empty string if the username
+        cannot be determined.
+
+    Examples
+    --------
+    >>> username = get_username()
+    >>> print(username)
+    'john_doe'
+    """
+
+    # Determine username based on operating system
+    if 'Windows' in platform.system():
+        user_name = os.environ['USERNAME']
+    else:
+        user_name = os.environ['USER']
+
+    # Return empty string if user_name is None
+    if not user_name:
+        user_name = ''
+
+    return user_name

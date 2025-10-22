@@ -127,7 +127,7 @@ class Model():
         self.verbose = param.verbose()
         self.settings = param.issmsettings()
         self.toolkits = param.toolkits()
-        self.cluster = None
+        self.cluster = param.cluster.generic()
         self.balancethickness = param.balancethickness()
         self.stressbalance = param.stressbalance()
         self.groundingline = param.groundingline()

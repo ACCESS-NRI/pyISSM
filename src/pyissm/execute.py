@@ -4,6 +4,12 @@ ISSM execution commands to handle model marshalling and execution.
 
 from copy import copy
 import numpy as np
+import os
+import datetime
+import warnings
+import collections
+
+from . import utils, param
 
 
 def marshall(md):
@@ -901,4 +907,834 @@ def format_to_code(datatype):
     
     return format_codes[datatype]
 
+def solve(md,
+          solution_string,
+          batch = False,
+          check_consistency = True,
+          restart = None,
+          load_only = False,
+          runtime_name = True):
+    """
+    Solve an ISSM model with the specified solution type.
+
+    This function configures and executes a solution for an ISSM Model.
+    It maps solution strings to their corresponding solution classes, performs model
+    consistency checks, and manages runtime naming conventions.
+
+    Parameters
+    ----------
+    md : object
+        Model data structure containing the ISSM model configuration.
+    solution_string : str
+        String identifier for the solution type. Supported values include:
+        - 'sb', 'stressbalance' : Stress balance solution
+        - 'mt', 'masstransport' : Mass transport solution  
+        - 'oceant', 'oceantransport' : Ocean transport solution
+        - 'th', 'thermal' : Thermal solution
+        - 'st', 'steadystate' : Steady state solution
+        - 'tr', 'transient' : Transient solution
+        - 'mc', 'balancethickness' : Balance thickness solution
+        - 'mcsoft' : Balance thickness soft solution
+        - 'bv', 'balancevelocity' : Balance velocity solution
+        - 'bsl', 'bedslope' : Bed slope solution
+        - 'ssl', 'surfaceslope' : Surface slope solution
+        - 'hy', 'hydrology' : Hydrology solution
+        - 'da', 'damageevolution' : Damage evolution solution
+        - 'gia' : GIA solution
+        - 'lv', 'love' : Love solution
+        - 'esa' : ESA solution
+        - 'smp', 'sampling' : Sampling solution
+    batch : bool, optional
+        Whether to run in batch mode, by default False.
+    check_consistency : bool, optional
+        Whether to perform model consistency checks before solving, by default True.
+    restart : str, optional
+        Directory name (relative to execution directory) where restart file is located, by default None.
+    load_only : bool, optional
+        Whether to only load the solution without executing, by default False.
+    runtime_name : bool, optional
+        Whether to generate a unique runtime name based on timestamp and process ID,
+        by default True. If False, uses md.miscellaneous.name as runtime name.
+
+    Raises
+    ------
+    ValueError
+        If the provided solution_string is not recognized or supported.
+
+    Notes
+    -----
+    The function modifies the model structure in-place by setting the solution type
+    and runtime name. When runtime_name is True, a unique identifier is generated
+    using the current timestamp and process ID to avoid clobbering existing runs.
+
+    Examples
+    --------
+    >>> solve(md, 'stressbalance')
+    >>> solve(md, 'transient', check_consistency = False)
+    >>> solve(md, 'thermal', runtime_name = False)
+    """
+
+    # Map solution string to solution names
+    solution_map = {
+        'sb': 'StressbalanceSolution', 'stressbalance': 'StressbalanceSolution',
+        'mt': 'MasstransportSolution', 'masstransport': 'MasstransportSolution',
+        'oceant': 'OceantransportSolution', 'oceantransport': 'OceantransportSolution',
+        'th': 'ThermalSolution', 'thermal': 'ThermalSolution',
+        'st': 'SteadystateSolution', 'steadystate': 'SteadystateSolution',
+        'tr': 'TransientSolution', 'transient': 'TransientSolution',
+        'mc': 'BalancethicknessSolution', 'balancethickness': 'BalancethicknessSolution',
+        'mcsoft': 'BalancethicknessSoftSolution',
+        'bv': 'BalancevelocitySolution', 'balancevelocity': 'BalancevelocitySolution',
+        'bsl': 'BedSlopeSolution', 'bedslope': 'BedSlopeSolution',
+        'ssl': 'SurfaceSlopeSolution', 'surfaceslope': 'SurfaceSlopeSolution',
+        'hy': 'HydrologySolution', 'hydrology': 'HydrologySolution',
+        'da': 'DamageEvolutionSolution', 'damageevolution': 'DamageEvolutionSolution',
+        'gia': 'GiaSolution',
+        'lv': 'LoveSolution', 'love': 'LoveSolution',
+        'esa': 'EsaSolution',
+        'smp': 'SamplingSolution', 'sampling': 'SamplingSolution',
+    }
+
+    ## Check that solution string is valid and extract solution name
+    key = solution_string.lower()
+    if key not in solution_map:
+        raise ValueError(f'solve error: solution "{solution_string}" not recognized!')
+    solution = solution_map[key]
     
+    # Parse options and fields
+    ## Set solution in model structure
+    md.private.solution = solution
+
+    ## Check model consistency
+    if check_consistency:
+        if md.verbose.solution:
+            print('Checking model consistency...')
+        is_model_consistent(md)
+    
+    ## If using restart, use the provided runtime name
+    if restart is not None:
+        md.private.runtimename = restart
+
+    ## If runtime_name is true, generate a unique runtime name
+    if runtime_name:
+        now = datetime.datetime.now()
+        md.private.runtimename = (
+            f"{md.miscellaneous.name}-{now.month:02d}-{now.day:02d}-"
+            f"{now.year:04d}-{now.hour:02d}-{now.minute:02d}-"
+            f"{now.second:02d}-{os.getpid()}"
+        )
+    else:
+        ### Otherwise use the model name as runtime name
+        md.private.runtimename = md.miscellaneous.name
+
+    ## Error when using md.settings.io_gather = 0
+    ## NOTE: parse_results_from_disk_io_split is not yet implemented in pyISSM.
+    if md.settings.io_gather == 0:
+        raise NotImplementedError('pyissm.execute.solve: Reading model results when using md.settings.io_gather = 0 is not yet supported.')
+
+    ## If running QMU analysis, some preprocessing of Dakota files is needed
+    if md.qmu.isdakota:
+        if md.verbose.solution:
+            print('Preprocessing dakota files...')
+        preprocess_qmu(md)
+
+    ## If load_only is true, skip the actual solve
+    if load_only:
+        if md.verbose.solution:
+            print('Loading results from cluster...')
+        md = load_results_from_cluster(md)
+        return md
+    
+    # Write all input files (.bin, .toolkits, build queue script)
+    ## Extract model_name
+    model_name = md.miscellaneous.name
+
+    ## Marshall model (write .bin file)
+    marshall(md)
+
+    ## Write toolkits file
+    md.toolkits.write_toolkits_file(model_name + '.toolkits')
+
+    ## Build queue script (and associated logs, if necessary)
+    md.cluster.build_queue_script(
+        dir_name = md.private.runtimename,
+        model_name = model_name,
+        solution = md.private.solution,
+        io_gather = md.settings.io_gather,
+        is_valgrind = md.debug.valgrind,
+        is_gprof = md.debug.gprof,
+        is_dakota = md.qmu.isdakota,
+        is_ocean_coupling = md.transient.isoceancoupling
+    )
+    
+    # Upload all required files (if no restart is provided)
+    if restart is None:
+        ## Create list of files to upload
+        file_list = [model_name + ext for ext in ['.bin', '.toolkits']]
+    
+        ## Append appropriate queue script to file_list
+        if utils.config.is_pc():
+            file_list.append(model_name + '.bat')
+        else:
+            file_list.append(model_name + '.queue')
+
+        ## If using dakota, append dakota input file to file_list
+        if md.qmu.isdakota:
+            file_list.append('qmu.in')
+
+        ## Upload all files to cluster
+        print('Uploading files to cluster...')
+        md.cluster.upload_queue_job(model_name, md.private.runtimename, file_list)
+
+    # Launch job
+    md.cluster.launch_queue_job(
+        model_name,
+        md.private.runtimename,
+        restart,
+        batch
+        )
+    
+    # Early return if using batch
+    if batch:
+        if md.verbose.solution:
+            print('batch mode: not launching job interactively')
+            print('launch solution sequence on remote cluster by hand')
+        return md
+    
+    # Wait for job to finish
+    if md.settings.waitonlock > 0:
+        if md.verbose.solution:
+            print('Waiting for job to complete...')
+        done = wait_on_lock(md)
+        if md.verbose.solution:
+            print('Job completed -- loading results from cluster...')
+            md = load_results_from_cluster(md)
+    else:
+        print('Model results must be loaded manually with md = load_results_from_cluster(md)')
+
+    return md
+    
+
+def is_model_consistent(md):
+    print('is_model_consistent not implemented yet')
+    return
+
+def preprocess_qmu(md):
+    print('preprocess_qmu not implemented yet')
+    return
+
+def postprocess_qmu(md):
+    print('postprocess_qmu not implemented yet')
+    return
+
+def wait_on_lock(md):
+    print('wait_on_lock not implemented yet')
+    return
+
+def load_results_from_cluster(md,
+                              nolog = False,
+                              runtime_name = None):
+    """
+    Load results from cluster after job completion.
+
+    Downloads output files from a remote cluster, loads the results into the model,
+    and cleans up temporary files. Handles both standard ISSM runs and Dakota
+    uncertainty quantification runs.
+
+    Parameters
+    ----------
+    md : model
+        ISSM model object containing cluster configuration and run parameters.
+    nolog : bool, optional
+        If True, skip downloading log files (.outlog and .errlog).
+        Default is False.
+    runtime_name : str, optional
+        Name of the runtime directory on the cluster. If None, uses
+        md.private.runtimename. Default is None.
+
+    Returns
+    -------
+    model
+        Updated model object with loaded results from the cluster run.
+
+    Notes
+    -----
+    This function performs the following operations:
+    1. Downloads output files from the cluster including:
+    - Log files (.outlog, .errlog) unless nolog=True
+    - Binary output files (.outbin or multiple files for Dakota sampling)
+    - Dakota-specific files (qmu.err, qmu.out, dakota_tabular.dat, .stats)
+    2. Loads results from the binary output file into the model object
+    3. Cleans up downloaded files and removes temporary files
+    4. If run on the same platform as the cluster, removes input files
+    (.bin, .toolkits, qmu.in, .queue/.bat)
+    The function handles different file patterns depending on whether Dakota
+    uncertainty quantification is used and what type of Dakota method is employed.
+    Warnings are issued if expected files are not found during cleanup.
+
+    """
+
+    # Set default runtime_name
+    if runtime_name is None:
+        runtime_name = md.private.runtimename
+    
+    # Create list of files to download
+    if nolog:
+        file_list = []
+    else:
+        file_list = [md.miscellaneous.name + '.outlog', md.miscellaneous.name + '.errlog']
+
+    # If using dakota, append dakota output files to file_list
+    if md.qmu.isdakota:
+        file_list.append('qmu.err')
+        file_list.append('qmu.out')
+        if 'tabular_graphics_data' in list(vars(md.qmu).keys()):
+            file_list.append('dakota_tabular.dat')
+        if md.qmu.output and md.qmu.statistics.method[0]['name'] == 'None':
+            if md.qmu.method.method == 'nond_sampling':
+                for i in range(md.qmu.method.params.samples):
+                    file_list.append(md.miscellaneous.name + '.outbin.' + str(i + 1))
+        if md.qmu.statistics.method[0]['name'] != 'None':
+            file_list.append(md.miscellaneous.name + '.stats')
+    else:
+        ## Otherwise, append standard output binary file
+        file_list.append(md.miscellaneous.name + '.outbin')
+    
+    # Download all files from cluster
+    md.cluster.download(md.private.runtimename, file_list)
+
+    # Load results from downloaded files
+    md = load_results_from_disk(md, md.miscellaneous.name + '.outbin')
+
+    # Erase log and output files
+    for i in range(len(file_list)):
+        try:
+            os.remove(file_list[i])
+        except OSError:
+            warnings.warn(f'pyissm.execute.load_results_from_cluster: File {file_list[i]} not found.')
+    
+    # Remove initial tar.gz file
+    if not utils.config.is_pc() and os.path.exists(md.private.runtimename + '.tar.gz'):
+        os.remove(md.private.runtimename + '.tar.gz')
+    
+    # Erase all input files if run was carried out on same platform
+    hostname = utils.config.get_hostname()
+    if hostname.lower() == md.cluster.name.lower():
+        
+        ## Remove bin and toolkits files
+        os.remove(md.miscellaneous.name + '.bin')
+        os.remove(md.miscellaneous.name + '.toolkits')
+        
+        ## If using dakota, remove dakota input file
+        if md.qmu.isdakota and os.path.exists('qmu.in'):
+            os.remove('.qmu.in')
+
+        ## Remove queue script
+        if not utils.config.is_pc():
+            if os.path.exists(md.miscellaneous.name + '.queue'):
+                os.remove(md.miscellaneous.name + '.queue')
+        else:
+            if os.path.exists(md.miscellaneous.name + '.bat'):
+                os.remove(md.miscellaneous.name + '.bat')
+
+    return md
+    
+def _process_love_kernels(field, md):
+    """
+    This function converts Love kernel solutions from the ISSM (Ice Sheet System Model)
+    internal format to a standardized format suitable for further analysis. The conversion
+    involves rescaling the kernel components using reference values and applying appropriate
+    boundary conditions at the surface layer.
+
+    Parameters
+    ----------
+    field : numpy.ndarray
+        Input Love kernel field data in ISSM format with shape (M, N) where M is the
+        flattened spatial dimension and N is the frequency dimension.
+    md : object
+        Model data structure containing material properties and Love number configuration.
+        Must have the following attributes:
+        - materials.numlayers : int
+            Number of material layers
+        - materials.radius : numpy.ndarray
+            Radial coordinates of layer boundaries
+        - materials.density : numpy.ndarray
+            Density values for each layer
+        - love.sh_nmax : int
+            Maximum spherical harmonic degree
+        - love.nfreq : int
+            Number of frequencies
+        - love.r0 : float
+            Reference radius scaling factor
+        - love.g0 : float
+            Reference gravity scaling factor
+        - love.mu0 : float
+            Reference shear modulus scaling factor
+        - love.forcing_type : int
+            Type of forcing (9 or 11 for different boundary conditions)
+
+    Returns
+    -------
+    numpy.ndarray
+        Processed Love kernel field with shape (degmax+1, nfreq, nlayer+1, 6).
+        The last dimension contains 6 kernel components:
+        - Component 0: Scaled displacement kernel (mm=4)
+        - Component 1: Scaled stress kernel (mm=5)
+        - Component 2: Scaled displacement kernel (mm=6)
+        - Component 3: Scaled stress kernel (mm=1)
+        - Component 4: Scaled gravitational potential kernel (mm=2)
+        - Component 5: Scaled gravity kernel (mm=3)
+
+    Notes
+    -----
+    The function handles two main regions:
+    1. Interior layers (kk < nlayer): All 6 components are computed from the input field
+       with appropriate scaling factors.
+    2. Surface boundary layer (kk == nlayer): Special boundary conditions are applied
+       depending on the forcing type.
+    For forcing_type == 9: Surface stress components are set to zero.
+    For forcing_type == 11: Surface stress includes average density correction.
+    The average density is computed as a volume-weighted average across all layers.
+    """
+
+    nlayer = md.materials.numlayers
+    degmax = md.love.sh_nmax
+    nfreq = md.love.nfreq
+    r0 = md.love.r0
+    g0 = md.love.g0
+    mu0 = md.love.mu0
+    rr = md.materials.radius
+    rho = md.materials.density
+    forcing_type = md.love.forcing_type
+
+    # Average density term
+    rho_avg_partial = np.diff(rr**3, n=1, axis=0)
+    rho_avg = np.sum((rho * rho_avg_partial) / rho_avg_partial.sum())
+
+    # Initialize output array: (degree, frequency, layer, components)
+    temp_field = np.zeros((degmax + 1, nfreq, nlayer + 1, 6), dtype=float)
+
+    for ii in range(degmax + 1):
+        for jj in range(nfreq):
+            for kk in range(nlayer + 1):
+
+                if kk < nlayer:
+                    
+                    # Compute base index in flattened array
+                    ll = ii * (nlayer + 1) * 6 + (kk * 6 + 1) + 3
+
+                    temp_field[ii, jj, kk, 0] = field[ll + 0, jj] * r0       # mm = 4
+                    temp_field[ii, jj, kk, 1] = field[ll + 1, jj] * mu0      # mm = 5
+                    temp_field[ii, jj, kk, 2] = field[ll + 2, jj] * r0       # mm = 6
+                    temp_field[ii, jj, kk, 3] = field[ll + 3, jj] * mu0      # mm = 1
+                    temp_field[ii, jj, kk, 4] = field[ll + 4, jj] * r0 * g0  # mm = 2
+                    temp_field[ii, jj, kk, 5] = field[ll + 5, jj] * g0       # mm = 3
+
+                else:
+                    # Surface boundary layer
+                    ll = (ii + 1) * (nlayer + 1) * 6 - 2
+
+                    temp_field[ii, jj, kk, 0] = field[ll + 0, jj] * r0
+                    temp_field[ii, jj, kk, 2] = field[ll + 1, jj] * r0
+                    temp_field[ii, jj, kk, 4] = field[ll + 2, jj] * r0 * g0
+                    temp_field[ii, jj, kk, 3] = 0.0  # surface BC
+
+                    if forcing_type == 9:
+                        temp_field[ii, jj, kk, 1] = 0.0
+                        temp_field[ii, jj, kk, 5] = ((2 * (ii + 1) - 1) / r0
+                            - (ii + 1) * field[ll + 2, jj] * g0)
+
+                    elif forcing_type == 11:
+                        temp_field[ii, jj, kk, 1] = -(2 * ii + 1) * rho_avg / 3
+                        temp_field[ii, jj, kk, 5] = ((2 * (ii + 1) - 1) / r0
+                            - (ii + 1) * field[ll + 2, jj] * g0)
+
+        return temp_field
+
+def load_results_from_disk(md, filename):
+    """
+    Load simulation results from disk into a model object.
+
+    This function loads results from a binary file or processes QMU (Quantification 
+    of Margins and Uncertainties) results depending on the model configuration. 
+    It handles result parsing, error checking, log file reading, and result 
+    organization within the model structure.
+
+    Parameters
+    ----------
+    md : object
+        Model object containing simulation parameters, results structure, and 
+        configuration settings. Must have attributes like `qmu`, `results`, 
+        `miscellaneous`, and `private`.
+    filename : str
+        Path to the binary file containing simulation results to be loaded.
+
+    Returns
+    -------
+    object
+        The modified model object with results loaded into the `md.results` 
+        attribute and solution type set in `md.private.solution`.
+
+    Raises
+    ------
+    ValueError
+        If no results are found in the specified file.
+
+    Warnings
+    --------
+    UserWarning
+        - If SolutionType field cannot be found in results
+        - If errors are detected in the error log during solution
+
+    Notes
+    -----
+    The function performs different operations based on whether QMU is enabled:
+    - **Non-QMU mode**: Parses binary results, loads error/output logs, and 
+      organizes results by solution type
+    - **QMU mode**: Delegates to QMU-specific postprocessing
+    For non-QMU results, the function:
+    1. Verifies the result file exists
+    2. Initializes the results structure if needed
+    3. Parses results and determines solution type
+    4. Loads associated log files (.errlog and .outlog)
+    5. Extracts single solutions from lists for user convenience
+    Log files are read as lists of strings with newlines removed. If no log 
+    files exist, empty strings are assigned to the respective log attributes.
+
+    Examples
+    --------
+    >>> md = load_results_from_disk(md, 'simulation_results.bin')
+    >>> print(md.results.StressbalanceSolution.Vel)
+    """
+    
+    if not md.qmu.isdakota:
+        # Check that file exists
+        if not os.path.exists(filename):
+            err_msg = '==========================================================================\n'
+            err_msg += '   Binary file {} not found                                              \n'.format(filename)
+            err_msg += '                                                                         \n'
+            err_msg += '   This typically results from an error encountered during the simulation\n'
+            err_msg += '   Please check for error messages above or in the outlog                \n'
+            err_msg += '=========================================================================\n'
+            print(err_msg)
+            return
+        
+        # Initialize md.results if it is not a structure yet
+        if not isinstance(md.results, param.results.default):
+            md.results = param.results.default()
+
+        # Load results onto model
+        results = parse_results_from_disk(md, filename)
+        if not results:
+            raise ValueError(f'load_results_from_disk error: no results found in file {filename!r}')
+        
+        if not hasattr(results[0], 'SolutionType'):
+            if hasattr(results[-1], 'SolutionType'):
+                results[0].SolutionType = results[-1].SolutionType
+            else:
+                warnings.warn('load_results_from_disk: Cannot find a SolutionType field in results. Setting to "NoneSolution".')
+                results[0].SolutionType = "NoneSolution"
+        setattr(md.results, results[0].SolutionType, results)
+
+        # Recover solution_type from results
+        md.private.solution = results[0].SolutionType
+
+        # Read log files onto fields
+        if os.path.exists(md.miscellaneous.name + '.errlog'):
+            with open(md.miscellaneous.name + '.errlog', 'r') as f:
+                setattr(getattr(md.results, results[0].SolutionType)[0], 'errlog', [line[:-1] for line in f])
+        else:
+            setattr(getattr(md.results, results[0].SolutionType)[0], 'errlog', '')
+
+        if os.path.exists(md.miscellaneous.name + '.outlog'):
+            with open(md.miscellaneous.name + '.outlog', 'r') as f:
+                setattr(getattr(md.results, results[0].SolutionType)[0], 'outlog', [line[:-1] for line in f])
+        else:
+            setattr(getattr(md.results, results[0].SolutionType)[0], 'outlog', '')
+
+        if getattr(md.results, results[0].SolutionType)[0].errlog:
+            warnings.warn('load_results_from_disk: error during solution. Check your errlog and outlog model fields.')
+
+        # If only one solution, extract it from list for user friendliness
+        if len(results.steps) == 1 and results[0].SolutionType != 'TransientSolution':
+            setattr(md.results, results[0].SolutionType, results[0])
+
+    else:
+        # Postprocess QMU results
+        md = postprocess_qmu(md, filename)
+
+    return md
+
+
+def parse_results_from_disk(md, filename):
+    """
+    Parse and load results from an ISSM binary file.
+
+    This function reads an ISSM binary results file and organizes all fields by
+    solution step. It handles sequential reading of field records, groups them
+    by time step, and returns a structured results object containing all solution
+    data.
+
+    Parameters
+    ----------
+    md : object
+        Model data structure containing simulation parameters and configuration.
+        Must have a `constants` attribute with `yts` (years to seconds conversion).
+    filename : str
+        Path to the binary results file to be parsed.
+
+    Returns
+    -------
+    param.results.solution
+        Structured results object containing all solution steps. Each step
+        contains the fields and metadata for that particular solution time.
+        Fields are organized as attributes accessible via dot notation.
+
+    Raises
+    ------
+    IOError
+        If the specified results file cannot be opened for reading.
+    Exception
+        If no results are found in the binary file or if there are issues
+        reading the binary data format.
+
+    Notes
+    -----
+    The function performs the following operations:
+    1. Opens and sequentially reads all field records from the binary file
+    2. Extracts unique solution steps and organizes fields by step
+    3. Applies unit conversions and data formatting (e.g., flattening column vectors)
+    4. Returns a results object with fields accessible by step index
+
+    The binary file format is expected to contain field records with names,
+    time stamps, step numbers, and data arrays in ISSM-specific format.
+    """
+
+    try:
+        fid = open(filename, 'rb')
+    except IOError:
+        raise IOError(f"parse_results_from_disk: could not open {filename}")
+
+    # --- read all fields sequentially ---
+    all_fields = []
+    while True:
+        field_record = _read_data(fid, md)
+        if field_record is None:
+            break
+        all_fields.append(field_record)
+    fid.close()
+
+    if not all_fields:
+        raise Exception(f'parse_results_from_disk: no results found in binary file {filename}')
+
+    # --- determine all unique steps ---
+    all_steps = np.array([r['step'] for r in all_fields if r['step'] != -9999])
+    all_steps = np.sort(np.unique(all_steps))
+
+    # --- construct solution array ---
+    results = param.results.solution()
+    
+    # Assign fields to appropriate solution step
+    for i in range(len(all_fields)):
+        result = all_fields[i]
+        index = 0
+        if result['step'] != -9999:
+            index = np.where(result['step'] == all_steps)[0][0]
+            setattr(results[index], 'step', result['step'])
+        if result['time'] != -9999:
+            setattr(results[index], 'time', result['time'])
+
+        field = result['field']
+
+        # Flatten 2D arrays for improved python indexing
+        if isinstance(field, np.ndarray) and field.ndim == 2 and field.shape[1] == 1:
+            # Convert column vectors to 1D arrays
+            setattr(results[index], result['fieldname'], field.ravel())
+        else:
+            setattr(results[index], result['fieldname'], field)
+
+    return results
+
+
+def _read_data(fid, md):
+    """
+    Read a single field record from an ISSM binary results file.
+
+    This function reads one complete field record from an ISSM (Ice Sheet System Model)
+    binary results file in little-endian format. Each record contains metadata
+    (field name, time, step, data type) followed by the actual field data.
+
+    Parameters
+    ----------
+    fid : file object
+        File handle opened in binary read mode pointing to an ISSM results file.
+    md : object
+        Model data structure containing constants and configuration parameters.
+        Must have a `constants.yts` attribute for time unit conversion.
+
+    Returns
+    -------
+    collections.OrderedDict or None
+        Dictionary containing the parsed field record with keys:
+        - 'fieldname' : str
+            Name of the field being read
+        - 'time' : float
+            Time value associated with the field (converted from seconds to years)
+        - 'step' : int
+            Solution step number
+        - 'field' : numpy.ndarray or str
+            The actual field data, with appropriate unit conversions applied
+        Returns None if end-of-file is reached or if an error occurs during reading.
+
+    Notes
+    -----
+    The function handles multiple data types:
+    - Type 1: Double precision vector
+    - Type 2: String data
+    - Type 3: Double precision matrix
+    - Type 4: Integer matrix
+    
+    Unit conversions are automatically applied based on field names using the
+    `_convert_units` helper function. Time values are normalized from seconds
+    to years using the years-to-seconds conversion factor from the model.
+
+    The binary format expects little-endian byte ordering and reads data in
+    the following sequence:
+    1. Field name length (4 bytes, int32)
+    2. Field name (variable length string)
+    3. Time value (8 bytes, float64)
+    4. Step number (4 bytes, int32)
+    5. Data type (4 bytes, int32)
+    6. Data dimensions and values (format depends on data type)
+    """
+
+    try:
+        # --- read field name length ---
+        length_bytes = np.fromfile(fid, dtype='<i4', count=1)
+        if length_bytes.size == 0:
+            return None  # EOF
+        length = int(length_bytes[0])
+
+        # --- read field name ---
+        fieldname_bytes = np.fromfile(fid, dtype='S1', count=length)
+        fieldname = b''.join(fieldname_bytes).rstrip(b'\x00').decode()
+
+        # --- read metadata ---
+        time = np.fromfile(fid, dtype='<f8', count=1)[0]
+        step = np.fromfile(fid, dtype='<i4', count=1)[0]
+        datatype = np.fromfile(fid, dtype='<i4', count=1)[0]
+        M = np.fromfile(fid, dtype='<i4', count=1)[0]
+
+        # --- read data ---
+        if datatype == 1:  # double vector
+            field = np.fromfile(fid, dtype='<f8', count=M)
+        elif datatype == 2:  # string
+            field_bytes = np.fromfile(fid, dtype='S1', count=M)
+            field = b''.join(field_bytes).rstrip(b'\x00').decode()
+        elif datatype == 3:  # double matrix
+            N = int(np.fromfile(fid, dtype='<i4', count=1)[0])
+            field = np.fromfile(fid, dtype='<f8', count=M*N).reshape(M, N)
+        elif datatype == 4:  # int matrix
+            N = int(np.fromfile(fid, dtype='<i4', count=1)[0])
+            field = np.fromfile(fid, dtype='<i4', count=M*N).reshape(M, N)
+        else:
+            raise TypeError(f"cannot read data of datatype {datatype}")
+
+        # --- unit conversions ---
+        field = _convert_units(fieldname, field, md)
+
+        # --- normalize time ---
+        if time != -9999:
+            time /= md.constants.yts
+
+        return collections.OrderedDict(fieldname=fieldname, time=time, step=step, field=field)
+
+    except Exception:
+        # any read error or EOF mid-field
+        return None
+    
+def _convert_units(field_name, field, md):
+    """
+    Apply unit conversions based on field name.
+
+    This function converts ISSM simulation output fields from their internal
+    units to more convenient units for analysis. It handles velocity fields,
+    mass balance terms, and specialized fields like Love kernels.
+
+    Parameters
+    ----------
+    field_name : str
+        Name of the field being converted. Used to determine which conversion
+        factors to apply.
+    field : numpy.ndarray or scalar
+        The field data to be converted. Can be any numeric type that supports
+        arithmetic operations.
+    md : object
+        Model data structure containing conversion constants. Must have a
+        `constants.yts` attribute (years to seconds conversion factor).
+
+    Returns
+    -------
+    numpy.ndarray or scalar
+        Field data with appropriate unit conversions applied:
+        - Velocity fields: converted from m/s to m/yr
+        - Mass balance fields: converted from kg/s to m/yr equivalent
+        - Total/cumulative fields: converted to Gt/yr
+        - Love kernels: processed using specialized kernel transformation
+        - Other fields: returned unchanged
+
+    Notes
+    -----
+    Unit conversions applied:
+    - **Time-based fields** (velocities, rates): multiplied by yts to convert
+      from per-second to per-year units
+    - **Total/cumulative fields**: multiplied by yts/1e12 to convert from kg/s
+      to Gt/yr (gigatons per year)
+    - **Love kernels**: processed using `_process_love_kernels` for specialized
+      geophysical unit handling
+
+    The following field categories are recognized:
+    - Velocity components (Vx, Vy, Vz, Vel, etc.)
+    - Surface mass balance terms (SmbMassBalance, SmbPrecipitation, etc.)
+    - Calving rates (CalvingCalvingrate, Calvingratex, etc.)
+    - Total mass fluxes (TotalFloatingBmb, GroundinglineMassFlux, etc.)
+
+    Examples
+    --------
+    >>> # Convert velocity from m/s to m/yr
+    >>> vel_converted = _convert_units('Vx', velocity_field, md)
+    >>> # Convert mass balance from kg/s to Gt/yr  
+    >>> mass_converted = _convert_units('TotalSmb', mass_field, md)
+    """
+    yts = md.constants.yts
+    gigaton_scale = yts / 1e12
+
+    # Time-based fields
+    scale_fields = {
+        "BalancethicknessThickeningRate", "HydrologyWaterVx", "HydrologyWaterVy",
+        "Vx", "Vy", "Vz", "Vel", "VxShear", "VyShear",
+        "VxBase", "VyBase", "VxSurface", "VySurface",
+        "VxAverage", "VyAverage", "VxDebris", "VyDebris",
+        "SmbMassBalance", "SmbPrecipitation", "SmbRain", "SmbRunoff", "SmbRunoffSubstep",
+        "SmbEvaporation", "SmbRefreeze", "SmbEC", "SmbAccumulation", "SmbMelt",
+        "SmbMAdd", "SmbWAdd", "CalvingCalvingrate", "Calvingratex", "Calvingratey",
+        "CalvingMeltingrate",
+    }
+
+    # Cumulative / Total Fields (Gt yr^{-1})
+    total_fields = {
+        "TotalFloatingBmb", "TotalFloatingBmbScaled",
+        "TotalGroundedBmb", "TotalGroundedBmbScaled",
+        "TotalSmb", "TotalSmbScaled",
+        "TotalSmbMelt", "TotalSmbRefreeze",
+        "GroundinglineMassFlux", "IcefrontMassFlux", "IcefrontMassFluxLevelset",
+    }
+
+    if field_name in scale_fields:
+        return field * yts
+    elif field_name in total_fields:
+        return field * gigaton_scale
+    elif field_name in ['LoveKernelsReal', 'LoveKernelsImag']:
+        field = _process_love_kernels(field_name, field, md)
+    else:
+        return field
