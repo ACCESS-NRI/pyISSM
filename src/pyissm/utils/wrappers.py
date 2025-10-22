@@ -602,7 +602,8 @@ def InterpFromGridToMesh(x,
                          data,
                          x_mesh,
                          y_mesh,
-                         default_value):
+                         default_value = np.nan,
+                         interpolation_type = 'bilinear'):
     """
     Interpolation from a grid onto a list of points.
 
@@ -630,14 +631,14 @@ def InterpFromGridToMesh(x,
 
     Examples
     --------
-    >>> data_mesh = InterpFromGridToMesh(x_grid, y_grid, Vel, md.mesh.x, md.mesh.y, 0)
+    >>> data_mesh = InterpFromGridToMesh(x_grid, y_grid, Vel, md.mesh.x, md.mesh.y, 0, 'nearest')
     """
 
     # Load the _python function
     InterpFromGridToMesh._load_func()
 
     # Call the loaded _python function
-    return np.squeeze(InterpFromGridToMesh._func(x, y, data, x_mesh, y_mesh, default_value))
+    return np.squeeze(InterpFromGridToMesh._func(x, y, data, x_mesh, y_mesh, default_value, interpolation_type))
 
 ## InterpFromMesh2d_python
 @load_issm_wrapper
