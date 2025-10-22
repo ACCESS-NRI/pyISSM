@@ -1,3 +1,4 @@
+import numpy as np
 from . import param_utils
 from . import class_registry
 
@@ -54,7 +55,7 @@ class default(class_registry.manage_state):
                     lengthvalue = len(value)
                 except TypeError:
                     lengthvalue = 1
-            s += '    {}: [1x{} struct]\n'.format(key, lengthvalue)
+            s += '    {}: [1x{} array]\n'.format(key, lengthvalue)
         return s
 
     # Define class string
@@ -163,6 +164,7 @@ class solution(class_registry.manage_state):
     # Initialise with default parameters
     def __init__(self, *args):
         self.steps = None
+        self._field_major_cache = None
         if len(args) == 1:
             arg = args[0]
             if isinstance(arg, list):
@@ -180,9 +182,9 @@ class solution(class_registry.manage_state):
             for key, value in self.steps[0].__dict__.items():
                 s += '    {}: {}\n'.format(key, value)
         else:
-            s = '  1x{} struct array with fields:\n'.format(numsteps)
+            s = '  1x{} array with fields:\n'.format(numsteps)
             s += '\n'
-            for fieldname in self.steps[0].getfieldnames():
+            for fieldname in self.steps[0].get_fieldnames():
                 s += '    {}\n'.format(fieldname)
         return s
 
@@ -190,6 +192,63 @@ class solution(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - solution Class'
         return s
+    
+    # Define getitem
+    def __getitem__(self, index):
+        while index >= len(self.steps):
+            self.steps.append(solutionstep())
+        return self.steps[index]
+    
+    # Convert time-major (steps) to field-major (dict)
+    def _build_field_major(self):
+        ## Return empty dict if no steps exist
+        if not self.steps:
+            return {}
+
+        ## Collect all unique field names across all steps
+        all_fields = set()
+        for step in self.steps:
+            all_fields.update(step.__dict__.keys())
+
+        ## Build field-major dictionary
+        field_data = {}
+        for field in all_fields:
+            ### Extract field values from all steps (None if field doesn't exist in a step)
+            values = [getattr(step, field, None) for step in self.steps]
+
+            ### Filter out None values to analyze actual data
+            non_none = [v for v in values if v is not None]
+            
+            ### Handle different field types
+            if len(non_none) == 1:
+                ### Static/scalar field: only one value across all steps. Store as scalar
+                field_data[field] = non_none[0]
+            elif all(isinstance(v, np.ndarray) for v in non_none):
+                ### Time-varying numeric arrays: stack along time axis (axis=0)
+                try:
+                    field_data[field] = np.stack(non_none, axis=0)
+                except Exception:
+                    #### If stacking fails (incompatible shapes), keep as list
+                    field_data[field] = non_none
+            else:
+                ### Mixed types or non-arrays: keep as list (preserving None values)
+                field_data[field] = values
+
+        return field_data
+
+    # Allow dot access (e.g. md.results.TransientSolution.Vel[t])
+    def __getattr__(self, name):
+        ## Build field-major cache lazily on first access to avoid unnecessary computation
+        if self._field_major_cache is None:
+            self._field_major_cache = self._build_field_major()
+
+        ## Check if the requested attribute exists in the field-major cache
+        if name in self._field_major_cache:
+            # Return the field data (either scalar for static fields or array for time-varying fields)
+            return self._field_major_cache[name]
+        
+        # Raise AttributeError if the requested field doesn't exist
+        raise AttributeError(f"'{name}' not found in {self.__class__.__name__}")
 
 ## ------------------------------------------------------
 ## results.solutionstep
@@ -247,3 +306,7 @@ class solutionstep(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - solutionstep Class'
         return s
+
+    # Define get_fieldnames
+    def get_fieldnames(self):
+        return self.__dict__.keys()

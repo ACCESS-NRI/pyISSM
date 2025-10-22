@@ -6,7 +6,6 @@ Functions for building and interacting with an ISSM model mesh.
 import numpy as np
 import matplotlib.tri as tri
 from scipy.interpolate import griddata
-import scipy.sparse
 import warnings
 from .. import utils
 

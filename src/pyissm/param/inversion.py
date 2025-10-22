@@ -82,7 +82,7 @@ class default(class_registry.manage_state):
         self.control_parameters = 'FrictionCoefficient'
         self.nsteps = 20
         self.maxiter_per_step = 20 * np.ones(self.nsteps)
-        self.cost_functions = 'List of cost functions' # Default = [101, ]
+        self.cost_functions = [101]
         self.cost_functions_coefficients = np.nan
         self.gradient_scaling = 50 * np.ones((self.nsteps, 1))
         self.cost_function_threshold = np.nan

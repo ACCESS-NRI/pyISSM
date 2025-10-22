@@ -326,9 +326,9 @@ def set_flow_equation(md,
     md.flowequation.element_equation[hofs_flag] = 9
 
     # Define border
-    md.flowequation.borderHO = ho_node
-    md.flowequation.borderSSA = ssa_node
-    md.flowequation.borderFS = fs_node
+    md.flowequation.borderHO = ho_node.astype(int)
+    md.flowequation.borderSSA = ssa_node.astype(int)
+    md.flowequation.borderFS = fs_node.astype(int)
 
     # Create vertices_type
     md.flowequation.vertex_equation = np.zeros(md.mesh.numberofvertices, int)
@@ -347,11 +347,11 @@ def set_flow_equation(md,
     md.flowequation.vertex_equation[ssafs_node] = 9
     
     # Define solution types
-    md.flowequation.isSIA = any(md.flowequation.element_equation == 1)
-    md.flowequation.isSSA = any(md.flowequation.element_equation == 2)
-    md.flowequation.isL1L2= any(md.flowequation.element_equation == 3)
-    md.flowequation.isMOLHO= any(md.flowequation.element_equation == 4)
-    md.flowequation.isHO = any(md.flowequation.element_equation == 5)
-    md.flowequation.isFS = any(md.flowequation.element_equation == 6)
+    md.flowequation.isSIA = int(any(md.flowequation.element_equation == 1))
+    md.flowequation.isSSA = int(any(md.flowequation.element_equation == 2))
+    md.flowequation.isL1L2= int(any(md.flowequation.element_equation == 3))
+    md.flowequation.isMOLHO= int(any(md.flowequation.element_equation == 4))
+    md.flowequation.isHO = int(any(md.flowequation.element_equation == 5))
+    md.flowequation.isFS = int(any(md.flowequation.element_equation == 6))
 
     return md

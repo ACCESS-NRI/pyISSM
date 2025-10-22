@@ -85,7 +85,7 @@ class default(class_registry.manage_state):
             warnings.warn('pyissm.param.basalforcings.default: no groundedice_melting_rate specified -- values set as 0')
 
         if np.all(np.isnan(self.floatingice_melting_rate)):
-            self.floatingice_melting_rate = np.ones((md.mesh.numberofvertices,))
+            self.floatingice_melting_rate = np.zeros((md.mesh.numberofvertices,))
             warnings.warn('pyissm.param.basalforcings.default: no floatingice_melting_rate specified -- values set as 0')
 
         return self
@@ -894,7 +894,7 @@ class plume(class_registry.manage_state):
             warnings.warn('pyissm.param.basalforcings.plume: no groundedice_melting_rate specified -- values set as 0')
 
         if np.all(np.isnan(self.floatingice_melting_rate)):
-            self.floatingice_melting_rate = np.ones((md.mesh.numberofvertices,))
+            self.floatingice_melting_rate = np.zeros((md.mesh.numberofvertices,))
             warnings.warn('pyissm.param.basalforcings.plume: no floatingice_melting_rate specified -- values set as 0')
 
         return self
