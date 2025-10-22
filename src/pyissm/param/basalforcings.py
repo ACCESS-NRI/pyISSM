@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 from . import param_utils
 from . import class_registry
 from .. import execute
@@ -73,6 +74,21 @@ class default(class_registry.manage_state):
         s = 'ISSM - basalforcings.default Class'
         return s
     
+    # Initialise empty fields of correct dimensions
+    def initialise(self, md):
+        """
+        Initialise empty fields in basalforcings.default.
+        """
+
+        if np.all(np.isnan(self.groundedice_melting_rate)):
+            self.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices,))
+            warnings.warn('pyissm.param.basalforcings.default: no groundedice_melting_rate specified -- values set as 0')
+
+        if np.all(np.isnan(self.floatingice_melting_rate)):
+            self.floatingice_melting_rate = np.ones((md.mesh.numberofvertices,))
+            warnings.warn('pyissm.param.basalforcings.default: no floatingice_melting_rate specified -- values set as 0')
+
+        return self
 
     # Marshall method for saving the basalforcings.default parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -200,6 +216,30 @@ class pico(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - basalforcings.pico Class'
         return s
+    
+    # Initialise empty fields of correct dimensions
+    def initialise(self, md):
+        """
+        Initialise empty fields in basalforcings.pico.
+        """
+
+        if np.isnan(self.maxboxcount):
+            self.maxboxcount = 5
+            warnings.warn('pyissm.parm.basalforcings.pico: no maximum number of boxes set -- value set to 5.')
+
+        if np.isnan(self.overturning_coeff):
+            self.overturning_coeff = 1e6 * np.ones((md.mesh.numberofvertices,1))
+            warnings.warn('pyissm.parm.basalforcings.pico: no overturning strength set -- value set to 1e6.')
+
+        if np.isnan(self.gamma_T):
+            self.gamma_T = 2e-5
+            warnings.warn('pyissm.parm.basalforcings.pico: no turbulent temperature exchange velocity set -- value set to 2e-5.')
+
+        if np.isnan(self.groundedice_melting_rate):
+            self.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices,1))
+            warnings.warn('pyissm.parm.basalforcings.pico: no basalforcings.groundedice_melting_rate specified -- values set as zero.')
+
+        return self
 
     # Marshall method for saving the basalforcings.pico parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -328,6 +368,18 @@ class linear(class_registry.manage_state):
         s = 'ISSM - basalforcings.linear Class'
         return s
 
+    # Initialise empty fields of correct dimensions
+    def initialise(self, md):
+        """
+        Initialise empty fields in basalforcings.linear.
+        """
+        
+        if np.all(np.isnan(self.groundedice_melting_rate)):
+            self.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices))
+            warnings.warn('pyissm.parm.basalforcings.linear: no basalforcings.groundedice_melting_rate specified -- values set as zero.')
+
+        return self
+    
     # Marshall method for saving the basalforcings.linear parameters
     def marshall_class(self, fid, prefix, md = None):
         """
@@ -477,6 +529,39 @@ class lineararma(class_registry.manage_state):
         s = 'ISSM - basalforcings.lineararma Class'
         return s
     
+    # Initialise empty fields of correct dimensions
+    def initialise(self, md):
+        """
+        Initialise empty fields in basalforcings.lineararma.
+        """
+
+        if np.all(np.isnan(self.groundedice_melting_rate)):
+            self.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices))
+            warnings.warn('pyissm.param.basalforcings.lineararma: no basalforcings.groundedice_melting_rate specified -- values set as 0.')
+
+        if np.all(np.isnan(self.trend)):
+            self.trend = np.zeros((1, self.num_basins)) # No trend in SMB
+            warnings.warn('pyissm.param.basalforcings.lineararma: no basalforcings.trend specified -- values set as 0.')
+
+        if self.ar_order == 0:
+            self.ar_order = 1 # Dummy 1 value for autoregression
+            self.arlag_coefs = np.zeros((self.num_basins, self.ar_order)) # Autoregression coefficients all set to 0
+            warnings.warn('pyissm.param.basalforcings.lineararma: no basalforcings.ar_order specified -- order of autoregressive model set to 0.')
+
+        if self.arma_timestep == 0:
+            self.arma_timestep = md.timestepping.time_step # ARMA model has no prescribed time step
+            warnings.warn('pyissm.param.basalforcings.lineararma: no basalforcings.arma_timestep specified -- set to md.timestepping.time_step.')
+
+        if np.all(np.isnan(self.arlag_coefs)):
+            self.arlag_coefs = np.zeros((self.num_basins, self.ar_order)) # Autoregression model of order 0
+            warnings.warn('pyissm.param.basalforcings.lineararma: no basalforcings.arlag_coefs specified -- order of autoregressive model set to 0.')
+
+        if np.all(np.isnan(self.malag_coefs)):
+            self.malag_coefs = np.zeros((self.num_basins, self.ma_order)) # Moving-average model of order 0
+            warnings.warn('pyissm.param.basalforcings.lineararma: no basalforcings.malag_coefs specified -- order of moving-average model set to 0.')
+
+        return self
+
     # Marshall method for saving the basalforcings.lineararma parameters
     def marshall_class(self, fid, prefix, md = None):
         """
@@ -635,6 +720,22 @@ class mismip(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - basalforcings.mismip Class'
         return s
+    
+    # Initialise empty fields of correct dimensions
+    def initialise(self, md):
+        """
+        Initialise empty fields in basalforcings.mismip.
+        """
+
+        if np.all(np.isnan(self.groundedice_melting_rate)):
+            self.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices))
+            warnings.warn('pyissm.param.basalforcings.mismip: no basalforcings.groundedice_melting_rate specified -- values set as 0.')
+        
+        if np.all(np.isnan(self.geothermalflux)):
+            self.geothermalflux = np.zeros((md.mesh.numberofvertices))
+            warnings.warn('pyissm.param.basalforcings.mismip: no basalforcings.geothermalflux specified -- values set as 0.')
+
+        return self
 
     # Marshall method for saving the basalforcings.mismip parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -781,6 +882,22 @@ class plume(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - basalforcings.plume Class'
         return s
+    
+    # Initialise empty fields of correct dimensions
+    def initialise(self, md):
+        """
+        Initialise empty fields in basalforcings.plume.
+        """
+
+        if np.all(np.isnan(self.groundedice_melting_rate)):
+            self.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices,))
+            warnings.warn('pyissm.param.basalforcings.plume: no groundedice_melting_rate specified -- values set as 0')
+
+        if np.all(np.isnan(self.floatingice_melting_rate)):
+            self.floatingice_melting_rate = np.ones((md.mesh.numberofvertices,))
+            warnings.warn('pyissm.param.basalforcings.plume: no floatingice_melting_rate specified -- values set as 0')
+
+        return self
 
     # Marshall method for saving the basalforcings.plume parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -895,6 +1012,18 @@ class spatiallinear(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - basalforcings.spatiallinear Class'
         return s
+    
+    # Initialise empty fields of correct dimensions
+    def initialise(self, md):
+        """
+        Initialise empty fields in basalforcings.spatiallinear.
+        """
+
+        if np.all(np.isnan(self.groundedice_melting_rate)):
+            self.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices,))
+            warnings.warn('pyissm.param.basalforcings.spatiallinear: no groundedice_melting_rate specified -- values set as 0')
+
+        return self
 
     # Marshall method for saving the basalforcings.spatiallinear parameters
     def marshall_class(self, fid, prefix, md = None):
