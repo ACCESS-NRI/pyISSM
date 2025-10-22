@@ -62,7 +62,7 @@ def load_model(path):
     """
 
     # Helper function to load different variables
-    def get_variables(state, group, group_name):
+    def _get_variables(state, group, group_name):
         for var_name, var in group.variables.items():
             try:
                 data = var[:]
@@ -77,26 +77,26 @@ def load_model(path):
         return state
 
     # Helper function to load attributes
-    def get_attributes(state, group):
+    def _get_attributes(state, group):
         for attr in group.ncattrs():
             if attr != "classtype":
                 state[attr] = group.getncattr(attr)
         return state
 
     # Helper function to retrieve classtype and create new instance object
-    def get_class(group):
+    def _get_class(group):
         classtype = group.getncattr("classtype")
         obj = param.class_registry.create_instance(classtype)
         return classtype, obj
 
     # Helper function to normalise NaN values (convert all NaN to np.nan)
-    def normalize_nans(obj):
+    def _normalize_nans(obj):
         if isinstance(obj, dict):
-            return {k: normalize_nans(v) for k, v in obj.items()}
+            return {k: _normalize_nans(v) for k, v in obj.items()}
         elif isinstance(obj, list):
-            return [normalize_nans(item) for item in obj]
+            return [_normalize_nans(item) for item in obj]
         elif isinstance(obj, tuple):
-            return tuple(normalize_nans(item) for item in obj)
+            return tuple(_normalize_nans(item) for item in obj)
         elif isinstance(obj, np.ndarray):
             if np.issubdtype(obj.dtype, np.floating):
                 obj = np.where(np.isnan(obj), np.nan, obj)
@@ -105,6 +105,83 @@ def load_model(path):
             return np.nan
         else:
             return obj
+        
+    def _normalize_loaded_attributes(obj):
+        """
+        Normalize a loaded model object by converting data types for consistency.
+        
+        This function performs post-loading normalization on model objects to ensure
+        data types are consistent with Python conventions. It handles various data
+        type conversions that may be necessary after loading from NetCDF format.
+        
+        Parameters
+        ----------
+        obj : object
+            The model object to normalize. Must have a __dict__ attribute containing
+            the attributes to be normalized.
+        
+        Notes
+        -----
+        The function performs the following normalizations:
+        
+        - NumPy integers are converted to Python int for consistency
+        - 1D object arrays containing strings are converted to Python lists
+        - Legacy character arrays are converted to lists of strings:
+          
+          - 1D char arrays become single-element lists: ['string']
+          - 2D char arrays (MATLAB-style) become lists of strings
+          
+        - Nested objects with __dict__ attributes are recursively processed
+        
+        The function modifies the object in-place by updating its attributes
+        using setattr().
+        """
+        
+        ## Helper function to unpack MATLAB-style 2D char arrays
+        def _unpack_char_cell(char_arr):
+            """
+            Convert MATLAB-style 2D char array (num_strings x max_len) to list of Python strings
+            """
+            num_strings, max_len = char_arr.shape
+            str_list = []
+            for i in range(num_strings):
+                row = char_arr[i, :]
+                # decode bytes if needed
+                if row.dtype.kind == 'S':
+                    s = b"".join(row.astype('S1')).decode('utf-8').rstrip()
+                else:
+                    s = "".join(row).rstrip()
+                if s:
+                    str_list.append(s)
+            return str_list
+
+        ## Iterate through all attributes of the object
+        for attr_name, value in vars(obj).items():
+
+            ### Convert NumPy integers to Python integers
+            if isinstance(value, np.integer):
+                setattr(obj, attr_name, int(value))
+
+            ### Convert 1D object arrays to Python lists
+            elif isinstance(value, np.ndarray) and value.dtype == object and value.ndim == 1:
+                setattr(obj, attr_name, value.tolist())
+
+            ### Convert legacy Char arrays to lists of strings
+            elif isinstance(value, np.ndarray) and value.dtype.kind in ['S','U']:
+
+                if value.ndim == 2:
+                    #### MATLAB-style 2D char array: convert to list of strings
+                    str_list = _unpack_char_cell(value)
+                    setattr(obj, attr_name, str_list)
+
+                elif value.ndim == 1:
+                    #### 1D char array: single string, put in a list
+                    s = b"".join(value.astype('S1')).decode('utf-8') if value.dtype.kind == 'S' else "".join(value)
+                    setattr(obj, attr_name, [s])
+
+            ### Recursively normalize nested objects
+            elif hasattr(value, "__dict__"):
+                _normalize_loaded_attributes(value)
 
     # Initialise empty model class
     md = core.Model()
@@ -132,7 +209,7 @@ def load_model(path):
                     if "classtype" in sub_grp.ncattrs():
 
                         ## Get the classtype for the subgroup & create new instance
-                        classtype, obj = get_class(sub_grp)
+                        classtype, obj = _get_class(sub_grp)
                         # If obj is None, carry on (a warning is printed by create_instance in get_class)
                         if obj is None:
                             continue
@@ -141,13 +218,13 @@ def load_model(path):
                         state = {}
 
                         ## Get scalar attributes (those that are not stored as variables) and add to state
-                        state = get_attributes(state, sub_grp)
+                        state = _get_attributes(state, sub_grp)
 
                         ## Get variables
-                        state = get_variables(state, sub_grp, sub_grp_name)
+                        state = _get_variables(state, sub_grp, sub_grp_name)
 
                         ## Convert all NaN values to np.nan
-                        state = normalize_nans(state)
+                        state = _normalize_nans(state)
 
                         ## Set the state for the model class
                         try:
@@ -159,6 +236,9 @@ def load_model(path):
                         ## If the object is a collapsed solutionstep from TransientSolution, expand back into solution for consistency
                         if isinstance(obj, param.results.solutionstep) and sub_grp_name == "TransientSolution":
                             obj = _expand_step_to_solution(obj)
+
+                        ## Normalize data types
+                        _normalize_loaded_attributes(obj)
 
                         ## Assign the object to the model                        
                         setattr(md.results, sub_grp_name, obj)
@@ -175,7 +255,8 @@ def load_model(path):
                 ## Check that a valid classtype exists:
                 if "classtype" in grp.ncattrs():
                     ## Get the classtype for the group & create new instance
-                    classtype, obj = get_class(grp)
+                    classtype, obj = _get_class(grp)
+
                     # If obj is None, carry on (a warning is printed by create_instance in get_class)
                     if obj is None:
                         continue
@@ -184,13 +265,13 @@ def load_model(path):
                     state = {}
 
                     ## Get scalar attributes (those that are not stored as variables) and add to state
-                    state = get_attributes(state, grp)
+                    state = _get_attributes(state, grp)
 
                     ## Get variables
-                    state = get_variables(state, grp, grp_name)
+                    state = _get_variables(state, grp, grp_name)
 
                     ## Convert all NaN values to np.nan
-                    state = normalize_nans(state)
+                    state = _normalize_nans(state)
 
                     ## Set the state for the model class
                     try:
@@ -198,6 +279,9 @@ def load_model(path):
                     except Exception as e:
                         print(f"⚠️ Failed to set state for '{grp_name}': {e}")
                         continue
+
+                    ## Normalize data types
+                    _normalize_loaded_attributes(obj)
 
                     ## Assign the object to the model (e.g., md.mesh)
                     setattr(md, grp_name, obj)
@@ -255,7 +339,7 @@ def save_model(md, path):
     """
 
     # Helper function to convert character array to string for NetCDF writing
-    def char_array_to_strings(arr):
+    def _char_array_to_strings(arr):
         arr = np.asarray(arr)  # Ensure it's a NumPy array
         if arr.ndim == 1:
             # Convert 1D string to single byte string array
@@ -267,7 +351,7 @@ def save_model(md, path):
             raise ValueError("Input must be a 1D or 2D char array with dtype='S1'")
 
     # Helper function to serialize an object's state
-    def serialize_object(obj, group):
+    def _serialize_object(obj, group):
         """
         Serializes an object's state, including nested objects.
         """
@@ -298,7 +382,7 @@ def save_model(md, path):
                         value = np.array(value, dtype='S')
                     # Special handling for 'S1' datatype (these come from NetCDF Char variables when output from MATLAB)
                     elif value.dtype.kind == 'S':
-                        value = char_array_to_strings(value)
+                        value = _char_array_to_strings(value)
                     else:
                         value = value
 
@@ -326,13 +410,13 @@ def save_model(md, path):
                 # If the value is a class instance, treat it as a group and recurse
                 if hasattr(value, '__getstate__'):
                     nested_group = group.createGroup(attr_name)
-                    serialize_object(value, nested_group)
+                    _serialize_object(value, nested_group)
 
             else:
                 print(f"⚠️ Skipping unsupported field: {attr_name} ({type(value).__name__})")
                 continue
 
-    def get_registered_name(obj):
+    def _get_registered_name(obj):
         classname = obj.__class__
         matching_keys = [k for k, v in param.class_registry.CLASS_REGISTRY.items() if v is classname]
         if not matching_keys:
@@ -366,10 +450,10 @@ def save_model(md, path):
                         solution_obj = _collapse_solution_to_step(solution_obj)
 
                     ## Attach class type metadata
-                    classname = get_registered_name(solution_obj)
+                    classname = _get_registered_name(solution_obj)
                     solution_group.setncattr("classtype", classname)
 
-                    serialize_object(solution_obj, solution_group)
+                    _serialize_object(solution_obj, solution_group)
 
             else:
                 ## For regular model components (e.g., mesh, materials, geometry)
@@ -380,11 +464,11 @@ def save_model(md, path):
                 group = ds.createGroup(name)
 
                 ## Attach class type metadata
-                classname = get_registered_name(obj)
+                classname = _get_registered_name(obj)
                 group.setncattr("classtype", classname)
 
                 ## Serialize the component state
-                serialize_object(obj, group)
+                _serialize_object(obj, group)
 
 def _collapse_solution_to_step(solution):
     """
