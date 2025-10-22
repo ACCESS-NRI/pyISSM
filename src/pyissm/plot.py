@@ -509,7 +509,7 @@ def plot_model_field(md,
                 raise Exception('plot_model_field: The provided field is an unexpected shape.')
 
     ## Update shading, if necessary. When field is defined on elements, shading = 'flat' is required.
-    if (is3d and field.shape == md.mesh.numberofelements2d and plot_data_on == 'points') or (not is3d and field.shape == md.mesh.numberofelements and plot_data_on == 'points'):
+    if (is3d and field.shape[0] == md.mesh.numberofelements2d and plot_data_on == 'points') or (not is3d and field.shape[0] == md.mesh.numberofelements and plot_data_on == 'points'):
         shading = 'flat'
         warnings.warn("Using plot_data_on = 'elements'. Data are defined on elements")
     if plot_data_on == 'elements':

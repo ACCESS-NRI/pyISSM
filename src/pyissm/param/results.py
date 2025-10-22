@@ -55,7 +55,7 @@ class default(class_registry.manage_state):
                     lengthvalue = len(value)
                 except TypeError:
                     lengthvalue = 1
-            s += '    {}: [1x{} struct]\n'.format(key, lengthvalue)
+            s += '    {}: [1x{} array]\n'.format(key, lengthvalue)
         return s
 
     # Define class string
