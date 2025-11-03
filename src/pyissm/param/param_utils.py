@@ -1,4 +1,7 @@
 import numpy as np
+import os
+import re
+from operator import attrgetter
 
 """
 Functions for formatting and displaying model fields in ISSM classes. Taken from $ISSM_DIR/src/m/miscellaneous/fielddisplay.py.
@@ -413,3 +416,238 @@ def marshall_inversion_cost_functions(cost_functions):
         return [cfDict[cost_functions]]
     else:
         return [cfDict[cf] for cf in cost_functions]
+    
+def _resolve_field(md, field=None, fieldname=None):
+    """Retrieve a field either directly or via a dotted/indexed path."""
+    if field is not None:
+        return field, fieldname or "anonymous"
+
+    if not fieldname:
+        raise ValueError("Must specify either `field` or `fieldname`.")
+
+    # Parse things like 'results.TransientSolution[0].Vel'
+    attr_path = re.split(r'\[(.*?)\]', fieldname)[0]
+    indexes = re.findall(r'\[(.*?)\]', fieldname)
+    value = attrgetter(attr_path)(md)
+    for idx in indexes:
+        idx = idx.strip("'\" ")
+        value = value[int(idx)] if idx.isdigit() else value[idx]
+    return value, fieldname
+
+
+def _check_size(md, field, fieldname, expected, message=None):
+    """Check array size or 'universal' size semantics."""
+    if isinstance(expected, str) and expected == "universal":
+        v, e = md.mesh.numberofvertices, md.mesh.numberofelements
+        if v == e or v + 1 == e or v == e + 1:
+            md.check_message(message or f"{fieldname}: ambiguous universal size")
+        return
+
+    if expected is not None:
+        shape = np.shape(field)
+        if len(shape) != len(expected) or any(
+            not np.isnan(s) and s != shape[i] for i, s in enumerate(expected)
+        ):
+            md.check_message(message or f"{fieldname} has shape {shape}, expected {expected}")
+
+
+def _check_values(md, field, fieldname, allowed, message=None):
+    """Check categorical values."""
+    if not np.all(np.isin(field, allowed)):
+        md.check_message(message or f"{fieldname} values not in {allowed}")
+
+
+def _check_bound(md, field, fieldname, op, bound, message=None):
+    """Generic bound check: <, <=, >, >=."""
+    fn = {
+        ">": np.greater,
+        ">=": np.greater_equal,
+        "<": np.less,
+        "<=": np.less_equal,
+    }[op]
+    mask = fn(field, bound)
+    if not np.all(mask):
+        md.check_message(message or f"{fieldname} fails condition {op} {bound}")
+
+
+def _check_timeseries(md, field, fieldname, kind, message=None):
+    """Check time series structure and sorting."""
+    nrow = field.shape[0]
+    v, e = md.mesh.numberofvertices, md.mesh.numberofelements
+
+    def sorted_check(arr):
+        if np.any(arr[:-1] > arr[1:]):
+            md.check_message(message or f"{fieldname}: time not sorted")
+        if np.any(arr[:-1] == arr[1:]):
+            md.check_message(message or f"{fieldname}: duplicate timesteps")
+
+    if kind == "timeseries":
+        valid_rows = {v, e, v + 1, e + 1}
+        if nrow not in valid_rows:
+            md.check_message(message or f"{fieldname}: invalid timeseries row count")
+        elif nrow in {v + 1, e + 1} and np.ndim(field) > 1:
+            sorted_check(field[-1, :])
+
+    elif kind == "singletimeseries":
+        if nrow == 2:
+            sorted_check(field[-1, :])
+        elif nrow != 1:
+            md.check_message(message or f"{fieldname}: must have 1 or 2 rows")
+
+    elif kind == "mappedtimeseries":
+        if np.ndim(field) > 1:
+            sorted_check(field[-1, :])
+
+
+def check_field(
+    md,
+    field = None,
+    fieldname = None,
+    allow_nan = True,
+    allow_inf = True,
+    scalar = False,
+    size = None,
+    numel = None,
+    cell = False,
+    empty = False,
+    values = None,
+    gt = None,
+    ge = None,
+    lt = None,
+    le = None,
+    timeseries = False,
+    singletimeseries = False,
+    mappedtimeseries = False,
+    file = False,
+    message = None,
+):
+
+    """
+    Validate a model field against a set of common checks.
+
+    This function resolves a field either from the provided `field` argument
+    or by resolving `fieldname` on `md` (supports dotted attribute paths and
+    indexed access like "results.TransientSolution[0].Vel"). It then applies a
+    series of optional validations (size, scalar, numel, emptiness, allowed
+    values, numeric bounds, NaN/Inf presence, cell type, file existence and
+    timeseries-specific structure checks). On failure, the model's
+    md.check_message(...) method is invoked with an explanatory message.
+
+    Parameters
+    ----------
+    md : object
+        ISSM model object. Must provide md.mesh.numberofvertices,
+        md.mesh.numberofelements (for timeseries semantics) and a
+        md.check_message(str) method to report validation failures.
+    field : any, optional
+        Direct field value to validate. If provided, `fieldname` is optional.
+    fieldname : str, optional
+        Path used to resolve the field on `md` when `field` is None.
+        Supports dotted attribute access and index notation, e.g.
+        "results.TransientSolution[0].Vel".
+    allow_nan : bool, optional
+        If False, fail when the field contains NaNs. Default True.
+    allow_inf : bool, optional
+        If False, fail when the field contains Infs. Default True.
+    scalar : bool, optional
+        If True, require the field to be a scalar (or single element). Default False.
+    size : tuple or "universal", optional
+        Expected shape of the field. Use np.nan for wildcard dimensions.
+        The special string "universal" applies mesh-universal heuristics.
+    numel : int or sequence of int, optional
+        Expected number of elements (np.size). Can be an int or list/tuple of
+        acceptable ints.
+    cell : bool, optional
+        If True, require the field to be a Python container (list/tuple/dict).
+    empty : bool, optional
+        If True, allow an empty field; otherwise an empty field triggers a check.
+    values : sequence, optional
+        Allowed categorical values for the field (checked with np.isin).
+    gt, ge, lt, le : scalar or array-like, optional
+        Bound constraints (>, >=, <, <=). If provided, the corresponding
+        comparison is applied elementwise.
+    timeseries : bool, optional
+        Apply timeseries structural checks ("timeseries" kind).
+    singletimeseries : bool, optional
+        Apply single-timeseries structural checks ("singletimeseries" kind).
+    mappedtimeseries : bool, optional
+        Apply mapped-timeseries structural checks ("mappedtimeseries" kind).
+    file : bool, optional
+        If True, treat the field as a filesystem path and require it exists.
+    message : str, optional
+        Custom message to use on check failures instead of generated defaults.
+
+    Returns
+    -------
+    md : object
+        The same model object passed in (returned for convenience).
+
+    Notes
+    -----
+    - If a resolved field is a Python scalar (bool/int/float) it will be
+      converted to a 1-element numpy array for uniform checking.
+    - Checks do not raise exceptions; they report failures via
+      md.check_message(msg).
+    - The `size` parameter may contain np.nan entries that act as wildcards.
+    """
+    
+    # Resolve field
+    field, fieldname = _resolve_field(md, field, fieldname)
+
+    if isinstance(field, (bool, int, float)):
+        field = np.array([field])
+
+    # Empty
+    if empty and (field is None or len(np.atleast_1d(field)) == 0):
+        md.check_message(message or f"{fieldname} is empty")
+
+    # Size
+    if size is not None:
+        _check_size(md, field, fieldname, size, message)
+
+    # Scalar
+    if scalar:
+        if not np.isscalar(field) and np.size(field) != 1:
+            md.check_message(message or f"{fieldname} is not a scalar")
+
+    # Numel
+    if numel is not None:
+        n = np.size(field)
+        valid = [numel] if isinstance(numel, int) else numel
+        if n not in valid:
+            md.check_message(message or f"{fieldname} size {n}, expected {valid}")
+
+    # NaN
+    if not allow_nan and np.any(np.isnan(field)):
+        md.check_message(message or f"{fieldname} contains NaN")
+
+    # Inf
+    if not allow_inf and np.any(np.isinf(field)):
+        md.check_message(message or f"{fieldname} contains Inf")
+
+    # Type
+    if cell and not isinstance(field, (list, tuple, dict)):
+        md.check_message(message or f"{fieldname} must be list/tuple/dict")
+
+    # Allowed values
+    if values is not None:
+        _check_values(md, field, fieldname, values, message)
+
+    # Bounds
+    for op, bound in {">": gt, ">=": ge, "<": lt, "<=": le}.items():
+        if bound is not None:
+            _check_bound(md, field, fieldname, op, bound, message)
+
+    # File check
+    if file and not os.path.exists(field):
+        md.check_message(f"File in {fieldname} not found: {field}")
+
+    # Timeseries checks
+    if timeseries:
+        _check_timeseries(md, field, fieldname, "timeseries", message)
+    if singletimeseries:
+        _check_timeseries(md, field, fieldname, "singletimeseries", message)
+    if mappedtimeseries:
+        _check_timeseries(md, field, fieldname, "mappedtimeseries", message)
+
+    return md

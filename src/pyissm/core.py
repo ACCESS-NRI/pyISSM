@@ -208,6 +208,11 @@ class Model():
     def __str__(self):
         s = 'ISSM Model Class'
         return s
+    
+    def check_message(self, string):
+        print('model not consistent: {}'.format(string))
+        self.private.isconsistent = False
+        return self
 
     # Define state
     def __getstate__(self):
