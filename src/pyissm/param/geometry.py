@@ -72,6 +72,28 @@ class geometry(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - geometry Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):  # {{{
+        # Early return if LoveSolution
+        if solution == 'LoveSolution':
+            return md
+        else:
+            param_utils.check_field(md, fieldname = 'geometry.surface', size = (md.mesh.numberofvertices), allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = 'geometry.base', size = (md.mesh.numberofvertices), allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = 'geometry.thickness', ge = 0, size = (md.mesh.numberofvertices), allow_nan = False, allow_inf = False)
+            if any(abs(self.thickness - self.surface + self.base) > 1e-9):
+                md.checkmessage('equality thickness = surface-base violated')
+            if solution == 'TransientSolution' and md.transient.isgroundingline:
+                param_utils.check_field(md, fieldname = 'geometry.bed', size = (md.mesh.numberofvertices), allow_nan = False, allow_inf = False)
+                if np.any(self.bed - self.base > 1e-12):
+                    md.checkmessage('base < bed on one or more vertices')
+                pos = np.where(md.mask.ocean_levelset > 0)
+                if np.any(np.abs(self.bed[pos] - self.base[pos]) > 1e-9):
+                    md.checkmessage('equality base = bed on grounded ice violated')
+                param_utils.check_field(md, fieldname = 'geometry.bed', size = (md.mesh.numberofvertices), allow_nan = False, allow_inf = False)
+        
+        return md
 
     # Marshall method for saving the geometry parameters
     def marshall_class(self, fid, prefix, md = None):

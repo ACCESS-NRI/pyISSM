@@ -1,3 +1,4 @@
+import numpy as np
 from . import param_utils
 from . import class_registry
 from .. import execute
@@ -76,6 +77,25 @@ class groundingline(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - groundingline Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):  # {{{
+        param_utils.check_field(md, fieldname = 'groundingline.migration', values = ['None', 'SubelementMigration', 'AggressiveMigration', 'SoftMigration', 'Contact', 'GroundingOnly'])
+        param_utils.check_field(md, fieldname = 'groundingline.friction_interpolation', values = ['SubelementFriction1', 'SubelementFriction2', 'NoFrictionOnPartiallyFloating'])
+        param_utils.check_field(md, fieldname = 'groundingline.melt_interpolation', values = ['SubelementMelt1', 'SubelementMelt2', 'IntrusionMelt', 'NoMeltOnPartiallyFloating', 'FullMeltOnPartiallyFloating'])
+        param_utils.check_field(md, fieldname = 'groundingline.intrusion_distance', ge = 0)
+        param_utils.check_field(md, fieldname = 'groundingline.requested_outputs', string_list = True)
+
+        if(not self.migration == 'None' and md.transient.isgroundingline and solution == 'TransientSolution'):
+            if np.any(np.isnan(md.geometry.bed)):
+                md.checkmessage("requesting grounding line migration, but bathymetry is absent!")
+            pos = np.nonzero(md.mask.ocean_levelset > 0.)[0]
+            if any(np.abs(md.geometry.base[pos] - md.geometry.bed[pos]) > pow(10, -10)):
+                md.checkmessage("base not equal to bed on grounded ice!")
+            if any(md.geometry.bed - md.geometry.base > pow(10, -9)):
+                md.checkmessage("bed superior to base on floating ice!")
+                
+        return md
     
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,
