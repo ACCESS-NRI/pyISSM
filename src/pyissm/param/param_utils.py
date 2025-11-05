@@ -1,3 +1,4 @@
+from attrs import field
 import numpy as np
 import os
 import re
@@ -509,7 +510,8 @@ def check_field(
     size = None,
     numel = None,
     cell = False,
-    empty = False,
+    string_list = False,
+    allow_empty = False,
     values = None,
     gt = None,
     ge = None,
@@ -559,7 +561,9 @@ def check_field(
         acceptable ints.
     cell : bool, optional
         If True, require the field to be a Python container (list/tuple/dict).
-    empty : bool, optional
+    string_list : bool, optional
+        If True, require the field to be a list of strings.
+    allow_empty : bool, optional
         If True, allow an empty field; otherwise an empty field triggers a check.
     values : sequence, optional
         Allowed categorical values for the field (checked with np.isin).
@@ -598,7 +602,7 @@ def check_field(
         field = np.array([field])
 
     # Empty
-    if empty and (field is None or len(np.atleast_1d(field)) == 0):
+    if allow_empty and (field is None or len(np.atleast_1d(field)) == 0):
         md.check_message(message or f"{fieldname} is empty")
 
     # Size
@@ -628,6 +632,10 @@ def check_field(
     # Type
     if cell and not isinstance(field, (list, tuple, dict)):
         md.check_message(message or f"{fieldname} must be list/tuple/dict")
+
+    # String_list
+    if string_list and not isinstance(field, list):
+        md.check_message(message or f"{fieldname} must be a list (string_list expected)")
 
     # Allowed values
     if values is not None:

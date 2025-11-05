@@ -86,6 +86,23 @@ class esa(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - esa Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if EsaAnalysis not specified
+        if (solution != 'EsaAnalysis'):
+            return md
+        
+        param_utils.check_field(md, fieldname = "esa.deltathickness", allow_nan = True, allow_inf = True, size = (md.mesh.numberofelements, 1))
+        param_utils.check_field(md, fieldname = "esa.love_h", allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "esa.love_l", allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "esa.hemisphere", allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "esa.degacc", size = (1, 1), ge = 1e-10)
+        param_utils.check_field(md, fieldname = "esa.requested_outputs", string_list = True)
+
+        if (np.size(self.love_h, 1) != np.size(self.love_l, 0)):
+            raise ValueError('pyissm.param.esa.check_consistency: love_h and love_l must be the same size.')
+
 
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,

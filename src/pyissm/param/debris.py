@@ -103,6 +103,29 @@ class debris(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - debris Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+
+        # Early return if not mass transport analysis or transient with debris transport
+        if not 'MassTransportAnalysis' in analyses or solution == 'TransientSolution' and not md.transient.isdebris:
+            return md
+
+        param_utils.check_field(md, fieldname = "debris.spcthickness")
+        param_utils.check_field(md, fieldname = "debris.stabilization", scalar = True, values = [0, 1, 2, 3, 4, 5])
+        param_utils.check_field(md, fieldname = "debris.min_thickness", ge = 0)
+        param_utils.check_field(md, fieldname = "debris.packingfraction", ge = 0)
+        param_utils.check_field(md, fieldname = "debris.removalmodel", values = [0, 1, 2])
+        param_utils.check_field(md, fieldname = "debris.displacementmodel", values = [0, 1, 2])
+        param_utils.check_field(md, fieldname = "debris.max_displacementvelocity", ge = 0)
+        param_utils.check_field(md, fieldname = "debris.removal_slope_threshold", ge = 0)
+        param_utils.check_field(md, fieldname = "debris.removal_stress_threshold", ge = 0)
+        param_utils.check_field(md, fieldname = "debris.requested_outputs", string_list = True)
+        if not np.any(np.isnan(md.stressbalance.vertex_pairing)) and len(md.stressbalance.vertex_pairing) > 0:
+            md = param_utils.check_field(md, fieldname = "stressbalance.vertex_pairing", gt = 0)
+            
+        return md
+    
 
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,

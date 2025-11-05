@@ -1,5 +1,6 @@
 import yaml
 import subprocess
+import numpy as np
 from . import param_utils, class_registry
 from .. import utils, model
 
@@ -131,6 +132,13 @@ class generic(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - cluster.generic Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        if self.np < 1 or np.isnan(self.np):
+            md.check_message('cluster.generic.check_consistency: np must be >= 1')
+
+        return md
 
     def build_queue_script(self,
                            dir_name,

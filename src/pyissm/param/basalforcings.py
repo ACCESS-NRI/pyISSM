@@ -74,6 +74,25 @@ class default(class_registry.manage_state):
         s = 'ISSM - basalforcings.default Class'
         return s
     
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Masstransport analysis
+        if 'Masstransport' in analyses and solution != 'TransientSolution' and not md.transient.ismasstransport:
+            param_utils.check_field(md, fieldname = "basalforcings.groundedice_melting_rate", timeseries = True, allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = "basalforcings.floatingice_melting_rate", timeseries = True, allow_nan = False, allow_inf = False)
+
+        # BalancethicknessAnalysis
+        if 'BalancethicknessAnalysis' in analyses:
+            param_utils.check_field(md, fieldname = "basalforcings.groundedice_melting_rate", size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = "basalforcings.floatingice_melting_rate", size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+
+        if 'ThermalAnalysis' in analyses and solution != 'TransientSolution' and not md.transient.isthermal:
+            param_utils.check_field(md, fieldname = "basalforcings.groundedice_melting_rate", timeseries = True, allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = "basalforcings.floatingice_melting_rate", timeseries = True, allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = "basalforcings.geothermalflux", timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
+            
+        return md
+    
     # Initialise empty fields of correct dimensions
     def initialise(self, md):
         """
@@ -216,6 +235,27 @@ class pico(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - basalforcings.pico Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+
+        param_utils.check_field(md, fieldname = "basalforcings.num_basins", scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "basalforcings.basin_id", size = (md.mesh.numberofelements, 1), ge = 0, le = md.basalforcings.num_basins, allow_inf = False)
+        param_utils.check_field(md, fieldname = "basalforcings.maxboxcount", scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+
+        if np.size(self.overturning_coeff) == 1:
+            param_utils.check_field(md, fieldname = "basalforcings.overturning_coeff", scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        else:
+            param_utils.check_field(md, fieldname = "basalforcings.overturning_coeff", size = (md.mesh.numberofvertices, 1), gt = 0, allow_nan = False, allow_inf = False)
+
+        param_utils.check_field(md, fieldname = "basalforcings.gamma_T", scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "basalforcings.farocean_temperature", size = (md.basalforcings.num_basins + 1, None), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "basalforcings.farocean_salinity", size = (md.basalforcings.num_basins + 1, None), gt = 0, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "basalforcings.isplume", scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = "basalforcings.geothermalflux", timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "basalforcings.groundedice_melting_rate", timeseries = True, allow_nan = False, allow_inf = False)
+    
+        return md
     
     # Initialise empty fields of correct dimensions
     def initialise(self, md):
@@ -367,6 +407,32 @@ class linear(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - basalforcings.linear Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        if not np.all(np.isnan(self.perturbation_melting_rate)):
+            param_utils.check_field(md, fieldname = "basalforcings.perturbation_melting_rate", timeseries = True, allow_nan = False, allow_inf = False)
+        if 'MasstransportAnalysis' in analyses and solution != 'TransientSolution' and not md.transient.ismasstransport:
+            param_utils.check_field(md, fieldname = "basalforcings.groundedice_melting_rate", timeseries = True, allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = "basalforcings.deepwater_melting_rate", singletimeseries = True, ge = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.upperwater_melting_rate", singletimeseries = True, ge = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.deepwater_elevation", singletimeseries = True, lt = self.upperwater_elevation)
+            param_utils.check_field(md, fieldname = "basalforcings.upperwater_elevation", singletimeseries = True, le = 0)
+        if 'BalancethicknessAnalysis' in analyses:
+            param_utils.check_field(md, fieldname = "basalforcings.groundedice_melting_rate", size = (md.mesh.numberofvertices,), allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = "basalforcings.deepwater_melting_rate", singletimeseries = True, ge = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.upperwater_melting_rate", singletimeseries = True, ge = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.deepwater_elevation", singletimeseries = True, lt = self.upperwater_elevation)
+            param_utils.check_field(md, fieldname = "basalforcings.upperwater_elevation", singletimeseries = True, le = 0)
+        if 'ThermalAnalysis' in analyses and solution != 'TransientSolution' and not md.transient.isthermal:
+            param_utils.check_field(md, fieldname = "basalforcings.groundedice_melting_rate", timeseries = True, allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = "basalforcings.deepwater_melting_rate", singletimeseries = True, ge = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.upperwater_melting_rate", singletimeseries = True, ge = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.deepwater_elevation", singletimeseries = True, lt = self.upperwater_elevation)
+            param_utils.check_field(md, fieldname = "basalforcings.upperwater_elevation", singletimeseries = True, le = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.geothermalflux", timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
+
+        return md
 
     # Initialise empty fields of correct dimensions
     def initialise(self, md):
@@ -527,7 +593,59 @@ class lineararma(class_registry.manage_state):
     # Define class string
     def __str__(self):
         s = 'ISSM - basalforcings.lineararma Class'
-        return s
+
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):  # {{{
+        if 'MasstransportAnalysis' in analyses:
+            nbas = md.basalforcings.num_basins
+            nprm = md.basalforcings.num_params
+            nbrk = md.basalforcings.num_breaks
+
+            param_utils.check_field(md, fieldname = "basalforcings.num_basins", scalar = True, allow_nan = False, allow_inf = False, gt = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.groundedice_melting_rate", timeseries = True, allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = "basalforcings.num_params", scalar = True, allow_nan = False, allow_inf = False, gt = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.num_breaks", scalar = True, allow_nan = False, allow_inf = False, ge = 0)
+
+            if len(np.shape(self.deepwater_elevation)) == 1:
+                self.deepwater_elevation = np.array([self.deepwater_elevation])
+                self.upperwater_elevation = np.array([self.upperwater_elevation])
+                self.upperwater_melting_rate = np.array([self.upperwater_melting_rate])
+            if len(np.shape(self.polynomialparams)) == 1:
+                self.polynomialparams = np.array([[self.polynomialparams]])
+
+            if nbas > 1 and nbrk >= 1 and nprm > 1:
+                param_utils.check_field(md, fieldname = "basalforcings.polynomialparams", allow_nan = False, allow_inf = False, size = (nbas, nbrk + 1, nprm), numel = nbas * (nbrk + 1) * nprm)
+            elif nbas == 1:
+                param_utils.check_field(md, fieldname = "basalforcings.polynomialparams", allow_nan = False, allow_inf = False, size = (nprm, nbrk + 1), numel = nbas * (nbrk + 1) * nprm)
+            elif nbrk == 0:
+                param_utils.check_field(md, fieldname = "basalforcings.polynomialparams", allow_nan = False, allow_inf = False, size = (nbas, nprm), numel = nbas * (nbrk + 1) * nprm)
+            elif nprm == 1:
+                param_utils.check_field(md, fieldname = "basalforcings.polynomialparams", allow_nan = False, allow_inf = False, size = (nbas, nbrk), numel = nbas * (nbrk + 1) * nprm)
+
+            param_utils.check_field(md, fieldname = "basalforcings.deepwater_elevation", allow_nan = False, allow_inf = False, size = (1, md.basalforcings.num_basins), numel = md.basalforcings.num_basins)
+            param_utils.check_field(md, fieldname = "basalforcings.upperwater_elevation", allow_nan = False, allow_inf = False, le = 0, size = (1, md.basalforcings.num_basins), numel = md.basalforcings.num_basins)
+            param_utils.check_field(md, fieldname = "basalforcings.upperwater_melting_rate", allow_nan = False, allow_inf = False, ge = 0, size = (1, md.basalforcings.num_basins), numel = md.basalforcings.num_basins)
+            param_utils.check_field(md, fieldname = "basalforcings.basin_id", allow_inf = False, ge = 0, le = md.basalforcings.num_basins, size = (md.mesh.numberofelements,))
+
+            param_utils.check_field(md, fieldname = "basalforcings.ar_order", scalar = True, allow_nan = False, allow_inf = False, ge = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.ma_order", scalar = True, allow_nan = False, allow_inf = False, ge = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.arma_timestep", scalar = True, allow_nan = False, allow_inf = False, ge = md.timestepping.time_step)
+            param_utils.check_field(md, fieldname = "basalforcings.arlag_coefs", allow_nan = False, allow_inf = False, size = (md.basalforcings.num_basins, md.basalforcings.ar_order))
+            param_utils.check_field(md, fieldname = "basalforcings.malag_coefs", allow_nan = False, allow_inf = False, size = (md.basalforcings.num_basins, md.basalforcings.ma_order))
+
+            if nbrk > 0:
+                param_utils.check_field(md, fieldname = "basalforcings.datebreaks", allow_nan = False, allow_inf = False, size = (nbas, nbrk))
+            elif np.size(md.basalforcings.datebreaks) == 0 or np.all(np.isnan(md.basalforcings.datebreaks)):
+                pass
+            else:
+                raise RuntimeError("md.basalforcings.num_breaks is 0 but md.basalforcings.datebreaks is not empty")
+
+        if 'BalancethicknessAnalysis' in analyses:
+            raise Exception("pyissm.basalforcings.lineararma.check_consistency:: BalancethicknessAnalysis not implemented yet!")
+        if 'ThermalAnalysis' in analyses and solution != 'TransientSolution' and not md.transient.isthermal:
+            raise Exception("pyissm.basalforcings.lineararma.check_consistency:: ThermalAnalysis not implemented yet!")
+
+        return md
     
     # Initialise empty fields of correct dimensions
     def initialise(self, md):
@@ -721,6 +839,29 @@ class mismip(class_registry.manage_state):
         s = 'ISSM - basalforcings.mismip Class'
         return s
     
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        if 'MasstransportAnalysis' in analyses and solution != 'TransientSolution' and not md.transient.ismasstransport:
+            param_utils.check_field(md, fieldname = "basalforcings.groundedice_melting_rate", timeseries = True, allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = "basalforcings.meltrate_factor", scalar = True, ge = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.threshold_thickness", scalar = True, ge = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.upperdepth_melt", scalar = True, le = 0)
+
+        if 'BalancethicknessAnalysis' in analyses:
+            param_utils.check_field(md, fieldname = "basalforcings.groundedice_melting_rate", allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices, ))
+            param_utils.check_field(md, fieldname = "basalforcings.meltrate_factor", scalar = True, ge = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.threshold_thickness", scalar = True, ge = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.upperdepth_melt", scalar = True, le = 0)
+
+        if 'ThermalAnalysis' in analyses and not (solution == 'TransientSolution' and not md.transient.isthermal):
+            param_utils.check_field(md, fieldname = "basalforcings.groundedice_melting_rate", timeseries = True, allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = "basalforcings.meltrate_factor", scalar = True, ge = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.threshold_thickness", scalar = True, ge = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.upperdepth_melt", scalar = True, le = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.geothermalflux", timeseries = True, allow_nan = False, allow_inf = False, ge = 0)
+
+        return md
+    
     # Initialise empty fields of correct dimensions
     def initialise(self, md):
         """
@@ -883,6 +1024,33 @@ class plume(class_registry.manage_state):
         s = 'ISSM - basalforcings.plume Class'
         return s
     
+    # Check model consistency
+    def checkconsistency(self, md, solution, analyses):
+        if 'MasstransportAnalysis' in analyses and not (solution == 'TransientSolution' and md.transient.ismasstransport == 0):
+            param_utils.check_field(md, fieldname = "basalforcings.groundedice_melting_rate", timeseries = True, allow_nan = False)
+            param_utils.check_field(md, fieldname = "basalforcings.floatingice_melting_rate", timeseries = True, allow_nan = False)
+
+        if 'BalancethicknessAnalysis' in analyses:
+            param_utils.check_field(md, fieldname = "basalforcings.groundedice_melting_rate", size = (md.mesh.numberofvertices, ), allow_nan = False)
+            param_utils.check_field(md, fieldname = "basalforcings.floatingice_melting_rate", size = (md.mesh.numberofvertices, ), allow_nan = False)
+
+        if 'ThermalAnalysis' in analyses and not (solution == 'TransientSolution' and md.transient.isthermal == 0):
+            param_utils.check_field(md, fieldname = "basalforcings.groundedice_melting_rate", timeseries = True, allow_nan = False)
+            param_utils.check_field(md, fieldname = "basalforcings.floatingice_melting_rate", timeseries = True, allow_nan = False)
+            param_utils.check_field(md, fieldname = "basalforcings.mantleconductivity", scalar = True, ge = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.nusselt", scalar = True, gt = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.dtbg", scalar = True, gt = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.topplumedepth", scalar = True, gt = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.bottomplumedepth", scalar = True, gt = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.plumex", scalar = True)
+            param_utils.check_field(md, fieldname = "basalforcings.plumey", scalar = True)
+            param_utils.check_field(md, fieldname = "basalforcings.crustthickness", scalar = True, gt = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.uppercrustthickness", scalar = True, gt = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.uppercrustheat", scalar = True, gt = 0)
+            param_utils.check_field(md, fieldname = "basalforcings.lowercrustheat", scalar = True, gt = 0)
+
+        return md
+
     # Initialise empty fields of correct dimensions
     def initialise(self, md):
         """
@@ -1013,6 +1181,26 @@ class spatiallinear(class_registry.manage_state):
         s = 'ISSM - basalforcings.spatiallinear Class'
         return s
     
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        if not np.all(np.isnan(self.perturbation_melting_rate)):
+            param_utils.check_field(md, fieldname = "basalforcings.perturbation_melting_rate", timeseries = True, allow_nan = False)
+
+        if 'MasstransportAnalysis' in analyses and not solution == 'TransientSolution' and not md.transient.ismasstransport:
+            param_utils.check_field(md, fieldname = "basalforcings.groundedice_melting_rate", timeseries = True, allow_nan = False)
+            param_utils.check_field(md, fieldname = "basalforcings.deepwater_melting_rate", timeseries = True, ge = 0, allow_nan = False)
+            param_utils.check_field(md, fieldname = "basalforcings.deepwater_elevation", timeseries = True, allow_nan = False)
+            param_utils.check_field(md, fieldname = "basalforcings.upperwater_melting_rate", timeseries = True, ge = 0, allow_nan = False)
+            param_utils.check_field(md, fieldname = "basalforcings.upperwater_elevation", timeseries = True, lt = 0, allow_nan = False)
+
+        if 'BalancethicknessAnalysis' in analyses:
+            raise Exception("pyissm.param.basalforcings.spatiallinear.check_consistency:: BalancethicknessAnalysis not implemented yet!")
+
+        if 'ThermalAnalysis' in analyses and not solution == 'TransientSolution' and not md.transient.isthermal:
+            raise Exception("pyissm.param.basalforcings.spatiallinear.check_consistency:: ThermalAnalysis not implemented yet!")
+
+        return md
+        
     # Initialise empty fields of correct dimensions
     def initialise(self, md):
         """
