@@ -136,6 +136,55 @@ class default(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - inversion.default Class'
         return s
+
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):  # {{{
+        # Early return if inversion disabled
+        if not self.iscontrol:
+            return md
+
+        num_controls = np.size(md.inversion.control_parameters)
+        num_costfunc = np.size(md.inversion.cost_functions)
+
+        param_utils.check_field(md, fieldname = 'inversion.iscontrol', values = [0, 1])
+        param_utils.check_field(md, fieldname = 'inversion.incomplete_adjoint', values = [0, 1])
+        param_utils.check_field(md, fieldname = 'inversion.control_parameters', cell = True, values = param_utils.supported_inversion_control_parameters())
+        param_utils.check_field(md, fieldname = 'inversion.nsteps', scalar = True, ge = 0)
+        param_utils.check_field(md, fieldname = 'inversion.maxiter_per_step', size = (md.inversion.nsteps, 1), ge = 0)
+        param_utils.check_field(md, fieldname = 'inversion.step_threshold', size = (md.inversion.nsteps, ))
+        param_utils.check_field(md, fieldname = 'inversion.cost_functions', size = (num_costfunc, ), values = param_utils.supported_inversion_cost_functions())
+        if num_costfunc == 1:
+            md.inversion.cost_functions_coefficients = np.squeeze(md.inversion.cost_functions_coefficients)
+            param_utils.check_field(md, fieldname = 'inversion.cost_functions_coefficients', size = (md.mesh.numberofvertices, ), ge = 0)
+        else:
+            param_utils.check_field(md, fieldname = 'inversion.cost_functions_coefficients', size = (md.mesh.numberofvertices, num_costfunc), ge = 0)
+
+        if num_controls == 1:
+            md.inversion.gradient_scaling = np.squeeze(md.inversion.gradient_scaling)
+            md.inversion.min_parameters = np.squeeze(md.inversion.min_parameters)
+            md.inversion.max_parameters = np.squeeze(md.inversion.max_parameters)
+            param_utils.check_field(md, fieldname = 'inversion.gradient_scaling', size = (md.inversion.nsteps, ))
+            param_utils.check_field(md, fieldname = 'inversion.min_parameters', size = (md.mesh.numberofvertices, ))
+            param_utils.check_field(md, fieldname = 'inversion.max_parameters', size = (md.mesh.numberofvertices, ))
+        else:
+            param_utils.check_field(md, fieldname = 'inversion.gradient_scaling', size = (md.inversion.nsteps, num_controls))
+            param_utils.check_field(md, fieldname = 'inversion.min_parameters', size = (md.mesh.numberofvertices, num_controls))
+            param_utils.check_field(md, fieldname = 'inversion.max_parameters', size = (md.mesh.numberofvertices, num_controls))
+
+        # Only SSA, MMOLHO, L1L2, HO and FS are supported right now
+        if solution == 'StressbalanceSolution':
+            if not (md.flowequation.isSSA or md.flowequation.isMOLHO or md.flowequation.isHO or md.flowequation.isFS or md.flowequation.isL1L2):
+                md.checkmessage("'inversion can only be performed for SSA, MOLHO, HO or FS ice flow models")
+        
+        # Balancethicknesssolution
+        if solution == 'BalancethicknessSolution':
+            param_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        elif solution == 'BalancethicknessSoftSolution':
+            param_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        else:
+            param_utils.check_field(md, fieldname = 'inversion.vx_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = 'inversion.vy_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        return md
     
     # Marshall method for saving the inversion.default parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -323,6 +372,39 @@ class m1qn3(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - inversion.m1qn3 Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if inversion disabled
+        if not self.iscontrol:
+            return md
+
+        num_controls = np.size(md.inversion.control_parameters)
+        num_costfunc = np.size(md.inversion.cost_functions)
+
+        param_utils.check_field(md, fieldname = 'inversion.iscontrol', values = [0, 1])
+        param_utils.check_field(md, fieldname = 'inversion.incomplete_adjoint', values = [0, 1])
+        param_utils.check_field(md, fieldname = 'inversion.control_parameters', cell = True, values = param_utils.supported_inversion_control_parameters())
+        param_utils.check_field(md, fieldname = 'inversion.control_scaling_factors', size = (num_controls, ), gt = 0, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'inversion.maxsteps', scalar = True, ge = 0)
+        param_utils.check_field(md, fieldname = 'inversion.maxiter', scalar = True, ge = 0)
+        param_utils.check_field(md, fieldname = 'inversion.dxmin', scalar = True, gt = 0.)
+        param_utils.check_field(md, fieldname = 'inversion.dfmin_frac', scalar = True, ge = 0., le = 1.)
+        param_utils.check_field(md, fieldname = 'inversion.gttol', scalar = True, gt = 0.)
+        param_utils.check_field(md, fieldname = 'inversion.cost_functions', size = (num_costfunc, 1), values = param_utils.supported_inversion_cost_functions())
+        param_utils.check_field(md, fieldname = 'inversion.cost_functions_coefficients', size = (md.mesh.numberofvertices, num_costfunc), ge = 0)
+        param_utils.check_field(md, fieldname = 'inversion.min_parameters', size = (md.mesh.numberofvertices, num_controls))
+        param_utils.check_field(md, fieldname = 'inversion.max_parameters', size = (md.mesh.numberofvertices, num_controls))
+
+        if solution == 'BalancethicknessSolution':
+            param_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        elif solution == 'BalancethicknessSoftSolution':
+            param_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        else:
+            param_utils.check_field(md, fieldname = 'inversion.vx_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = 'inversion.vy_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        
+        return md
 
     # Marshall method for saving the inversion.m1qn3 parameters
     def marshall_class(self, fid, prefix, md = None):

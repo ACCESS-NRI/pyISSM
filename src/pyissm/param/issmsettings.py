@@ -87,6 +87,19 @@ class issmsettings(class_registry.manage_state):
         s = 'ISSM - issmsettings Class'
         return s
 
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        param_utils.check_field(md, fieldname = 'settings.results_on_nodes', string_list = True)
+        param_utils.check_field(md, fieldname = 'settings.io_gather', scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = 'settings.lowmem', scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = 'settings.output_frequency', scalar = True, ge = 1)
+        param_utils.check_field(md, fieldname = 'settings.sb_coupling_frequency', scalar = True, ge = 1)
+        param_utils.check_field(md, fieldname = 'settings.checkpoint_frequency', scalar = True, ge = 0)
+        param_utils.check_field(md, fieldname = 'settings.waitonlock', scalar = True)
+        param_utils.check_field(md, fieldname = 'settings.solver_residue_threshold', scalar = True, gt = 0)
+
+        return md
+
     # Marshall method for saving the issmsettings parameters
     def marshall_class(self, fid, prefix, md = None):
         """

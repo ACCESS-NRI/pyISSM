@@ -417,6 +417,43 @@ def marshall_inversion_cost_functions(cost_functions):
         return [cfDict[cost_functions]]
     else:
         return [cfDict[cf] for cf in cost_functions]
+
+def supported_inversion_control_parameters():
+    """
+    Return a list of supported inversion control parameters.
+
+    Returns
+    -------
+    list of str
+        List of supported inversion control parameter names.
+    """
+
+    return [
+        'BalancethicknessThickeningRate',
+        'FrictionCoefficient',
+        'FrictionC',
+        'FrictionAs',
+        'MaterialsRheologyBbar',
+        'DamageDbar',
+        'Vx',
+        'Vy',
+        'Thickness',
+        'BalancethicknessOmega',
+        'BalancethicknessApparentMassbalance',
+        'MaterialsRheologyB'
+    ]
+
+def supported_inversion_cost_functions():
+    """
+    Return a list of supported inversion cost function codes.
+
+    Returns
+    -------
+    list of int
+        List of supported inversion cost function codes.
+    """
+    return list(range(101, 105 + 1)) + [201] + list(range(501, 508 + 1)) + [510] + list(range(601, 604 + 1))
+
     
 def _resolve_field(md, field=None, fieldname=None):
     """Retrieve a field either directly or via a dotted/indexed path."""
