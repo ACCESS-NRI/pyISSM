@@ -85,7 +85,7 @@ class levelset(class_registry.manage_state):
         return s
     
     # Check model consistency
-    def checkconsistency(self, md, solution, analyses):  # {{{
+    def check_consistency(self, md, solution, analyses):
         # Early return if not a transient moving front simulation
         if (solution != 'TransientSolution') or (not md.transient.ismovingfront):
             return md

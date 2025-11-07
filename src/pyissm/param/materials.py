@@ -120,6 +120,22 @@ class ice(class_registry.manage_state):
         s = 'ISSM - materials.ice Class'
         return s
     
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        if solution == 'TransientSolution' and md.transient.isslc:
+            param_utils.check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
+        else:
+            param_utils.check_field(md, fieldname = 'materials.rho_ice', gt = 0)
+            param_utils.check_field(md, fieldname = 'materials.rho_water', gt = 0)
+            param_utils.check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
+            param_utils.check_field(md, fieldname = 'materials.mu_water', gt = 0)
+            param_utils.check_field(md, fieldname = 'materials.rheology_B', gt = 0, size = 'universal', allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = 'materials.rheology_n', gt = 0, size = 'universal', allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = 'materials.rheology_law', values = ['None', 'BuddJacka', 'Cuffey', 'CuffeyTemperate', 'Paterson', 'Arrhenius', 'LliboutryDuval', 'NyeCO2', 'NyeH2O'])
+            param_utils.check_field(md, fieldname = 'materials.effectiveconductivity_averaging', scalar = True, values = [0, 1, 2])
+
+        return md
+    
     # Marshall method for saving the materials.ice parameters
     def marshall_class(self, fid, prefix, md = None):
         """

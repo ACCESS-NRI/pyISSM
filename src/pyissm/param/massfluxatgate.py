@@ -1,4 +1,5 @@
 import numpy as np
+import os
 from . import param_utils
 from . import class_registry
 from .. import execute
@@ -71,6 +72,27 @@ class massfluxatgate(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - massfluxatgate Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        if not isinstance(self.name, str):
+            raise RuntimeError("pyissm.param.massfluxatgate.check_consistency: 'name' field should be a string.")
+
+        if not isinstance(self.profilename, str):
+            raise RuntimeError("pyissm.param.massfluxatgate.check_consistency: 'profilename' field should be a string.")
+
+        OutputdefinitionStringArray = []
+        for i in range(1, 100):
+            x = 'Outputdefinition' + str(i)
+            OutputdefinitionStringArray.append(x)
+
+        param_utils.check_field(md, field = self.definitionstring, values = OutputdefinitionStringArray)
+
+        # Check the profilename points to a file!:
+        if not os.path.isfile(self.profilename):
+            raise FileNotFoundError(f"Profile file for gate not found: {self.profilename}")
+
+        return md
     
     # Marshall method for saving the massfluxatgate parameters
     def marshall_class(self, fid, prefix, md = None):
