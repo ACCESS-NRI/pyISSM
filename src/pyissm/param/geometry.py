@@ -131,7 +131,6 @@ class geometry(class_registry.manage_state):
             raise RuntimeError('geometry thickness time series should be a vertex or element time series')
 
         ## 2. Write other geometry fields to file (all fields are of the same type/format)
-        fieldnames = list(self.__dict__.keys())
-        fieldnames.remove('thickness') # Remove thickness as it is handled separately above
+        fieldnames = ['surface', 'base', 'bed', 'hydrostatic_ratio']
         for fieldname in fieldnames:
                 execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'DoubleMat', mattype = 1)

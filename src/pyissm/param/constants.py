@@ -103,7 +103,7 @@ class constants(class_registry.manage_state):
         """
         
         ## Write each field to the file (all fields are of the same type/format)
-        fieldnames = list(self.__dict__.keys())
+        fieldnames = ['g', 'omega', 'yts', 'referencetemperature', 'gravitational_constant']
         for fieldname in fieldnames:
             execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'Double')
 
