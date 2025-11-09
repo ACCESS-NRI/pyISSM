@@ -1,0 +1,23 @@
+name: Modify new issues
+
+# Trigger the workflow whenever a new issue is opened
+on:
+  issues:
+    types: [opened, reopened]
+
+# Grant permission to modify issues
+permissions:
+  issues: write
+
+# Run jobs
+jobs:
+
+  # Add default label to new/reopened issues
+  add-labels:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add label to new issue
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          github_token: ${{ github.token }}
+          labels: pyissm
