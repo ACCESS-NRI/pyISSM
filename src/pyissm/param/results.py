@@ -193,6 +193,11 @@ class solution(class_registry.manage_state):
         s = 'ISSM - solution Class'
         return s
     
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # No checks
+        return md
+    
     # Define getitem
     def __getitem__(self, index):
         while index >= len(self.steps):

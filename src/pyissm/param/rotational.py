@@ -62,6 +62,18 @@ class rotational(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - rotational Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if required analysis/solutions are not present
+        if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc):
+            return md
+        
+        param_utils.check_field(md, fieldname = 'solidearth.rotational.equatorialmoi', allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'solidearth.rotational.polarmoi', allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'solidearth.rotational.angularvelocity', allow_nan = False, allow_inf = False)
+        
+        return md
 
     # Marshall method for saving the rotational parameters
     def marshall_class(self, fid, prefix, md = None):

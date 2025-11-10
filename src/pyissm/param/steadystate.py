@@ -1,3 +1,4 @@
+import numpy as np
 from . import param_utils
 from . import class_registry
 from .. import execute
@@ -68,6 +69,22 @@ class steadystate(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - steadystate Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if required analysis/solutions are not present
+        if not solution == 'SteadystateSolution':
+            return md
+
+        if not md.timestepping.time_step == 0:
+            md.checkmessage("for a steadystate computation, timestepping.time_step must be zero.")
+
+        if np.isnan(md.stressbalance.reltol):
+            md.checkmessage("for a steadystate computation, stressbalance.reltol (relative convergence criterion) must be defined!")
+
+        param_utils.check_field(md, fieldname = 'steadystate.requested_outputs', string_list = True)
+
+        return md
 
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,

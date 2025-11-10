@@ -1,4 +1,5 @@
 import numpy as np
+import sys
 from . import param_utils
 from . import class_registry
 from .. import execute
@@ -204,6 +205,56 @@ class stressbalance(class_registry.manage_state):
         if return_default_outputs:
             return outputs, default_outputs
         return outputs
+    
+
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if required analysis/solutions are not present
+        if 'StressbalanceAnalysis' not in analyses:
+            return md
+        if solution == 'TransientSolution' and not md.transient.isstressbalance:
+            return md
+
+        param_utils.check_field(md, fieldname = 'stressbalance.spcvx', timeseries = True, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'stressbalance.spcvy', timeseries = True, allow_inf = False)
+        if md.mesh.domaintype() == '3D':
+            param_utils.check_field(md, fieldname = 'stressbalance.spcvz', timeseries = True, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'stressbalance.restol', scalar = True, gt = 0)
+        param_utils.check_field(md, fieldname = 'stressbalance.reltol', scalar = True)
+        param_utils.check_field(md, fieldname = 'stressbalance.abstol', scalar = True)
+        param_utils.check_field(md, fieldname = 'stressbalance.ishydrologylayer', scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = 'stressbalance.isnewton', scalar = True, values = [0, 1, 2])
+        param_utils.check_field(md, fieldname = 'stressbalance.FSreconditioning', scalar = True, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'stressbalance.maxiter', scalar = True, ge = 1)
+        param_utils.check_field(md, fieldname = 'stressbalance.referential', size = (md.mesh.numberofvertices, 6))
+        param_utils.check_field(md, fieldname = 'stressbalance.loadingforce', size = (md.mesh.numberofvertices, 3))
+        param_utils.check_field(md, fieldname = 'stressbalance.requested_outputs', string_list = True)
+        if not np.any(np.isnan(self.vertex_pairing)) and len(self.vertex_pairing) > 0:
+            param_utils.check_field(md, fieldname = 'stressbalance.vertex_pairing', ge = 0)
+        # Singular solution
+        if (not np.any(np.logical_or(np.logical_not(np.isnan(md.stressbalance.spcvx)), np.logical_not(np.isnan(md.stressbalance.spcvy))))) & (not np.any(md.mask.ocean_levelset>0)):
+            print('\n !!! Warning: no spc applied, model might not be well posed if no basal friction is applied, check for solution crash\n')
+        # CHECK THAT EACH LINES CONTAIN ONLY NAN VALUES OR NO NAN VALUES
+        if np.any(np.logical_and(np.sum(np.isnan(md.stressbalance.referential), axis=1) != 0, np.sum(np.isnan(md.stressbalance.referential), axis=1) != 6)):
+            md.checkmessage('Each line of stressbalance.referential should contain either only NaN values or no NaN values')
+        # CHECK THAT THE TWO VECTORS PROVIDED ARE ORTHOGONAL
+        if np.any(np.sum(np.isnan(md.stressbalance.referential), axis=1) == 0):
+            pos = [i for i, item in enumerate(np.sum(np.isnan(md.stressbalance.referential), axis=1)) if item == 0]
+            for item in md.stressbalance.referential[pos, :]:
+                if np.abs(np.inner(item[0:2], item[3:5])) > sys.float_info.epsilon:
+                    md.checkmessage('Vectors in stressbalance.referential (columns 1 to 3 and 4 to 6) must be orthogonal')
+        # CHECK THAT NO rotation specified for FS Grounded ice at base
+        if m.strcmp(md.mesh.domaintype(), '3D') and md.flowequation.isFS:
+            pos = np.nonzero(np.logical_and(md.mask.ocean_levelset, md.mesh.vertexonbase))
+            if np.any(np.logical_not(np.isnan(md.stressbalance.referential[pos, :]))):
+                md.checkmessage('no referential should be specified for basal vertices of grounded ice')
+        if md.flowequation.isMOLHO:
+            param_utils.check_field(md, fieldname = 'stressbalance.spcvx_base', timeseries = True, allow_inf = False)
+            param_utils.check_field(md, fieldname = 'stressbalance.spcvy_base', timeseries = True, allow_inf = False)
+            param_utils.check_field(md, fieldname = 'stressbalance.spcvx_shear', timeseries = True, allow_inf = False)
+            param_utils.check_field(md, fieldname = 'stressbalance.spcvy_shear', timeseries = True, allow_inf = False)
+            
+        return md
     
     # Marshall method for saving the stressbalance parameters
     def marshall_class(self, fid, prefix, md = None):

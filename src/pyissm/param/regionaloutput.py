@@ -1,4 +1,5 @@
 import numpy as np
+import os
 from . import param_utils
 from . import class_registry
 from .. import execute
@@ -76,6 +77,31 @@ class regionaloutput(class_registry.manage_state):
         s = 'ISSM - regionaloutput Class'
         return s
 
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+
+        if not isinstance(self.name, str):
+            raise RuntimeError("pyissm.param.regionaloutput.check_consistency: 'name' field should be a string!")
+
+        if not isinstance(self.outputnamestring, str):
+            raise RuntimeError("pyissm.param.regionaloutput.check_consistency: 'outputnamestring' field should be a string!")
+
+        if len(self.maskexpstring) > 0:
+            if not os.path.isfile(self.maskexpstring):
+                raise RuntimeError("pyissm.param.regionaloutput.check_consistency: file name for mask exp does not point to a legitimate file on disk!")
+            else:
+                self.setmaskfromexp(md)
+
+        OutputdefinitionStringArray = []
+        for i in range(1, 100):
+            x = 'Outputdefinition' + str(i)
+            OutputdefinitionStringArray.append(x)
+
+        param_utils.check_field(md, field = self.definitionstring, values = OutputdefinitionStringArray)
+        param_utils.check_field(md, field = self.mask, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        
+        return md
+    
     # Marshall method for saving the regionaloutput parameters
     def marshall_class(self, fid, prefix, md = None):
         """

@@ -72,6 +72,18 @@ class nodalvalue(class_registry.manage_state):
         s = 'ISSM - nodalvalue Class'
         return s
     
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        if not isinstance(self.name, str):
+            raise Exception("pyissm.param.nodalvalue.check_consistency: 'name' field should be a string!")
+        OutputdefinitionStringArray = []
+        for i in range(100):
+            OutputdefinitionStringArray.append('Outputdefinition{}'.format(i))
+        param_utils.check_field(md, fieldname = 'self.definitionstring', field = self.definitionstring, values = OutputdefinitionStringArray)
+        param_utils.check_field(md, fieldname = 'self.node', field = self.node, values = range(md.mesh.numberofvertices))
+        
+        return md
+
     # Marshall method for saving the nodalvalue parameters
     def marshall_class(self, fid, prefix, md = None):
         """
