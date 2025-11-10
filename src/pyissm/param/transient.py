@@ -1,4 +1,5 @@
 from . import param_utils
+from . import materials
 from . import class_registry
 from .. import execute
 
@@ -128,6 +129,38 @@ class transient(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - transient Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        #Early return if not a transient solution
+        if not solution == 'TransientSolution':
+            return md
+
+        param_utils.check_field(md, fieldname = 'transient.isage', scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = 'transient.issmb', scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = 'transient.ismasstransport', scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = 'transient.ismmemasstransport', scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = 'transient.isoceantransport', scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = 'transient.isstressbalance', scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = 'transient.isthermal', scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = 'transient.isgroundingline', scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = 'transient.isesa', scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = 'transient.isdamageevolution', scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = 'transient.ishydrology', scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = 'transient.isdebris', scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = 'transient.issampling', scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = 'transient.ismovingfront', scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = 'transient.isslc', scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = 'transient.isoceancoupling', scalar = True, values = [0, 1, 2])
+        param_utils.check_field(md, fieldname = 'transient.amr_frequency', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+
+        if solution != 'TransientSolution' and md.transient.iscoupling:
+            md.checkmessage("Coupling with ocean can only be done in transient simulations!")
+        
+        if md.transient.isdamageevolution and not isinstance(md.materials, materials.damageice):
+            md.checkmessage("requesting damage evolution but md.materials is not of class damageice")
+        
+        return md
 
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,

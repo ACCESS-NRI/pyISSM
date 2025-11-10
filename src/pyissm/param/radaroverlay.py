@@ -66,3 +66,7 @@ class radaroverlay(class_registry.manage_state):
         s = 'ISSM - radaroverlay Class'
         return s
 
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # No checks
+        return md

@@ -88,8 +88,8 @@ class default(class_registry.manage_state):
             param_utils.check_field(md, fieldname = 'smb.mass_balance', timeseries= True, allow_nan = False, allow_inf = False)
         if 'BalancethicknessAnalysis' in analyses:
             param_utils.check_field(md, fieldname = 'smb.mass_balance', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, numel = 1)
-        param_utils.check_field(md, fieldname = 'smb.averaging', numel = 1, values = [0, 1, 2])
+        param_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+        param_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
         param_utils.check_field(md, fieldname = 'smb.requested_outputs', string_list = True)
         
         return md
@@ -315,9 +315,9 @@ class arma(class_registry.manage_state):
             nbas = md.smb.num_basins
             nprm = md.smb.num_params
             nbrk = md.smb.num_breaks
-            param_utils.check_field(md, fieldname = 'smb.num_basins', numel = 1, gt = 0, allow_nan = False, allow_inf = False)
-            param_utils.check_field(md, fieldname = 'smb.num_params', numel = 1, gt = 0, allow_nan = False, allow_inf = False)
-            param_utils.check_field(md, fieldname = 'smb.num_breaks', numel = 1, ge = 0, allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = 'smb.num_basins', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = 'smb.num_params', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = 'smb.num_breaks', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
             param_utils.check_field(md, fieldname = 'smb.basin_id', ge = 0, le = md.smb.num_basins, size = (md.mesh.numberofelements, ), allow_inf = False)
 
             if nbas > 1 and nbrk >= 1 and nprm > 1:
@@ -328,9 +328,9 @@ class arma(class_registry.manage_state):
                 param_utils.check_field(md, fieldname = 'smb.polynomialparams', size = (nbas, nprm), numel = nbas * (nbrk + 1) * nprm, allow_nan = False, allow_inf = False)
             elif nprm == 1:
                 param_utils.check_field(md, fieldname = 'smb.polynomialparams', size = (nbas, nbrk), numel = nbas * (nbrk + 1) * nprm, allow_nan = False, allow_inf = False)
-            param_utils.check_field(md, fieldname = 'smb.ar_order', numel = 1, ge = 0, allow_nan = False, allow_inf = False)
-            param_utils.check_field(md, fieldname = 'smb.ma_order', numel = 1, ge = 0, allow_nan = False, allow_inf = False)
-            param_utils.check_field(md, fieldname = 'smb.arma_timestep', numel = 1, ge = md.timestepping.time_step, allow_nan = False, allow_inf = False) # Autoregression time step cannot be finer than ISSM timestep
+            param_utils.check_field(md, fieldname = 'smb.ar_order', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = 'smb.ma_order', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = 'smb.arma_timestep', scalar = True, ge = md.timestepping.time_step, allow_nan = False, allow_inf = False) # Autoregression time step cannot be finer than ISSM timestep
             param_utils.check_field(md, fieldname = 'smb.arlag_coefs', size = (nbas, md.smb.ar_order), allow_nan = False, allow_inf = False)
             param_utils.check_field(md, fieldname = 'smb.malag_coefs', size = (nbas, md.smb.ma_order), allow_nan = False, allow_inf = False)
             if nbrk > 0:
@@ -379,8 +379,8 @@ class arma(class_registry.manage_state):
                 param_utils.check_field(md, fieldname = 'smb.lapserates', size = (nbas, nbins * ntmlapse), numel = nbas * nbins * ntmlapse, allow_inf = False)
                 param_utils.check_field(md, fieldname = 'smb.elevationbins', size = (nbas, max(1, nbins - 1) * ntmlapse), numel = nbas * max(1, nbins - 1) * ntmlapse, allow_nan = False, allow_inf = False)
 
-        param_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, numel = 1)
-        param_utils.check_field(md, fieldname = 'smb.averaging', numel = 1, values = [0, 1, 2])
+        param_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+        param_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
         param_utils.check_field(md, fieldname = 'smb.requested_outputs', string_list = True)
 
         return md
@@ -678,8 +678,8 @@ class components(class_registry.manage_state):
             param_utils.check_field(md, fieldname = 'smb.accumulation', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
             param_utils.check_field(md, fieldname = 'smb.runoff', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
             param_utils.check_field(md, fieldname = 'smb.evaporation', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, numel = 1)
-        param_utils.check_field(md, fieldname = 'smb.averaging', numel = 1, values = [0, 1, 2])
+        param_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+        param_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
         param_utils.check_field(md, fieldname = 'smb.requested_outputs', string_list = True)
 
         return md
@@ -936,13 +936,13 @@ class d18opdd(class_registry.manage_state):
     
     def checkconsistency(self, md, solution, analyses):
         if 'MasstransportAnalysis' in analyses:
-            param_utils.check_field(md, fieldname = 'smb.desfac', le = 1, numel = 1)
+            param_utils.check_field(md, fieldname = 'smb.desfac', le = 1, scalar = True)
             param_utils.check_field(md, fieldname = 'smb.s0p', size = (md.mesh.numberofvertices, ), ge = 0, allow_nan = False, allow_inf = False)
             param_utils.check_field(md, fieldname = 'smb.s0t', size = (md.mesh.numberovertices, ), ge = 0, allow_nan = False, allow_inf = False)
-            param_utils.check_field(md, fieldname = 'smb.rlaps', ge = 0, numel = 1)
-            param_utils.check_field(md, fieldname = 'smb.rlapslgm', ge = 0, numel = 1)
-            param_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, numel = 1)
-            param_utils.check_field(md, fieldname = 'smb.averaging', numel = 1, values = [0, 1, 2])
+            param_utils.check_field(md, fieldname = 'smb.rlaps', ge = 0, scalar = True)
+            param_utils.check_field(md, fieldname = 'smb.rlapslgm', ge = 0, scalar = True)
+            param_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+            param_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
 
             if self.isd18opd:
                 lent = float(np.size(self.temperatures_presentday, 1))
@@ -963,8 +963,8 @@ class d18opdd(class_registry.manage_state):
                     param_utils.check_field(md, fieldname = 'smb.precipitations_reconstructed', timeseries = True, size =  (md.mesh.numberofvertices + 1, multp), allow_nan = False, allow_inf = False)
 
                 param_utils.check_field(md, fieldname = 'smb.delta18o', singletimeseries = True, size = (2, np.nan), allow_nan = False, allow_inf = False)
-                param_utils.check_field(md, fieldname = 'smb.dpermil', ge = 0, numel = 1)
-                param_utils.check_field(md, fieldname = 'smb.f', ge = 0, numel = 1)
+                param_utils.check_field(md, fieldname = 'smb.dpermil', ge = 0, scalar = True)
+                param_utils.check_field(md, fieldname = 'smb.f', ge = 0, scalar = True)
 
             if self.issetpddfac:
                 param_utils.check_field(md, fieldname = 'smb.pddfac_snow', ge = 0, allow_nan = False, allow_inf = False)
@@ -1514,8 +1514,8 @@ class gemb(class_registry.manage_state):
         he = np.sum(md.geometry.thickness[md.mesh.elements - 1], axis=1) / np.size(md.mesh.elements, 1)
         if np.any(he < self.zTop):
             raise IOError('SMBgemb consistency check error: zTop should be smaller than local ice thickness')
-        param_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, numel = 1)
-        param_utils.check_field(md, fieldname = 'smb.averaging', numel = 1, values = [0, 1, 2])
+        param_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+        param_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
         param_utils.check_field(md, fieldname = 'smb.requested_outputs', string_list = True)
 
         return md
@@ -1794,8 +1794,8 @@ class gradients(class_registry.manage_state):
             param_utils.check_field(md, fieldname = 'smb.b_pos', timeseries = True, allow_nan = False, allow_inf = False)
             param_utils.check_field(md, fieldname = 'smb.b_neg', timeseries = True, allow_nan = False, allow_inf = False)
 
-        param_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, numel = 1)
-        param_utils.check_field(md, fieldname = 'smb.averaging', numel = 1, values = [0, 1, 2])
+        param_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+        param_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
         param_utils.check_field(md, fieldname = 'masstransport.requested_outputs', string_list = True)
 
         return md
@@ -1990,15 +1990,15 @@ class gradientscomponents(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):  # {{{
         if 'MasstransportAnalysis' in analyses:
-            param_utils.check_field(md, fieldname = 'smb.accualti', numel = 1, allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = 'smb.accualti', scalar = True, allow_nan = False, allow_inf = False)
             param_utils.check_field(md, fieldname = 'smb.accuref', singletimeseries = True, allow_nan = False, allow_inf = False)
             param_utils.check_field(md, fieldname = 'smb.accugrad', singletimeseries = True, allow_nan = False, allow_inf = False)
-            param_utils.check_field(md, fieldname = 'smb.runoffalti', numel = 1, allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = 'smb.runoffalti', scalar = True, allow_nan = False, allow_inf = False)
             param_utils.check_field(md, fieldname = 'smb.runoffref', singletimeseries = True, allow_nan = False, allow_inf = False)
             param_utils.check_field(md, fieldname = 'smb.runoffgrad', singletimeseries = True, allow_nan = False, allow_inf = False)
 
-        param_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, numel = 1)
-        param_utils.check_field(md, fieldname = 'smb.averaging', numel = 1, values = [0, 1, 2])
+        param_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+        param_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
         param_utils.check_field(md, fieldname = 'masstransport.requested_outputs', string_list = True)
         
         return md
@@ -2206,8 +2206,8 @@ class gradientsela(class_registry.manage_state):
             param_utils.check_field(md, fieldname = 'smb.b_max', timeseries = True, allow_nan = False, allow_inf = False)
             param_utils.check_field(md, fieldname = 'smb.b_min', timeseries = True, allow_nan = False, allow_inf = False)
 
-        param_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, numel = 1)
-        param_utils.check_field(md, fieldname = 'smb.averaging', numel = 1, values = [0, 1, 2])
+        param_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+        param_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
         param_utils.check_field(md, fieldname = 'smb.requested_outputs', string_list = True)
 
         return md
@@ -2381,8 +2381,8 @@ class henning(class_registry.manage_state):
             param_utils.check_field(md, fieldname = 'smb.mass_balance', timeseries = True, allow_nan = False, allow_inf = False)
         if 'BalancethicknessAnalysis' in analyses:
             param_utils.check_field(md, fieldname = 'smb.mass_balance', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, numel = 1)
-        param_utils.check_field(md, fieldname = 'smb.averaging', numel = 1, values = [0, 1, 2])
+        param_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+        param_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
         param_utils.check_field(md, fieldname = 'smb.requested_outputs', string_list = True)
 
         return md
@@ -2582,8 +2582,8 @@ class meltcomponents(class_registry.manage_state):
             param_utils.check_field(md, fieldname = 'smb.refreeze', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
             param_utils.check_field(md, fieldname = 'smb.melt', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
 
-        param_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, numel = 1)
-        param_utils.check_field(md, fieldname = 'smb.averaging', numel = 1, values = [0, 1, 2])
+        param_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+        param_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
         param_utils.check_field(md, fieldname = 'smb.requested_outputs', string_list = 1)
 
         return md
@@ -2858,11 +2858,11 @@ class pdd(class_registry.manage_state):
     def check_consistency(self, md, solution, analyses):
 
         if 'MasstransportAnalysis' in analyses:
-            param_utils.check_field(md, fieldname = 'smb.desfac', le = 1, numel = 1)
+            param_utils.check_field(md, fieldname = 'smb.desfac', le = 1, scalar = True)
             param_utils.check_field(md, fieldname = 'smb.s0p', ge = 0, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
             param_utils.check_field(md, fieldname = 'smb.s0t', ge = 0, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-            param_utils.check_field(md, fieldname = 'smb.rlaps', ge = 0, numel = 1)
-            param_utils.check_field(md, fieldname = 'smb.rlapslgm', ge = 0, numel = 1)
+            param_utils.check_field(md, fieldname = 'smb.rlaps', ge = 0, scalar = True)
+            param_utils.check_field(md, fieldname = 'smb.rlapslgm', ge = 0, scalar = True)
 
             if (self.isdelta18o == 0 and self.ismungsm == 0):
                 param_utils.check_field(md, fieldname = 'smb.monthlytemperatures', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
@@ -2889,8 +2889,8 @@ class pdd(class_registry.manage_state):
                 param_utils.check_field(md, fieldname = 'smb.pddfac_snow', ge = 0, allow_nan = False, allow_inf = False)
                 param_utils.check_field(md, fieldname = 'smb.pddfac_ice', ge = 0, allow_nan = False, allow_inf = False)
 
-        param_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, numel = 1)
-        param_utils.check_field(md, fieldname = 'smb.averaging', numel = 1, values = [0, 1, 2])
+        param_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+        param_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
         param_utils.check_field(md, fieldname = 'masstransport.requested_outputs', string_list = 1)
 
         return md
@@ -3145,14 +3145,14 @@ class pddSicopolis(class_registry.manage_state):
         if solution == 'TransientSolution' and not md.transient.issmb:
             return
         if 'MasstransportAnalysis' in analyses:
-            param_utils.check_field(md, fieldname = 'smb.desfac', ge = 1, numel = 1)
+            param_utils.check_field(md, fieldname = 'smb.desfac', ge = 1, scalar = True)
             param_utils.check_field(md, fieldname = 'smb.s0p', ge = 0, size = (md.mesh.numberofvertices, 1), allow_nan = False, allow_inf = False)
             param_utils.check_field(md, fieldname = 'smb.s0t', ge = 0, size = (md.mesh.numberofvertices, 1), allow_nan = False, allow_inf = False)
-            param_utils.check_field(md, fieldname = 'smb.rlaps', ge = 0, numel = 1)
+            param_utils.check_field(md, fieldname = 'smb.rlaps', ge = 0, scalar = True)
             param_utils.check_field(md, fieldname = 'smb.monthlytemperatures', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
             param_utils.check_field(md, fieldname = 'smb.precipitation', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, numel = 1)
-        param_utils.check_field(md, fieldname = 'smb.averaging', numel = 1, values = [0, 1, 2])
+        param_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+        param_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
         param_utils.check_field(md, fieldname = 'smb.requested_outputs', string_list = 1)
         
         return md

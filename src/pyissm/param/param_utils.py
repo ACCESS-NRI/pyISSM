@@ -454,6 +454,41 @@ def supported_inversion_cost_functions():
     """
     return list(range(101, 105 + 1)) + [201] + list(range(501, 508 + 1)) + [510] + list(range(601, 604 + 1))
 
+def supported_analyses():
+    """
+    Return a list of supported analyses.
+
+    Returns
+    -------
+    list of str
+        List of supported analyses.
+    """
+    return [
+        'DefaultAnalysis',
+        'RecoveryAnalysis',
+        'StressbalanceAnalysis',
+        'StressbalanceVerticalAnalysis',
+        'GLheightadvectionAnalysis',
+        'MasstransportAnalysis',
+        'ThermalAnalysis',
+        'EnthalpyAnalysis',
+        'AdjointBalancethicknessAnalysis',
+        'BalancethicknessAnalysis',
+        'Balancethickness2Analysis',
+        'BalancethicknessSoftAnalysis',
+        'BalancevelocityAnalysis',
+        'DamageEvolutionAnalysis',
+        'LoveAnalysis',
+        'EsaAnalysis',
+        'SealevelchangeAnalysis',
+        'FreeSurfaceBaseAnalysis',
+        'FreeSurfaceTopAnalysis',
+        'LevelsetAnalysis',
+        'DebrisAnalysis',
+        'L2ProjectionBaseAnalysis',
+        'ExtrudeFromBaseAnalysis',
+        'ExtrudeFromTopAnalysis'
+    ]
     
 def _resolve_field(md, field=None, fieldname=None):
     """Retrieve a field either directly or via a dotted/indexed path."""

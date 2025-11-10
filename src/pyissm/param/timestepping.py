@@ -97,6 +97,23 @@ class default(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - timestepping.default Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        param_utils.check_field(md, fieldname = 'timestepping.start_time', scalar = True, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'timestepping.final_time', scalar = True, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'timestepping.time_step', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'timestepping.interp_forcing', scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = 'timestepping.average_forcing', scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = 'timestepping.cycle_forcing', scalar = True, values = [0, 1])
+        
+        if (self.final_time - self.start_time) < 0:
+            md.checkmessage('timestepping.final_time should be larger than timestepping.start_time')
+        
+        if solution == 'TransientSolution':
+            param_utils.check_field(md, fieldname = 'timestepping.time_step', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+
+        return md
 
     # Marshall method for saving the timestepping.default() parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -241,6 +258,22 @@ class adaptive(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - timestepping.adaptive Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        param_utils.check_field(md, fieldname = 'timestepping.start_time', scalar = True, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'timestepping.final_time', scalar = True, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'timestepping.time_step_min', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'timestepping.time_step_max', scalar = True, ge = md.timestepping.time_step_min, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'timestepping.cfl_coefficient', scalar = True, gt = 0, le = 1)
+        if self.final_time - self.start_time < 0:
+            md.checkmessage("timestepping.final_time should be larger than timestepping.start_time")
+        param_utils.check_field(md, fieldname = 'timestepping.interp_forcing', scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = 'timestepping.average_forcing', scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = 'timestepping.cycle_forcing', scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = 'timestepping.coupling_time', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+
+        return md
 
     # Marshall method for saving the timestepping.adaptive parameters
     def marshall_class(self, fid, prefix, md = None):

@@ -70,5 +70,5 @@ class private(class_registry.manage_state):
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        # No checks for now
+        # No checks
         return md

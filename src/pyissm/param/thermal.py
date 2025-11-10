@@ -108,7 +108,39 @@ class thermal(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - thermal Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if required analyses/solution are not present
+        if ('ThermalAnalysis' not in analyses and 'EnthalpyAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isthermal):
+            return md
+        
+        param_utils.check_field(md, fieldname = 'thermal.stabilization', scalar = True, values = [0, 1, 2, 3])
+        param_utils.check_field(md, fieldname = 'thermal.spctemperature', timeseries = True, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'thermal.fe', values = ['P1', 'P1xP2', 'P1xP3'])
+        param_utils.check_field(md, fieldname = 'thermal.requested_outputs', string_list = True)
+        if 'EnthalpyAnalysis' in analyses and md.thermal.isenthalpy and md.mesh.dimension() == 3:
+            param_utils.check_field(md, fieldname = 'thermal.isdrainicecolumn', scalar = True, values = [0, 1])
+            param_utils.check_field(md, fieldname = 'thermal.watercolumn_upperlimit', ge = 0)
 
+            TEMP = md.thermal.spctemperature[:-1].flatten()
+            pos = np.where(~np.isnan(TEMP))
+            try:
+                spccol = np.size(md.thermal.spctemperature, 1)
+            except IndexError:
+                spccol = 1
+
+            replicate = np.tile(md.geometry.surface - md.mesh.z, (spccol)).flatten()
+            control = md.materials.meltingpoint - md.materials.beta * md.materials.rho_ice * md.constants.g * replicate + 1.0e-5
+            param_utils.check_field(md, fieldname = 'thermal.spctemperature', field = md.thermal.spctemperature.flatten()[pos], le = control[pos], message = "spctemperature should be below the adjusted melting point")
+            param_utils.check_field(md, fieldname = 'thermal.isenthalpy', scalar = True, values = [0, 1])
+            param_utils.check_field(md, fieldname = 'thermal.isdynamicbasalspc', scalar = True, values = [0, 1])
+            if(md.thermal.isenthalpy):
+                if np.isnan(md.stressbalance.reltol):
+                    md.checkmessage("for a steadystate computation, thermal.reltol (relative convergence criterion) must be defined!")
+                param_utils.check_field(md, fieldname = 'thermal.reltol', gt = 0. , message = "reltol must be larger than zero")
+
+        return md
     
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,

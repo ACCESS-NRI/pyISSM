@@ -76,12 +76,8 @@ class toolkits(class_registry.manage_state):
                           'Returning empty toolkits class to be defined manually.')
             self.DefaultAnalysis = {'toolkit': '',         
                                     'mat_type': '',
-                                    'ksp_type': '',
-                                    'pc_type': '',
-                                    'mat_mumps_icntl_14': '',
-                                    'pc_factor_mat_solver': '',
-                                    'mat_mumps_icntl_28': np.nan,
-                                    'mat_mumps_icntl_29': np.nan
+                                    'vec_type': '',
+                                    'solver_type': ''
                                     }
             self.RecoveryAnalysis = self.DefaultAnalysis
 
@@ -96,6 +92,21 @@ class toolkits(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - toolkits Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+
+        supported_analyses = param_utils.supported_analyses()
+
+        analyses = list(vars(self).keys())
+        for analysis in analyses:
+            if analysis not in supported_analyses:
+                md.checkmessage('md.toolkits.{} not supported yet'.format(analysis))
+
+            if not getattr(self, analysis):
+                md.checkmessage('md.toolkits.{} is empty'.format(analysis))
+
+        return md
     
     def write_toolkits_file(self, filename):
         """

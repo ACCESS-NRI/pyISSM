@@ -78,7 +78,7 @@ class surfaceload(class_registry.manage_state):
         if type(self.waterheightchange) == np.ndarray:
             param_utils.check_field(md, fieldname = 'solidearth.surfaceload.waterheightchange', timeseries = True, allow_nan = False, allow_inf = False)
         if type(self.otherchange) == np.ndarray:
-            param_utils.check_field(md, fieldname = 'solidearth.surfaceload.other', timeseries = True, allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = 'solidearth.surfaceload.otherchange', timeseries = True, allow_nan = False, allow_inf = False)
 
         return md
     

@@ -62,6 +62,11 @@ class default(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - results.default Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # No checks
+        return md
 
 ## ------------------------------------------------------
 ## results.resultsdakota
@@ -120,6 +125,10 @@ class resultsdakota(class_registry.manage_state):
         s = 'ISSM - resultsdakota Class'
         return s
 
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # No checks
+        return md
 ## ------------------------------------------------------
 ## results.solution
 ## ------------------------------------------------------
@@ -311,6 +320,11 @@ class solutionstep(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - solutionstep Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # No checks
+        return md
 
     # Define get_fieldnames
     def get_fieldnames(self):
