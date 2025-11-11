@@ -217,7 +217,7 @@ class stressbalance(class_registry.manage_state):
 
         param_utils.check_field(md, fieldname = 'stressbalance.spcvx', timeseries = True, allow_inf = False)
         param_utils.check_field(md, fieldname = 'stressbalance.spcvy', timeseries = True, allow_inf = False)
-        if md.mesh.domaintype() == '3D':
+        if md.mesh.domain_type() == '3D':
             param_utils.check_field(md, fieldname = 'stressbalance.spcvz', timeseries = True, allow_inf = False)
         param_utils.check_field(md, fieldname = 'stressbalance.restol', scalar = True, gt = 0)
         param_utils.check_field(md, fieldname = 'stressbalance.reltol', scalar = True)
@@ -244,7 +244,7 @@ class stressbalance(class_registry.manage_state):
                 if np.abs(np.inner(item[0:2], item[3:5])) > sys.float_info.epsilon:
                     md.checkmessage('Vectors in stressbalance.referential (columns 1 to 3 and 4 to 6) must be orthogonal')
         # CHECK THAT NO rotation specified for FS Grounded ice at base
-        if m.strcmp(md.mesh.domaintype(), '3D') and md.flowequation.isFS:
+        if (md.mesh.domain_type() == '3D') and md.flowequation.isFS:
             pos = np.nonzero(np.logical_and(md.mask.ocean_levelset, md.mesh.vertexonbase))
             if np.any(np.logical_not(np.isnan(md.stressbalance.referential[pos, :]))):
                 md.checkmessage('no referential should be specified for basal vertices of grounded ice')

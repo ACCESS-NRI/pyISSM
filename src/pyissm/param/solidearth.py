@@ -4,6 +4,7 @@ from . import param_utils
 from . import class_registry
 from . import rotational
 from . import lovenumbers
+from . import mesh
 from .. import execute
 
 ## ------------------------------------------------------
@@ -116,6 +117,23 @@ class earth(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - solidearth.earth Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if required analyses/solution not present
+        if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc):
+            return md
+
+        param_utils.check_field(md, fieldname = 'solidearth.requested_outputs', string_list = True)
+
+        settings.check_consistency(md, solution, analyses)
+        lovenumbers.check_consistency(md, solution, analyses)
+        rotational.check_consistency(md, solution, analyses)
+        if self.external:
+            if not isinstance(self.external, solution):
+                raise Exception('pyissm.param.solidearth.earth.check_consistency: external field should be a pyissm.param.solidearth.solution')
+            self.external.check_consistency(md, solution, analyses)
+        return md
 
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,
@@ -331,6 +349,23 @@ class europa(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - solidearth.europa Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if required analyses/solution not present
+        if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc):
+            return md
+
+        param_utils.check_field(md, fieldname = 'solidearth.requested_outputs', string_list = True)
+
+        settings.check_consistency(md, solution, analyses)
+        lovenumbers.check_consistency(md, solution, analyses)
+        rotational.check_consistency(md, solution, analyses)
+        if self.external:
+            if not isinstance(self.external, solution):
+                raise Exception('pyissm.param.solidearth.earth.check_consistency: external field should be a pyissm.param.solidearth.solution')
+            self.external.check_consistency(md, solution, analyses)
+        return md
     
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,
@@ -575,6 +610,43 @@ class settings(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - solidearth.settings Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if required analyses/solution not present
+        if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc):
+            return md
+
+        param_utils.check_field(md, fieldname = 'solidearth.settings.reltol', scalar = True)
+        param_utils.check_field(md, fieldname = 'solidearth.settings.abstol', scalar = True)
+        param_utils.check_field(md, fieldname = 'solidearth.settings.maxiter', scalar = True, ge = 1)
+        param_utils.check_field(md, fieldname = 'solidearth.settings.runfrequency', scalar = True, ge = 1)
+        param_utils.check_field(md, fieldname = 'solidearth.settings.degacc', scalar = True, ge = 1e-10)
+        param_utils.check_field(md, fieldname = 'solidearth.settings.timeacc', scalar = True, gt = 0)
+        param_utils.check_field(md, fieldname = 'solidearth.settings.horiz', values = [0, 1], allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'solidearth.settings.grdmodel', ge = 0, le = 2)
+        param_utils.check_field(md, fieldname = 'solidearth.settings.cross_section_shape', scalar = True, values = [1, 2])
+
+        if self.elastic and not self.selfattraction:
+            raise Exception('pyissm.param.solidearth.settings.check_consistency: need selfattraction on if elastic flag is set')
+        if self.viscous and not self.elastic:
+            raise Exception('pyissm.param.solidearth.settings.check_consistency: need elastic on if viscous flag is set')
+
+        # A GRD computation has been requested, make some checks on the nature of the meshes provided
+        if self.isgrd:
+            if isinstance(md.mesh, mesh.mesh3dsurface):
+                if self.grdmodel == 2:
+                    raise Exception('pyissm.param.solidearth.settings.check_consistency: model requires a 2D mesh to run gia Ivins computations (change mesh from mesh3dsurface to mesh2d)')
+            else:
+                if self.grdmodel == 1:
+                    raise Exception('pyissm.param.solidearth.settings.check_consistency: model requires a 3D surface mesh to run GRD computations (change mesh from mesh2d to mesh3dsurface)')
+            if self.sealevelloading and not self.grdocean:
+                raise Exception('solidearthsettings checkconsistency error message: need grdocean on if sealevelloading flag is set')
+
+        if self.compute_bp_grd and not md.solidearth.settings.isgrd:
+            raise Exception('pyissm.param.solidearth.settings.check_consistency: if bottom pressure grd patterns are requested, solidearth settings class should have isgrd flag on')
+
+        return md
 
     # Marshall method for saving the solidearth.settings parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -698,6 +770,15 @@ class solution(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - solidearth.solution Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        param_utils.check_field(md, fieldname = 'solidearth.external.displacementeast', timeseries = True, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'solidearth.external.displacementnorth', timeseries = True, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'solidearth.external.displacementup', timeseries = True, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'solidearth.external.geoid', timeseries = True, allow_inf = False)
+
+        return md
 
     # Marshall method for saving the solidearth.solution parameters
     def marshall_class(self, fid, prefix, md = None):

@@ -3,6 +3,11 @@ import numpy as np
 import os
 import re
 from operator import attrgetter
+from . import basalforcings
+from . import calving
+from . import friction
+from . import smb
+from . import frontalforcings
 
 """
 Functions for formatting and displaying model fields in ISSM classes. Taken from $ISSM_DIR/src/m/miscellaneous/fielddisplay.py.
@@ -489,7 +494,39 @@ def supported_analyses():
         'ExtrudeFromBaseAnalysis',
         'ExtrudeFromTopAnalysis'
     ]
+
+def supported_stochastic_forcings(return_dict = False):
+    """Return supported stochastic forcings.
     
+    Parameters
+    ----------
+    return_dict : bool, default=False
+        If True, return the full mapping dict; 
+        otherwise, return just the list of keys.
+
+    Returns
+    -------
+    dict or list of str
+        Mapping of supported stochastic forcing fields to their
+        corresponding parameter modules, or list of field names.
+
+    Notes
+    -----
+    Maintain legacy naming for compatibility with MATLAB version
+    """
+    structure = {
+        'BasalforcingsDeepwaterMeltingRatearma': basalforcings.lineararma,
+        'BasalforcingsSpatialDeepwaterMeltingRate': basalforcings.spatiallinear,
+        'DefaultCalving': calving.default,
+        'FloatingMeltRate': basalforcings.default,
+        'FrictionWaterPressure': friction.schoof,
+        'FrontalForcingsRignotarma': frontalforcings.rignotarma,
+        'FrontalForcingsSubglacialDischargearma': frontalforcings.rignotarma,
+        'SMBarma': smb.arma,
+        'SMBforcing': smb.default,
+    }
+    return structure if return_dict else list(structure.keys())
+
 def _resolve_field(md, field=None, fieldname=None):
     """Retrieve a field either directly or via a dotted/indexed path."""
     if field is not None:

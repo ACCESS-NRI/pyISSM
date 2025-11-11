@@ -1,4 +1,8 @@
 import numpy as np
+import warnings
+
+from . import friction
+from . import hydrology
 from . import param_utils
 from . import class_registry
 from .. import execute
@@ -57,7 +61,7 @@ class stochasticforcing(class_registry.manage_state):
     # Initialise with default parameters
     def __init__(self, other = None):
         self.isstochasticforcing = 0
-        self.fields = 'List of fields'
+        self.fields = []
         self.defaultdimension = 0
         self.default_id = np.nan
         self.covariance = np.nan
@@ -72,7 +76,7 @@ class stochasticforcing(class_registry.manage_state):
     def __repr__(self):
         s = '   stochasticforcing parameters:\n'
         s += '{}\n'.format(param_utils.fielddisplay(self, 'isstochasticforcing', 'is stochasticity activated?'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'fields', 'fields with stochasticity applied, ex: [\'SMBautoregression\'], or [\'SMBforcing\',\'DefaultCalving\']'))
+        s += '{}\n'.format(param_utils.fielddisplay(self, 'fields', 'fields with stochasticity applied, ex: [\'smb.default\',\'calving.default\']'))
         s += '{}\n'.format(param_utils.fielddisplay(self, 'defaultdimension', 'dimensionality of the noise terms (does not apply to fields with their specific dimension)'))
         s += '{}\n'.format(param_utils.fielddisplay(self, 'default_id', 'id of each element for partitioning of the noise terms (does not apply to fields with their specific partition)'))
         s += '{}\n'.format(param_utils.fielddisplay(self, 'covariance', 'covariance matrix for within- and between-fields covariance (units must be squared field units),multiple matrices can be concatenated along 3rd dimension to apply different covariances in time'))
@@ -97,6 +101,156 @@ class stochasticforcing(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - stochasticforcing Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if stochasticforcing not enabled
+        if not self.isstochasticforcing:
+            return md
+
+        num_fields = len(self.fields)
+
+        # If not specified, set stochastictimestep to md.timestepping.time_step
+        if self.stochastictimestep == 0:
+            md.stochasticforcing.stochastictimestep = md.timestepping.time_step
+            warnings.warn('pyissm.param.stochasticforcing.check_consistency: stochasticforcing.stochastictimestep not specified -- set to md.timestepping.time_step')
+
+        # Covariance matrix checks
+        if(len(np.shape(self.covariance))==3):
+           # Set number of covariance matrices in time
+           numtcovmat = np.shape(self.covariance)[2]
+           lsCovmats = []
+           for ii in range(numtcovmat):
+               lsCovmats.append(self.covariance[:,:,ii])
+               try:
+                   np.linalg.cholesky(self.covariance[:,:,ii])
+               except:
+                   raise TypeError('pyissm.param.stochasticforcing.check_consistency: an entry in md.stochasticforcing.covariance is not positive definite')
+        elif(len(np.shape(self.covariance))==2):
+            numtcovmat = 1
+            lsCovmats = [self.covariance]
+            # Check that covariance matrix is positive definite (this is done internally by linalg)
+            try:
+                np.linalg.cholesky(self.covariance)
+            except:
+                raise TypeError('pyissm.param.stochasticforcing.check_consistency:md.stochasticforcing.covariance is not positive definite')
+
+        # Check that all fields agree with the corresponding md class and if any field needs the default params
+        checkdefaults = False  # Need to check defaults only if one of the fields does not have its own dimensionality
+        structstoch = param_utils.supported_stochastic_forcings(return_dict = True)
+        
+        # Check if hydrologyarmapw is used
+        if isinstance(md.hydrology, hydrology.armapw) and md.transient.ishydrology==1:
+            ispwHydroarma = 1
+        else:
+            ispwHydroarma = 0
+
+        component_map = {
+            'SMB': md.smb,
+            'FrontalForcings': md.frontalforcings,
+            'Calving': md.calving,
+            'Basalforcings': md.basalforcings,
+            'Friction': md.friction
+        }
+
+        for field in self.fields:
+            expected_class = structstoch.get(field)
+            if expected_class is None:
+                raise ValueError(f'Field {field} in stochasticforcing is not recognized.')
+            
+            # Identify which md submodel this field belongs to
+            component = next((obj for key, obj in component_map.items() if key in field), None)
+            if component is None:
+                raise ValueError(f"Cannot identify model component for stochasticforcing field '{field}'")
+            
+            # Handle friction (WaterPressure)
+            if "WaterPressure" in field:
+                if not isinstance(md.friction, (friction.default, friction.coulomb, friction.schoof)):
+                    raise TypeError(f"md.friction does not agree with stochasticforcing field '{field}'")
+
+                if md.friction.coupling not in [0, 1, 2]:
+                    raise TypeError(
+                        f"stochasticforcing field '{field}' only supported for md.friction.coupling in [0, 1, 2]"
+                    )
+
+                if isinstance(md.friction, friction) and np.any(md.friction.q == 0):
+                    raise TypeError(f"stochasticforcing field '{field}' requires non-zero q exponent")
+
+                continue
+
+            # Handle other components
+            if not isinstance(component, expected_class):
+                raise TypeError(
+                    f"{component.__class__.__name__} does not agree with stochasticforcing field '{field}' "
+                    f"(expected instance of {expected_class.__name__})"
+                    )
+
+            # Check dimensions
+            if (field not in ["SMBarma", "FrontalForcingsRignotarma", "BasalforcingsDeepwaterMeltingRatearma"] and not (field == "FrictionWaterPressure" and ispwHydroarma)):
+                checkdefaults = True 
+
+
+        # Retrieve sum of all the field dimensionalities
+        dimensions = self.defaultdimension * np.ones((num_fields))
+
+        # Mapping of supported ARMA fields to their md components
+        # NOTE: Maintain legacy naming for compatibility with MATLAB version
+        arma_fields = {
+            "SMBarma": ("smb", "arma_timestep", "num_basins", "indSMBarma"),
+            "FrontalForcingsRignotarma": ("frontalforcings", "arma_timestep", "num_basins", "indTFarma"),
+            "FrontalForcingsSubglacialDischargearma": ("frontalforcings", "sd_arma_timestep", "num_basins", "indSdarma"),
+            "BasalforcingsDeepwaterMeltingRatearma": ("basalforcings", "arma_timestep", "num_basins", "indBDWarma"),
+            "hydrologyarmapw": ("hydrology", "arma_timestep", "num_basins", "indPwarma"),
+        }
+
+        # Initialise index variables for compatibility
+        indSMBarma = indTFarma = indSdarma = indBDWarma = indPwarma = -1
+        indices = {}
+        timesteps = {}
+
+        # Assign dimensions and check timesteps
+        for field, (attr, ts_attr, dim_attr) in arma_fields.items():
+            if field in self.fields:
+                idx = self.fields.index(field)
+                obj = getattr(md, attr)
+                dimensions[idx] = getattr(obj, dim_attr)
+                indices[field] = idx
+                timesteps[field] = getattr(obj, ts_attr)
+                if timesteps[field] < self.stochastictimestep:
+                    raise TypeError(f"{field} cannot have a timestep shorter than stochastictimestep")
+
+        size_tot = np.sum(dimensions)
+
+        # Check pairwise covariance consistency
+        present_fields = list(indices.keys())
+        for i, f1 in enumerate(present_fields):
+            for f2 in present_fields[i + 1 :]:
+                ts1, ts2 = timesteps[f1], timesteps[f2]
+                if ts1 == ts2:
+                    continue  # same timestep, OK
+
+                i1, i2 = indices[f1], indices[f2]
+                for covm in lsCovmats:
+                    r1, r2 = int(np.sum(dimensions[:i1])), int(np.sum(dimensions[:i1 + 1]))
+                    c1, c2 = int(np.sum(dimensions[:i2])), int(np.sum(dimensions[:i2 + 1]))
+                    covsum = covm[r1:r2, c1:c2]
+                    if np.any(covsum != 0):
+                        raise IOError(
+                            f"{f1} and {f2} have different arma_timestep and non-zero covariance"
+                        )
+
+        param_utils.check_field(md, fieldname = 'stochasticforcing.isstochasticforcing', values = [0, 1])
+        param_utils.check_field(md, fieldname = 'stochasticforcing.fields', numel = num_fields, cell = True, values = param_utils.supported_stochastic_forcings())
+        param_utils.check_field(md, fieldname = 'stochasticforcing.covariance', size = (size_tot, size_tot, numtcovmat), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'stochasticforcing.stochastictimestep', ge = md.timestepping.time_step, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'stochasticforcing.randomflag', scalar = True, values = [0, 1])
+        if(numtcovmat > 1):
+            param_utils.check_field(md, fieldname = 'stochasticforcing.timecovariance', ge = md.timestepping.start_time, le = md.timestepping.final_time, size = (1, numtcovmat), allow_nan = False, allow_inf = False)
+        if checkdefaults:
+            param_utils.check_field(md, fieldname = 'stochasticforcing.defaultdimension', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = 'stochasticforcing.default_id', ge = 0, le = self.defaultdimension, size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+
+        return md
 
     # Marshall method for saving the stochasticforcing parameters
     def marshall_class(self, fid, prefix, md = None):
