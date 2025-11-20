@@ -5,8 +5,8 @@ Functions for parameterising ISSM models.
 import numpy as np
 import os
 import warnings
-from .. import model
-from .. import utils
+from pyissm import model
+from pyissm import utils
 
 def set_mask(md,
              floating_ice_name = None,

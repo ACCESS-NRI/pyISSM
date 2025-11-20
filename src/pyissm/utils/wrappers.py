@@ -15,7 +15,7 @@ import pathlib
 import glob
 import numpy as np
 import warnings
-from .. import param
+from pyissm import param
 
 
 # Check for ISSM_DIR

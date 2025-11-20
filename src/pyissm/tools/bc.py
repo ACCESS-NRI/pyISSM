@@ -5,7 +5,7 @@ Tools for setting boundary conditions on ISSM models.
 import warnings
 import numpy as np
 import os
-from .. import utils
+from pyissm import utils
 
 def get_ice_front_nodes(md, ice_front_exp):
     """Identify nodes on the ice front from the provided contour file."""

@@ -8,7 +8,7 @@ import collections
 import platform
 import os
 import socket
-from . import wrappers
+from pyissm.utils import wrappers
 
 def mumps_options(**kwargs):
     """

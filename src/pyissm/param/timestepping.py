@@ -1,6 +1,6 @@
-from . import param_utils
-from . import class_registry
-from .. import execute
+from pyissm.param import param_utils
+from pyissm.param import class_registry
+from pyissm import execute
 
 ## ------------------------------------------------------
 ## timestepping.default

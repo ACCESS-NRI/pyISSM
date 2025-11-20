@@ -1,8 +1,9 @@
 import yaml
 import subprocess
 import numpy as np
-from . import param_utils, class_registry
-from .. import utils, model
+from pyissm.param import param_utils
+from pyissm.param import class_registry
+from pyissm import utils, model
 
 ## ------------------------------------------------------
 ## cluster.generic

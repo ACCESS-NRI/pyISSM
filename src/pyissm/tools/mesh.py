@@ -7,10 +7,10 @@ import warnings
 import os
 import collections
 
-from .. import utils
-from .. import param
-from .. import core
-from . import exp
+from pyissm import utils
+from pyissm import param
+from pyissm import core
+from pyissm.tools import exp
 
 def triangle(md,
              domain_name,

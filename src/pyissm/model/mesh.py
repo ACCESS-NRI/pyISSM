@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.tri as tri
 from scipy.interpolate import griddata
 import warnings
-from .. import utils
+from pyissm import utils
 
 def get_mesh(mesh_x,
              mesh_y,

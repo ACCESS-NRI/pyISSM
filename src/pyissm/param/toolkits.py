@@ -1,8 +1,8 @@
 import warnings
 import numpy as np
-from . import class_registry
-from . import param_utils
-from .. import utils
+from pyissm.param import class_registry
+from pyissm.param import param_utils
+from pyissm import utils
 
 @class_registry.register_class
 class toolkits(class_registry.manage_state):

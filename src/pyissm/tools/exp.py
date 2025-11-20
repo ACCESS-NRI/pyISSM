@@ -6,7 +6,6 @@ import numpy as np
 import collections
 import os
 
-
 def exp_write(contours, filename):
     """
     Write contours to an exp file.

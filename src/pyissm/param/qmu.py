@@ -1,9 +1,8 @@
 import numpy as np
 import collections
 import warnings
-from . import param_utils
-from . import class_registry
-from .. import execute
+from pyissm.param import class_registry
+from pyissm import execute
 
 ## ------------------------------------------------------
 ## qmu.default

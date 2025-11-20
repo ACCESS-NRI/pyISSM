@@ -1,1 +1,1 @@
-from . import io, mesh
+from pyissm.model import io, mesh

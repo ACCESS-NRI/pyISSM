@@ -1,7 +1,7 @@
 """
 Primary class for all ISSM model interactions.
 """
-from . import param
+from pyissm import param
 
 class Model():
     """

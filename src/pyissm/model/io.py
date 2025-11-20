@@ -14,7 +14,7 @@ import warnings
 import sys
 import shutil
 
-from .. import core, analysis, model, param, utils
+from pyissm import core, analysis, model, param, utils
 
 def load_model(path):
     """

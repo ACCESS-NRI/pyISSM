@@ -1,1 +1,1 @@
-from . import datapool
+from pyissm.data import datapool

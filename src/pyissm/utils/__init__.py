@@ -1,1 +1,1 @@
-from . import general, wrappers, config
+from pyissm.utils import general, wrappers, config

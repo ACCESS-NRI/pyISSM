@@ -1,1 +1,1 @@
-from . import tutorials
+from pyissm.learn import tutorials

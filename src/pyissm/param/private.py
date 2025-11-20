@@ -1,6 +1,6 @@
 import collections
-from . import param_utils
-from . import class_registry
+from pyissm.param import param_utils
+from pyissm.param import class_registry
 
 @class_registry.register_class
 class private(class_registry.manage_state):

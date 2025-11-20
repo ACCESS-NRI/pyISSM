@@ -1,11 +1,11 @@
 import numpy as np
-from .. import utils
-from . import param_utils
-from . import class_registry
-from . import rotational
-from . import lovenumbers
-from . import mesh
-from .. import execute
+from pyissm.param import param_utils
+from pyissm.param import class_registry
+from pyissm.param import rotational
+from pyissm.param import lovenumbers
+from pyissm.param import mesh
+from pyissm import utils
+from pyissm import execute
 
 ## ------------------------------------------------------
 ## solidearth.earth

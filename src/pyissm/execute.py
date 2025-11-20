@@ -9,7 +9,7 @@ import datetime
 import warnings
 import collections
 
-from . import utils, param
+from pyissm import utils, param
 
 
 def marshall(md):

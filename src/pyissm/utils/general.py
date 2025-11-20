@@ -5,7 +5,7 @@ This module contains various utility functions that are used throughout the ISSM
 """
 
 import numpy as np
-from .. import model
+from pyissm import model
 
 
 ## ------------------------------------------------------------------------------------

@@ -5,7 +5,7 @@ Functions to visualize ISSM Models
 import matplotlib.pyplot as plt
 import matplotlib
 import numpy as np
-from . import model, utils
+from pyissm import model, utils
 import warnings
 
 ## ------------------------------------------------------------------------------------
