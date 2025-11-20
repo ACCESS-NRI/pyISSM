@@ -128,6 +128,28 @@ class amr(class_registry.manage_state):
         s = 'ISSM - amr Class'
         return s
     
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        param_utils.check_field(md, fieldname = "amr.hmax", scalar = True, gt = 0, allow_nan = False)
+        param_utils.check_field(md, fieldname = "amr.hmin", scalar = True, gt = 0, lt = self.hmax, allow_nan = False)
+        param_utils.check_field(md, fieldname = "amr.keepmetric", scalar = True, ge = 0, le = 1, allow_nan = False)
+        param_utils.check_field(md, fieldname = "amr.gradation", scalar = True, ge = 1.1, le = 5, allow_nan = False)
+        param_utils.check_field(md, fieldname = "amr.groundingline_resolution", scalar = True, gt = 0, lt = self.hmax, allow_nan = False)
+        param_utils.check_field(md, fieldname = "amr.groundingline_distance", scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "amr.icefront_resolution", scalar = True, gt = 0, lt = self.hmax, allow_nan = False)
+        param_utils.check_field(md, fieldname = "amr.icefront_distance", scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "amr.thicknesserror_resolution", scalar = True, gt = 0, lt = self.hmax, allow_nan = False)
+        param_utils.check_field(md, fieldname = "amr.thicknesserror_threshold", scalar = True, ge = 0, le = 1, allow_nan = False)
+        param_utils.check_field(md, fieldname = "amr.thicknesserror_groupthreshold", scalar = True, ge = 0, le = 1, allow_nan = False)
+        param_utils.check_field(md, fieldname = "amr.thicknesserror_maximum", scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "amr.deviatoricerror_resolution", scalar = True, gt = 0, lt = self.hmax, allow_nan = False)
+        param_utils.check_field(md, fieldname = "amr.deviatoricerror_threshold", scalar = True, ge = 0, le = 1, allow_nan = False)
+        param_utils.check_field(md, fieldname = "amr.deviatoricerror_groupthreshold", scalar = True, ge = 0, le = 1, allow_nan = False)
+        param_utils.check_field(md, fieldname = "amr.deviatoricerror_maximum", scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "amr.restart", scalar = True, ge = 0, le = 1, allow_nan = False)
+
+        return md
+
     # Marshall method for saving the amr parameters
     def marshall_class(self, fid, prefix, md = None):
         """

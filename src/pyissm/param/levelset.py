@@ -83,6 +83,20 @@ class levelset(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - levelset Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if not a transient moving front simulation
+        if (solution != 'TransientSolution') or (not md.transient.ismovingfront):
+            return md
+
+        param_utils.check_field(md, fieldname = 'levelset.spclevelset', timeseries = True, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'levelset.stabilization', scalar = True, values = [0, 1, 2, 5, 6])
+        param_utils.check_field(md, fieldname = 'levelset.kill_icebergs', scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = 'levelset.migration_max', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'levelset.fe', values = ['P1', 'P2'])
+
+        return md
 
     # Marshall method for saving the levelset parameters
     def marshall_class(self, fid, prefix, md = None):

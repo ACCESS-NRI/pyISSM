@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 from . import param_utils
 from . import class_registry
 from .. import execute
@@ -134,9 +135,59 @@ class flowequation(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - flowequation Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if necessary analyses and solutions not present
+        if ('StressbalanceAnalysis' not in analyses and 'StressbalanceSIAAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isstressbalance):
+            return md
+
+        param_utils.check_field(md, fieldname = "flowequation.isSIA", scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = "flowequation.isSSA", scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = "flowequation.isL1L2", scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = "flowequation.isMOLHO", scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = "flowequation.isHO", scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = "flowequation.isFS", scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = "flowequation.isNitscheBC", scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = "flowequation.FSNitscheGamma", scalar = True, ge = 0.0)
+        param_utils.check_field(md, fieldname = 'flowequation.fe_SSA', values = ['P1', 'P1bubble', 'P1bubblecondensed', 'P2', 'P2bubble'])
+        param_utils.check_field(md, fieldname = 'flowequation.fe_HO', values =  ['P1', 'P1bubble', 'P1bubblecondensed', 'P1xP2', 'P2xP1', 'P2', 'P2bubble', 'P1xP3', 'P2xP4'])
+        param_utils.check_field(md, fieldname = 'flowequation.fe_FS', values = ['P1P1', 'P1P1GLS', 'MINIcondensed', 'MINI', 'TaylorHood', 'LATaylorHood', 'XTaylorHood', 'OneLayerP4z', 'CrouzeixRaviart', 'LACrouzeixRaviart'])
+        param_utils.check_field(md, fieldname = 'flowequation.borderSSA', size = (md.mesh.numberofvertices, ), values = [0, 1])
+        param_utils.check_field(md, fieldname = 'flowequation.borderHO', size = (md.mesh.numberofvertices, ), values = [0, 1])
+        param_utils.check_field(md, fieldname = 'flowequation.borderFS', size = (md.mesh.numberofvertices, ), values = [0, 1])
+        param_utils.check_field(md, fieldname = "flowequation.augmented_lagrangian_r", scalar = True, gt = 0.0)
+        param_utils.check_field(md, fieldname = "flowequation.augmented_lagrangian_rhop", scalar = True, gt = 0.0)
+        param_utils.check_field(md, fieldname = "flowequation.augmented_lagrangian_rlambda", scalar = True, gt = 0.0)
+        param_utils.check_field(md, fieldname = "flowequation.augmented_lagrangian_rholambda", scalar = True, gt = 0.0)
+        param_utils.check_field(md, fieldname = "flowequation.XTH_theta", scalar = True, ge = 0.0, lt = 0.5)
+
+        if md.mesh.domain_type() == '2Dhorizontal':
+            param_utils.check_field(md, fieldname = 'flowequation.vertex_equation', size = (md.mesh.numberofvertices, ), values = [1, 2, 4])
+            param_utils.check_field(md, fieldname = 'flowequation.element_equation', size = (md.mesh.numberofelements, ), values = [1, 2, 4])
+        elif md.mesh.domain_type() == '3Dsurface':
+            param_utils.check_field(md, fieldname = 'flowequation.vertex_equation', size = (md.mesh.numberofvertices, ), values = np.arange(1, 2 + 1))
+            param_utils.check_field(md, fieldname = 'flowequation.element_equation', size = (md.mesh.numberofelements, ), values = np.arange(1, 2 + 1))
+        elif md.mesh.domain_type() == '2Dvertical':
+            param_utils.check_field(md, fieldname = 'flowequation.vertex_equation', size = (md.mesh.numberofvertices, ), values = [2, 5, 6])
+            param_utils.check_field(md, fieldname = 'flowequation.element_equation', size = (md.mesh.numberofelements, ), values = [2, 5, 6])
+        elif md.mesh.domain_type() == '3D':
+            param_utils.check_field(md, fieldname = 'flowequation.vertex_equation', size = (md.mesh.numberofvertices, ), values = np.arange(0, 9 + 1))
+            param_utils.check_field(md, fieldname = 'flowequation.element_equation', size = (md.mesh.numberofelements, ), values = np.arange(0, 9 + 1))
+        else:
+            raise RuntimeError(f'pyissm.param.flowequation.check_consistency: unknown domain_type: {md.mesh.domain_type()}.')
+    
+        if not (self.isSIA or self.isSSA or self.isL1L2 or self.isMOLHO or self.isHO or self.isFS):
+            md.checkmessage("no element types set for this model")
+        if 'StressbalanceSIAAnalysis' in analyses:
+            if any(self.element_equation == 1):
+                if np.any(np.logical_and(self.vertex_equation, md.mask.ocean_levelset)):
+                    warnings.warn("\n !!! Warning: SIA's model is not consistent on ice shelves !!!\n")
+        
+        return md
 
     # Marshall method for saving the flowequation parameters
-    def marshall_class(self, fid, prefix, md = None):
+    def marshall_class(self, fid, prefix, md  =  None):
         """
         Marshall [flowequation] parameters to a binary file.
 

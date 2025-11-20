@@ -88,6 +88,23 @@ class masstransport(class_registry.manage_state):
         s = 'ISSM - masstransport Class'
         return s
     
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if required analyses and solution are not requested
+        if ('MasstransportAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.ismasstransport):
+            return md
+
+        param_utils.check_field(md, fieldname = 'masstransport.spcthickness', timeseries = True, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'masstransport.isfreesurface', values = [0, 1])
+        param_utils.check_field(md, fieldname = 'masstransport.hydrostatic_adjustment', values = ['Absolute', 'Incremental'])
+        param_utils.check_field(md, fieldname = 'masstransport.stabilization', values = [0, 1, 2, 3, 4, 5])
+        param_utils.check_field(md, fieldname = 'masstransport.min_thickness', gt = 0)
+        param_utils.check_field(md, fieldname = 'masstransport.requested_outputs', string_list = True)
+        if not np.any(np.isnan(self.vertex_pairing)) and len(self.vertex_pairing) > 0:
+            param_utils.check_field(md, fieldname = 'stressbalance.vertex_pairing', gt = 0)
+
+        return md
+    
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,
                         md = None,

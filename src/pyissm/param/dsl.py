@@ -65,6 +65,20 @@ class default(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - dsl Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if no sealevelchange analysis or if transient solution without isslc or oceantransport
+        if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc) or (not md.transient.isoceantransport):
+            return md
+        param_utils.check_field(md, fieldname = 'dsl.global_average_thermosteric_sea_level', allow_nan = True, allow_inf = True)
+        param_utils.check_field(md, fieldname = 'dsl.sea_surface_height_above_geoid', allow_nan = True, allow_inf = True, timeseries = True)
+        param_utils.check_field(md, fieldname = 'dsl.sea_water_pressure_at_sea_floor', allow_nan = True, allow_inf = True, timeseries = True)
+
+        if md.solidearth.settings.compute_bp_grd:
+            param_utils.check_field(md, fieldname = 'dsl.sea_water_pressure_at_sea_floor', allow_empty = True)
+
+        return md
 
     # Marshall method for saving the dsl.default parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -161,6 +175,25 @@ class mme(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - dsl mme Class'
         return s
+    
+
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if no sealevelchange analysis or if transient solution without isslc or oceantransport
+        if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc) or (not md.transient.isoceantransport):
+            return md
+
+        for i in range(len(self.global_average_thermosteric_sea_level)):
+            param_utils.check_field(md, field = self.global_average_thermosteric_sea_level[i], allow_nan = True, allow_inf = True)
+            param_utils.check_field(md, field = self.sea_surface_height_above_geoid[i], allow_nan = True, allow_inf = True, timeseries = True)
+            param_utils.check_field(md, field = self.sea_water_pressure_at_sea_floor[i], allow_nan = True, allow_inf = True, timeseries = True)
+        
+        param_utils.check_field(md, field = self.modelid, allow_nan = True, allow_inf = True, ge = 1, le = len(self.global_average_thermosteric_sea_level))
+
+        if self.solidearth.settings.compute_bp_grd:
+            param_utils.check_field(md, field = self.sea_water_pressure_at_sea_floor, allow_empty = True)
+
+        return md
     
     # Marshall method for saving the dsl.default parameters
     def marshall_class(self, fid, prefix, md = None):

@@ -120,6 +120,22 @@ class ice(class_registry.manage_state):
         s = 'ISSM - materials.ice Class'
         return s
     
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        if solution == 'TransientSolution' and md.transient.isslc:
+            param_utils.check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
+        else:
+            param_utils.check_field(md, fieldname = 'materials.rho_ice', gt = 0)
+            param_utils.check_field(md, fieldname = 'materials.rho_water', gt = 0)
+            param_utils.check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
+            param_utils.check_field(md, fieldname = 'materials.mu_water', gt = 0)
+            param_utils.check_field(md, fieldname = 'materials.rheology_B', gt = 0, size = 'universal', allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = 'materials.rheology_n', gt = 0, size = 'universal', allow_nan = False, allow_inf = False)
+            param_utils.check_field(md, fieldname = 'materials.rheology_law', values = ['None', 'BuddJacka', 'Cuffey', 'CuffeyTemperate', 'Paterson', 'Arrhenius', 'LliboutryDuval', 'NyeCO2', 'NyeH2O'])
+            param_utils.check_field(md, fieldname = 'materials.effectiveconductivity_averaging', scalar = True, values = [0, 1, 2])
+
+        return md
+    
     # Marshall method for saving the materials.ice parameters
     def marshall_class(self, fid, prefix, md = None):
         """
@@ -223,6 +239,15 @@ class hydro(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - materials.hydro Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        param_utils.check_field(md, fieldname = 'materials.rho_ice', gt = 0)
+        param_utils.check_field(md, fieldname = 'materials.rho_water', gt = 0)
+        param_utils.check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
+        param_utils.check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
+
+        return md
     
     # Marshall method for saving the materials.hydro parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -363,7 +388,44 @@ class litho(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - materials.litho Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if not LoveAnalysis
+        if 'LoveAnalysis' not in analyses:
+            return md
+        
+        param_utils.check_field(md, fieldname = 'materials.numlayers', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'materials.radius', size = (md.materials.numlayers + 1, 1), gt = 0, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'materials.lame_mu', size = (md.materials.numlayers, 1), ge = 0, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'materials.lame_lambda', size = (md.materials.numlayers, 1), ge = 0, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'materials.issolid', size = (md.materials.numlayers, 1), ge = 0, lt = 2, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'materials.density', size = (md.materials.numlayers, 1), gt = 0, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'materials.viscosity', size = (md.materials.numlayers, 1), ge = 0, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'materials.rheologymodel', size = (md.materials.layers, 1), ge = 0, le = 2, allow_nan = False, allow_inf = False)
 
+        if np.any(self.rheologymodel == 1):
+            param_utils.check_field(md, fieldname = 'materials.burgers_viscosity', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
+            param_utils.check_field(md, fieldname = 'materials.burgers_mu', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
+
+        if np.any(self.rheologymodel == 2):
+            param_utils.check_field(md, fieldname = 'materials.ebm_alpha', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
+            param_utils.check_field(md, fieldname = 'materials.ebm_delta', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
+            param_utils.check_field(md, fieldname = 'materials.ebm_taul', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
+            param_utils.check_field(md, fieldname = 'materials.ebm_tauh', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
+
+        for i in range(md.materials.numlayers):
+            if md.materials.rheologymodel[i] == 1 and (np.isnan(md.materials.burgers_viscosity[i] or np.isnan(md.materials.burgers_mu[i]))):
+                raise RuntimeError('pyissm.param.materials.litho.check_consistency: Litho burgers_viscosity or burgers_mu has NaN values, inconsistent with rheologymodel choice')
+
+            if md.materials.rheologymodel[i] == 2 and (np.isnan(md.materials.ebm_alpha[i]) or np.isnan(md.materials.ebm_delta[i]) or np.isnan(md.materials.ebm_taul[i]) or np.isnan(md.materials.ebm_tauh[i])):
+                raise RuntimeError('pyissm.param.materials.litho.check_consistency: Litho ebm_alpha, ebm_delta, ebm_taul or ebm_tauh has NaN values, inconsistent with rheologymodel choice')
+        if md.materials.issolid[0] == 0 or md.materials.lame_mu[0] == 0:
+            raise RuntimeError('First layer must be solid (issolid[0] > 0 AND lame_mu[0] > 0). Add a weak inner core if necessary.')
+        ind = np.where(md.materials.issolid == 0)[0]
+
+        return md
+    
     # Marshall method for saving the materials.litho parameters
     def marshall_class(self, fid, prefix, md = None):
         """
@@ -523,6 +585,22 @@ class damageice(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - materials.damageice Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        param_utils.check_field(md, fieldname = 'materials.rho_ice', gt = 0)
+        param_utils.check_field(md, fieldname = 'materials.rho_water', gt = 0)
+        param_utils.check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
+        param_utils.check_field(md, fieldname = 'materials.mu_water', gt = 0)
+        param_utils.check_field(md, fieldname = 'materials.rheology_B', size = (md.mesh.numberofvertices, ), gt = 0)
+        param_utils.check_field(md, fieldname = 'materials.rheology_n', size = (md.mesh.numberofelements, ), gt = 0)
+        param_utils.check_field(md, fieldname = 'materials.rheology_law', values = ['None', 'BuddJacka', 'Cuffey', 'CuffeyTemperate', 'Paterson', 'Arrhenius', 'LliboutryDuval'])
+        param_utils.check_field(md, fieldname = 'materials.effectiveconductivity_averaging', scalar = True, values = [0, 1, 2])
+
+        if 'SealevelchangeAnalysis' in analyses:
+            param_utils.check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
+
+        return md
     
     # Marshall method for saving the materials.damageice parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -684,6 +762,23 @@ class enhancedice(class_registry.manage_state):
         s = 'ISSM - materials.enhancedice Class'
         return s
     
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        param_utils.check_field(md, fieldname = 'materials.rho_ice', gt = 0)
+        param_utils.check_field(md, fieldname = 'materials.rho_water', gt = 0)
+        param_utils.check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
+        param_utils.check_field(md, fieldname = 'materials.mu_water', gt = 0)
+        param_utils.check_field(md, fieldname = 'materials.rheology_E', timeseries = True, gt = 0, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'materials.rheology_B', timeseries = True, gt = 0, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'materials.rheology_n', size = (md.mesh.numberofelements, ), gt = 0)
+        param_utils.check_field(md, fieldname = 'materials.rheology_law', values = ['None', 'BuddJacka', 'Cuffey', 'CuffeyTemperate', 'Paterson', 'Arrhenius', 'LliboutryDuval'])
+        param_utils.check_field(md, fieldname = 'materials.effectiveconductivity_averaging', scalar = True, values = [0, 1, 2])
+
+        if 'SealevelchangeAnalysis' in analyses:
+            param_utils.check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
+
+        return md
+    
     # Marshall method for saving the materials.enhancedice parameters
     def marshall_class(self, fid, prefix, md = None):
         """
@@ -844,6 +939,23 @@ class estar(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - materials.estar Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        param_utils.check_field(md, fieldname = 'materials.rho_ice', gt = 0)
+        param_utils.check_field(md, fieldname = 'materials.rho_water', gt = 0)
+        param_utils.check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
+        param_utils.check_field(md, fieldname = 'materials.mu_water', gt = 0)
+        param_utils.check_field(md, fieldname = 'materials.rheology_B', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'materials.rheology_Ec', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'materials.rheology_Es', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'materials.rheology_law', values = ['None', 'BuddJacka', 'Cuffey', 'CuffeyTemperate', 'Paterson', 'Arrhenius', 'LliboutryDuval'])
+        param_utils.check_field(md, fieldname = 'materials.effectiveconductivity_averaging', scalar = True, values = [0, 1, 2])
+
+        if 'SealevelchangeAnalysis' in analyses:
+            param_utils.check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
+
+        return md
 
     # Marshall method for saving the materials.estar parameters
     def marshall_class(self, fid, prefix, md = None):

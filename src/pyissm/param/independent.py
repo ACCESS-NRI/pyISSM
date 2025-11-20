@@ -89,4 +89,17 @@ class independent(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - independent Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, i, solution, analyses, driver):
+        if not np.isnan(self.fos_forward_index):
+            if self.nods == 0:
+                raise TypeError('pyissm.param.independent.check_consistency: nods should be set to the size of the independent variable')
 
+        if len(self.fov_forward_indices) > 0:
+            if self.nods == 0:
+                raise TypeError('pyissm.param.independent.check_consistency: nods should be set to the size of the independent variable')
+            
+            param_utils.check_field(md, fieldname = 'autodiff.independents[%d].fov_forward_indices' % i, ge = 1, le = self.nods)
+
+        return md

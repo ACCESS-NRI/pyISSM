@@ -75,6 +75,15 @@ class balancethickness(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - balancethickness Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+            
+        param_utils.check_field(md, fieldname = "balancethickness.spcthickness")
+        param_utils.check_field(md, fieldname = "balancethickness.thickening_rate", size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "balancethickness.stabilization", scalar = True, values = [0, 1, 2, 3])
+
+        return md
 
     # Marshall method for saving the balancethickness parameters
     def marshall_class(self, fid, prefix, md = None):

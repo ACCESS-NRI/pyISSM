@@ -61,6 +61,19 @@ class mask(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - mask Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if LoveSolution requested
+        if solution == 'LoveSolution':
+            return md
+
+        param_utils.check_field(md, fieldname = 'mask.ice_levelset', size = (md.mesh.numberofvertices, ))
+        is_ice = np.array(md.mask.ice_levelset <= 0, int)
+        if np.sum(is_ice) == 0:
+            raise ValueError('pyissm.param.mask.check_consistency: mask.ice_levelset does not contain any ice (all values > 0)')
+
+        return md
 
     # Marshall method for saving the mask parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -82,6 +95,6 @@ class mask(class_registry.manage_state):
         """
 
         ## Write fields (consistent format for all)
-        fieldnames = list(self.__dict__.keys())
+        fieldnames = ['ice_levelset', 'ocean_levelset']
         for fieldname in fieldnames:
             execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)

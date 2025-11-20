@@ -105,4 +105,17 @@ class dependent(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - dependent Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        if self.name.lower() == 'massflux':
+            if not self.segments:
+                raise ValueError('pyissm.param.dependent.check_consistency: need segments to compute massflux dependent variable response')
+            if self.index < 0:
+                raise ValueError('pyissm.param.dependent.check_consistency: index for massflux dependent variable must be non-negative')
+            
+        if not np.isnan(self.fos_reverse_index):
+            if self.nods == 0:
+                raise ValueError('pyissm.param.dependent.check_consistency: nods must be specified when fos_reverse_index is used')
 
+        return md

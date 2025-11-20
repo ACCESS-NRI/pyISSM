@@ -51,29 +51,28 @@ def marshall(md):
         fid = open(md.miscellaneous.name + '.bin', 'wb')
     except IOError as e:
         raise IOError(f"Could not open file {md.miscellaneous.name}.bin for writing: {e}")
-    
-    # List (and sort) all model classes. Sort simply makes it easier to compare binary files
-    model_classes = list(vars(md).keys())
-    model_classes.sort()
-    
+        
     # Iterate over all model classes and marshall them
-    for model_class in model_classes:
+    for model_class in md.model_class_names():
         ## Skip certain classes that do not need marshalling
         if model_class in ['results', 'radaroverlay', 'toolkits', 'cluster', 'private']:
             continue
+
+        ## Get the model class object
+        obj = getattr(md, model_class)
         
         ## Check if the model class has a marshall method
         try:
-            callable(getattr(md, model_class).marshall_class)
+            callable(obj.marshall_class)
         except Exception as e:
             print(f"Skipping {model_class} due to error: {e}")
             continue
 
         ## Marshall the model class
         try:
-            getattr(md, model_class).marshall_class(fid = fid,
-                                                    prefix = f'md.{model_class}',
-                                                    md = md)
+            obj.marshall_class(fid = fid,
+                               prefix = f'md.{model_class}',
+                               md = md)
         except Exception as e:
             raise RuntimeError(f"Error marshalling model class {model_class}: {e}")
         
@@ -1009,7 +1008,7 @@ def solve(md,
     if check_consistency:
         if md.verbose.solution:
             print('Checking model consistency...')
-        is_model_consistent(md)
+        is_model_self_consistent(md)
     
     ## If using restart, use the provided runtime name
     if restart is not None:
@@ -1113,10 +1112,188 @@ def solve(md,
         print('Model results must be loaded manually with md = load_results_from_cluster(md)')
 
     return md
-    
 
-def is_model_consistent(md):
-    print('is_model_consistent not implemented yet')
+
+def _get_analysis_for_solution(solution_type):
+    """
+    Map solution type to analysis type.
+
+    This function returns the analysis type corresponding to a given solution type.
+    It is used to determine the appropriate analysis method for different solution
+    strategies in the ISSM framework.
+
+    Parameters
+    ----------
+    solution_type : str
+        The solution type string. Supported values include:
+
+
+    Returns
+    -------
+    str
+        The corresponding analysis type string.
+
+    Raises
+    ------
+    ValueError
+        If the provided solution_type is not recognized.
+    """
+
+    analyses_map = {'StressbalanceSolution': ['StressbalanceAnalysis',
+                                            'StressbalanceVerticalAnalysis',
+                                            'StressbalanceSIAAnalysis',
+                                            'L2ProjectionBaseAnalysis'],
+                    'SteadystateSolution': ['StressbalanceAnalysis',
+                                            'StressbalanceVerticalAnalysis',
+                                            'StressbalanceSIAAnalysis',
+                                            'L2ProjectionBaseAnalysis',
+                                            'ThermalAnalysis',
+                                            'MeltingAnalysis',
+                                            'EnthalpyAnalysis',
+                                            'AgeAnalysis'],
+                    'ThermalSolution': ['EnthalpyAnalysis',
+                                        'ThermalAnalysis',
+                                        'MeltingAnalysis'],
+                    'MasstransportSolution': ['MasstransportAnalysis'],
+                    'OceantransportSolution': ['OceantransportAnalysis'],
+                    'BalancethicknessSolution': ['BalancethicknessAnalysis'],
+                    'Balancethickness2Solution': ['Balancethickness2Analysis'],
+                    'BalancethicknessSoftSolution': ['BalancethicknessAnalysis'],
+                    'BalancevelocitySolution': ['BalancevelocityAnalysis'],
+                    'SurfaceSlopeSolution': ['L2ProjectionBaseAnalysis'],
+                    'BedSlopeSolution': ['L2ProjectionBaseAnalysis'],
+                    'GiaSolution': ['GiaIvinsAnalysis'],
+                    'LoveSolution': ['LoveAnalysis'],
+                    'EsaSolution': ['EsaAnalysis'],
+                    'TransientSolution': ['StressbalanceAnalysis',
+                                        'StressbalanceVerticalAnalysis',
+                                        'StressbalanceSIAAnalysis',
+                                        'L2ProjectionBaseAnalysis',
+                                        'ThermalAnalysis',
+                                        'MeltingAnalysis',
+                                        'EnthalpyAnalysis',
+                                        'MasstransportAnalysis',
+                                        'OceantransportAnalysis',
+                                        'HydrologyShaktiAnalysis',
+                                        'HydrologyGladsAnalysis',
+                                        'HydrologyShreveAnalysis',
+                                        'HydrologyTwsAnalysis',
+                                        'HydrologyDCInefficientAnalysis',
+                                        'HydrologyDCEfficientAnalysis',
+                                        'SealevelchangeAnalysis',
+                                        'AgeAnalysis',
+                                        'HydrologyArmapwAnalysis',
+                                        'DebrisAnalysis'],
+                        'SealevelchangeSolution': ['SealevelchangeAnalysis'],
+                        'HydrologySolution': ['L2ProjectionBaseAnalysis',
+                                            'HydrologyShreveAnalysis',
+                                            'HydrologyDCInefficientAnalysis',
+                                            'HydrologyDCEfficientAnalysis',
+                                            'HydrologyGladsAnalysis',
+                                            'HydrologyShaktiAnalysis',
+                                            'HydrologyTwsAnalysis',
+                                            'HydrologyArmapwAnalysis'],
+                        'DamageEvolutionSolution': ['DamageEvolutionAnalysis'],
+                        'SamplingSolution': ['SamplingAnalysis']
+                        }
+
+    try:
+        return analyses_map[solution_type]
+    except KeyError:
+        raise TypeError(f"pyissm.execute._get_analysis_for_solution: Solution type '{solution_type}' not supported.")
+
+
+def is_model_self_consistent(md):
+    """
+    Check that all relevant model classes in the given model are self-consistent.
+    This function iterates over the model classes returned by md.model_class_names(),
+    skips a small set of classes that are not subject to consistency checking
+    ('results', 'debug', 'radaroverlay'), and invokes a consistency check on each
+    model class that provides a check_consistency method. The routine:
+    - Initializes md.private.isconsistent to True.
+    - Retrieves the model solution and any associated analyses.
+    - For each model class:
+        - If the class does not expose a callable `check_consistency` it is skipped
+            (a message is printed to stdout).
+        - Otherwise, calls obj.check_consistency(md, solution, analyses).
+        - If that call raises an exception, records a message via md.check_message
+            and sets md.private.isconsistent to False.
+    - If any consistency check fails (md.private.isconsistent becomes False),
+        raises a RuntimeError to indicate the overall model is not consistent.
+
+    Parameters
+    ----------
+    md : object
+            The model object to validate. The object is expected to provide:
+            - md.private, an attribute with at least `isconsistent` (bool) and
+                `solution` attributes;
+            - md.model_class_names(), a callable that returns an iterable of model
+                class name strings;
+            - for each name returned by md.model_class_names(), an attribute on `md`
+                with that name, representing the model class object;
+            - md.check_message(msg: str), a callable used to record consistency
+                failure messages.
+
+    Returns
+    -------
+    None
+            This function performs in-place updates to `md` (notably
+            md.private.isconsistent) and does not return a value.
+
+    Raises
+    ------
+    RuntimeError
+            If any per-class consistency check fails. In that case, md.private.isconsistent
+            will be set to False and a RuntimeError is raised after the failing check(s)
+            so callers are made aware that the model is not consistent.
+
+    Notes
+    -----
+    - Classes named 'results', 'debug', and 'radaroverlay' are intentionally skipped.
+    - If a model class does not provide a callable `check_consistency` attribute,
+        a message will be printed to stdout and the class will be skipped.
+    - Consistency checks are expected to follow the signature:
+        check_consistency(md, solution, analyses). Any exception raised by a
+        check_consistency implementation will be caught, recorded via
+        md.check_message, and treated as a failure.
+    - This function mutates md.private.isconsistent; callers can inspect that value
+        to determine consistency state prior to handling the RuntimeError.
+    """
+
+    # Initialize consistency flag
+    md.private.isconsistent = True
+
+    # Get solution and associated analyses
+    solution = md.private.solution
+    analyses = _get_analysis_for_solution(solution)
+
+    for model_class in md.model_class_names():
+        # Skip select model classes
+        if model_class in {'results', 'debug', 'radaroverlay'}:
+            continue
+
+        # Get model class object
+        obj = getattr(md, model_class)
+
+        # Check if the model class has a check_consistency method
+        try:
+            callable(obj.check_consistency)
+        except Exception as e:
+            # NOTE: using md.check_message here would throw an inconsistency error since it modifies md.private.isconsistent. Just skip these classes for now.
+            print(f"No check_consistency() available for model class '{model_class}'.")
+            continue
+
+        # Perform consistency check
+        try:
+            obj.check_consistency(md, solution, analyses)
+        except Exception as e:
+            md.check_message(f"Consistency check failed for model class '{model_class}': {e}")
+            md.private.isconsistent = False
+
+        # If an inconsistency is found, md.private.isconsistent is set to False
+        if not md.private.isconsistent:
+            raise RuntimeError("pyissm.execute.is_model_self_consistent: model not consistent — see messages above.")
+    
     return
 
 def preprocess_qmu(md):

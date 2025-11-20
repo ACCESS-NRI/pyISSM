@@ -83,6 +83,11 @@ class verbose(class_registry.manage_state):
         s = 'ISSM - verbose Class'
         return s
     
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # No checks
+        return md
+    
     def VerboseToBinary(self):
         """
         Convert current verbosity settings to integer bitmask.

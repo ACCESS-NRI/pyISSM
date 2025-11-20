@@ -95,6 +95,25 @@ class misfit(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - misfit Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        if type(self.name) != str:
+            raise TypeError('pyissm.param.misfit.check_consistency: "name" field should be a string!')
+
+        OutputdefinitionStringArray = []
+        for i in range(100):
+            OutputdefinitionStringArray.append('Outputdefinition' + str(i))
+
+        param_utils.check_field(md, fieldname = 'self.definitionstring', field = self.definitionstring, values = OutputdefinitionStringArray)
+        if type(self.timeinterpolation) != str:
+            raise TypeError('pyissm.param.misfit.check_consistency: "timeinterpolation" field should be a string!')
+
+        param_utils.check_field(md, fieldname = 'self.observation', field = self.observation, timeseries = True, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'self.timeinterpolation', field = self.timeinterpolation, values = ['nearestneighbor'])
+        param_utils.check_field(md, fieldname = 'self.weights', field = self.weights, timeseries = True, allow_nan = False, allow_inf = False)
+
+        return md
 
     # Marshall method for saving the misfit parameters
     def marshall_class(self, fid, prefix, md = None):

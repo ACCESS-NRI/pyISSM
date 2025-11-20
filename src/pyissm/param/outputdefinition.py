@@ -57,6 +57,16 @@ class outputdefinition(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - outputdefinition Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        param_utils.check_field(md, fieldname = 'outputdefinition.definitions', string_list = True)
+        
+        # Loop over definitions and check their consistency
+        for definition in self.definitions:
+            definition.check_consistency(md, solution, analyses)
+        
+        return md
 
     # Marshall method for saving the outputdefinition parameters
     def marshall_class(self, fid, prefix, md = None):

@@ -65,6 +65,11 @@ class miscellaneous(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - miscellaneous Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        param_utils.check_field(md, fieldname = 'miscellaneous.name', allow_empty = False)
+        return md
 
     # Marshall method for saving the miscellaneous parameters
     def marshall_class(self, fid, prefix, md = None):

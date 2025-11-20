@@ -73,6 +73,16 @@ class constants(class_registry.manage_state):
         s = 'ISSM - constants Class'
         return s
 
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        param_utils.check_field(md, fieldname = 'constants.g', ge = 0, scalar = True) # We allow 0 for validation tests
+        param_utils.check_field(md, fieldname = 'constants.omega', ge = 0, scalar = True)
+        param_utils.check_field(md, fieldname = 'constants.yts', ge = 0, scalar = True)
+        param_utils.check_field(md, fieldname = 'constants.referencetemperature', scalar = True)
+        param_utils.check_field(md, fieldname = 'constants.gravitational_constant', scalar = True)
+
+        return md
+
     # Marshall method for saving the constants parameters
     def marshall_class(self, fid, prefix, md = None):
         """
@@ -93,7 +103,7 @@ class constants(class_registry.manage_state):
         """
         
         ## Write each field to the file (all fields are of the same type/format)
-        fieldnames = list(self.__dict__.keys())
+        fieldnames = ['g', 'omega', 'yts', 'referencetemperature', 'gravitational_constant']
         for fieldname in fieldnames:
             execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'Double')
 

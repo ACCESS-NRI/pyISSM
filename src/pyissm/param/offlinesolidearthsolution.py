@@ -65,6 +65,19 @@ class offlinesolidearthsolution(class_registry.manage_state):
         s = 'ISSM - offlinesolidearthsolution Class'
         return s
 
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if required analyses and solutions not present
+        if ('SealevelchangeAnalysis' not in analyses) or ((solution=='TransientSolution') and (md.solidearth.settings.isgrd==1)): 
+            print('pyissm.param.offlinesolidearthsolution.check_consistency: trying to run GRD patterns while supplying an offline solution for those patterns!')
+            return md 
+        param_utils.check_field(md, fieldname = 'solidearth.external.displacementeast', timeseries = True, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'solidearth.external.displacementnorth', timeseries = True, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'solidearth.external.displacementup',  timeseries = True, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'solidearth.external.geoid', timeseries = True, allow_inf = False)
+
+        return md
+
     # Marshall method for saving the offlinesolidearthsolution parameters
     def marshall_class(self, fid, prefix, md = None):
         """

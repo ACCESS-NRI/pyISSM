@@ -127,6 +127,35 @@ class damage(class_registry.manage_state):
         s = 'ISSM - damage Class'
         return s
     
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        param_utils.check_field(md, fieldname = "damage.isdamage", scalar = True, values = [0, 1])
+
+        if self.isdamage:
+            param_utils.check_field(md, fieldname = "damage.D", ge = 0, le = self.max_damage, size = (md.mesh.numberofvertices, ))
+            param_utils.check_field(md, fieldname = "damage.max_damage", ge = 0, lt = 1)
+            param_utils.check_field(md, fieldname = "damage.law", scalar = True, values = [0, 1, 2, 3])
+            param_utils.check_field(md, fieldname = "damage.spcdamage", allow_inf = True, timeseries = True)
+            param_utils.check_field(md, fieldname = "damage.stabilization", scalar = True, values = [0, 1, 2, 4])
+            param_utils.check_field(md, fieldname = "damage.maxiter", ge = 0)
+            param_utils.check_field(md, fieldname = "damage.elementinterp", values = ["P1", "P2"])
+            param_utils.check_field(md, fieldname = "damage.stress_threshold", ge = 0)
+            param_utils.check_field(md, fieldname = "damage.stress_ubound", ge = 0)
+            param_utils.check_field(md, fieldname = "damage.kappa", gt = 1)
+            param_utils.check_field(md, fieldname = "damage.healing", ge = 0)
+            param_utils.check_field(md, fieldname = "damage.c1", ge = 0)
+            param_utils.check_field(md, fieldname = "damage.c2", ge = 0)
+            param_utils.check_field(md, fieldname = "damage.c3", ge = 0)
+            param_utils.check_field(md, fieldname = "damage.c4", ge = 0)
+            param_utils.check_field(md, fieldname = "damage.equiv_stress", scalar = True, values = [0, 1])
+            param_utils.check_field(md, fieldname = "damage.requested_outputs", string_list = True)
+
+        elif self.law != 0:
+            if solution == "DamageEvolutionSolution":
+                raise RuntimeError("pyissm.param.damage.check_consistency: Invalid evolution law (md.damage.law) for a damage solution")
+
+        return md
+    
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,
                         md = None,

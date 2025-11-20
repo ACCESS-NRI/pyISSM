@@ -69,9 +69,9 @@ class autodiff(class_registry.manage_state):
 
     # Initialise with default parameters
     def __init__(self, other = None):
-        self.isautodiff = 0.
-        self.dependents = 'List dependents'
-        self.independents = 'List independents'
+        self.isautodiff = 0
+        self.dependents = []
+        self.independents = []
         self.driver = 'fos_forward'
         self.obufsize = 524288
         self.lbufsize = 524288
@@ -111,6 +111,50 @@ class autodiff(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - autodiff Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        param_utils.check_field(md, fieldname = "autodiff.isautodiff", scalar = True, values = [0, 1])
+        
+        # Early return if autodiff is not activated
+        if not self.isautodiff:
+            return md
+    
+        # Buffer sizes
+        param_utils.check_field(md, fieldname = "autodiff.obufsize", ge = 524288)
+        param_utils.check_field(md, fieldname = "autodiff.lbufsize", ge = 524288)
+        param_utils.check_field(md, fieldname = "autodiff.cbufsize", ge = 524288)
+        param_utils.check_field(md, fieldname = "autodiff.tbufsize", ge = 524288)
+
+        # Garbage collector options
+        param_utils.check_field(md, fieldname = "autodiff.gcTriggerRatio", ge = 2.0)
+        param_utils.check_field(md, fieldname = "autodiff.gcTriggerMaxSize", ge = 65536)
+        param_utils.check_field(md, fieldname = "autodiff.tapeAlloc", ge = 0)
+
+        # Memory and time output flags (single element, either 0 or 1)
+        param_utils.check_field(md, fieldname = "autodiff.outputTapeMemory", scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = "autodiff.outputTime", scalar = True, values = [0, 1])
+
+        # Memory reduction options
+        param_utils.check_field(md, fieldname = "autodiff.enablePreaccumulation", ge = 0)
+
+        # Driver field (must be one of allowed strings)
+        param_utils.check_field(
+            md,
+            fieldname = "autodiff.driver",
+            values = [
+                "fos_forward", "fov_forward", "fov_forward_all",
+                "fos_reverse", "fov_reverse", "fov_reverse_all"
+            ]
+        )
+
+        # Check dependents and independents recursively
+        for dep in self.dependents:
+            dep.check_consistency(md, solution, analyses)
+        for i, indep in enumerate(self.independents):
+            indep.check_consistency(md, i, solution, analyses, self.driver)
+
+        return md
 
     # Marshall method for saving the autodiff parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -159,7 +203,7 @@ class autodiff(class_registry.manage_state):
                 for i, dep in enumerate(self.dependents):
                     names.append(dep.name)
 
-            execute.WriteData(fid, prefix, name = 'md.autodiff.dependent_object_names', data = names, format = 'StringArray')
+                execute.WriteData(fid, prefix, name = 'md.autodiff.dependent_object_names', data = names, format = 'StringArray')
 
             ## 2 - independent variables
             num_independent_objects = len(self.independents)

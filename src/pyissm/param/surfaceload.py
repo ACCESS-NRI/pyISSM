@@ -67,6 +67,21 @@ class surfaceload(class_registry.manage_state):
         s = 'ISSM - surfaceload Class'
         return s
     
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):  # {{{
+        # Early return if required analysis/solutions are not present
+        if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc):
+            return md
+        
+        if type(self.icethicknesschange) == np.ndarray:
+            param_utils.check_field(md, fieldname = 'solidearth.surfaceload.icethicknesschange', timeseries = True, allow_nan = False, allow_inf = False)
+        if type(self.waterheightchange) == np.ndarray:
+            param_utils.check_field(md, fieldname = 'solidearth.surfaceload.waterheightchange', timeseries = True, allow_nan = False, allow_inf = False)
+        if type(self.otherchange) == np.ndarray:
+            param_utils.check_field(md, fieldname = 'solidearth.surfaceload.otherchange', timeseries = True, allow_nan = False, allow_inf = False)
+
+        return md
+    
     # Marshall method for saving the surfaceload parameters
     def marshall_class(self, fid, prefix, md = None):
         """

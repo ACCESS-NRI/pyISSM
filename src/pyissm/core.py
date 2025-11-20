@@ -208,6 +208,61 @@ class Model():
     def __str__(self):
         s = 'ISSM Model Class'
         return s
+    
+    def check_message(self, string):
+        """
+        Notify about a model consistency error, update internal state, and return the instance.
+
+        This method prints a formatted consistency error message to standard output,
+        marks the instance as inconsistent by setting ``self.private.isconsistent``
+        to ``False``, and returns the instance to allow for method chaining.
+
+        Parameters
+        ----------
+        string : str
+            Human-readable description of the consistency error. This will be inserted
+            into the printed message: ``Model consistency error: {string}``.
+
+        Returns
+        -------
+        self
+            The same instance on which the method was called, enabling fluent/chained
+            calls.
+
+        Notes
+        -----
+        This method has the side effect of mutating the instance state (``self.private.isconsistent``),
+        and it performs output via ``print``. It does not raise exceptions.
+
+        Examples
+        --------
+        >>> obj.check_message("missing parameter")
+        Model consistency error: missing parameter
+        >>> obj.private.isconsistent
+        False
+        """
+        print(f'Model consistency error: {string}')
+        self.private.isconsistent = False
+        return self
+    
+    def model_class_names(self):
+        """
+        Return a sorted list of registered model class attribute names.
+
+        The method inspects the instance attributes and returns those whose
+        classes are registered in ``param.class_registry.CLASS_REGISTRY``.
+
+        Returns
+        -------
+        list of str
+            Sorted list of attribute names corresponding to registered model classes.
+        """
+        registered_classes = set(param.class_registry.CLASS_REGISTRY.values())
+        names = [
+            name for name, obj in vars(self).items()
+            if obj.__class__ in registered_classes
+        ]
+        return sorted(names)
 
     # Define state
     def __getstate__(self):

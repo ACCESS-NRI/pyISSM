@@ -142,7 +142,32 @@ class mesh2d(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - mesh.mesh2d Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if LoveSolution requested
+        if solution == 'LoveSolution':
+            return md
+        
+        if solution == 'ThermalSolution':
+            md.checkmessage('thermal not supported for 2d mesh')
+            
+        param_utils.check_field(md, fieldname = 'mesh.x', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'mesh.y', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'mesh.elements', gt = 0, values = np.arange(1, md.mesh.numberofvertices + 1), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'mesh.elements', size = (md.mesh.numberofelements, 3))
+        nodes = np.arange(1, md.mesh.numberofvertices + 1)
+        if np.any(~np.isin(nodes, md.mesh.elements)):
+            md.checkmessage('orphan nodes have been found. Check the mesh outline')
+        param_utils.check_field(md, fieldname = 'mesh.numberofelements', gt = 0)
+        param_utils.check_field(md, fieldname = 'mesh.numberofvertices', gt = 0)
+        param_utils.check_field(md, fieldname = 'mesh.average_vertex_connectivity', ge = 9, message =  "'mesh.average_vertex_connectivity' should be at least 9 in 2d.")
+        param_utils.check_field(md, fieldname = 'mesh.segments', size = (np.nan, 3), gt = 0, allow_nan = False, allow_inf = False)
+        if(np.size(self.scale_factor) > 1):
+            param_utils.check_field(md, fieldname = 'mesh.scale_factor', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
 
+        return md
+            
     # Define domain type
     def domain_type(self):
         return '2Dhorizontal'
@@ -335,6 +360,32 @@ class mesh2dvertical(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - mesh.mesh2dvertical Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if LoveSolution requested
+        if solution == 'LoveSolution':
+            return md
+        
+        if solution == 'ThermalSolution':
+            md.checkmessage('thermal not supported for 2d mesh')
+            
+        param_utils.check_field(md, fieldname = 'mesh.x', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'mesh.y', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'mesh.elements', gt = 0, values = np.arange(1, md.mesh.numberofvertices + 1), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'mesh.elements', size = (md.mesh.numberofelements, 3))
+        nodes = np.arange(1, md.mesh.numberofvertices + 1)
+        if np.any(~np.isin(nodes, md.mesh.elements)):
+            md.checkmessage('orphan nodes have been found. Check the mesh outline')
+        param_utils.check_field(md, fieldname = 'mesh.numberofelements', gt = 0)
+        param_utils.check_field(md, fieldname = 'mesh.numberofvertices', gt = 0)
+        param_utils.check_field(md, fieldname = 'mesh.vertexonbase', size = (md.mesh.numberofvertices, ), values = [0, 1])
+        param_utils.check_field(md, fieldname = 'mesh.vertexonsurface', size = (md.mesh.numberofvertices, ), values = [0, 1])
+        param_utils.check_field(md, fieldname = 'mesh.average_vertex_connectivity', ge = 9, message =  "'mesh.average_vertex_connectivity' should be at least 9 in 2d.")
+        if(np.size(self.scale_factor) > 1):
+            param_utils.check_field(md, fieldname = 'mesh.scale_factor', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+
+        return md
 
     # Define domain type
     def domain_type(self):
@@ -565,6 +616,27 @@ class mesh3dprisms(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - mesh.mesh3dprisms Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):            
+        param_utils.check_field(md, fieldname = 'mesh.x', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'mesh.y', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'mesh.z', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'mesh.elements', gt = 0, values = np.arange(1, md.mesh.numberofvertices + 1), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'mesh.elements', size = (md.mesh.numberofelements, 6))
+        nodes = np.arange(1, md.mesh.numberofvertices + 1)
+        if np.any(~np.isin(nodes, md.mesh.elements)):
+            md.checkmessage('orphan nodes have been found. Check the mesh outline')
+        param_utils.check_field(md, fieldname = 'mesh.numberoflayers', ge = 0)
+        param_utils.check_field(md, fieldname = 'mesh.numberofelements', gt = 0)
+        param_utils.check_field(md, fieldname = 'mesh.numberofvertices', gt = 0)
+        param_utils.check_field(md, fieldname = 'mesh.vertexonbase', size = (md.mesh.numberofvertices, ), values = [0, 1])
+        param_utils.check_field(md, fieldname = 'mesh.vertexonsurface', size = (md.mesh.numberofvertices, ), values = [0, 1])
+        param_utils.check_field(md, fieldname = 'mesh.average_vertex_connectivity', ge = 24, message =  "'mesh.average_vertex_connectivity' should be at least 24 in 3d.")
+        if(np.size(self.scale_factor) > 1):
+            param_utils.check_field(md, fieldname = 'mesh.scale_factor', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+
+        return md
 
     # Define domain type
     def domain_type(self):
@@ -762,6 +834,30 @@ class mesh3dsurface(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - mesh.mesh3dsurface Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        if solution == 'ThermalSolution':
+            md.checkmessage('thermal not supported for 3d surface mesh')
+            
+        param_utils.check_field(md, fieldname = 'mesh.x', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'mesh.y', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'mesh.z', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'mesh.lat', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'mesh.long', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'mesh.r', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'mesh.elements', gt = 0, values = np.arange(1, md.mesh.numberofvertices + 1), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'mesh.elements', size = (md.mesh.numberofelements, 3))
+        nodes = np.arange(1, md.mesh.numberofvertices + 1)
+        if np.any(~np.isin(nodes, md.mesh.elements)):
+            md.checkmessage('orphan nodes have been found. Check the mesh outline')
+        param_utils.check_field(md, fieldname = 'mesh.numberofelements', gt = 0)
+        param_utils.check_field(md, fieldname = 'mesh.numberofvertices', gt = 0)
+        param_utils.check_field(md, fieldname = 'mesh.average_vertex_connectivity', ge = 9, message =  "'mesh.average_vertex_connectivity' should be at least 9 in 2d.")
+        if(np.size(self.scale_factor) > 1):
+            param_utils.check_field(md, fieldname = 'mesh.scale_factor', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+
+        return md
 
     # Define domain type
     def domain_type(self):

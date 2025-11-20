@@ -84,6 +84,26 @@ class default(class_registry.manage_state):
         s = 'ISSM - friction.default Class'
         return s
 
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+
+        # Early return if necessary analyses or solutions not specified
+        if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
+            return md
+        if solution == 'TransientSolution' and not md.transient.isstressbalance and not md.transient.isthermal:
+            return md
+        
+        param_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "friction.p", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2, 3, 4])
+        param_utils.check_field(md, fieldname = "friction.linearize", scalar = True, values = [0, 1, 2])
+        param_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)
+
+        if self.coupling == 3:
+            param_utils.check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
+
+        return md
 
     # Marshall method for saving the friction.default parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -211,6 +231,29 @@ class coulomb(class_registry.manage_state):
         s = 'ISSM - friction.coulomb Class'
         return s
     
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+
+        # Early return if necessary analyses or solutions not specified
+        if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
+            return md
+        
+        param_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "friction.coefficientcoulomb", timeseries = True, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "friction.p", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2])
+        param_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)
+
+        if self.coupling == 1:
+            param_utils.check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
+        elif self.coupling == 2:
+            raise ValueError('pyissm.param.friction.coulomb.check_consistency: md.friction.coupling = 2 (coupled) is not implemented yet')
+        elif self.coupling > 2:
+            raise ValueError(f'pyissm.param.friction.coulomb.check_consistency: md.friction.coupling = {self.coupling} is not implemented yet')
+
+        return md
+
     # Marshall method for saving the friction.coulomb parameters
     def marshall_class(self, fid, prefix, md = None):
         """
@@ -328,6 +371,29 @@ class coulomb2(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - friction.coulomb2 Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+
+        # Early return if necessary analyses or solutions not specified
+        if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
+            return md
+        
+        param_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "friction.coefficientcoulomb", timeseries = True, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "friction.p", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2])
+        param_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)
+
+        if self.coupling == 1:
+            param_utils.check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
+        elif self.coupling == 2:
+            raise ValueError('pyissm.param.friction.coulomb.check_consistency: md.friction.coupling = 2 (coupled) is not implemented yet')
+        elif self.coupling > 2:
+            raise ValueError(f'pyissm.param.friction.coulomb.check_consistency: md.friction.coupling = {self.coupling} is not implemented yet')
+
+        return md
 
     # Marshall method for saving the friction.coulomb2 parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -441,6 +507,26 @@ class hydro(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - friction.hydro Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+
+        # Early return if necessary analyses or solutions not specified
+        if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
+            return md
+        
+        param_utils.check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2, 3, 4])
+        param_utils.check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "friction.C", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "friction.As", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)       
+
+        if self.coupling == 3:
+            param_utils.check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
+        elif self.coupling > 4:
+            raise ValueError(f'pyissm.param.friction.hydro.check_consistency: md.friction.coupling = {self.coupling} is not implemented yet. Use md.friction.coupling <= 4.')
+
+        return md
 
     # Marshall method for saving the friction.hydro parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -547,6 +633,23 @@ class josh(class_registry.manage_state):
         s = 'ISSM - friction.josh Class'
         return s
     
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+
+        # Early return if necessary analyses or solutions not specified
+        if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
+            return md
+        
+        param_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "friction.C", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "friction.As", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)       
+
+        param_utils.check_field(md, fieldname = "initialization.temperature", size = 'universal', allow_nan = False, allow_inf = False)
+
+        return md
+    
     # Marshall method for saving the friction.josh parameters
     def marshall_class(self, fid, prefix, md = None):
         """
@@ -651,6 +754,24 @@ class pism(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - friction.pism Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+
+        # Early return if necessary analyses or solutions not specified
+        if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
+            return md
+        if solution == 'TransientSolution' and not md.transient.isstressbalance and not md.transient.isthermal:
+            return md
+
+        param_utils.check_field(md, fieldname = 'friction.pseudoplasticity_exponent', scalar = True, gt = 0, all_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'friction.threshold_speed', scalar = True, gt = 0, all_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'friction.delta', scalar = True, gt = 0, lt = 1, all_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'friction.void_ratio', scalar = True, gt = 0, lt = 1, all_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'friction.till_friction_angle', gt = 0, lt = 360., size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'friction.sediment_compressibility_coefficient', gt = 0., lt = 1., size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+
+        return md
 
     # Marshall method for saving the friction.pism parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -753,6 +874,19 @@ class regcoulomb(class_registry.manage_state):
         s = 'ISSM - friction.regcoulomb Class'
         return s
     
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+
+        # Early return if necessary analyses or solutions not specified
+        if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
+            return md
+        
+        param_utils.check_field(md, fieldname = 'friction.C', timeseries = True, ge = 0., allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'friction.u0', scalar = True, gt = 0, all_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, 1), gt = 0., allow_nan = False, allow_inf = False)
+
+        return md
+
     # Marshall method for saving the friction.regcoulomb parameters
     def marshall_class(self, fid, prefix, md = None):
         """
@@ -854,6 +988,19 @@ class regcoulomb2(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - friction.regcoulomb2 Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+
+        # Early return if necessary analyses or solutions not specified
+        if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
+            return md
+        
+        param_utils.check_field(md, fieldname = 'friction.C', timeseries = True, ge = 0., allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'friction.K', gt = 0, all_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, 1), gt = 0., allow_nan = False, allow_inf = False)
+
+        return md
 
     # Marshall method for saving the friction.regcoulomb2 parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -966,6 +1113,24 @@ class schoof(class_registry.manage_state):
         s = 'ISSM - friction.schoof Class'
         return s
     
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+
+        # Early return if necessary analyses or solutions not specified
+        if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
+            return md
+        
+        param_utils.check_field(md, fieldname = 'friction.C', timeseries = True, gt = 0., allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'friction.Cmax', timeseries = True, gt = 0., allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, 1), gt = 0., allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'friction.effective_pressure_limit', scalar = True, ge = 0.)
+        param_utils.check_field(md, fieldname = 'friction.coupling', scalar = True, values = [0, 1, 2, 3, 4])
+        
+        if self.coupling == 3:
+            param_utils.check_field(md, fieldname = 'friction.effective_pressure', timeseries = True, allow_nan = False, allow_inf = False)
+
+        return md
+    
     # Marshall method for saving the friction.schoof parameters
     def marshall_class(self, fid, prefix, md = None):
         """
@@ -1058,6 +1223,17 @@ class shakti(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - friction.shakti Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+
+        # Early return if necessary analyses or solutions not specified
+        if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
+            return md
+        
+        param_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
+
+        return md
     
     # Marshall method for saving the friction.shakti parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -1156,6 +1332,21 @@ class waterlayer(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - friction.waterlayer Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+
+        # Early return if necessary analyses or solutions not specified
+        if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
+            return md
+        
+        param_utils.check_field(md, fieldname = 'friction.coefficient', timeseries = True, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'friction.f', scalar = True, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'friction.q', size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'friction.p', size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'thermal.spctemperature', timeseries = True, ge = 0., allow_inf = False)
+
+        return md
 
     # Marshall method for saving the friction.waterlayer parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -1250,6 +1441,19 @@ class weertman(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - friction.weertman Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+
+        # Early return if necessary analyses or solutions not specified
+        if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
+            return md
+        
+        param_utils.check_field(md, fieldname = 'friction.C', timeseries = True, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = 'friction.linearize', scalar = True, values = [0, 1, 2])
+
+        return md
 
     # Marshall method for saving the friction.weertman parameters
     def marshall_class(self, fid, prefix, md = None):

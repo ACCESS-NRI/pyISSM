@@ -66,6 +66,11 @@ class debug(class_registry.manage_state):
         s = 'ISSM - debug Class'
         return s
     
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # No specific checks for debug parameters
+        return md
+    
     # Marshall method for saving the debug parameters
     def marshall_class(self, fid, prefix, md = None):
         """

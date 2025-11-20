@@ -60,6 +60,16 @@ class default(class_registry.manage_state):
         s = 'ISSM - calving.default Class'
         return s
 
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        #Early return if not transient with moving front
+        if solution != 'TransientSolution' or not md.transient.ismovingfront:
+            return md
+
+        param_utils.check_field(md, fieldname = 'calving.calvingrate', ge = 0, timeseries = True, allow_nan = False, allow_inf = False)
+            
+        return md
+
     # Marshall method for saving the calving.default parameters
     def marshall_class(self, fid, prefix, md = None):
         """
@@ -152,6 +162,18 @@ class crevassedepth(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - calving.crevassedepth Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if not transient with moving front
+        if solution != "TransientSolution" or not md.transient.ismovingfront:
+            return md
+
+        param_utils.check_field(md, fieldname = "calving.crevasse_opening_stress", scalar = True, values = [0, 1])
+        param_utils.check_field(md, fieldname = "calving.crevasse_threshold", scalar = True, gt = 0.0, le = 1.0)
+        param_utils.check_field(md, fieldname = "calving.water_height", timeseries = True, ge = 0, allow_nan = False)
+
+        return md
 
     # Marshall method for saving the calving.crevassedepth parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -243,6 +265,17 @@ class dev(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - calving.dev Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if not transient with moving front
+        if solution != "TransientSolution" or not md.transient.ismovingfront:
+            return md
+
+        param_utils.check_field(md, fieldname = "calving.stress_threshold_groundedice", gt = 0, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "calving.stress_threshold_floatingice", gt = 0, allow_nan = False, allow_inf = False)
+
+        return md
 
     # Marshall method for saving the calving.dev parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -327,6 +360,16 @@ class levermann(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - calving.levermann Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if not transient with moving front
+        if solution != "TransientSolution" or not md.transient.ismovingfront:
+            return md
+
+        param_utils.check_field(md, fieldname = "calving.coeff", size = (md.mesh.numberofvertices, ), gt = 0)
+
+        return md
 
     # Marshall method for saving the calving.levermann parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -410,6 +453,16 @@ class minthickness(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - calving.minthickness Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if not transient with moving front
+        if solution != "TransientSolution" or not md.transient.ismovingfront:
+            return md
+
+        param_utils.check_field(md, fieldname = "calving.min_thickness", gt = 0, scalar = True, allow_nan = False, allow_inf = False)
+
+        return md
     
     # Marshall method for saving the calving.minthickness parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -541,6 +594,24 @@ class parameterization(class_registry.manage_state):
         s = 'ISSM - calving.parameterization Class'
         return s
     
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if not transient with moving front
+        if solution != "TransientSolution" or not md.transient.ismovingfront:
+            return md
+
+        param_utils.check_field(md, fieldname = "calving.min_thickness", scalar = True, ge = 0, allow_nan = False)
+        param_utils.check_field(md, fieldname = "calving.use_param", scalar = True, values = [-1, 0, 1, 2, 3, 4, 5])
+        param_utils.check_field(md, fieldname = "calving.theta", scalar = True, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "calving.alpha", scalar = True, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "calving.xoffset", scalar = True, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "calving.yoffset", scalar = True, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "calving.vel_lowerbound", scalar = True, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "calving.vel_threshold", scalar = True, allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "calving.vel_upperbound", scalar = True, allow_nan = False, allow_inf = False)
+
+        return md
+    
     # Marshall method for saving the calving.parameterization parameters
     def marshall_class(self, fid, prefix, md = None):
         """
@@ -639,6 +710,18 @@ class vonmises(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - calving.vonmises Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Early return if not transient with moving front
+        if solution != "TransientSolution" or not md.transient.ismovingfront:
+            return md
+
+        param_utils.check_field(md, fieldname = "calving.stress_threshold_groundedice", gt = 0, size = 'universal', allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "calving.stress_threshold_floatingice", gt = 0, size = 'universal', allow_nan = False, allow_inf = False)
+        param_utils.check_field(md, fieldname = "calving.min_thickness", scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+
+        return md
     
     # Marshall method for saving the calving.vonmises parameters
     def marshall_class(self, fid, prefix, md = None):

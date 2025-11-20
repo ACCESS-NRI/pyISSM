@@ -55,6 +55,11 @@ class default(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - qmu.default Class'
         return s
+    
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        # Checks not yet implemented
+        return md
 
     # Marshall method for saving the qmu parameters
     def marshall_class(self, fid, prefix, md = None):
