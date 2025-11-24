@@ -1111,8 +1111,8 @@ def triangle(md,
     --------
     >>> import pyissm
     >>> md = pyissm.Model()
-    >>> md = pyissm.tools.mesh.triangle(md, 'domain.exp', 1000.0)
-    >>> md = pyissm.tools.mesh.triangle(md, 'domain.exp', 500.0, 'rifts.exp')
+    >>> md = pyissm.model.mesh.triangle(md, 'domain.exp', 1000.0)
+    >>> md = pyissm.model.mesh.triangle(md, 'domain.exp', 500.0, 'rifts.exp')
     """
 
     # Error checks
@@ -1129,7 +1129,7 @@ def triangle(md,
     
     ## Check if wrappers are installed
     if not tools.wrappers.check_wrappers_installed():
-        raise RuntimeError('pyissm.tools.mesh.triangle: Python wrappers not installed. Cannot create mesh.')
+        raise RuntimeError('pyissm.model.mesh.triangle: Python wrappers not installed. Cannot create mesh.')
 
 
     # Calculate characteristic area. Resolution is node-oriented. A 1000 m resolution = 1000 * 1000 area
@@ -1144,7 +1144,7 @@ def triangle(md,
     uniqueelements = np.sort(np.unique(elements))
     orphans = np.nonzero((~np.isin(range(1, len(x)), uniqueelements)).astype(int))[0]
     if len(orphans):
-        warnings.warn(f'pyissm.tools.mesh.triangle: {len(orphans)} orphaned nodes found. These nodes do not belong to any element.\n'
+        warnings.warn(f'pyissm.model.mesh.triangle: {len(orphans)} orphaned nodes found. These nodes do not belong to any element.\n'
                       'Removing orphaned nodes from the mesh.')
         
         for i in range(0, len(orphans)):
@@ -1231,7 +1231,7 @@ def square_mesh(md,
     --------
     >>> import pyissm
     >>> md = pyissm.Model()
-    >>> md = pyissm.tools.mesh.square_mesh(md, Lx=100.0, Ly=50.0, nx=11, ny=6)
+    >>> md = pyissm.model.mesh.square_mesh(md, Lx=100.0, Ly=50.0, nx=11, ny=6)
     """  
 
     # Error checks
@@ -1241,7 +1241,7 @@ def square_mesh(md,
 
     ## Check if wrappers are installed
     if not tools.wrappers.check_wrappers_installed():
-        raise RuntimeError('pyissm.tools.mesh.square_mesh: Python wrappers not installed. Cannot create mesh.')
+        raise RuntimeError('pyissm.model.mesh.square_mesh: Python wrappers not installed. Cannot create mesh.')
 
     # Get number of elements and nodes
     n_elements = (nx - 1) * (ny - 1) * 2
@@ -1369,8 +1369,8 @@ def round_mesh(md,
     --------
     >>> import pyissm
     >>> md = pyissm.Model()
-    >>> md = pyissm.tools.mesh.round_mesh(md, radius=5000.0, resolution=500.0)
-    >>> md = pyissm.tools.mesh.round_mesh(md, radius=1000.0, resolution=100.0, 
+    >>> md = pyissm.model.mesh.round_mesh(md, radius=5000.0, resolution=500.0)
+    >>> md = pyissm.model.mesh.round_mesh(md, radius=1000.0, resolution=100.0, 
     ...                                   exp_output_name='circle.exp', keep_exp=True)
     """
 
@@ -1666,12 +1666,12 @@ def bamg(md, **kwargs):
     >>> import pyissm
     >>> md = pyissm.Model()
     >>> # Basic domain meshing
-    >>> md = pyissm.tools.mesh.bamg(md, domain='outline.exp', hmax=1000.0)
+    >>> md = pyissm.model.mesh.bamg(md, domain='outline.exp', hmax=1000.0)
     >>> # Anisotropic meshing with metric
-    >>> md = pyissm.tools.mesh.bamg(md, domain='outline.exp', 
+    >>> md = pyissm.model.mesh.bamg(md, domain='outline.exp', 
     ...                             metric=metric_field, err=0.005)
     >>> # Mesh with holes and subdomains
-    >>> md = pyissm.tools.mesh.bamg(md, domain='outline.exp', 
+    >>> md = pyissm.model.mesh.bamg(md, domain='outline.exp', 
     ...                             holes='holes.exp', subdomains='regions.exp')
     """
 
@@ -1737,7 +1737,7 @@ def bamg(md, **kwargs):
                     if all(isinstance(c, (dict, collections.OrderedDict)) for c in component):
                         return component
                     else:
-                        raise Exception("pyissm.tools.mesh.bamg: if a spatial component is a list, its elements must be of type dict or OrderedDict")
+                        raise Exception("pyissm.model.mesh.bamg: if a spatial component is a list, its elements must be of type dict or OrderedDict")
                 else:
                     return component
             
@@ -1745,7 +1745,7 @@ def bamg(md, **kwargs):
             elif isinstance(component, (dict, collections.OrderedDict)):
                 return [component]
             else:
-                raise Exception("pyissm.tools.mesh.bamg: spatial components must be a filename (str), a list of contours (list of dicts), or a single contour (dict).")
+                raise Exception("pyissm.model.mesh.bamg: spatial components must be a filename (str), a list of contours (list of dicts), or a single contour (dict).")
         return []
     
     def _process_spatial_component(component, domain, ref_counter, count, is_hole = False, is_subdomain = False):
@@ -1758,7 +1758,7 @@ def bamg(md, **kwargs):
 
             ### Check the contour is closed
             if component[i]['x'][0] != component[i]['x'][-1] or component[i]['y'][0] != component[i]['y'][-1]:
-                raise Exception("pyissm.tools.mesh.bamg: each contour must be closed (first and last points must be identical).")
+                raise Exception("pyissm.model.mesh.bamg: each contour must be closed (first and last points must be identical).")
 
             ### Check all holes and subdomain contours are INSIDE the principle domain
             ## NOTE: This check differs from existing bamg.m and bamg.py which only checks the domain contours (not holes)
@@ -1766,7 +1766,7 @@ def bamg(md, **kwargs):
                 for c in component:
                     flags = tools.wrappers.ContourToNodes(c['x'], c['y'], [domain[0]], 0)[0]
                     if np.any(np.logical_not(flags)):
-                        raise Exception("pyissm.tools.mesh.bamg: all contours in 'holes' and 'subdomains' must be inside the first contour of 'domain'.")
+                        raise Exception("pyissm.model.mesh.bamg: all contours in 'holes' and 'subdomains' must be inside the first contour of 'domain'.")
 
             ### Check the orientation of the contour
             nods = component[i]['nods'] - 1
@@ -1902,9 +1902,9 @@ def bamg(md, **kwargs):
         
         # Error checks
         if not isinstance(rift_file, (str)):
-            raise TypeError("pyissm.tools.mesh.bamg: rifts must be a filename (str).")
+            raise TypeError("pyissm.model.mesh.bamg: rifts must be a filename (str).")
         if not os.path.exists(rift_file):
-            raise IOError(f"pyissm.tools.mesh.bamg: rift file {rift_file} does not exist.")
+            raise IOError(f"pyissm.model.mesh.bamg: rift file {rift_file} does not exist.")
 
         # Read rift file
         rift = tools.exp.exp_read(rift_file)
@@ -1915,7 +1915,7 @@ def bamg(md, **kwargs):
             ## Check whether all points of the rift are inside the domain
             flags = tools.wrappers.ContourToNodes(rift[i]['x'], rift[i]['y'], [domain[0]], 0)[0]
             if np.all(np.logical_not(flags)):
-                raise RuntimeError("pyissm.tools.mesh.bamg: one rift has all its points outside of the domain outline")
+                raise RuntimeError("pyissm.model.mesh.bamg: one rift has all its points outside of the domain outline")
             
             ## Check if rift tip is outside of the domain
             elif np.any(np.logical_not(flags)):
@@ -1924,7 +1924,7 @@ def bamg(md, **kwargs):
 
                 ## Check that only one point is outside (for now)
                 if np.sum(np.logical_not(flags).astype(int)) != 1:
-                    raise RuntimeError("pyissm.tools.mesh.bamg: only one point outside of the domain is supported at this time")
+                    raise RuntimeError("pyissm.model.mesh.bamg: only one point outside of the domain is supported at this time")
 
                 ## Move tip outside to the first position
                 if not flags[0]:
@@ -1934,7 +1934,7 @@ def bamg(md, **kwargs):
                     rift[i]['x'] = np.flipud(rift[i]['x'])
                     rift[i]['y'] = np.flipud(rift[i]['y'])
                 else:
-                    raise RuntimeError('pyissm.tools.mesh.bamg: only a rift tip can be outside of the domain')
+                    raise RuntimeError('pyissm.model.mesh.bamg: only a rift tip can be outside of the domain')
 
                 # Get coordinate of intersection point
                 x1 = rift[i]['x'][0]
@@ -1990,7 +1990,7 @@ def bamg(md, **kwargs):
                             # Decompose the crossing edge into 2 subedges
                             pos = np.nonzero(np.logical_and(bamg_geom['Edges'][:, 0] == i1, bamg_geom['Edges'][:, 1] == i2))[0]
                             if not pos:
-                                raise RuntimeError('pyissm.tools.mesh.bamg: a problem occurred...')
+                                raise RuntimeError('pyissm.model.mesh.bamg: a problem occurred...')
                             bamg_geom['Edges'] = np.vstack((
                                 bamg_geom['Edges'][0:pos - 1, :],
                                 np.array([[
@@ -2196,7 +2196,7 @@ def bamg(md, **kwargs):
 
         ## If there are rifts in the model, raise an error (not supported yet)
         if isinstance(md.rifts.riftstruct, dict):
-            raise TypeError('pyissm.tools.mesh.bamg: rifts not supported yet. Do meshprocessrift after bamg.')
+            raise TypeError('pyissm.model.mesh.bamg: rifts not supported yet. Do meshprocessrift after bamg.')
     
     # Call the BAMG mesher
     bamg_mesh_out, bamg_geom_out = tools.wrappers.BamgMesher(bamg_mesh, bamg_geom, options)
@@ -2339,7 +2339,7 @@ def bamg_flowband(md,
     >>> x = np.arange(1, 3001, 100).T
     >>> h = np.linspace(1000, 300, np.size(x)).T
     >>> b = -917. / 1023. * h
-    >>> md = pyissm.tools.mesh.bamg_flowband(md, x = x, surf = b + h, base = b, hmax = 80.)
+    >>> md = pyissm.model.mesh.bamg_flowband(md, x = x, surf = b + h, base = b, hmax = 80.)
     """
 
     # Create domain structure
@@ -2424,9 +2424,9 @@ def mesh_convert(md, **kwargs):
     Examples
     --------
     >>> md = pyissm.Model()
-    >>> md = pyissm.tools.mesh.triangle(md, 'domain.exp', 1000.0)
-    >>> md = pyissm.tools.mesh.meshconvert(md)
-    >>> md = pyissm.tools.mesh.meshconvert(md, x=custom_x, y=custom_y)
+    >>> md = pyissm.model.mesh.triangle(md, 'domain.exp', 1000.0)
+    >>> md = pyissm.model.mesh.meshconvert(md)
+    >>> md = pyissm.model.mesh.meshconvert(md, x=custom_x, y=custom_y)
     """
 
     # Default arguments
@@ -2476,7 +2476,7 @@ def model_intersect_3d():
         Function is not yet implemented.
     """
 
-    raise NotImplementedError('pyissm.tools.mesh.model_intersect_3d:  This functionality is not yet implemented. Please contact ACCESS-NRI for support.')
+    raise NotImplementedError('pyissm.model.mesh.model_intersect_3d:  This functionality is not yet implemented. Please contact ACCESS-NRI for support.')
 
 def model_merge_3d():
     """
@@ -2488,7 +2488,7 @@ def model_merge_3d():
         Function is not yet implemented.
     """
 
-    raise NotImplementedError('pyissm.tools.mesh.model_merge_3d:  This functionality is not yet implemented. Please contact ACCESS-NRI for support.')
+    raise NotImplementedError('pyissm.model.mesh.model_merge_3d:  This functionality is not yet implemented. Please contact ACCESS-NRI for support.')
 
 def twod_to_3d():
     """
@@ -2500,4 +2500,4 @@ def twod_to_3d():
         Function is not yet implemented.
     """
 
-    raise NotImplementedError('pyissm.tools.mesh.twod_to_3d:  This functionality is not yet implemented. Please contact ACCESS-NRI for support.')
+    raise NotImplementedError('pyissm.model.mesh.twod_to_3d:  This functionality is not yet implemented. Please contact ACCESS-NRI for support.')

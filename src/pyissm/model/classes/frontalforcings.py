@@ -411,7 +411,7 @@ class rignotarma(class_registry.manage_state):
         elif(np.size(md.frontalforcings.datebreaks)==0 or np.all(np.isnan(md.frontalforcings.datebreaks))):
             pass
         else:
-            raise RuntimeError('param.frontalforcings.rignotarma.check_consistency: md.frontalforcings.num_breaks is 0 but md.frontalforcings.datebreaks is not empty')
+            raise RuntimeError('pyissm.model.classes.frontalforcings.rignotarma.check_consistency: md.frontalforcings.num_breaks is 0 but md.frontalforcings.datebreaks is not empty')
         
 
         ### Check if some monthly forcings are provided ###

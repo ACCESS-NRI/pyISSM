@@ -1,5 +1,5 @@
 """
-Test marshall_class() functions on all classes within pyissm.param.XXX
+Test marshall_class() functions on all classes within pyissm.model.classes.XXX
 """
 
 import inspect
@@ -35,7 +35,7 @@ def build_base_model():
     area = resolution ** 2
 
     ## Create the mesh
-    elements, x, y, segments, segmentmarkers = pyissm.utils.wrappers.Triangle(domain_name, rift_name, area)
+    elements, x, y, segments, segmentmarkers = pyissm.tools.wrappers.Triangle(domain_name, rift_name, area)
 
     ## Assign mesh to model
     md.mesh.x = x
@@ -47,8 +47,8 @@ def build_base_model():
     md.mesh.numberofelements = np.size(md.mesh.elements, axis = 0)
     md.mesh.vertexonboundary = np.zeros(md.mesh.numberofvertices, dtype = int)
     md.mesh.vertexonboundary[segments[:, 0:2] - 1] = 1
-    md.mesh.vertexconnectivity = pyissm.utils.wrappers.NodeConnectivity(md.mesh.elements, md.mesh.numberofvertices)
-    md.mesh.elementconnectivity = pyissm.utils.wrappers.ElementConnectivity(md.mesh.elements, md.mesh.vertexconnectivity)
+    md.mesh.vertexconnectivity = pyissm.tools.wrappers.NodeConnectivity(md.mesh.elements, md.mesh.numberofvertices)
+    md.mesh.elementconnectivity = pyissm.tools.wrappers.ElementConnectivity(md.mesh.elements, md.mesh.vertexconnectivity)
 
     ## Assign defaults
     md.friction.coefficient = 100 * np.ones((md.mesh.numberofvertices))
@@ -59,9 +59,9 @@ def build_base_model():
 
 def get_all_param_classes():
     """
-    Discover and return all parameter classes from pyissm.param submodules.
+    Discover and return all parameter classes from pyissm.model.classes submodules.
 
-    This function iterates through all submodules in the pyissm.param package
+    This function iterates through all submodules in the pyissm.model.classes package
     and extracts classes that are defined within each module (not imported).
 
     Returns
@@ -72,7 +72,7 @@ def get_all_param_classes():
     """
 
     classes = []
-    package = pyissm.param
+    package = pyissm.model.classes
     for _, mod_name, ispkg in pkgutil.iter_modules(package.__path__):
         if ispkg:
             continue
@@ -99,7 +99,7 @@ def test_marshall_class(module_name, class_name, cls):
     Parameters
     ----------
     module_name : str
-        Full module name of the parameter class (e.g., 'pyissm.param.friction').
+        Full module name of the parameter class (e.g., 'pyissm.model.classes.friction').
     class_name : str
         Name of the parameter class to test.
     cls : type

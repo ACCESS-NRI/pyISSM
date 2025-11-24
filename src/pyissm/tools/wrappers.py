@@ -700,7 +700,7 @@ def InterpFromMesh2d(index,
     elif not default_value is None and not contourname is None:
         data_prime = InterpFromMesh2d._func(index, x, y, data, x_prime, y_prime, default_value, contourname)
     else:
-        raise Exception('utils.wrappers.InterpFromMesh2d:: When defining a contourname, default_value must also be defined.')
+        raise Exception('pyissm.tools.wrappers.InterpFromMesh2d:: When defining a contourname, default_value must also be defined.')
 
     ## NOTE: Value returned from wrapper function is a tuple, the first element of which being the result we actually want
     return data_prime[0]
@@ -803,7 +803,7 @@ def InterpFromMeshToMesh2d(index,
     elif not default_value is None:
         data_prime = InterpFromMeshToMesh2d._func(index, x, y, data, x_interp, y_interp, default_value)
     else:
-        raise Exception('utils.wrappers.InterpFromMeshToMesh2d:: Something went wrong! Make sure you have provided all required arguments.')
+        raise Exception('pyissm.tools.wrappers.InterpFromMeshToMesh2d:: Something went wrong! Make sure you have provided all required arguments.')
 
     ## NOTE: Value returned from wrapper function is a tuple, the first element of which being the result we actually want
     return data_prime[0]

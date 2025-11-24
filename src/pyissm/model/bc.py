@@ -29,7 +29,7 @@ def get_ice_front_nodes(md, ice_front_exp):
 
     else:
         ## If Python wrappers are not installed, issue a warning and return all False (No ice front)
-        warnings.warn('pyissm.tools.bc.get_ice_front_nodes: Python wrappers not installed. Cannot identify ice front nodes.\n'
+        warnings.warn('pyissm.model.bc.get_ice_front_nodes: Python wrappers not installed. Cannot identify ice front nodes.\n'
                       'Returning all False array (no ice front).')
         node_on_ice_front = np.zeros((md.mesh.numberofvertices), bool)
     
@@ -92,13 +92,13 @@ def set_sb_dirichlet_bc(md):
         if md.inversion.vy_obs.ndim == 1:
             md.inversion.vy_obs = md.inversion.vy_obs.reshape(-1, )
 
-        warnings.warn('pyissm.tools.bc.set_sb_dirichlet_bc: Using observed velocities for stressbalance model boundary conditions.')
+        warnings.warn('pyissm.model.bc.set_sb_dirichlet_bc: Using observed velocities for stressbalance model boundary conditions.')
         md.stressbalance.spcvx[boundary_node_indices] = md.inversion.vx_obs[boundary_node_indices]
         md.stressbalance.spcvy[boundary_node_indices] = md.inversion.vy_obs[boundary_node_indices]
     
     ## If observed velocities are not available, set Dirichlet values to zero
     else:
-        warnings.warn('pyissm.tools.bc.set_sb_dirichlet_bc: No observed velocities found. Setting stressbalance model boundary conditions as 0.')
+        warnings.warn('pyissm.model.bc.set_sb_dirichlet_bc: No observed velocities found. Setting stressbalance model boundary conditions as 0.')
         md.stressbalance.spcvx[boundary_node_indices] = 0
         md.stressbalance.spcvy[boundary_node_indices] = 0
         md.stressbalance.spcvz[boundary_node_indices] = 0
@@ -125,7 +125,7 @@ def set_ice_shelf_bc(md,
         node_on_ice_front = get_ice_front_nodes(md, ice_front_exp)
     else: 
         ## If no ice front file is provided, assume no ice front
-        warnings.warn('pyissm.tools.bc.set_ice_shelf_bc: No ice front file provided. Assuming no ice front.')
+        warnings.warn('pyissm.model.bc.set_ice_shelf_bc: No ice front file provided. Assuming no ice front.')
         node_on_ice_front = np.zeros((md.mesh.numberofvertices), bool)
 
     # Set neumann BC on ice front
@@ -142,7 +142,7 @@ def set_ice_shelf_bc(md,
     ## Define balancethickness BCs
     if np.all(np.isnan(md.balancethickness.thickening_rate)):
         md.balancethickness.thickening_rate = np.zeros((md.mesh.numberofvertices))
-        warnings.warn('pyissm.tools.bc.set_ice_shelf_bc: no balancethickness.thickening_rate specified -- values set as 0.')
+        warnings.warn('pyissm.model.bc.set_ice_shelf_bc: no balancethickness.thickening_rate specified -- values set as 0.')
     md.masstransport.spcthickness = np.nan * np.ones((md.mesh.numberofvertices))
     md.balancethickness.spcthickness = np.nan * np.ones((md.mesh.numberofvertices))
     md.damage.spcdamage = np.nan * np.ones((md.mesh.numberofvertices))
@@ -162,9 +162,6 @@ def set_ice_shelf_bc(md,
             md.basalforcings.geothermalflux = np.zeros((md.mesh.numberofvertices))
 
     else:
-        warnings.warn('pyissm.tools.bc.set_ice_shelf_bc: No observed temperature found. No thermal boundary conditions created.')
+        warnings.warn('pyissm.model.bc.set_ice_shelf_bc: No observed temperature found. No thermal boundary conditions created.')
     
     return md
-
-
-

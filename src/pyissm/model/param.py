@@ -83,7 +83,7 @@ def set_mask(md,
             vertex_inside = tools.wrappers.ContourToMesh(elements, x, y, ice_domain, 'node', 1)
             md.mask.ice_levelset[vertex_inside.astype(bool)] = -1.
         else:
-            raise ImportError("pyissm.tools.param.set_mask: Wrappers are not installed. Cannot use ice_domain option.")
+            raise ImportError("pyissm.model.param.set_mask: Wrappers are not installed. Cannot use ice_domain option.")
     
     ## Otherwise, set ice_levelset to -1 (all ice)
     else:
@@ -108,11 +108,11 @@ def set_flow_equation(md,
 
     # Error checks
     if coupling.lower() not in ['tiling', 'penalties']:
-        raise ValueError("pyissm.tools.param.set_flow_equation: Coupling must be 'tiling' or 'penalties'.")
+        raise ValueError("pyissm.model.param.set_flow_equation: Coupling must be 'tiling' or 'penalties'.")
     
     if fill is not None:
         if fill.lower() not in ['sia', 'ssa', 'ho', 'l1l2', 'molho', 'fs']:
-            raise ValueError("pyissm.tools.param.set_flow_equation: Fill must be one of: None, 'SIA', 'SSA', 'HO', 'L1L2', 'MOLHO', or 'FS'.")
+            raise ValueError("pyissm.model.param.set_flow_equation: Fill must be one of: None, 'SIA', 'SSA', 'HO', 'L1L2', 'MOLHO', or 'FS'.")
     
     # Get flags for each flow equation
     sia_flag = model.mesh.flag_elements(md, SIA)
@@ -137,26 +137,26 @@ def set_flow_equation(md,
     
     ## Check all elements have been assigned a flow equation
     if not np.all(np.logical_or.reduce(flag)):
-        raise ValueError("pyissm.tools.param.set_flow_equation: One or more elements have not been assigned a flow equation.")    
+        raise ValueError("pyissm.model.param.set_flow_equation: One or more elements have not been assigned a flow equation.")    
     
     ## Check no elements have been assigned multiple flow equations
     if np.any(np.sum(flag, axis=0) > 1):
-        raise ValueError("pyissm.tools.param.set_flow_equation: One or more elements have been assigned multiple flow equations.")
+        raise ValueError("pyissm.model.param.set_flow_equation: One or more elements have been assigned multiple flow equations.")
 
     ## Check that L1L2, MOLHO, and FS are not coupled to any other model for now
     if np.any(l1l2_flag) and np.any(sia_flag | ssa_flag | ho_flag | fs_flag | molho_flag):
-        raise ValueError('pyissm.tools.param.set_flow_equation: L1L2 cannot be coupled to other flow equations.')
+        raise ValueError('pyissm.model.param.set_flow_equation: L1L2 cannot be coupled to other flow equations.')
     if np.any(molho_flag) and np.any(sia_flag | ssa_flag | ho_flag | fs_flag | l1l2_flag):
-        raise ValueError('pyissm.tools.param.set_flow_equation: MOLHO cannot be coupled to other flow equations.')
+        raise ValueError('pyissm.model.param.set_flow_equation: MOLHO cannot be coupled to other flow equations.')
     if np.any(fs_flag) & np.any(sia_flag | ssa_flag | ho_flag | l1l2_flag | molho_flag):
-        raise ValueError('pyissm.tools.param.set_flow_equation: FS cannot be coupled to other flow equations.')
+        raise ValueError('pyissm.model.param.set_flow_equation: FS cannot be coupled to other flow equations.')
         
     ##  Check HO or FS are not used for a 2D mesh
     if md.mesh.domain_type() == '2Dhorizontal':
         if np.any(ho_flag):
-            raise ValueError('pyissm.tools.param.set_flow_equation: HO cannot be used for a 2D mesh. Extrude it first.')
+            raise ValueError('pyissm.model.param.set_flow_equation: HO cannot be used for a 2D mesh. Extrude it first.')
         if np.any(fs_flag):
-            raise ValueError('pyissm.tools.param.set_flow_equation: FS cannot be used for a 2D mesh. Extrude it first.')
+            raise ValueError('pyissm.model.param.set_flow_equation: FS cannot be used for a 2D mesh. Extrude it first.')
     
     # Initialize flow equation fields
     sia_node = np.zeros(md.mesh.numberofvertices, dtype = bool)
@@ -309,7 +309,7 @@ def set_flow_equation(md,
             ssafs_node[md.mesh.elements[ssafs_flag, :] - 1] = True
     
         elif any(fs_flag) and any(sia_flag):
-            raise TypeError('pyissm.tools.param.set_flow_equation: Type of coupling not supported yet.')
+            raise TypeError('pyissm.model.param.set_flow_equation: Type of coupling not supported yet.')
 
     # Create SSAHOApproximation where needed
     md.flowequation.element_equation = np.zeros(md.mesh.numberofelements, int)
