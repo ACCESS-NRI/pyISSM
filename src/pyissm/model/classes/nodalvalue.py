@@ -1,7 +1,7 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class nodalvalue(class_registry.manage_state):
@@ -41,7 +41,7 @@ class nodalvalue(class_registry.manage_state):
 
     Examples
     --------
-    md.nodalvalue = pyissm.param.nodalvalue()
+    md.nodalvalue = pyissm.model.classes.nodalvalue()
     md.nodalvalue.name = 'velocity_at_glacier_terminus'
     md.nodalvalue.model_string = 'Vel'
     md.nodalvalue.node = 1245
@@ -61,10 +61,10 @@ class nodalvalue(class_registry.manage_state):
     def __repr__(self):
         s = '   nodalvalue parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'name', 'identifier for this nodalvalue response'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'definitionstring', 'string that identifies this output definition uniquely, from \'Outputdefinition[1-10]\''))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'model_string', 'string for field that is being retrieved'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'node', 'vertex index at which we retrieve the value'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'name', 'identifier for this nodalvalue response'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'definitionstring', 'string that identifies this output definition uniquely, from \'Outputdefinition[1-10]\''))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'model_string', 'string for field that is being retrieved'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'node', 'vertex index at which we retrieve the value'))
         return s
 
     # Define class string
@@ -75,12 +75,12 @@ class nodalvalue(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         if not isinstance(self.name, str):
-            raise Exception("pyissm.param.nodalvalue.check_consistency: 'name' field should be a string!")
+            raise Exception("pyissm.model.classes.nodalvalue.check_consistency: 'name' field should be a string!")
         OutputdefinitionStringArray = []
         for i in range(100):
             OutputdefinitionStringArray.append('Outputdefinition{}'.format(i))
-        param_utils.check_field(md, fieldname = 'self.definitionstring', field = self.definitionstring, values = OutputdefinitionStringArray)
-        param_utils.check_field(md, fieldname = 'self.node', field = self.node, values = range(md.mesh.numberofvertices))
+        class_utils.check_field(md, fieldname = 'self.definitionstring', field = self.definitionstring, values = OutputdefinitionStringArray)
+        class_utils.check_field(md, fieldname = 'self.node', field = self.node, values = range(md.mesh.numberofvertices))
         
         return md
 

@@ -1,7 +1,7 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class autodiff(class_registry.manage_state):
@@ -61,7 +61,7 @@ class autodiff(class_registry.manage_state):
 
     Examples
     --------
-    md.autodiff = pyissm.param.autodiff()
+    md.autodiff = pyissm.model.classes.autodiff()
     md.autodiff.isautodiff = 1
     md.autodiff.dependents = ['Vel']
     md.autodiff.independents = ['MaterialsRheologyBbar']
@@ -88,23 +88,23 @@ class autodiff(class_registry.manage_state):
         super().__init__(other)
 
     # Define repr
-    def __repr__(self):  # {{{
+    def __repr__(self):
         s = '      automatic differentiation parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'isautodiff', "indicates if the automatic differentiation is activated"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'dependents', "list of dependent variables"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'independents', "list of independent variables"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'driver', "ADOLC driver ('fos_forward' or 'fov_forward')"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'obufsize', "Number of operations per buffer (== OBUFSIZE in usrparms.h)"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'lbufsize', "Number of locations per buffer (== LBUFSIZE in usrparms.h)"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'cbufsize', "Number of values per buffer (== CBUFSIZE in usrparms.h)"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'tbufsize', "Number of taylors per buffer (<=TBUFSIZE in usrparms.h)"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'gcTriggerRatio', "free location block sorting / consolidation triggered if the ratio between allocated and used locations exceeds gcTriggerRatio"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'gcTriggerMaxSize', "free location block sorting / consolidation triggered if the allocated locations exceed gcTriggerMaxSize)"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'tapeAlloc', 'Iteration count of a priori memory allocation of the AD tape'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'outputTapeMemory', 'Write AD tape memory statistics to file ad_mem.dat'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'outputTime', 'Write AD recording and evaluation times to file ad_time.dat'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'enablePreaccumulation', 'Enable CoDiPack preaccumulation in augmented places'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'isautodiff', "indicates if the automatic differentiation is activated"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'dependents', "list of dependent variables"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'independents', "list of independent variables"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'driver', "ADOLC driver ('fos_forward' or 'fov_forward')"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'obufsize', "Number of operations per buffer (== OBUFSIZE in usrparms.h)"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'lbufsize', "Number of locations per buffer (== LBUFSIZE in usrparms.h)"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'cbufsize', "Number of values per buffer (== CBUFSIZE in usrparms.h)"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'tbufsize', "Number of taylors per buffer (<=TBUFSIZE in usrparms.h)"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'gcTriggerRatio', "free location block sorting / consolidation triggered if the ratio between allocated and used locations exceeds gcTriggerRatio"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'gcTriggerMaxSize', "free location block sorting / consolidation triggered if the allocated locations exceed gcTriggerMaxSize)"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'tapeAlloc', 'Iteration count of a priori memory allocation of the AD tape'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'outputTapeMemory', 'Write AD tape memory statistics to file ad_mem.dat'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'outputTime', 'Write AD recording and evaluation times to file ad_time.dat'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'enablePreaccumulation', 'Enable CoDiPack preaccumulation in augmented places'))
         return s
 
     # Define class string
@@ -114,32 +114,32 @@ class autodiff(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        param_utils.check_field(md, fieldname = "autodiff.isautodiff", scalar = True, values = [0, 1])
+        class_utils.check_field(md, fieldname = "autodiff.isautodiff", scalar = True, values = [0, 1])
         
         # Early return if autodiff is not activated
         if not self.isautodiff:
             return md
     
         # Buffer sizes
-        param_utils.check_field(md, fieldname = "autodiff.obufsize", ge = 524288)
-        param_utils.check_field(md, fieldname = "autodiff.lbufsize", ge = 524288)
-        param_utils.check_field(md, fieldname = "autodiff.cbufsize", ge = 524288)
-        param_utils.check_field(md, fieldname = "autodiff.tbufsize", ge = 524288)
+        class_utils.check_field(md, fieldname = "autodiff.obufsize", ge = 524288)
+        class_utils.check_field(md, fieldname = "autodiff.lbufsize", ge = 524288)
+        class_utils.check_field(md, fieldname = "autodiff.cbufsize", ge = 524288)
+        class_utils.check_field(md, fieldname = "autodiff.tbufsize", ge = 524288)
 
         # Garbage collector options
-        param_utils.check_field(md, fieldname = "autodiff.gcTriggerRatio", ge = 2.0)
-        param_utils.check_field(md, fieldname = "autodiff.gcTriggerMaxSize", ge = 65536)
-        param_utils.check_field(md, fieldname = "autodiff.tapeAlloc", ge = 0)
+        class_utils.check_field(md, fieldname = "autodiff.gcTriggerRatio", ge = 2.0)
+        class_utils.check_field(md, fieldname = "autodiff.gcTriggerMaxSize", ge = 65536)
+        class_utils.check_field(md, fieldname = "autodiff.tapeAlloc", ge = 0)
 
         # Memory and time output flags (single element, either 0 or 1)
-        param_utils.check_field(md, fieldname = "autodiff.outputTapeMemory", scalar = True, values = [0, 1])
-        param_utils.check_field(md, fieldname = "autodiff.outputTime", scalar = True, values = [0, 1])
+        class_utils.check_field(md, fieldname = "autodiff.outputTapeMemory", scalar = True, values = [0, 1])
+        class_utils.check_field(md, fieldname = "autodiff.outputTime", scalar = True, values = [0, 1])
 
         # Memory reduction options
-        param_utils.check_field(md, fieldname = "autodiff.enablePreaccumulation", ge = 0)
+        class_utils.check_field(md, fieldname = "autodiff.enablePreaccumulation", ge = 0)
 
         # Driver field (must be one of allowed strings)
-        param_utils.check_field(
+        class_utils.check_field(
             md,
             fieldname = "autodiff.driver",
             values = [

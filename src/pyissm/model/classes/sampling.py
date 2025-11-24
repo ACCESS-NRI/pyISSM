@@ -1,7 +1,7 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class sampling(class_registry.manage_state):
@@ -51,7 +51,7 @@ class sampling(class_registry.manage_state):
 
     Examples
     --------
-    md.sampling = pyissm.param.sampling()
+    md.sampling = pyissm.model.classes.sampling()
     md.sampling.kappa = 0.1
     md.sampling.alpha = 2.0
     md.sampling.phi = 0.9
@@ -78,20 +78,20 @@ class sampling(class_registry.manage_state):
         s = '   Sampling parameters:\n'
 
         s += '      Parameters of PDE operator (kappa^2 I-Laplacian)^(alpha/2)(tau):\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'kappa', 'coefficient of the identity operator'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'tau', 'scaling coefficient of the solution (default: 1.0)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'alpha', 'exponent in PDE operator, (default: 2.0, BiLaplacian covariance operator)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'kappa', 'coefficient of the identity operator'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'tau', 'scaling coefficient of the solution (default: 1.0)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'alpha', 'exponent in PDE operator, (default: 2.0, BiLaplacian covariance operator)'))
         s += '\n'
         s += '      Parameters of Robin boundary conditions nabla () \cdot normvec + beta ():\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'robin', 'Apply Robin boundary conditions (1 if applied and 0 for homogenous Neumann boundary conditions) (default: 0)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'beta', 'Coefficient in Robin boundary conditions (to be defined for robin = 1)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'robin', 'Apply Robin boundary conditions (1 if applied and 0 for homogenous Neumann boundary conditions) (default: 0)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'beta', 'Coefficient in Robin boundary conditions (to be defined for robin = 1)'))
         s += '\n'
         s += '      Parameters for first-order autoregressive process (X_t = phi X_{t-1} + noise) (if transient):\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'phi', 'Temporal correlation factor (|phi|<1 for stationary process, phi = 1 for random walk process) (default 0)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'phi', 'Temporal correlation factor (|phi|<1 for stationary process, phi = 1 for random walk process) (default 0)'))
         s += '\n'
         s += '      Other parameters of stochastic sampler:\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'seed', 'Seed for pseudorandom number generator (given seed if >=0 and random seed if <0) (default: -1)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested (not implemented yet)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'seed', 'Seed for pseudorandom number generator (given seed if >=0 and random seed if <0) (default: -1)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested (not implemented yet)'))
         return s
 
     # Define class string
@@ -105,15 +105,15 @@ class sampling(class_registry.manage_state):
         if 'SamplingAnalysis' not in analyses:
             return md
 
-        param_utils.check_field(md, fieldname = 'sampling.kappa', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'sampling.tau', gt = 0, numel = 1, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'sampling.robin', numel = 1, values = [0, 1])
+        class_utils.check_field(md, fieldname = 'sampling.kappa', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'sampling.tau', gt = 0, numel = 1, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'sampling.robin', numel = 1, values = [0, 1])
         if md.sampling.robin:
-            param_utils.check_field(md, fieldname = 'sampling.beta', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'sampling.beta', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
     
-        param_utils.check_field(md, fieldname = 'sampling.alpha', numel = 1, gt = 0, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'sampling.seed', numel = 1, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'sampling.requested_outputs', string_list = True)
+        class_utils.check_field(md, fieldname = 'sampling.alpha', numel = 1, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'sampling.seed', numel = 1, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'sampling.requested_outputs', string_list = True)
 
         return md
     

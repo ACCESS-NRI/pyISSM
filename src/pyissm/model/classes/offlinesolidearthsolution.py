@@ -1,7 +1,7 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class offlinesolidearthsolution(class_registry.manage_state):
@@ -39,7 +39,7 @@ class offlinesolidearthsolution(class_registry.manage_state):
 
     Examples
     --------
-    md.solidearth = pyissm.param.offlinesolidearthsolution()
+    md.solidearth = pyissm.model.classes.offlinesolidearthsolution()
     """
 
     # Initialise with default parameters
@@ -54,10 +54,10 @@ class offlinesolidearthsolution(class_registry.manage_state):
 
     def __repr__(self):
         s = '         units for time series is (yr)\n       external: offlinesolidearth solution\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'displacementeast', 'solid-Earth Eastwards bedrock displacement time series (m)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'displacementnorth', 'solid-Earth Northwards bedrock displacement time series (m)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'displacementup', 'solid-Earth bedrock uplift time series (m)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'geoid', 'solid-Earth geoid time series (m)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'displacementeast', 'solid-Earth Eastwards bedrock displacement time series (m)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'displacementnorth', 'solid-Earth Northwards bedrock displacement time series (m)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'displacementup', 'solid-Earth bedrock uplift time series (m)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'geoid', 'solid-Earth geoid time series (m)'))
         return s
 
     # Define class string
@@ -69,12 +69,12 @@ class offlinesolidearthsolution(class_registry.manage_state):
     def check_consistency(self, md, solution, analyses):
         # Early return if required analyses and solutions not present
         if ('SealevelchangeAnalysis' not in analyses) or ((solution=='TransientSolution') and (md.solidearth.settings.isgrd==1)): 
-            print('pyissm.param.offlinesolidearthsolution.check_consistency: trying to run GRD patterns while supplying an offline solution for those patterns!')
+            print('pyissm.model.classes.offlinesolidearthsolution.check_consistency: trying to run GRD patterns while supplying an offline solution for those patterns!')
             return md 
-        param_utils.check_field(md, fieldname = 'solidearth.external.displacementeast', timeseries = True, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'solidearth.external.displacementnorth', timeseries = True, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'solidearth.external.displacementup',  timeseries = True, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'solidearth.external.geoid', timeseries = True, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'solidearth.external.displacementeast', timeseries = True, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'solidearth.external.displacementnorth', timeseries = True, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'solidearth.external.displacementup',  timeseries = True, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'solidearth.external.geoid', timeseries = True, allow_inf = False)
 
         return md
 

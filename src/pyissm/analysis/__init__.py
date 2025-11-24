@@ -1,1 +1,1 @@
-from pyissm.analysis import ismip
+from . import ismip

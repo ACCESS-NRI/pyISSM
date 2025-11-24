@@ -4,7 +4,7 @@ CLASS_REGISTRY = {}
 
 def register_class(cls):
     """
-    Register a class in the global class registry for ISSM param system.
+    Register a class in the global class registry for ISSM classes system.
 
     This decorator function automatically registers classes in the global CLASS_REGISTRY
     dictionary using a hierarchical naming scheme based on the module structure.
@@ -23,22 +23,22 @@ def register_class(cls):
     Notes
     -----
     The registration key is constructed as:
-    - If 'param' is in the module path: uses parts after 'param' + class name
+    - If 'classes' is in the module path: uses parts after 'classes' + class name
     - Otherwise: uses last 2 module parts + class name
     
-    Example module path: pyissm.param.smb -> key: "smb.default" (for class 'default')
+    Example module path: pyissm.model.classes.smb -> key: "smb.default" (for class 'default')
 
     Examples
     --------
     @register_class
     class default(manage_state):
         pass
-    # Registers as 'smb.default' if in pyissm.param.smb module
+    # Registers as 'smb.default' if in pyissm.model.classes.smb module
     """
     parts = cls.__module__.split(".")
-    if "param" in parts:
-        param_index = parts.index("param")
-        key_parts = parts[param_index + 1:]  # skip 'param'
+    if "classes" in parts:
+        classes_index = parts.index("classes")
+        key_parts = parts[classes_index + 1:]  # skip 'classes'
     else:
         key_parts = parts[-2:]  # fallback
 
@@ -187,7 +187,7 @@ def create_instance(classtype: str):
     4. Returns None (with warning) if class type is unknown
 
     This is the primary interface for dynamic class instantiation in the
-    ISSM param system, used for loading saved models and creating class instances
+    ISSM classes system, used for loading saved models and creating class instances
     from string identifiers.
 
     Examples
@@ -213,7 +213,7 @@ class manage_state:
     """
     Base class providing state management and inheritance capabilities for ISSM classes.
 
-    This class serves as the foundation for all ISSM param classes, providing
+    This class serves as the foundation for all ISSM classes, providing
     automatic field inheritance, state serialization for save/load operations,
     and field comparison utilities. It enables the "other" parameter pattern
     used throughout ISSM for class initialization and configuration inheritance.

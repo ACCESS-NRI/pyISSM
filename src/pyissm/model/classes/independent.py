@@ -1,6 +1,6 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
 
 @class_registry.register_class
 class independent(class_registry.manage_state):
@@ -48,7 +48,7 @@ class independent(class_registry.manage_state):
 
     Examples
     --------
-    md.independent = pyissm.param.independent()
+    md.independent = pyissm.model.classes.independent()
     md.independent.name = 'FrictionCoefficient'
     md.independent.type = 'vertex'
     md.independent.min_parameters = 1e-3
@@ -74,15 +74,15 @@ class independent(class_registry.manage_state):
     def __repr__(self):
         s = '   independent variable:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'name', 'variable name (must match corresponding String)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'type', 'type of variable (\'vertex\' or \'scalar\')'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'nods', 'size of independent variables'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'control_size', 'number of timesteps'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'min_parameters', 'absolute minimum acceptable value of the inversed parameter on each vertex'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'max_parameters', 'absolute maximum acceptable value of the inversed parameter on each vertex'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'control_scaling_factor', 'order of magnitude of each control (useful for multi-parameter optimization)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'fos_forward_index', 'index for fos_foward driver of ADOLC'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'fov_forward_indices', 'indices for fov_foward driver of ADOLC'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'name', 'variable name (must match corresponding String)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'type', 'type of variable (\'vertex\' or \'scalar\')'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'nods', 'size of independent variables'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'control_size', 'number of timesteps'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'min_parameters', 'absolute minimum acceptable value of the inversed parameter on each vertex'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'max_parameters', 'absolute maximum acceptable value of the inversed parameter on each vertex'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'control_scaling_factor', 'order of magnitude of each control (useful for multi-parameter optimization)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'fos_forward_index', 'index for fos_foward driver of ADOLC'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'fov_forward_indices', 'indices for fov_foward driver of ADOLC'))
         return s
 
     # Define class string
@@ -94,12 +94,12 @@ class independent(class_registry.manage_state):
     def check_consistency(self, md, i, solution, analyses, driver):
         if not np.isnan(self.fos_forward_index):
             if self.nods == 0:
-                raise TypeError('pyissm.param.independent.check_consistency: nods should be set to the size of the independent variable')
+                raise TypeError('pyissm.model.classes.independent.check_consistency: nods should be set to the size of the independent variable')
 
         if len(self.fov_forward_indices) > 0:
             if self.nods == 0:
-                raise TypeError('pyissm.param.independent.check_consistency: nods should be set to the size of the independent variable')
+                raise TypeError('pyissm.model.classes.independent.check_consistency: nods should be set to the size of the independent variable')
             
-            param_utils.check_field(md, fieldname = 'autodiff.independents[%d].fov_forward_indices' % i, ge = 1, le = self.nods)
+            class_utils.check_field(md, fieldname = 'autodiff.independents[%d].fov_forward_indices' % i, ge = 1, le = self.nods)
 
         return md

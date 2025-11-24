@@ -1,7 +1,7 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class groundingline(class_registry.manage_state):
@@ -45,7 +45,7 @@ class groundingline(class_registry.manage_state):
 
     Examples
     --------
-    md.groundingline = pyissm.param.groundingline()
+    md.groundingline = pyissm.model.classes.groundingline()
     md.groundingline.migration = 'AggressiveMigration'
     md.groundingline.friction_interpolation = 'SubelementFriction2'
     md.groundingline.melt_interpolation = 'SubelementMelt1'
@@ -66,11 +66,11 @@ class groundingline(class_registry.manage_state):
     def __repr__(self):
         s = '   grounding line migration parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'migration', 'type of grounding line migration: \'SoftMigration\', \'SubelementMigration\', \'AggressiveMigration\', \'Contact\', \'None\''))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'friction_interpolation', 'type of friction interpolation on partially floating elements: ''SubelementFriction1'', ''SubelementFriction2'', ''NoFrictionOnPartiallyFloating'''))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'melt_interpolation', 'type of melt interpolation on partially floating elements: \'SubelementMelt1\', \'SubelementMelt2\', \'IntrusionMelt\', \'NoMeltOnPartiallyFloating\', \'FullMeltOnPartiallyFloating\''))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'intrusion_distance', 'distance of seawater intrusion from grounding line [m]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'migration', 'type of grounding line migration: \'SoftMigration\', \'SubelementMigration\', \'AggressiveMigration\', \'Contact\', \'None\''))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'friction_interpolation', 'type of friction interpolation on partially floating elements: ''SubelementFriction1'', ''SubelementFriction2'', ''NoFrictionOnPartiallyFloating'''))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'melt_interpolation', 'type of melt interpolation on partially floating elements: \'SubelementMelt1\', \'SubelementMelt2\', \'IntrusionMelt\', \'NoMeltOnPartiallyFloating\', \'FullMeltOnPartiallyFloating\''))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'intrusion_distance', 'distance of seawater intrusion from grounding line [m]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -79,12 +79,12 @@ class groundingline(class_registry.manage_state):
         return s
     
     # Check model consistency
-    def check_consistency(self, md, solution, analyses):  # {{{
-        param_utils.check_field(md, fieldname = 'groundingline.migration', values = ['None', 'SubelementMigration', 'AggressiveMigration', 'SoftMigration', 'Contact', 'GroundingOnly'])
-        param_utils.check_field(md, fieldname = 'groundingline.friction_interpolation', values = ['SubelementFriction1', 'SubelementFriction2', 'NoFrictionOnPartiallyFloating'])
-        param_utils.check_field(md, fieldname = 'groundingline.melt_interpolation', values = ['SubelementMelt1', 'SubelementMelt2', 'IntrusionMelt', 'NoMeltOnPartiallyFloating', 'FullMeltOnPartiallyFloating'])
-        param_utils.check_field(md, fieldname = 'groundingline.intrusion_distance', ge = 0)
-        param_utils.check_field(md, fieldname = 'groundingline.requested_outputs', string_list = True)
+    def check_consistency(self, md, solution, analyses):
+        class_utils.check_field(md, fieldname = 'groundingline.migration', values = ['None', 'SubelementMigration', 'AggressiveMigration', 'SoftMigration', 'Contact', 'GroundingOnly'])
+        class_utils.check_field(md, fieldname = 'groundingline.friction_interpolation', values = ['SubelementFriction1', 'SubelementFriction2', 'NoFrictionOnPartiallyFloating'])
+        class_utils.check_field(md, fieldname = 'groundingline.melt_interpolation', values = ['SubelementMelt1', 'SubelementMelt2', 'IntrusionMelt', 'NoMeltOnPartiallyFloating', 'FullMeltOnPartiallyFloating'])
+        class_utils.check_field(md, fieldname = 'groundingline.intrusion_distance', ge = 0)
+        class_utils.check_field(md, fieldname = 'groundingline.requested_outputs', string_list = True)
 
         if(not self.migration == 'None' and md.transient.isgroundingline and solution == 'TransientSolution'):
             if np.any(np.isnan(md.geometry.bed)):

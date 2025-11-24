@@ -1,6 +1,6 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
 
 @class_registry.register_class
 class radaroverlay(class_registry.manage_state):
@@ -36,7 +36,7 @@ class radaroverlay(class_registry.manage_state):
 
     Examples
     --------
-    md.radaroverlay = pyissm.param.radaroverlay()
+    md.radaroverlay = pyissm.model.classes.radaroverlay()
     md.radaroverlay.pwr = radar_power_matrix
     md.radaroverlay.x = x_coordinates
     md.radaroverlay.y = y_coordinates
@@ -55,9 +55,9 @@ class radaroverlay(class_registry.manage_state):
     def __repr__(self):
         s = '   radaroverlay parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'pwr', 'radar power image (matrix)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'x', 'corresponding x coordinates [m]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'y', 'corresponding y coordinates [m]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'pwr', 'radar power image (matrix)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'x', 'corresponding x coordinates [m]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'y', 'corresponding y coordinates [m]'))
 
         return s
 

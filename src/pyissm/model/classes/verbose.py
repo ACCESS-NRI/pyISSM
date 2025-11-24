@@ -1,6 +1,6 @@
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class verbose(class_registry.manage_state):
@@ -41,7 +41,7 @@ class verbose(class_registry.manage_state):
 
     Examples
     --------
-    md.geometry = pyissm.param.geometry()
+    md.geometry = pyissm.model.classes.geometry()
     md.geometry.surface = surface_elevation
     md.geometry.thickness = ice_thickness
     md.geometry.bed = bed_elevation
@@ -66,15 +66,15 @@ class verbose(class_registry.manage_state):
     def __repr__(self):
         s = '   verbose parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'mprocessor', 'processor verbosity'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'module', 'module verbosity'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'solution', 'solution verbosity'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'solver', 'solver verbosity'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'convergence', 'convergence verbosity'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'control', 'control verbosity'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'qmu', 'QMU verbosity'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'autodiff', 'autodiff verbosity'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'smb', 'SMB verbosity'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'mprocessor', 'processor verbosity'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'module', 'module verbosity'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'solution', 'solution verbosity'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'solver', 'solver verbosity'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'convergence', 'convergence verbosity'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'control', 'control verbosity'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'qmu', 'QMU verbosity'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'autodiff', 'autodiff verbosity'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'smb', 'SMB verbosity'))
         return s
 
     # Define class string

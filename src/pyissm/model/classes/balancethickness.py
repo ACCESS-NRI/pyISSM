@@ -1,7 +1,7 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class balancethickness(class_registry.manage_state):
@@ -45,7 +45,7 @@ class balancethickness(class_registry.manage_state):
 
     Examples
     --------
-    md.balancethickness = pyissm.param.balancethickness()
+    md.balancethickness = pyissm.model.classes.balancethickness()
     md.balancethickness.spcthickness = 100.0
     md.balancethickness.thickening_rate = 0.1
     """
@@ -66,9 +66,9 @@ class balancethickness(class_registry.manage_state):
     def __repr__(self):
         s = '   balance thickness solution parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'spcthickness', 'thickness constraints (NaN means no constraint) [m]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'thickening_rate', 'ice thickening rate used in the mass conservation (dh / dt) [m / yr]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'stabilization', "0: None, 1: SU, 2: SSA's artificial diffusivity, 3:DG"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'spcthickness', 'thickness constraints (NaN means no constraint) [m]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'thickening_rate', 'ice thickening rate used in the mass conservation (dh / dt) [m / yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'stabilization', "0: None, 1: SU, 2: SSA's artificial diffusivity, 3:DG"))
         return s
 
     # Define class string
@@ -78,10 +78,14 @@ class balancethickness(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+
+        # Early return if balance thickness solution is not requested
+        if solution != 'Balancethickness':
+            return md
             
-        param_utils.check_field(md, fieldname = "balancethickness.spcthickness")
-        param_utils.check_field(md, fieldname = "balancethickness.thickening_rate", size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "balancethickness.stabilization", scalar = True, values = [0, 1, 2, 3])
+        class_utils.check_field(md, fieldname = "balancethickness.spcthickness")
+        class_utils.check_field(md, fieldname = "balancethickness.thickening_rate", size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "balancethickness.stabilization", scalar = True, values = [0, 1, 2, 3])
 
         return md
 

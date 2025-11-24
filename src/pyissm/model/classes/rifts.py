@@ -1,7 +1,7 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class rifts(class_registry.manage_state):
@@ -37,7 +37,7 @@ class rifts(class_registry.manage_state):
 
     Examples
     --------
-    md.rifts = pyissm.param.rifts()
+    md.rifts = pyissm.model.classes.rifts()
     md.rifts.riftstruct = rift_structure_data
     md.rifts.riftproperties = rift_properties_data
     """
@@ -54,8 +54,8 @@ class rifts(class_registry.manage_state):
     def __repr__(self):
         s = '   rift parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'riftstruct', 'structure containing all rift information (vertices coordinates, segments, type of melange, ...)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'riftproperties', 'rift properties'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'riftstruct', 'structure containing all rift information (vertices coordinates, segments, type of melange, ...)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'riftproperties', 'rift properties'))
         return s
 
     # Define class string
@@ -80,7 +80,7 @@ class rifts(class_registry.manage_state):
                 #We have segments with rift markers, but no rift structure!
                 md.checkmessage("model should be processed for rifts (run meshprocessrifts)!")
             for i, rift in enumerate(self.riftstruct):
-                param_utils.check_field(md, fieldname = "rifts.riftstruct[{}]['fill']".format(i), values = ['Water', 'Air', 'Ice', 'Melange', 0, 1, 2, 3])
+                class_utils.check_field(md, fieldname = "rifts.riftstruct[{}]['fill']".format(i), values = ['Water', 'Air', 'Ice', 'Melange', 0, 1, 2, 3])
         else:
             valid_structure = np.any(~np.isnan(self.riftstruct)) if isinstance(self.riftstruct, np.ndarray) else True
             if self.riftstruct and valid_structure:

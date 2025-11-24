@@ -1,7 +1,7 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 ## ------------------------------------------------------
 ## dsl.default
@@ -41,7 +41,7 @@ class default(class_registry.manage_state):
 
     Examples
     --------
-    md.dsl = pyissm.param.dsl.default()
+    md.dsl = pyissm.model.classes.dsl.default()
     """
 
     # Initialise with default parameters
@@ -56,9 +56,9 @@ class default(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   dsl parameters:\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'global_average_thermosteric_sea_level', 'Corresponds to zostoga field in CMIP5 archives. Specified as a temporally variable quantity (in m).'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'sea_surface_height_above_geoid', 'Corresponds to zos field in CMIP5 archives. Spatial average is 0. Specified as a spatio-temporally variable quantity (in m).'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'sea_water_pressure_at_sea_floor', 'Corresponds to bpo field in CMIP5 archives. Specified as a spatio-temporally variable quantity (in m equivalent, not in Pa!).'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'global_average_thermosteric_sea_level', 'Corresponds to zostoga field in CMIP5 archives. Specified as a temporally variable quantity (in m).'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'sea_surface_height_above_geoid', 'Corresponds to zos field in CMIP5 archives. Spatial average is 0. Specified as a spatio-temporally variable quantity (in m).'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'sea_water_pressure_at_sea_floor', 'Corresponds to bpo field in CMIP5 archives. Specified as a spatio-temporally variable quantity (in m equivalent, not in Pa!).'))
         return s
 
     # Define class string
@@ -71,12 +71,12 @@ class default(class_registry.manage_state):
         # Early return if no sealevelchange analysis or if transient solution without isslc or oceantransport
         if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc) or (not md.transient.isoceantransport):
             return md
-        param_utils.check_field(md, fieldname = 'dsl.global_average_thermosteric_sea_level', allow_nan = True, allow_inf = True)
-        param_utils.check_field(md, fieldname = 'dsl.sea_surface_height_above_geoid', allow_nan = True, allow_inf = True, timeseries = True)
-        param_utils.check_field(md, fieldname = 'dsl.sea_water_pressure_at_sea_floor', allow_nan = True, allow_inf = True, timeseries = True)
+        class_utils.check_field(md, fieldname = 'dsl.global_average_thermosteric_sea_level', allow_nan = True, allow_inf = True)
+        class_utils.check_field(md, fieldname = 'dsl.sea_surface_height_above_geoid', allow_nan = True, allow_inf = True, timeseries = True)
+        class_utils.check_field(md, fieldname = 'dsl.sea_water_pressure_at_sea_floor', allow_nan = True, allow_inf = True, timeseries = True)
 
         if md.solidearth.settings.compute_bp_grd:
-            param_utils.check_field(md, fieldname = 'dsl.sea_water_pressure_at_sea_floor', allow_empty = True)
+            class_utils.check_field(md, fieldname = 'dsl.sea_water_pressure_at_sea_floor', allow_empty = True)
 
         return md
 
@@ -149,7 +149,7 @@ class mme(class_registry.manage_state):
 
     Examples
     --------
-    md.dsl = pyissm.param.dsl.mme()
+    md.dsl = pyissm.model.classes.dsl.mme()
     """
 
     # Initialise with default parameters
@@ -165,10 +165,10 @@ class mme(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   dsl mme parameters:\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'modelid', 'index into the multi-model ensemble, determines which field will be used.'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'global_average_thermosteric_sea_level', 'Corresponds to zostoga field in CMIP5 archives. Specified as a temporally variable quantity (in m) for each ensemble.'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'sea_surface_height_above_geoid', 'Corresponds to zos field in CMIP5 archives. Spatial average is 0. Specified as a spatio-temporally variable quantity (in m) for each ensemble.'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'sea_water_pressure_at_sea_floor', 'Corresponds to bpo field in CMIP5 archives. Specified as a spatio-temporally variable quantity (in m equivalent, not in Pa!) for each ensemble.'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'modelid', 'index into the multi-model ensemble, determines which field will be used.'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'global_average_thermosteric_sea_level', 'Corresponds to zostoga field in CMIP5 archives. Specified as a temporally variable quantity (in m) for each ensemble.'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'sea_surface_height_above_geoid', 'Corresponds to zos field in CMIP5 archives. Spatial average is 0. Specified as a spatio-temporally variable quantity (in m) for each ensemble.'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'sea_water_pressure_at_sea_floor', 'Corresponds to bpo field in CMIP5 archives. Specified as a spatio-temporally variable quantity (in m equivalent, not in Pa!) for each ensemble.'))
         return s
 
     # Define class string
@@ -184,14 +184,14 @@ class mme(class_registry.manage_state):
             return md
 
         for i in range(len(self.global_average_thermosteric_sea_level)):
-            param_utils.check_field(md, field = self.global_average_thermosteric_sea_level[i], allow_nan = True, allow_inf = True)
-            param_utils.check_field(md, field = self.sea_surface_height_above_geoid[i], allow_nan = True, allow_inf = True, timeseries = True)
-            param_utils.check_field(md, field = self.sea_water_pressure_at_sea_floor[i], allow_nan = True, allow_inf = True, timeseries = True)
+            class_utils.check_field(md, field = self.global_average_thermosteric_sea_level[i], allow_nan = True, allow_inf = True)
+            class_utils.check_field(md, field = self.sea_surface_height_above_geoid[i], allow_nan = True, allow_inf = True, timeseries = True)
+            class_utils.check_field(md, field = self.sea_water_pressure_at_sea_floor[i], allow_nan = True, allow_inf = True, timeseries = True)
         
-        param_utils.check_field(md, field = self.modelid, allow_nan = True, allow_inf = True, ge = 1, le = len(self.global_average_thermosteric_sea_level))
+        class_utils.check_field(md, field = self.modelid, allow_nan = True, allow_inf = True, ge = 1, le = len(self.global_average_thermosteric_sea_level))
 
         if self.solidearth.settings.compute_bp_grd:
-            param_utils.check_field(md, field = self.sea_water_pressure_at_sea_floor, allow_empty = True)
+            class_utils.check_field(md, field = self.sea_water_pressure_at_sea_floor, allow_empty = True)
 
         return md
     

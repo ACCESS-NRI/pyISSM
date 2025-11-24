@@ -15,7 +15,7 @@ import pathlib
 import glob
 import numpy as np
 import warnings
-from pyissm import param
+from pyissm.model import classes
 
 
 # Check for ISSM_DIR
@@ -900,14 +900,14 @@ def MeshPartition(md,
     elements_2d = []
 
     # Conditional handling for different mesh types
-    if isinstance(md.mesh, param.mesh.mesh3dprisms):
+    if isinstance(md.mesh, classes.mesh.mesh3dprisms):
         element_type = md.mesh.element_type()
         n_vertices_2d = md.mesh.numberofvertices2d
         n_layers = md.mesh.numberoflayers
         elements_2d = md.mesh.elements2d
-    elif isinstance(md.mesh, param.mesh.mesh2d):
+    elif isinstance(md.mesh, classes.mesh.mesh2d):
         element_type = md.mesh.element_type()
-    elif isinstance(md.mesh, param.mesh.mesh2dvertical):
+    elif isinstance(md.mesh, classes.mesh.mesh2dvertical):
         element_type = md.mesh.element_type()
 
     # Call the loaded _python function

@@ -1,8 +1,8 @@
 import numpy as np
 import warnings
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class flowequation(class_registry.manage_state):
@@ -76,7 +76,7 @@ class flowequation(class_registry.manage_state):
 
     Examples
     --------
-    md.flowequation = pyissm.param.flowequation()
+    md.flowequation = pyissm.model.classes.flowequation()
     md.flowequation.isSSA = 1
     md.flowequation.fe_SSA = 'P1bubble'
     md.flowequation.FSNitscheGamma = 1e5
@@ -113,22 +113,22 @@ class flowequation(class_registry.manage_state):
     def __repr__(self):
         s = '   flow equation parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'isSIA', "is the Shallow Ice Approximation (SIA) used?"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'isSSA', "is the Shelfy-Stream Approximation (SSA) used?"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'isL1L2', "are L1L2 equations used?"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'isMOLHO', "are MOno-layer Higher-Order (MOLHO) equations used?"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'isHO', "is the Higher-Order (HO) approximation used?"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'isFS', "are the Full-FS (FS) equations used?"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'isNitscheBC', "is weakly imposed condition used?"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'FSNitscheGamma', "Gamma value for the Nitsche term (default: 1e6)"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'fe_SSA', "Finite Element for SSA: 'P1', 'P1bubble' 'P1bubblecondensed' 'P2'"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'fe_HO', "Finite Element for HO:  'P1', 'P1bubble', 'P1bubblecondensed', 'P1xP2', 'P2xP1', 'P2', 'P2bubble', 'P1xP3', 'P2xP4'"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'fe_FS', "Finite Element for FS:  'P1P1' (debugging only) 'P1P1GLS' 'MINIcondensed' 'MINI' 'TaylorHood' 'LATaylorHood' 'XTaylorHood'"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'vertex_equation', "flow equation for each vertex"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'element_equation', "flow equation for each element"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'borderSSA', "vertices on SSA's border (for tiling)"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'borderHO', "vertices on HO's border (for tiling)"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'borderFS', "vertices on FS' border (for tiling)"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'isSIA', "is the Shallow Ice Approximation (SIA) used?"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'isSSA', "is the Shelfy-Stream Approximation (SSA) used?"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'isL1L2', "are L1L2 equations used?"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'isMOLHO', "are MOno-layer Higher-Order (MOLHO) equations used?"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'isHO', "is the Higher-Order (HO) approximation used?"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'isFS', "are the Full-FS (FS) equations used?"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'isNitscheBC', "is weakly imposed condition used?"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'FSNitscheGamma', "Gamma value for the Nitsche term (default: 1e6)"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'fe_SSA', "Finite Element for SSA: 'P1', 'P1bubble' 'P1bubblecondensed' 'P2'"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'fe_HO', "Finite Element for HO:  'P1', 'P1bubble', 'P1bubblecondensed', 'P1xP2', 'P2xP1', 'P2', 'P2bubble', 'P1xP3', 'P2xP4'"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'fe_FS', "Finite Element for FS:  'P1P1' (debugging only) 'P1P1GLS' 'MINIcondensed' 'MINI' 'TaylorHood' 'LATaylorHood' 'XTaylorHood'"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'vertex_equation', "flow equation for each vertex"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'element_equation', "flow equation for each element"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'borderSSA', "vertices on SSA's border (for tiling)"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'borderHO', "vertices on HO's border (for tiling)"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'borderFS', "vertices on FS' border (for tiling)"))
         return s
 
     # Define class string
@@ -142,40 +142,40 @@ class flowequation(class_registry.manage_state):
         if ('StressbalanceAnalysis' not in analyses and 'StressbalanceSIAAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isstressbalance):
             return md
 
-        param_utils.check_field(md, fieldname = "flowequation.isSIA", scalar = True, values = [0, 1])
-        param_utils.check_field(md, fieldname = "flowequation.isSSA", scalar = True, values = [0, 1])
-        param_utils.check_field(md, fieldname = "flowequation.isL1L2", scalar = True, values = [0, 1])
-        param_utils.check_field(md, fieldname = "flowequation.isMOLHO", scalar = True, values = [0, 1])
-        param_utils.check_field(md, fieldname = "flowequation.isHO", scalar = True, values = [0, 1])
-        param_utils.check_field(md, fieldname = "flowequation.isFS", scalar = True, values = [0, 1])
-        param_utils.check_field(md, fieldname = "flowequation.isNitscheBC", scalar = True, values = [0, 1])
-        param_utils.check_field(md, fieldname = "flowequation.FSNitscheGamma", scalar = True, ge = 0.0)
-        param_utils.check_field(md, fieldname = 'flowequation.fe_SSA', values = ['P1', 'P1bubble', 'P1bubblecondensed', 'P2', 'P2bubble'])
-        param_utils.check_field(md, fieldname = 'flowequation.fe_HO', values =  ['P1', 'P1bubble', 'P1bubblecondensed', 'P1xP2', 'P2xP1', 'P2', 'P2bubble', 'P1xP3', 'P2xP4'])
-        param_utils.check_field(md, fieldname = 'flowequation.fe_FS', values = ['P1P1', 'P1P1GLS', 'MINIcondensed', 'MINI', 'TaylorHood', 'LATaylorHood', 'XTaylorHood', 'OneLayerP4z', 'CrouzeixRaviart', 'LACrouzeixRaviart'])
-        param_utils.check_field(md, fieldname = 'flowequation.borderSSA', size = (md.mesh.numberofvertices, ), values = [0, 1])
-        param_utils.check_field(md, fieldname = 'flowequation.borderHO', size = (md.mesh.numberofvertices, ), values = [0, 1])
-        param_utils.check_field(md, fieldname = 'flowequation.borderFS', size = (md.mesh.numberofvertices, ), values = [0, 1])
-        param_utils.check_field(md, fieldname = "flowequation.augmented_lagrangian_r", scalar = True, gt = 0.0)
-        param_utils.check_field(md, fieldname = "flowequation.augmented_lagrangian_rhop", scalar = True, gt = 0.0)
-        param_utils.check_field(md, fieldname = "flowequation.augmented_lagrangian_rlambda", scalar = True, gt = 0.0)
-        param_utils.check_field(md, fieldname = "flowequation.augmented_lagrangian_rholambda", scalar = True, gt = 0.0)
-        param_utils.check_field(md, fieldname = "flowequation.XTH_theta", scalar = True, ge = 0.0, lt = 0.5)
+        class_utils.check_field(md, fieldname = "flowequation.isSIA", scalar = True, values = [0, 1])
+        class_utils.check_field(md, fieldname = "flowequation.isSSA", scalar = True, values = [0, 1])
+        class_utils.check_field(md, fieldname = "flowequation.isL1L2", scalar = True, values = [0, 1])
+        class_utils.check_field(md, fieldname = "flowequation.isMOLHO", scalar = True, values = [0, 1])
+        class_utils.check_field(md, fieldname = "flowequation.isHO", scalar = True, values = [0, 1])
+        class_utils.check_field(md, fieldname = "flowequation.isFS", scalar = True, values = [0, 1])
+        class_utils.check_field(md, fieldname = "flowequation.isNitscheBC", scalar = True, values = [0, 1])
+        class_utils.check_field(md, fieldname = "flowequation.FSNitscheGamma", scalar = True, ge = 0.0)
+        class_utils.check_field(md, fieldname = 'flowequation.fe_SSA', values = ['P1', 'P1bubble', 'P1bubblecondensed', 'P2', 'P2bubble'])
+        class_utils.check_field(md, fieldname = 'flowequation.fe_HO', values =  ['P1', 'P1bubble', 'P1bubblecondensed', 'P1xP2', 'P2xP1', 'P2', 'P2bubble', 'P1xP3', 'P2xP4'])
+        class_utils.check_field(md, fieldname = 'flowequation.fe_FS', values = ['P1P1', 'P1P1GLS', 'MINIcondensed', 'MINI', 'TaylorHood', 'LATaylorHood', 'XTaylorHood', 'OneLayerP4z', 'CrouzeixRaviart', 'LACrouzeixRaviart'])
+        class_utils.check_field(md, fieldname = 'flowequation.borderSSA', size = (md.mesh.numberofvertices, ), values = [0, 1])
+        class_utils.check_field(md, fieldname = 'flowequation.borderHO', size = (md.mesh.numberofvertices, ), values = [0, 1])
+        class_utils.check_field(md, fieldname = 'flowequation.borderFS', size = (md.mesh.numberofvertices, ), values = [0, 1])
+        class_utils.check_field(md, fieldname = "flowequation.augmented_lagrangian_r", scalar = True, gt = 0.0)
+        class_utils.check_field(md, fieldname = "flowequation.augmented_lagrangian_rhop", scalar = True, gt = 0.0)
+        class_utils.check_field(md, fieldname = "flowequation.augmented_lagrangian_rlambda", scalar = True, gt = 0.0)
+        class_utils.check_field(md, fieldname = "flowequation.augmented_lagrangian_rholambda", scalar = True, gt = 0.0)
+        class_utils.check_field(md, fieldname = "flowequation.XTH_theta", scalar = True, ge = 0.0, lt = 0.5)
 
         if md.mesh.domain_type() == '2Dhorizontal':
-            param_utils.check_field(md, fieldname = 'flowequation.vertex_equation', size = (md.mesh.numberofvertices, ), values = [1, 2, 4])
-            param_utils.check_field(md, fieldname = 'flowequation.element_equation', size = (md.mesh.numberofelements, ), values = [1, 2, 4])
+            class_utils.check_field(md, fieldname = 'flowequation.vertex_equation', size = (md.mesh.numberofvertices, ), values = [1, 2, 4])
+            class_utils.check_field(md, fieldname = 'flowequation.element_equation', size = (md.mesh.numberofelements, ), values = [1, 2, 4])
         elif md.mesh.domain_type() == '3Dsurface':
-            param_utils.check_field(md, fieldname = 'flowequation.vertex_equation', size = (md.mesh.numberofvertices, ), values = np.arange(1, 2 + 1))
-            param_utils.check_field(md, fieldname = 'flowequation.element_equation', size = (md.mesh.numberofelements, ), values = np.arange(1, 2 + 1))
+            class_utils.check_field(md, fieldname = 'flowequation.vertex_equation', size = (md.mesh.numberofvertices, ), values = np.arange(1, 2 + 1))
+            class_utils.check_field(md, fieldname = 'flowequation.element_equation', size = (md.mesh.numberofelements, ), values = np.arange(1, 2 + 1))
         elif md.mesh.domain_type() == '2Dvertical':
-            param_utils.check_field(md, fieldname = 'flowequation.vertex_equation', size = (md.mesh.numberofvertices, ), values = [2, 5, 6])
-            param_utils.check_field(md, fieldname = 'flowequation.element_equation', size = (md.mesh.numberofelements, ), values = [2, 5, 6])
+            class_utils.check_field(md, fieldname = 'flowequation.vertex_equation', size = (md.mesh.numberofvertices, ), values = [2, 5, 6])
+            class_utils.check_field(md, fieldname = 'flowequation.element_equation', size = (md.mesh.numberofelements, ), values = [2, 5, 6])
         elif md.mesh.domain_type() == '3D':
-            param_utils.check_field(md, fieldname = 'flowequation.vertex_equation', size = (md.mesh.numberofvertices, ), values = np.arange(0, 9 + 1))
-            param_utils.check_field(md, fieldname = 'flowequation.element_equation', size = (md.mesh.numberofelements, ), values = np.arange(0, 9 + 1))
+            class_utils.check_field(md, fieldname = 'flowequation.vertex_equation', size = (md.mesh.numberofvertices, ), values = np.arange(0, 9 + 1))
+            class_utils.check_field(md, fieldname = 'flowequation.element_equation', size = (md.mesh.numberofelements, ), values = np.arange(0, 9 + 1))
         else:
-            raise RuntimeError(f'pyissm.param.flowequation.check_consistency: unknown domain_type: {md.mesh.domain_type()}.')
+            raise RuntimeError(f'pyissm.model.classes.flowequation.check_consistency: unknown domain_type: {md.mesh.domain_type()}.')
     
         if not (self.isSIA or self.isSSA or self.isL1L2 or self.isMOLHO or self.isHO or self.isFS):
             md.checkmessage("no element types set for this model")

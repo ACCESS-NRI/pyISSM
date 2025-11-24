@@ -4,7 +4,7 @@ ISMIP-related functions for ISSM
 This module contains functions for handling ISMIP-related data and operations.
 """
 
-from pyissm import utils
+from pyissm import tools
 
 def calc_perc_ice_cover(total_ice_area, ice_area):
     """
@@ -77,21 +77,21 @@ def get_ismip_variable(md, ismip_variable_name):
     variable = None
 
     if ismip_variable_name == 'land_ice_area_fraction':
-        if utils.general.has_nested_attr(md, 'results', 'TransientSolution', 'GroundedArea') and utils.general.has_nested_attr(md, 'results', 'TransientSolution', 'FloatingArea'):
+        if tools.general.has_nested_attr(md, 'results', 'TransientSolution', 'GroundedArea') and tools.general.has_nested_attr(md, 'results', 'TransientSolution', 'FloatingArea'):
             total_area = md.results.TransientSolution.GroundedArea + md.results.TransientSolution.FloatingArea
             variable = calc_perc_ice_cover(total_area, total_area)
         else:
             print("\033[1mland_ice_area_fraction\033[0m cannot be computed and will be skipped.")
 
     elif ismip_variable_name == 'floating_ice_shelf_area_fraction':
-        if utils.general.has_nested_attr(md, 'results', 'TransientSolution', 'FloatingArea'):
+        if tools.general.has_nested_attr(md, 'results', 'TransientSolution', 'FloatingArea'):
             total_area = md.results.TransientSolution.GroundedArea + md.results.TransientSolution.FloatingArea
             variable = calc_perc_ice_cover(total_area, md.results.TransientSolution.FloatingArea)
         else:
             print("\033[1mfloating_ice_shelf_area_fraction\033[0m cannot be computed and will be skipped.")
 
     elif ismip_variable_name == 'grounded_ice_sheet_area_fraction':
-        if utils.general.has_nested_attr(md, 'results', 'TransientSolution', 'GroundedArea'):
+        if tools.general.has_nested_attr(md, 'results', 'TransientSolution', 'GroundedArea'):
             total_area = md.results.TransientSolution.GroundedArea + md.results.TransientSolution.FloatingArea
             variable = calc_perc_ice_cover(total_area, md.results.TransientSolution.GroundedArea)
         else:

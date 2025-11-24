@@ -1,8 +1,8 @@
 import numpy as np
 import warnings
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import utils
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm import tools
 
 @class_registry.register_class
 class dependent(class_registry.manage_state):
@@ -48,7 +48,7 @@ class dependent(class_registry.manage_state):
 
     Examples
     --------
-    md.dependent = pyissm.param.dependent()
+    md.dependent = pyissm.model.classes.dependent()
     md.dependent.name = 'Vel'
     md.dependent.exp = 'velocity_observations.exp'
     """
@@ -79,11 +79,11 @@ class dependent(class_registry.manage_state):
                 raise ValueError('dependent: md must be provided when using massflux as dependent variable!')
             
             ## Get segments that intersect with the supplied *.exp file.
-            if utils.wrappers.check_wrappers_installed():
-                self.segments = utils.wrappers.MeshProfileIntersection(md.mesh.elements, md.mesh.x, md.mesh.y, self.exp)[0]
+            if tools.wrappers.check_wrappers_installed():
+                self.segments = tools.wrappers.MeshProfileIntersection(md.mesh.elements, md.mesh.x, md.mesh.y, self.exp)[0]
             else:
                 ## If wrappers are not installed, return empty segments list
-                warnings.warn('pyissm.param.dependent: Python wrappers not installed. Unable to compute segments for mass flux variable.\n'
+                warnings.warn('pyissm.model.classes.dependent: Python wrappers not installed. Unable to compute segments for mass flux variable.\n'
                               'Returning empty segments list to be defined manually.')
                 self.segments = []
 
@@ -93,12 +93,12 @@ class dependent(class_registry.manage_state):
     def __repr__(self):
         s = '   dependent variable:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'name', 'variable name (must match corresponding String)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'fos_reverse_index', 'index for fos_reverse driver of ADOLC'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'exp', 'file needed to compute dependent variable'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'segments', 'mass flux segments'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'index', '...'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'nods', '...'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'name', 'variable name (must match corresponding String)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'fos_reverse_index', 'index for fos_reverse driver of ADOLC'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'exp', 'file needed to compute dependent variable'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'segments', 'mass flux segments'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'index', '...'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'nods', '...'))
         return s
 
     # Define class string
@@ -110,12 +110,12 @@ class dependent(class_registry.manage_state):
     def check_consistency(self, md, solution, analyses):
         if self.name.lower() == 'massflux':
             if not self.segments:
-                raise ValueError('pyissm.param.dependent.check_consistency: need segments to compute massflux dependent variable response')
+                raise ValueError('pyissm.model.classes.dependent.check_consistency: need segments to compute massflux dependent variable response')
             if self.index < 0:
-                raise ValueError('pyissm.param.dependent.check_consistency: index for massflux dependent variable must be non-negative')
+                raise ValueError('pyissm.model.classes.dependent.check_consistency: index for massflux dependent variable must be non-negative')
             
         if not np.isnan(self.fos_reverse_index):
             if self.nods == 0:
-                raise ValueError('pyissm.param.dependent.check_consistency: nods must be specified when fos_reverse_index is used')
+                raise ValueError('pyissm.model.classes.dependent.check_consistency: nods must be specified when fos_reverse_index is used')
 
         return md

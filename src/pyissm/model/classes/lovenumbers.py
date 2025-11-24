@@ -1,7 +1,7 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class lovenumbers(class_registry.manage_state):
@@ -59,7 +59,7 @@ class lovenumbers(class_registry.manage_state):
 
     Examples
     --------
-    md.lovenumbers = pyissm.param.lovenumbers()
+    md.lovenumbers = pyissm.model.classes.lovenumbers()
     md.lovenumbers.h = h_love_numbers
     md.lovenumbers.k = k_love_numbers
     md.lovenumbers.l = l_love_numbers
@@ -93,19 +93,19 @@ class lovenumbers(class_registry.manage_state):
         s += '****      NOT YET IMPLEMENTED      ****\n'
         s += '---------------------------------------\n\n'
         s += '   lovenumbers parameters:\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'h', 'load Love number for radial displacement'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'k', 'load Love number for gravitational potential perturbation'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'l', 'load Love number for horizontal displacements'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'th', 'tidal load Love number (deg 2)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'tk', 'tidal load Love number (deg 2)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'tl', 'tidal load Love number (deg 2)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'tk2secular', 'secular fluid Love number'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'pmtf_colinear', 'Colinear component of the Polar Motion Transfer Function (e.g. x-motion due to x-component perturbation of the inertia tensor)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'pmtf_ortho', 'Orthogonal component of the Polar Motion Transfer Function (couples x and y components, only used for Chandler Wobble)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'istime', 'time (default: 1) or frequency love numbers (0)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'timefreq', 'time/frequency vector (yr or 1/yr)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'pmtf_colinear', 'Colinear component of the Polar Motion Transfer Function (e.g. x-motion due to x-component perturbation of the inertia tensor)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'pmtf_ortho', 'Orthogonal component of the Polar Motion Transfer Function (couples x and y components, only used for Chandler Wobble)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'h', 'load Love number for radial displacement'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'k', 'load Love number for gravitational potential perturbation'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'l', 'load Love number for horizontal displacements'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'th', 'tidal load Love number (deg 2)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'tk', 'tidal load Love number (deg 2)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'tl', 'tidal load Love number (deg 2)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'tk2secular', 'secular fluid Love number'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'pmtf_colinear', 'Colinear component of the Polar Motion Transfer Function (e.g. x-motion due to x-component perturbation of the inertia tensor)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'pmtf_ortho', 'Orthogonal component of the Polar Motion Transfer Function (couples x and y components, only used for Chandler Wobble)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'istime', 'time (default: 1) or frequency love numbers (0)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'timefreq', 'time/frequency vector (yr or 1/yr)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'pmtf_colinear', 'Colinear component of the Polar Motion Transfer Function (e.g. x-motion due to x-component perturbation of the inertia tensor)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'pmtf_ortho', 'Orthogonal component of the Polar Motion Transfer Function (couples x and y components, only used for Chandler Wobble)'))
         return s
 
     # Define class string
@@ -118,28 +118,28 @@ class lovenumbers(class_registry.manage_state):
         if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc):
             return
         
-        param_utils.check_field(md, fieldname = 'solidearth.lovenumbers.h', allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'solidearth.lovenumbers.k', allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'solidearth.lovenumbers.l', allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'solidearth.lovenumbers.th', allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'solidearth.lovenumbers.tk', allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'solidearth.lovenumbers.tl', allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'solidearth.lovenumbers.tk2secular', allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'solidearth.lovenumbers.pmtf_colinear', allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'solidearth.lovenumbers.pmtf_ortho', allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'solidearth.lovenumbers.timefreq', allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'solidearth.lovenumbers.istime', values = [0, 1], allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.h', allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.k', allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.l', allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.th', allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.tk', allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.tl', allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.tk2secular', allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.pmtf_colinear', allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.pmtf_ortho', allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.timefreq', allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.istime', values = [0, 1], allow_nan = False, allow_inf = False)
 
         # Check that love numbers are provided at the same level of accuracy
         if (self.h.shape[0] != self.k.shape[0]) or (self.h.shape[0] != self.l.shape[0]):
-            raise ValueError('pyissm.param.lovenumbers.check_consistency: love numbers should be provided at the same level of accuracy')
+            raise ValueError('pyissm.model.classes.lovenumbers.check_consistency: love numbers should be provided at the same level of accuracy')
 
         ntf = len(self.timefreq)
         if (np.shape(self.h)[1] != ntf or np.shape(self.k)[1] != ntf or np.shape(self.l)[1] != ntf or np.shape(self.th)[1] != ntf or np.shape(self.tk)[1] != ntf or np.shape(self.tl)[1] != ntf or np.shape(self.pmtf_colinear)[1] != ntf or np.shape(self.pmtf_ortho)[1] != ntf):
-            raise ValueError('pyissm.param.lovenumbers.check_consistency: love numbers should have as many time/frequency steps as the time/frequency vector')
+            raise ValueError('pyissm.model.classes.lovenumbers.check_consistency: love numbers should have as many time/frequency steps as the time/frequency vector')
 
         if self.istime and self.timefreq[0] != 0:
-            raise ValueError('pyissm.param.lovenumbers.check_consistency: temporal love numbers must start with elastic response, i.e. timefreq[0] = 0')
+            raise ValueError('pyissm.model.classes.lovenumbers.check_consistency: temporal love numbers must start with elastic response, i.e. timefreq[0] = 0')
         return md
     
     # Marshall method for saving the lovenumbers parameters

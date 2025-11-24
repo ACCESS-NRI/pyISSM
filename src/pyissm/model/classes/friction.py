@@ -1,7 +1,7 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 ## ------------------------------------------------------
 ## friction.default
@@ -49,7 +49,7 @@ class default(class_registry.manage_state):
 
     Examples
     --------
-    md.friction = pyissm.param.friction.default()
+    md.friction = pyissm.model.classes.friction.default()
     """
 
     # Initialise with default parameters
@@ -70,13 +70,13 @@ class default(class_registry.manage_state):
         s = 'Basal shear stress parameters: Sigma_b = coefficient^2 * Neff ^r * |u_b|^(s - 1) * u_b,\n'
         s += '(effective stress Neff = rho_ice * g * thickness + rho_water * g * base, r = q / p and s = 1 / p)\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'coefficient', 'friction coefficient [SI]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'p', 'p exponent'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'q', 'q exponent'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'coupling', 'Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'linearize', '0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficient', 'friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'p', 'p exponent'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'q', 'q exponent'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'coupling', 'Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'linearize', '0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
         return s
 
     # Define class string
@@ -93,15 +93,15 @@ class default(class_registry.manage_state):
         if solution == 'TransientSolution' and not md.transient.isstressbalance and not md.transient.isthermal:
             return md
         
-        param_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "friction.p", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2, 3, 4])
-        param_utils.check_field(md, fieldname = "friction.linearize", scalar = True, values = [0, 1, 2])
-        param_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)
+        class_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "friction.p", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2, 3, 4])
+        class_utils.check_field(md, fieldname = "friction.linearize", scalar = True, values = [0, 1, 2])
+        class_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)
 
         if self.coupling == 3:
-            param_utils.check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
 
         return md
 
@@ -196,7 +196,7 @@ class coulomb(class_registry.manage_state):
 
     Examples
     --------
-    md.friction = pyissm.param.friction.coulomb()
+    md.friction = pyissm.model.classes.friction.coulomb()
     """
 
     # Initialise with default parameters
@@ -217,13 +217,13 @@ class coulomb(class_registry.manage_state):
         s = 'Basal shear stress parameters: Sigma_b = min(coefficient^2 * Neff ^r * |u_b|^(s - 1) * u_b,\n'
         s += 'coefficientcoulomb^2 * Neff), (effective stress Neff = rho_ice * g * thickness + rho_water * g * bed, r = q / p and s = 1 / p).\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'coefficient', 'power law (Weertman) friction coefficient [SI]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'coefficientcoulomb', 'Coulomb friction coefficient [SI]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'p', 'p exponent'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'q', 'q exponent'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'coupling', 'Coupling flag: 0 for default, 1 for forcing(provide md.friction.effective_pressure)  and 2 for coupled(not implemented yet)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficient', 'power law (Weertman) friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficientcoulomb', 'Coulomb friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'p', 'p exponent'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'q', 'q exponent'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'coupling', 'Coupling flag: 0 for default, 1 for forcing(provide md.friction.effective_pressure)  and 2 for coupled(not implemented yet)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
         return s
 
     # Define class string
@@ -238,19 +238,19 @@ class coulomb(class_registry.manage_state):
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        param_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "friction.coefficientcoulomb", timeseries = True, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "friction.p", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2])
-        param_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)
+        class_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "friction.coefficientcoulomb", timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "friction.p", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2])
+        class_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)
 
         if self.coupling == 1:
-            param_utils.check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
         elif self.coupling == 2:
-            raise ValueError('pyissm.param.friction.coulomb.check_consistency: md.friction.coupling = 2 (coupled) is not implemented yet')
+            raise ValueError('pyissm.model.classes.friction.coulomb.check_consistency: md.friction.coupling = 2 (coupled) is not implemented yet')
         elif self.coupling > 2:
-            raise ValueError(f'pyissm.param.friction.coulomb.check_consistency: md.friction.coupling = {self.coupling} is not implemented yet')
+            raise ValueError(f'pyissm.model.classes.friction.coulomb.check_consistency: md.friction.coupling = {self.coupling} is not implemented yet')
 
         return md
 
@@ -337,7 +337,7 @@ class coulomb2(class_registry.manage_state):
 
     Examples
     --------
-    md.friction = pyissm.param.friction.coulomb2()
+    md.friction = pyissm.model.classes.friction.coulomb2()
     """
 
     # Initialise with default parameters
@@ -358,13 +358,13 @@ class coulomb2(class_registry.manage_state):
         s = 'Basal shear stress parameters: Sigma_b = min(coefficient^2 * Neff ^r * |u_b|^(s - 1) * u_b,\n'
         s += 'coefficientcoulomb^2 * Neff), (effective stress Neff = rho_ice * g * thickness + rho_water * g * bed, r = q / p and s = 1 / p).\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'coefficient', 'power law (Weertman) friction coefficient [SI]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'coefficientcoulomb', 'Coulomb friction coefficient [SI]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'p', 'p exponent'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'q', 'q exponent'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'coupling', 'Coupling flag: 0 for default, 1 for forcing(provide md.friction.effective_pressure)  and 2 for coupled(not implemented yet)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficient', 'power law (Weertman) friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficientcoulomb', 'Coulomb friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'p', 'p exponent'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'q', 'q exponent'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'coupling', 'Coupling flag: 0 for default, 1 for forcing(provide md.friction.effective_pressure)  and 2 for coupled(not implemented yet)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
         return s
 
     # Define class string
@@ -379,19 +379,19 @@ class coulomb2(class_registry.manage_state):
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        param_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "friction.coefficientcoulomb", timeseries = True, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "friction.p", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2])
-        param_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)
+        class_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "friction.coefficientcoulomb", timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "friction.p", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2])
+        class_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)
 
         if self.coupling == 1:
-            param_utils.check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
         elif self.coupling == 2:
-            raise ValueError('pyissm.param.friction.coulomb.check_consistency: md.friction.coupling = 2 (coupled) is not implemented yet')
+            raise ValueError('pyissm.model.classes.friction.coulomb.check_consistency: md.friction.coupling = 2 (coupled) is not implemented yet')
         elif self.coupling > 2:
-            raise ValueError(f'pyissm.param.friction.coulomb.check_consistency: md.friction.coupling = {self.coupling} is not implemented yet')
+            raise ValueError(f'pyissm.model.classes.friction.coulomb.check_consistency: md.friction.coupling = {self.coupling} is not implemented yet')
 
         return md
 
@@ -476,7 +476,7 @@ class hydro(class_registry.manage_state):
 
     Examples
     --------
-    md.friction = pyissm.param.friction.hydro()
+    md.friction = pyissm.model.classes.friction.hydro()
     """
 
     # Initialise with default parameters
@@ -495,12 +495,12 @@ class hydro(class_registry.manage_state):
     def __repr__(self):
         s = 'Effective Pressure based friction law described in Gagliardini 2007\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'coupling', 'Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'q', 'friction law exponent q >= 1'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'C', 'friction law max value (Iken bound)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'As', 'Sliding Parameter without cavitation [m Pa^ - n s^ - 1]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'coupling', 'Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'q', 'friction law exponent q >= 1'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'C', 'friction law max value (Iken bound)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'As', 'Sliding Parameter without cavitation [m Pa^ - n s^ - 1]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
         return s
 
     # Define class string
@@ -515,16 +515,16 @@ class hydro(class_registry.manage_state):
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        param_utils.check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2, 3, 4])
-        param_utils.check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "friction.C", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "friction.As", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)       
+        class_utils.check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2, 3, 4])
+        class_utils.check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "friction.C", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "friction.As", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)       
 
         if self.coupling == 3:
-            param_utils.check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
         elif self.coupling > 4:
-            raise ValueError(f'pyissm.param.friction.hydro.check_consistency: md.friction.coupling = {self.coupling} is not implemented yet. Use md.friction.coupling <= 4.')
+            raise ValueError(f'pyissm.model.classes.friction.hydro.check_consistency: md.friction.coupling = {self.coupling} is not implemented yet. Use md.friction.coupling <= 4.')
 
         return md
 
@@ -604,7 +604,7 @@ class josh(class_registry.manage_state):
 
     Examples
     --------
-    md.friction = pyissm.param.friction.josh()
+    md.friction = pyissm.model.classes.friction.josh()
     """
 
     # Initialise with default parameters
@@ -622,10 +622,10 @@ class josh(class_registry.manage_state):
         s = 'Basal shear stress parameters: Sigma_b = coefficient^2 * Neff ^r * |u_b|^(s - 1) * u_b,\n'
         s += '(effective stress Neff = rho_ice * g * thickness + rho_water * g * base, r = q / p and s = 1 / p)\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'coefficient', 'friction coefficient [SI]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'pressure_adjusted_temperature', 'friction pressure_adjusted_temperature (T - Tpmp) [K]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'gamma', '(T - Tpmp)/gamma [K]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficient', 'friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'pressure_adjusted_temperature', 'friction pressure_adjusted_temperature (T - Tpmp) [K]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'gamma', '(T - Tpmp)/gamma [K]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
         return s
 
     # Define class string
@@ -640,13 +640,13 @@ class josh(class_registry.manage_state):
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        param_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "friction.C", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "friction.As", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)       
+        class_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "friction.C", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "friction.As", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)       
 
-        param_utils.check_field(md, fieldname = "initialization.temperature", size = 'universal', allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "initialization.temperature", size = 'universal', allow_nan = False, allow_inf = False)
 
         return md
     
@@ -723,7 +723,7 @@ class pism(class_registry.manage_state):
 
     Examples
     --------
-    md.friction = pyissm.param.friction.pism()
+    md.friction = pyissm.model.classes.friction.pism()
     """
 
     # Initialise with default parameters
@@ -742,12 +742,12 @@ class pism(class_registry.manage_state):
     def __repr__(self):
         s = 'Basal shear stress parameters for the PISM friction law (See Aschwanden et al. 2016 for more details)\n'
 
-        s += "{}\n".format(param_utils.fielddisplay(self, 'pseudoplasticity_exponent', 'pseudoplasticity exponent [dimensionless]'))
-        s += "{}\n".format(param_utils.fielddisplay(self, 'threshold_speed', 'threshold speed [m / yr]'))
-        s += "{}\n".format(param_utils.fielddisplay(self, 'delta', 'lower limit of the effective pressure, expressed as a fraction of overburden pressure [dimensionless]'))
-        s += "{}\n".format(param_utils.fielddisplay(self, 'void_ratio', 'void ratio at a reference effective pressure [dimensionless]'))
-        s += "{}\n".format(param_utils.fielddisplay(self, 'till_friction_angle', 'till friction angle [deg], recommended default: 30 deg'))
-        s += "{}\n".format(param_utils.fielddisplay(self, 'sediment_compressibility_coefficient', 'coefficient of compressibility of the sediment [dimensionless], recommended default: 0.12'))
+        s += "{}\n".format(class_utils.fielddisplay(self, 'pseudoplasticity_exponent', 'pseudoplasticity exponent [dimensionless]'))
+        s += "{}\n".format(class_utils.fielddisplay(self, 'threshold_speed', 'threshold speed [m / yr]'))
+        s += "{}\n".format(class_utils.fielddisplay(self, 'delta', 'lower limit of the effective pressure, expressed as a fraction of overburden pressure [dimensionless]'))
+        s += "{}\n".format(class_utils.fielddisplay(self, 'void_ratio', 'void ratio at a reference effective pressure [dimensionless]'))
+        s += "{}\n".format(class_utils.fielddisplay(self, 'till_friction_angle', 'till friction angle [deg], recommended default: 30 deg'))
+        s += "{}\n".format(class_utils.fielddisplay(self, 'sediment_compressibility_coefficient', 'coefficient of compressibility of the sediment [dimensionless], recommended default: 0.12'))
         return s
 
     # Define class string
@@ -764,12 +764,12 @@ class pism(class_registry.manage_state):
         if solution == 'TransientSolution' and not md.transient.isstressbalance and not md.transient.isthermal:
             return md
 
-        param_utils.check_field(md, fieldname = 'friction.pseudoplasticity_exponent', scalar = True, gt = 0, all_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'friction.threshold_speed', scalar = True, gt = 0, all_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'friction.delta', scalar = True, gt = 0, lt = 1, all_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'friction.void_ratio', scalar = True, gt = 0, lt = 1, all_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'friction.till_friction_angle', gt = 0, lt = 360., size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'friction.sediment_compressibility_coefficient', gt = 0., lt = 1., size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.pseudoplasticity_exponent', scalar = True, gt = 0, all_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.threshold_speed', scalar = True, gt = 0, all_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.delta', scalar = True, gt = 0, lt = 1, all_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.void_ratio', scalar = True, gt = 0, lt = 1, all_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.till_friction_angle', gt = 0, lt = 360., size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.sediment_compressibility_coefficient', gt = 0., lt = 1., size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
 
         return md
 
@@ -842,7 +842,7 @@ class regcoulomb(class_registry.manage_state):
 
     Examples
     --------
-    md.friction = pyissm.param.friction.regcoulomb()
+    md.friction = pyissm.model.classes.friction.regcoulomb()
     """
 
     # Initialise with default parameters
@@ -864,9 +864,9 @@ class regcoulomb(class_registry.manage_state):
         s += '      tau_b = -  ____________________________\n'
         s += '                     (|u|/u0 + 1)^(1/m)      \n'
         s += '\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'C', 'friction coefficient [SI]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'm', 'm exponent (set to m = 3 in original paper)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'u0', 'velocity controlling plastic limit'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'C', 'friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'm', 'm exponent (set to m = 3 in original paper)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'u0', 'velocity controlling plastic limit'))
         return s
 
     # Define class string
@@ -881,9 +881,9 @@ class regcoulomb(class_registry.manage_state):
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        param_utils.check_field(md, fieldname = 'friction.C', timeseries = True, ge = 0., allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'friction.u0', scalar = True, gt = 0, all_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, 1), gt = 0., allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.C', timeseries = True, ge = 0., allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.u0', scalar = True, gt = 0, all_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, 1), gt = 0., allow_nan = False, allow_inf = False)
 
         return md
 
@@ -955,7 +955,7 @@ class regcoulomb2(class_registry.manage_state):
 
     Examples
     --------
-    md.friction = pyissm.param.friction.regcoulomb2()
+    md.friction = pyissm.model.classes.friction.regcoulomb2()
     """
 
     # Initialise with default parameters
@@ -978,10 +978,10 @@ class regcoulomb2(class_registry.manage_state):
         s += '      tau_b = -  ____________________________\n'
         s += '                   (|u| + (K*N)^m)^(1/m)     \n'
         s += '\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'C', 'friction coefficient [SI]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'm', 'm exponent'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'K', '(K * N) ^ m to be velocity controlling plastic limit'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'C', 'friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'm', 'm exponent'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'K', '(K * N) ^ m to be velocity controlling plastic limit'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
         return s
 
     # Define class string
@@ -996,9 +996,9 @@ class regcoulomb2(class_registry.manage_state):
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        param_utils.check_field(md, fieldname = 'friction.C', timeseries = True, ge = 0., allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'friction.K', gt = 0, all_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, 1), gt = 0., allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.C', timeseries = True, ge = 0., allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.K', gt = 0, all_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, 1), gt = 0., allow_nan = False, allow_inf = False)
 
         return md
 
@@ -1075,7 +1075,7 @@ class schoof(class_registry.manage_state):
 
     Examples
     --------
-    md.friction = pyissm.param.friction.schoof()
+    md.friction = pyissm.model.classes.friction.schoof()
     """
 
     # Initialise with default parameters
@@ -1100,12 +1100,12 @@ class schoof(class_registry.manage_state):
         s += '      tau_b = - _____________________________   u_b   \n'
         s += '               (1+(C^2/(Cmax N))^1/m |u_b| )^m          \n'
         s += '\n'
-        s += "{}\n".format(param_utils.fielddisplay(self, 'C', 'friction coefficient [SI]'))
-        s += "{}\n".format(param_utils.fielddisplay(self, 'Cmax', 'Iken\'s bound (typically between 0.17 and 0.84) [SI]'))
-        s += "{}\n".format(param_utils.fielddisplay(self, 'm', 'm exponent (generally taken as m = 1/n = 1/3)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'coupling', 'Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
-        s += "{}\n".format(param_utils.fielddisplay(self, 'effective_pressure_limit', 'fNeff do not allow to fall below a certain limit: effective_pressure_limit*rho_ice*g*thickness (default 0)'))
+        s += "{}\n".format(class_utils.fielddisplay(self, 'C', 'friction coefficient [SI]'))
+        s += "{}\n".format(class_utils.fielddisplay(self, 'Cmax', 'Iken\'s bound (typically between 0.17 and 0.84) [SI]'))
+        s += "{}\n".format(class_utils.fielddisplay(self, 'm', 'm exponent (generally taken as m = 1/n = 1/3)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'coupling', 'Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
+        s += "{}\n".format(class_utils.fielddisplay(self, 'effective_pressure_limit', 'fNeff do not allow to fall below a certain limit: effective_pressure_limit*rho_ice*g*thickness (default 0)'))
         return s
 
     # Define class string
@@ -1120,14 +1120,14 @@ class schoof(class_registry.manage_state):
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        param_utils.check_field(md, fieldname = 'friction.C', timeseries = True, gt = 0., allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'friction.Cmax', timeseries = True, gt = 0., allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, 1), gt = 0., allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'friction.effective_pressure_limit', scalar = True, ge = 0.)
-        param_utils.check_field(md, fieldname = 'friction.coupling', scalar = True, values = [0, 1, 2, 3, 4])
+        class_utils.check_field(md, fieldname = 'friction.C', timeseries = True, gt = 0., allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.Cmax', timeseries = True, gt = 0., allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, 1), gt = 0., allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.effective_pressure_limit', scalar = True, ge = 0.)
+        class_utils.check_field(md, fieldname = 'friction.coupling', scalar = True, values = [0, 1, 2, 3, 4])
         
         if self.coupling == 3:
-            param_utils.check_field(md, fieldname = 'friction.effective_pressure', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'friction.effective_pressure', timeseries = True, allow_nan = False, allow_inf = False)
 
         return md
     
@@ -1201,7 +1201,7 @@ class shakti(class_registry.manage_state):
 
     Examples
     --------
-    md.friction = pyissm.param.friction.shakti()
+    md.friction = pyissm.model.classes.friction.shakti()
     """
 
     # Initialise with default parameters
@@ -1216,7 +1216,7 @@ class shakti(class_registry.manage_state):
         s = 'Basal shear stress parameters: Sigma_b = coefficient^2 * Neff * u_b\n'
 
         s += '(effective stress Neff = rho_ice * g * thickness + rho_water * g * (head - b))\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'coefficient', 'friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficient', 'friction coefficient [SI]'))
         return s
 
     # Define class string
@@ -1231,7 +1231,7 @@ class shakti(class_registry.manage_state):
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        param_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
 
         return md
     
@@ -1303,7 +1303,7 @@ class waterlayer(class_registry.manage_state):
 
     Examples
     --------
-    md.friction = pyissm.param.friction.waterlayer()
+    md.friction = pyissm.model.classes.friction.waterlayer()
     """
 
     # Initialise with default parameters
@@ -1321,11 +1321,11 @@ class waterlayer(class_registry.manage_state):
     def __repr__(self):
         s = 'Basal shear stress parameters: tau_b = coefficient^2 * Neff ^r * |u_b|^(s - 1) * u_b * 1 / f(T)\n(effective stress Neff = rho_ice * g * thickness + rho_water * g * (bed + water_layer), r = q / p and s = 1 / p)\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'coefficient', 'frictiontemp coefficient [SI]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'f', 'f variable for effective pressure'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'p', 'p exponent'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'q', 'q exponent'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'water_layer', 'water thickness at the base of the ice (m)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficient', 'frictiontemp coefficient [SI]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'f', 'f variable for effective pressure'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'p', 'p exponent'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'q', 'q exponent'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'water_layer', 'water thickness at the base of the ice (m)'))
         return s
 
     # Define class string
@@ -1340,11 +1340,11 @@ class waterlayer(class_registry.manage_state):
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        param_utils.check_field(md, fieldname = 'friction.coefficient', timeseries = True, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'friction.f', scalar = True, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'friction.q', size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'friction.p', size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'thermal.spctemperature', timeseries = True, ge = 0., allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.coefficient', timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.f', scalar = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.q', size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.p', size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'thermal.spctemperature', timeseries = True, ge = 0., allow_inf = False)
 
         return md
 
@@ -1416,7 +1416,7 @@ class weertman(class_registry.manage_state):
 
     Examples
     --------
-    md.friction = pyissm.param.friction.weertman()
+    md.friction = pyissm.model.classes.friction.weertman()
     """
 
     # Initialise with default parameters
@@ -1432,9 +1432,9 @@ class weertman(class_registry.manage_state):
     def __repr__(self):
         s = 'Weertman sliding law parameters: Sigma_b = C^(- 1 / m) * |u_b|^(1 / m - 1) * u_b\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'C', 'friction coefficient [SI]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'm', 'm exponent'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'linearize', '0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'C', 'friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'm', 'm exponent'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'linearize', '0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0)'))
         return s
 
     # Define class string
@@ -1449,9 +1449,9 @@ class weertman(class_registry.manage_state):
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        param_utils.check_field(md, fieldname = 'friction.C', timeseries = True, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'friction.linearize', scalar = True, values = [0, 1, 2])
+        class_utils.check_field(md, fieldname = 'friction.C', timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.linearize', scalar = True, values = [0, 1, 2])
 
         return md
 

@@ -1,7 +1,7 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class geometry(class_registry.manage_state):
@@ -40,7 +40,7 @@ class geometry(class_registry.manage_state):
 
     Examples
     --------
-    md.geometry = pyissm.param.geometry()
+    md.geometry = pyissm.model.classes.geometry()
     md.geometry.surface = surface_elevation
     md.geometry.thickness = ice_thickness
     md.geometry.bed = bed_elevation
@@ -61,11 +61,11 @@ class geometry(class_registry.manage_state):
     def __repr__(self):
         s = '   geometry parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'surface', 'ice upper surface elevation [m]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'thickness', 'ice thickness [m]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'base', 'ice base elevation [m]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'bed', 'bed elevation [m]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'hydrostatic_ratio', 'hydrostatic ratio for floating ice'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'surface', 'ice upper surface elevation [m]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'thickness', 'ice thickness [m]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'base', 'ice base elevation [m]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'bed', 'bed elevation [m]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'hydrostatic_ratio', 'hydrostatic ratio for floating ice'))
         return s
 
     # Define class string
@@ -74,24 +74,24 @@ class geometry(class_registry.manage_state):
         return s
     
     # Check model consistency
-    def check_consistency(self, md, solution, analyses):  # {{{
+    def check_consistency(self, md, solution, analyses):
         # Early return if LoveSolution
         if solution == 'LoveSolution':
             return md
         else:
-            param_utils.check_field(md, fieldname = 'geometry.surface', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-            param_utils.check_field(md, fieldname = 'geometry.base', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-            param_utils.check_field(md, fieldname = 'geometry.thickness', ge = 0, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'geometry.surface', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'geometry.base', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'geometry.thickness', ge = 0, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
             if any(abs(self.thickness - self.surface + self.base) > 1e-9):
                 md.checkmessage('equality thickness = surface-base violated')
             if solution == 'TransientSolution' and md.transient.isgroundingline:
-                param_utils.check_field(md, fieldname = 'geometry.bed', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+                class_utils.check_field(md, fieldname = 'geometry.bed', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
                 if np.any(self.bed - self.base > 1e-12):
                     md.checkmessage('base < bed on one or more vertices')
                 pos = np.where(md.mask.ocean_levelset > 0)
                 if np.any(np.abs(self.bed[pos] - self.base[pos]) > 1e-9):
                     md.checkmessage('equality base = bed on grounded ice violated')
-                param_utils.check_field(md, fieldname = 'geometry.bed', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+                class_utils.check_field(md, fieldname = 'geometry.bed', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
 
         return md
 

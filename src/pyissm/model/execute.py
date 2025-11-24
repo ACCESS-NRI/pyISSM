@@ -9,7 +9,7 @@ import datetime
 import warnings
 import collections
 
-from pyissm import utils, param
+from pyissm import model, tools
 
 
 def marshall(md):
@@ -1072,7 +1072,7 @@ def solve(md,
         file_list = [model_name + ext for ext in ['.bin', '.toolkits']]
     
         ## Append appropriate queue script to file_list
-        if utils.config.is_pc():
+        if tools.config.is_pc():
             file_list.append(model_name + '.bat')
         else:
             file_list.append(model_name + '.queue')
@@ -1391,11 +1391,11 @@ def load_results_from_cluster(md,
             warnings.warn(f'pyissm.execute.load_results_from_cluster: File {file_list[i]} not found.')
     
     # Remove initial tar.gz file
-    if not utils.config.is_pc() and os.path.exists(md.private.runtimename + '.tar.gz'):
+    if not tools.config.is_pc() and os.path.exists(md.private.runtimename + '.tar.gz'):
         os.remove(md.private.runtimename + '.tar.gz')
     
     # Erase all input files if run was carried out on same platform
-    hostname = utils.config.get_hostname()
+    hostname = tools.config.get_hostname()
     if hostname.lower() == md.cluster.name.lower():
         
         ## Remove bin and toolkits files
@@ -1407,7 +1407,7 @@ def load_results_from_cluster(md,
             os.remove('.qmu.in')
 
         ## Remove queue script
-        if not utils.config.is_pc():
+        if not tools.config.is_pc():
             if os.path.exists(md.miscellaneous.name + '.queue'):
                 os.remove(md.miscellaneous.name + '.queue')
         else:
@@ -1597,8 +1597,8 @@ def load_results_from_disk(md, filename):
             return
         
         # Initialize md.results if it is not a structure yet
-        if not isinstance(md.results, param.results.default):
-            md.results = param.results.default()
+        if not isinstance(md.results, model.classes.results.default):
+            md.results = model.classes.results.default()
 
         # Load results onto model
         results = parse_results_from_disk(md, filename)
@@ -1662,7 +1662,7 @@ def parse_results_from_disk(md, filename):
 
     Returns
     -------
-    param.results.solution
+    model.classes.results.solution
         Structured results object containing all solution steps. Each step
         contains the fields and metadata for that particular solution time.
         Fields are organized as attributes accessible via dot notation.
@@ -1709,7 +1709,7 @@ def parse_results_from_disk(md, filename):
     all_steps = np.sort(np.unique(all_steps))
 
     # --- construct solution array ---
-    results = param.results.solution()
+    results = model.classes.results.solution()
     
     # Assign fields to appropriate solution step
     for i in range(len(all_fields)):

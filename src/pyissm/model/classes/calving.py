@@ -1,7 +1,7 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 ## ------------------------------------------------------
 ## calving.default
@@ -37,7 +37,7 @@ class default(class_registry.manage_state):
 
     Examples
     --------
-    md.calving = pyissm.param.calving.default()
+    md.calving = pyissm.model.classes.calving.default()
     md.calving.calvingrate = np.zeros((md.mesh.numberofvertices,))
     """
 
@@ -52,7 +52,7 @@ class default(class_registry.manage_state):
     def __repr__(self):
         s = '   Calving parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'calvingrate', 'calving rate at given location [m/a]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'calvingrate', 'calving rate at given location [m/a]'))
         return s
 
     # Define class string
@@ -66,7 +66,7 @@ class default(class_registry.manage_state):
         if solution != 'TransientSolution' or not md.transient.ismovingfront:
             return md
 
-        param_utils.check_field(md, fieldname = 'calving.calvingrate', ge = 0, timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'calving.calvingrate', ge = 0, timeseries = True, allow_nan = False, allow_inf = False)
             
         return md
 
@@ -134,7 +134,7 @@ class crevassedepth(class_registry.manage_state):
 
     Examples
     --------
-    md.calving = pyissm.param.calving.crevassedepth()
+    md.calving = pyissm.model.classes.calving.crevassedepth()
     md.calving.crevasse_opening_stress = 1.0
     md.calving.crevasse_threshold = 0.75
     md.calving.water_height = 10.0
@@ -153,9 +153,9 @@ class crevassedepth(class_registry.manage_state):
     def __repr__(self):
         s = '   Calving Pi parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'crevasse_opening_stress', '0: stress only in the ice-flow direction, 1: max principal'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'crevasse_threshold', 'ratio of full thickness to calve (e.g. 0.75 is for 75% of the total ice thickness)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'water_height', 'water height in the crevasse [m]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'crevasse_opening_stress', '0: stress only in the ice-flow direction, 1: max principal'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'crevasse_threshold', 'ratio of full thickness to calve (e.g. 0.75 is for 75% of the total ice thickness)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'water_height', 'water height in the crevasse [m]'))
         return s
 
     # Define class string
@@ -169,9 +169,9 @@ class crevassedepth(class_registry.manage_state):
         if solution != "TransientSolution" or not md.transient.ismovingfront:
             return md
 
-        param_utils.check_field(md, fieldname = "calving.crevasse_opening_stress", scalar = True, values = [0, 1])
-        param_utils.check_field(md, fieldname = "calving.crevasse_threshold", scalar = True, gt = 0.0, le = 1.0)
-        param_utils.check_field(md, fieldname = "calving.water_height", timeseries = True, ge = 0, allow_nan = False)
+        class_utils.check_field(md, fieldname = "calving.crevasse_opening_stress", scalar = True, values = [0, 1])
+        class_utils.check_field(md, fieldname = "calving.crevasse_threshold", scalar = True, gt = 0.0, le = 1.0)
+        class_utils.check_field(md, fieldname = "calving.water_height", timeseries = True, ge = 0, allow_nan = False)
 
         return md
 
@@ -240,7 +240,7 @@ class dev(class_registry.manage_state):
 
     Examples
     --------
-    md.calving = pyissm.param.calving.dev()
+    md.calving = pyissm.model.classes.calving.dev()
     md.calving.stress_threshold_groundedice = 2e6
     md.calving.stress_threshold_floatingice = 200e3
     """
@@ -257,8 +257,8 @@ class dev(class_registry.manage_state):
     def __repr__(self):
         s = '   Calving Pi parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'stress_threshold_groundedice', 'sigma_max applied to grounded ice only [Pa]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'stress_threshold_floatingice', 'sigma_max applied to floating ice only [Pa]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'stress_threshold_groundedice', 'sigma_max applied to grounded ice only [Pa]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'stress_threshold_floatingice', 'sigma_max applied to floating ice only [Pa]'))
         return s
 
     # Define class string
@@ -272,8 +272,8 @@ class dev(class_registry.manage_state):
         if solution != "TransientSolution" or not md.transient.ismovingfront:
             return md
 
-        param_utils.check_field(md, fieldname = "calving.stress_threshold_groundedice", gt = 0, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "calving.stress_threshold_floatingice", gt = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "calving.stress_threshold_groundedice", gt = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "calving.stress_threshold_floatingice", gt = 0, allow_nan = False, allow_inf = False)
 
         return md
 
@@ -339,7 +339,7 @@ class levermann(class_registry.manage_state):
 
     Examples
     --------
-    md.calving = pyissm.param.calving.levermann()
+    md.calving = pyissm.model.classes.calving.levermann()
     """
 
     # Initialise with default parameters
@@ -353,7 +353,7 @@ class levermann(class_registry.manage_state):
     def __repr__(self):
         s = '   Calving Levermann parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'coeff', 'proportionality coefficient in Levermann model'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'coeff', 'proportionality coefficient in Levermann model'))
         return s
 
     # Define class string
@@ -367,7 +367,7 @@ class levermann(class_registry.manage_state):
         if solution != "TransientSolution" or not md.transient.ismovingfront:
             return md
 
-        param_utils.check_field(md, fieldname = "calving.coeff", size = (md.mesh.numberofvertices, ), gt = 0)
+        class_utils.check_field(md, fieldname = "calving.coeff", size = (md.mesh.numberofvertices, ), gt = 0)
 
         return md
 
@@ -432,7 +432,7 @@ class minthickness(class_registry.manage_state):
 
     Examples
     --------
-    md.calving = pyissm.param.calving.minthickness()
+    md.calving = pyissm.model.classes.calving.minthickness()
     """
 
     # Initialise with default parameters
@@ -446,7 +446,7 @@ class minthickness(class_registry.manage_state):
     def __repr__(self):
         s = '   Calving Minimum thickness:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'min_thickness', 'minimum thickness below which no ice is allowed'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'min_thickness', 'minimum thickness below which no ice is allowed'))
         return s
 
     # Define class string
@@ -460,7 +460,7 @@ class minthickness(class_registry.manage_state):
         if solution != "TransientSolution" or not md.transient.ismovingfront:
             return md
 
-        param_utils.check_field(md, fieldname = "calving.min_thickness", gt = 0, scalar = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "calving.min_thickness", gt = 0, scalar = True, allow_nan = False, allow_inf = False)
 
         return md
     
@@ -547,7 +547,7 @@ class parameterization(class_registry.manage_state):
 
     Examples
     --------
-    md.calving = pyissm.param.calving.parameterization()
+    md.calving = pyissm.model.classes.calving.parameterization()
     md.calving.min_thickness = 50.
     md.calving.use_param = 1
     md.calving.theta = 2.0
@@ -578,15 +578,15 @@ class parameterization(class_registry.manage_state):
     def __repr__(self):
         s = '   Calving test parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'min_thickness', 'minimum thickness below which no ice is allowed [m]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'use_param', '-1 - just use frontal ablation rate, 0 - f(x) = y_{o} + \alpha (x+x_{o}), 1 - f(x)=y_{o}-\frac{\theta}{2}\tanh(\alpha(x+x_{o})), 2 - tanh(thickness), 3 - tanh(normalized vel), 4 - tanh(truncated vel), 5 - linear(truncated vel)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'theta', 'the amplifier'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'alpha', 'the slope'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'xoffset', 'offset in x-axis'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'yoffset', 'offset in y-axis'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'vel_lowerbound', 'lowerbound of ice velocity to reduce the calving rate [m/a]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'vel_threshold', 'threshold of ice velocity to reduce the calving rate [m/a]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'vel_upperbound', 'upperbound of ice velocity to reduce the calving rate [m/a]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'min_thickness', 'minimum thickness below which no ice is allowed [m]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'use_param', '-1 - just use frontal ablation rate, 0 - f(x) = y_{o} + \alpha (x+x_{o}), 1 - f(x)=y_{o}-\frac{\theta}{2}\tanh(\alpha(x+x_{o})), 2 - tanh(thickness), 3 - tanh(normalized vel), 4 - tanh(truncated vel), 5 - linear(truncated vel)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'theta', 'the amplifier'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'alpha', 'the slope'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'xoffset', 'offset in x-axis'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'yoffset', 'offset in y-axis'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'vel_lowerbound', 'lowerbound of ice velocity to reduce the calving rate [m/a]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'vel_threshold', 'threshold of ice velocity to reduce the calving rate [m/a]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'vel_upperbound', 'upperbound of ice velocity to reduce the calving rate [m/a]'))
         return s
 
     # Define class string
@@ -600,15 +600,15 @@ class parameterization(class_registry.manage_state):
         if solution != "TransientSolution" or not md.transient.ismovingfront:
             return md
 
-        param_utils.check_field(md, fieldname = "calving.min_thickness", scalar = True, ge = 0, allow_nan = False)
-        param_utils.check_field(md, fieldname = "calving.use_param", scalar = True, values = [-1, 0, 1, 2, 3, 4, 5])
-        param_utils.check_field(md, fieldname = "calving.theta", scalar = True, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "calving.alpha", scalar = True, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "calving.xoffset", scalar = True, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "calving.yoffset", scalar = True, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "calving.vel_lowerbound", scalar = True, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "calving.vel_threshold", scalar = True, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "calving.vel_upperbound", scalar = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "calving.min_thickness", scalar = True, ge = 0, allow_nan = False)
+        class_utils.check_field(md, fieldname = "calving.use_param", scalar = True, values = [-1, 0, 1, 2, 3, 4, 5])
+        class_utils.check_field(md, fieldname = "calving.theta", scalar = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "calving.alpha", scalar = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "calving.xoffset", scalar = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "calving.yoffset", scalar = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "calving.vel_lowerbound", scalar = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "calving.vel_threshold", scalar = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "calving.vel_upperbound", scalar = True, allow_nan = False, allow_inf = False)
 
         return md
     
@@ -682,7 +682,7 @@ class vonmises(class_registry.manage_state):
         
     Examples
     --------
-    md.calving = pyissm.param.calving.vonmises()
+    md.calving = pyissm.model.classes.calving.vonmises()
     md.calving.stress_threshold_groundedice = 1e6
     md.calving.stress_threshold_floatingice = 150e3
     md.calving.min_thickness = 50.
@@ -701,9 +701,9 @@ class vonmises(class_registry.manage_state):
     def __repr__(self):
         s = '   Calving VonMises parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'stress_threshold_groundedice', 'sigma_max applied to grounded ice only [Pa]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'stress_threshold_floatingice', 'sigma_max applied to floating ice only [Pa]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'min_thickness', 'minimum thickness below which no ice is allowed [m]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'stress_threshold_groundedice', 'sigma_max applied to grounded ice only [Pa]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'stress_threshold_floatingice', 'sigma_max applied to floating ice only [Pa]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'min_thickness', 'minimum thickness below which no ice is allowed [m]'))
         return s
 
     # Define class string
@@ -717,9 +717,9 @@ class vonmises(class_registry.manage_state):
         if solution != "TransientSolution" or not md.transient.ismovingfront:
             return md
 
-        param_utils.check_field(md, fieldname = "calving.stress_threshold_groundedice", gt = 0, size = 'universal', allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "calving.stress_threshold_floatingice", gt = 0, size = 'universal', allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "calving.min_thickness", scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "calving.stress_threshold_groundedice", gt = 0, size = 'universal', allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "calving.stress_threshold_floatingice", gt = 0, size = 'universal', allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "calving.min_thickness", scalar = True, ge = 0, allow_nan = False, allow_inf = False)
 
         return md
     

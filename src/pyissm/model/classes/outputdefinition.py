@@ -1,7 +1,7 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class outputdefinition(class_registry.manage_state):
@@ -35,7 +35,7 @@ class outputdefinition(class_registry.manage_state):
 
     Examples
     --------
-    md.outputdefinition = pyissm.param.outputdefinition()
+    md.outputdefinition = pyissm.model.classes.outputdefinition()
     md.outputdefinition.definitions = ['IceVolume', 'IceVolumeAboveFloatation', 'CustomOutput1']
     """
 
@@ -50,7 +50,7 @@ class outputdefinition(class_registry.manage_state):
     def __repr__(self):
         s = '   Output definitions:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'definitions', 'List of potential outputs that can be requested, but which need additional data to be defined'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'definitions', 'List of potential outputs that can be requested, but which need additional data to be defined'))
         return s
 
     # Define class string
@@ -60,7 +60,7 @@ class outputdefinition(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        param_utils.check_field(md, fieldname = 'outputdefinition.definitions', string_list = True)
+        class_utils.check_field(md, fieldname = 'outputdefinition.definitions', string_list = True)
         
         # Loop over definitions and check their consistency
         for definition in self.definitions:

@@ -1,7 +1,7 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class surfaceload(class_registry.manage_state):
@@ -39,7 +39,7 @@ class surfaceload(class_registry.manage_state):
 
     Examples
     --------
-    md.surfaceload = pyissm.param.surfaceload()
+    md.surfaceload = pyissm.model.classes.surfaceload()
     md.surfaceload.icethicknesschange = ice_thickness_change
     md.surfaceload.waterheightchange = water_height_change
     md.surfaceload.other = sediment_load
@@ -57,9 +57,9 @@ class surfaceload(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   surfaceload:\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'icethicknesschange', 'thickness change: ice height equivalent [mIce/yr]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'waterheightchange', 'water height change: water height equivalent [mWater/yr]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'otherchange', 'other loads (sediments) [kg/m^2/yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'icethicknesschange', 'thickness change: ice height equivalent [mIce/yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'waterheightchange', 'water height change: water height equivalent [mWater/yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'otherchange', 'other loads (sediments) [kg/m^2/yr]'))
         return s
 
     # Define class string
@@ -68,17 +68,17 @@ class surfaceload(class_registry.manage_state):
         return s
     
     # Check model consistency
-    def check_consistency(self, md, solution, analyses):  # {{{
+    def check_consistency(self, md, solution, analyses):
         # Early return if required analysis/solutions are not present
         if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc):
             return md
         
         if type(self.icethicknesschange) == np.ndarray:
-            param_utils.check_field(md, fieldname = 'solidearth.surfaceload.icethicknesschange', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'solidearth.surfaceload.icethicknesschange', timeseries = True, allow_nan = False, allow_inf = False)
         if type(self.waterheightchange) == np.ndarray:
-            param_utils.check_field(md, fieldname = 'solidearth.surfaceload.waterheightchange', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'solidearth.surfaceload.waterheightchange', timeseries = True, allow_nan = False, allow_inf = False)
         if type(self.otherchange) == np.ndarray:
-            param_utils.check_field(md, fieldname = 'solidearth.surfaceload.otherchange', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'solidearth.surfaceload.otherchange', timeseries = True, allow_nan = False, allow_inf = False)
 
         return md
     

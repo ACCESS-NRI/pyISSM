@@ -3,11 +3,11 @@ import numpy as np
 import os
 import re
 from operator import attrgetter
-from pyissm.param import basalforcings
-from pyissm.param import calving
-from pyissm.param import friction
-from pyissm.param import smb
-from pyissm.param import frontalforcings
+from pyissm.model.classes import basalforcings
+from pyissm.model.classes import calving
+from pyissm.model.classes import friction
+from pyissm.model.classes import smb
+from pyissm.model.classes import frontalforcings
 
 """
 Functions for formatting and displaying model fields in ISSM classes. Taken from $ISSM_DIR/src/m/miscellaneous/fielddisplay.py.

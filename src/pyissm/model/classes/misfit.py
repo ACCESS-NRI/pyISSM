@@ -1,7 +1,7 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class misfit(class_registry.manage_state):
@@ -53,7 +53,7 @@ class misfit(class_registry.manage_state):
 
     Examples
     --------
-    md.misfit = pyissm.param.misfit()
+    md.misfit = pyissm.model.classes.misfit()
     md.misfit.name = 'velocity_misfit'
     md.misfit.model_string = 'Vel'
     md.misfit.observation = observed_velocity
@@ -80,15 +80,15 @@ class misfit(class_registry.manage_state):
     def __repr__(self):
         s = '   Misfit:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'name', 'identifier for this misfit response'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'definitionstring', 'string that identifies this output definition uniquely, from "Outputdefinition[1 - 10]"'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'model_string', 'string for field that is modeled'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'observation', 'observed field that we compare the model against'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'observation_string', 'observation string'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'local', 'is the response local to the elements, or global? (default is 1)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'timeinterpolation', 'interpolation routine used to interpolate misfit between two time steps (default is "nearestneighbor"'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'weights', 'weights (at vertices) to apply to the misfit'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'weights_string', 'string for weights for identification purposes'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'name', 'identifier for this misfit response'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'definitionstring', 'string that identifies this output definition uniquely, from "Outputdefinition[1 - 10]"'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'model_string', 'string for field that is modeled'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'observation', 'observed field that we compare the model against'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'observation_string', 'observation string'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'local', 'is the response local to the elements, or global? (default is 1)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'timeinterpolation', 'interpolation routine used to interpolate misfit between two time steps (default is "nearestneighbor"'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'weights', 'weights (at vertices) to apply to the misfit'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'weights_string', 'string for weights for identification purposes'))
         return s
 
     # Define class string
@@ -99,19 +99,19 @@ class misfit(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         if type(self.name) != str:
-            raise TypeError('pyissm.param.misfit.check_consistency: "name" field should be a string!')
+            raise TypeError('pyissm.model.classes.misfit.check_consistency: "name" field should be a string!')
 
         OutputdefinitionStringArray = []
         for i in range(100):
             OutputdefinitionStringArray.append('Outputdefinition' + str(i))
 
-        param_utils.check_field(md, fieldname = 'self.definitionstring', field = self.definitionstring, values = OutputdefinitionStringArray)
+        class_utils.check_field(md, fieldname = 'self.definitionstring', field = self.definitionstring, values = OutputdefinitionStringArray)
         if type(self.timeinterpolation) != str:
-            raise TypeError('pyissm.param.misfit.check_consistency: "timeinterpolation" field should be a string!')
+            raise TypeError('pyissm.model.classes.misfit.check_consistency: "timeinterpolation" field should be a string!')
 
-        param_utils.check_field(md, fieldname = 'self.observation', field = self.observation, timeseries = True, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'self.timeinterpolation', field = self.timeinterpolation, values = ['nearestneighbor'])
-        param_utils.check_field(md, fieldname = 'self.weights', field = self.weights, timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'self.observation', field = self.observation, timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'self.timeinterpolation', field = self.timeinterpolation, values = ['nearestneighbor'])
+        class_utils.check_field(md, fieldname = 'self.weights', field = self.weights, timeseries = True, allow_nan = False, allow_inf = False)
 
         return md
 

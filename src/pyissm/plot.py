@@ -5,7 +5,7 @@ Functions to visualize ISSM Models
 import matplotlib.pyplot as plt
 import matplotlib
 import numpy as np
-from pyissm import model, utils
+from pyissm import model, tools
 import warnings
 
 ## ------------------------------------------------------------------------------------
@@ -478,7 +478,7 @@ def plot_model_field(md,
         # If a 3D model is provided, extract the layer (if provided), or continue to default extraction of surface layer
         if layer is not None:
             # Extract the specified layer
-            field, _ = utils.general.extract_field_layer(md, field, layer)
+            field, _ = tools.general.extract_field_layer(md, field, layer)
         else:
             # Default behaviour for 3D model with no layer specified
             if field.shape[0] == md.mesh.numberofvertices:

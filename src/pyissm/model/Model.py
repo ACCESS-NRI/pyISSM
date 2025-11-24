@@ -1,7 +1,7 @@
 """
 Primary class for all ISSM model interactions.
 """
-from pyissm import param
+from pyissm.model import classes
 
 class Model():
     """
@@ -17,142 +17,142 @@ class Model():
 
     Attributes
     ----------
-    mesh : param.mesh.mesh2d()
+    mesh : classes.mesh.mesh2d()
         Mesh properties.
-    mask : param.mask.mask2d()
+    mask : classes.mask.mask2d()
         Defines grounded and floating elements.
-    geometry : param.geometry.geometry2d()
+    geometry : classes.geometry.geometry2d()
         Surface elevation, bedrock topography, ice thickness, etc.
-    constants : param.constants()
+    constants : classes.constants()
         Physical constants.
-    smb : param.smb.default()
+    smb : classes.smb.default()
         Surface mass balance.
-    basalforcings : param.basalforcings.default()
+    basalforcings : classes.basalforcings.default()
         Bed forcings.
-    materials : param.materials.ice()
+    materials : classes.materials.ice()
         Material properties.
-    damage : param.damage()
+    damage : classes.damage()
         Damage propagation laws.
-    friction : param.friction.default()
+    friction : classes.friction.default()
         Basal friction / drag properties.
-    flowequation : param.flowequation()
+    flowequation : classes.flowequation()
         Flow equations.
-    timestepping : param.timestepping.default()
+    timestepping : classes.timestepping.default()
         Timestepping for transient models.
-    initialization : param.initialization()
+    initialization : classes.initialization()
         Initial guess / state.
-    rifts : param.rifts()
+    rifts : classes.rifts()
         Rifts properties.
-    solidearth : param.solidearth.earth()
+    solidearth : classes.solidearth.earth()
         Solidearth inputs and settings.
-    dsl : param.dsl.default()
+    dsl : classes.dsl.default()
         Dynamic sea level.
-    debug : param.debug()
+    debug : classes.debug()
         Debugging tools (valgrind, gprof).
-    verbose : param.verbose()
+    verbose : classes.verbose()
         Verbosity level in solve.
-    settings : param.issmsettings()
+    settings : classes.issmsettings()
         Settings properties.
     toolkits : None
         PETSc options for each solution.
     cluster : None
         Cluster parameters (number of CPUs, etc.).
-    balancethickness : param.balancethickness()
+    balancethickness : classes.balancethickness()
         Parameters for balancethickness solution.
-    stressbalance : param.stressbalance()
+    stressbalance : classes.stressbalance()
         Parameters for stressbalance solution.
-    groundingline : param.groundingline()
+    groundingline : classes.groundingline()
         Parameters for groundingline solution.
-    hydrology : param.hydrology.shreve()
+    hydrology : classes.hydrology.shreve()
         Parameters for hydrology solution.
-    masstransport : param.masstransport()
+    masstransport : classes.masstransport()
         Parameters for masstransport solution.
-    thermal : param.thermal()
+    thermal : classes.thermal()
         Parameters for thermal solution.
-    steadystate : param.steadystate()
+    steadystate : classes.steadystate()
         Parameters for steadystate solution.
-    transient : param.transient()
+    transient : classes.transient()
         Parameters for transient solution.
-    levelset : param.levelset()
+    levelset : classes.levelset()
         Parameters for moving boundaries (level-set method).
-    calving : param.calving.default()
+    calving : classes.calving.default()
         Parameters for calving.
-    frontalforcings : param.frontalforcings.default()
+    frontalforcings : classes.frontalforcings.default()
         Parameters for frontalforcings.
-    love : param.love.default()
+    love : classes.love.default()
         Parameters for love solution.
-    esa : param.esa()
+    esa : classes.esa()
         Parameters for elastic adjustment solution.
-    sampling : param.sampling()
+    sampling : classes.sampling()
         Parameters for stochastic sampler.
-    autodiff : param.autodiff()
+    autodiff : classes.autodiff()
         Automatic differentiation parameters.
-    inversion : param.inversion.default()
+    inversion : classes.inversion.default()
         Parameters for inverse methods.
-    qmu : param.qmu.default()
+    qmu : classes.qmu.default()
         Dakota properties.
-    amr : param.amr()
+    amr : classes.amr()
         Adaptive mesh refinement properties.
-    results : param.results.default()
+    results : classes.results.default()
         Model results.
-    outputdefinition : param.outputdefinition()
+    outputdefinition : classes.outputdefinition()
         Output definition.
-    radaroverlay : param.radaroverlay()
+    radaroverlay : classes.radaroverlay()
         Radar image for plot overlay.
-    miscellaneous : param.miscellaneous()
+    miscellaneous : classes.miscellaneous()
         Miscellaneous fields.
-    stochasticforcing : param.stochasticforcing()
+    stochasticforcing : classes.stochasticforcing()
         Stochasticity applied to model forcings.
     """
 
     def __init__(self):
 
         ## Initialise all as None
-        self.mesh = param.mesh.mesh2d()
-        self.mask = param.mask()
-        self.geometry = param.geometry()
-        self.constants = param.constants()
-        self.smb = param.smb.default()
-        self.basalforcings = param.basalforcings.default()
-        self.materials = param.materials.ice()
-        self.damage = param.damage()
-        self.friction = param.friction.default()
-        self.flowequation = param.flowequation()
-        self.timestepping = param.timestepping.default()
-        self.initialization = param.initialization()
-        self.rifts = param.rifts()
-        self.dsl = param.dsl.default()
-        self.solidearth = param.solidearth.earth()
-        self.debug = param.debug()
-        self.verbose = param.verbose()
-        self.settings = param.issmsettings()
-        self.toolkits = param.toolkits()
-        self.cluster = param.cluster.generic()
-        self.balancethickness = param.balancethickness()
-        self.stressbalance = param.stressbalance()
-        self.groundingline = param.groundingline()
-        self.hydrology = param.hydrology.shreve()
-        self.debris = param.debris()
-        self.masstransport = param.masstransport()
-        self.thermal = param.thermal()
-        self.steadystate = param.steadystate()
-        self.transient = param.transient()
-        self.levelset = param.levelset()
-        self.calving = param.calving.default()
-        self.frontalforcings = param.frontalforcings.default()
-        self.love = param.love.default()
-        self.esa = param.esa()
-        self.sampling = param.sampling()
-        self.autodiff = param.autodiff()
-        self.inversion = param.inversion.default()
-        self.qmu = param.qmu.default()
-        self.amr = param.amr()
-        self.results = param.results.default()
-        self.outputdefinition = param.outputdefinition()
-        self.radaroverlay = param.radaroverlay()
-        self.miscellaneous = param.miscellaneous()
-        self.private = param.private()
-        self.stochasticforcing = param.stochasticforcing()
+        self.mesh = classes.mesh.mesh2d()
+        self.mask = classes.mask()
+        self.geometry = classes.geometry()
+        self.constants = classes.constants()
+        self.smb = classes.smb.default()
+        self.basalforcings = classes.basalforcings.default()
+        self.materials = classes.materials.ice()
+        self.damage = classes.damage()
+        self.friction = classes.friction.default()
+        self.flowequation = classes.flowequation()
+        self.timestepping = classes.timestepping.default()
+        self.initialization = classes.initialization()
+        self.rifts = classes.rifts()
+        self.dsl = classes.dsl.default()
+        self.solidearth = classes.solidearth.earth()
+        self.debug = classes.debug()
+        self.verbose = classes.verbose()
+        self.settings = classes.issmsettings()
+        self.toolkits = classes.toolkits()
+        self.cluster = classes.cluster.generic()
+        self.balancethickness = classes.balancethickness()
+        self.stressbalance = classes.stressbalance()
+        self.groundingline = classes.groundingline()
+        self.hydrology = classes.hydrology.shreve()
+        self.debris = classes.debris()
+        self.masstransport = classes.masstransport()
+        self.thermal = classes.thermal()
+        self.steadystate = classes.steadystate()
+        self.transient = classes.transient()
+        self.levelset = classes.levelset()
+        self.calving = classes.calving.default()
+        self.frontalforcings = classes.frontalforcings.default()
+        self.love = classes.love.default()
+        self.esa = classes.esa()
+        self.sampling = classes.sampling()
+        self.autodiff = classes.autodiff()
+        self.inversion = classes.inversion.default()
+        self.qmu = classes.qmu.default()
+        self.amr = classes.amr()
+        self.results = classes.results.default()
+        self.outputdefinition = classes.outputdefinition()
+        self.radaroverlay = classes.radaroverlay()
+        self.miscellaneous = classes.miscellaneous()
+        self.private = classes.private()
+        self.stochasticforcing = classes.stochasticforcing()
 
     # Define repr
     def __repr__(self):
@@ -250,14 +250,14 @@ class Model():
         Return a sorted list of registered model class attribute names.
 
         The method inspects the instance attributes and returns those whose
-        classes are registered in ``param.class_registry.CLASS_REGISTRY``.
+        classes are registered in ``classes.class_registry.CLASS_REGISTRY``.
 
         Returns
         -------
         list of str
             Sorted list of attribute names corresponding to registered model classes.
         """
-        registered_classes = set(param.class_registry.CLASS_REGISTRY.values())
+        registered_classes = set(classes.class_registry.CLASS_REGISTRY.values())
         names = [
             name for name, obj in vars(self).items()
             if obj.__class__ in registered_classes

@@ -1,7 +1,7 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class damage(class_registry.manage_state):
@@ -71,7 +71,7 @@ class damage(class_registry.manage_state):
 
     Examples
     --------
-    md.damage = pyissm.param.damage()
+    md.damage = pyissm.model.classes.damage()
     md.damage.isdamage = 1
     """
 
@@ -102,24 +102,24 @@ class damage(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   Damage:\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'isdamage', 'is damage mechanics being used? [0 (default) or 1]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, "D", "damage tensor (scalar for now)"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, "law", "damage law ['0: analytical', '1: pralong']"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, "spcdamage", "damage constraints (NaN means no constraint)"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, "max_damage", "maximum possible damage (0 <=max_damage < 1)"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, "stabilization", "0: no stabilization, 1: artificial diffusion, 2: SUPG (not working), 4: flux corrected transport"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, "maxiter", "maximum number of non linear iterations"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, "elementinterp", "interpolation scheme for finite elements [''P1'', ''P2'']"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, "stress_threshold", "stress threshold for damage initiation (Pa)"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, "stress_ubound", "stress upper bound for damage healing (Pa)"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, "kappa", "ductility parameter for stress softening and damage [ > 1]"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, "c1", "damage parameter 1 "))
-        s += '{}\n'.format(param_utils.fielddisplay(self, "c2", "damage parameter 2 "))
-        s += '{}\n'.format(param_utils.fielddisplay(self, "c3", "damage parameter 3 "))
-        s += '{}\n'.format(param_utils.fielddisplay(self, "c4", "damage parameter 4 "))
-        s += '{}\n'.format(param_utils.fielddisplay(self, "healing", "damage healing parameter"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, "equiv_stress", "0: von Mises, 1: max principal"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'isdamage', 'is damage mechanics being used? [0 (default) or 1]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, "D", "damage tensor (scalar for now)"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, "law", "damage law ['0: analytical', '1: pralong']"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, "spcdamage", "damage constraints (NaN means no constraint)"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, "max_damage", "maximum possible damage (0 <=max_damage < 1)"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, "stabilization", "0: no stabilization, 1: artificial diffusion, 2: SUPG (not working), 4: flux corrected transport"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, "maxiter", "maximum number of non linear iterations"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, "elementinterp", "interpolation scheme for finite elements [''P1'', ''P2'']"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, "stress_threshold", "stress threshold for damage initiation (Pa)"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, "stress_ubound", "stress upper bound for damage healing (Pa)"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, "kappa", "ductility parameter for stress softening and damage [ > 1]"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, "c1", "damage parameter 1 "))
+        s += '{}\n'.format(class_utils.fielddisplay(self, "c2", "damage parameter 2 "))
+        s += '{}\n'.format(class_utils.fielddisplay(self, "c3", "damage parameter 3 "))
+        s += '{}\n'.format(class_utils.fielddisplay(self, "c4", "damage parameter 4 "))
+        s += '{}\n'.format(class_utils.fielddisplay(self, "healing", "damage healing parameter"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, "equiv_stress", "0: von Mises, 1: max principal"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -129,30 +129,30 @@ class damage(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        param_utils.check_field(md, fieldname = "damage.isdamage", scalar = True, values = [0, 1])
+        class_utils.check_field(md, fieldname = "damage.isdamage", scalar = True, values = [0, 1])
 
         if self.isdamage:
-            param_utils.check_field(md, fieldname = "damage.D", ge = 0, le = self.max_damage, size = (md.mesh.numberofvertices, ))
-            param_utils.check_field(md, fieldname = "damage.max_damage", ge = 0, lt = 1)
-            param_utils.check_field(md, fieldname = "damage.law", scalar = True, values = [0, 1, 2, 3])
-            param_utils.check_field(md, fieldname = "damage.spcdamage", allow_inf = True, timeseries = True)
-            param_utils.check_field(md, fieldname = "damage.stabilization", scalar = True, values = [0, 1, 2, 4])
-            param_utils.check_field(md, fieldname = "damage.maxiter", ge = 0)
-            param_utils.check_field(md, fieldname = "damage.elementinterp", values = ["P1", "P2"])
-            param_utils.check_field(md, fieldname = "damage.stress_threshold", ge = 0)
-            param_utils.check_field(md, fieldname = "damage.stress_ubound", ge = 0)
-            param_utils.check_field(md, fieldname = "damage.kappa", gt = 1)
-            param_utils.check_field(md, fieldname = "damage.healing", ge = 0)
-            param_utils.check_field(md, fieldname = "damage.c1", ge = 0)
-            param_utils.check_field(md, fieldname = "damage.c2", ge = 0)
-            param_utils.check_field(md, fieldname = "damage.c3", ge = 0)
-            param_utils.check_field(md, fieldname = "damage.c4", ge = 0)
-            param_utils.check_field(md, fieldname = "damage.equiv_stress", scalar = True, values = [0, 1])
-            param_utils.check_field(md, fieldname = "damage.requested_outputs", string_list = True)
+            class_utils.check_field(md, fieldname = "damage.D", ge = 0, le = self.max_damage, size = (md.mesh.numberofvertices, ))
+            class_utils.check_field(md, fieldname = "damage.max_damage", ge = 0, lt = 1)
+            class_utils.check_field(md, fieldname = "damage.law", scalar = True, values = [0, 1, 2, 3])
+            class_utils.check_field(md, fieldname = "damage.spcdamage", allow_inf = True, timeseries = True)
+            class_utils.check_field(md, fieldname = "damage.stabilization", scalar = True, values = [0, 1, 2, 4])
+            class_utils.check_field(md, fieldname = "damage.maxiter", ge = 0)
+            class_utils.check_field(md, fieldname = "damage.elementinterp", values = ["P1", "P2"])
+            class_utils.check_field(md, fieldname = "damage.stress_threshold", ge = 0)
+            class_utils.check_field(md, fieldname = "damage.stress_ubound", ge = 0)
+            class_utils.check_field(md, fieldname = "damage.kappa", gt = 1)
+            class_utils.check_field(md, fieldname = "damage.healing", ge = 0)
+            class_utils.check_field(md, fieldname = "damage.c1", ge = 0)
+            class_utils.check_field(md, fieldname = "damage.c2", ge = 0)
+            class_utils.check_field(md, fieldname = "damage.c3", ge = 0)
+            class_utils.check_field(md, fieldname = "damage.c4", ge = 0)
+            class_utils.check_field(md, fieldname = "damage.equiv_stress", scalar = True, values = [0, 1])
+            class_utils.check_field(md, fieldname = "damage.requested_outputs", string_list = True)
 
         elif self.law != 0:
             if solution == "DamageEvolutionSolution":
-                raise RuntimeError("pyissm.param.damage.check_consistency: Invalid evolution law (md.damage.law) for a damage solution")
+                raise RuntimeError("pyissm.model.classes.damage.check_consistency: Invalid evolution law (md.damage.law) for a damage solution")
 
         return md
     

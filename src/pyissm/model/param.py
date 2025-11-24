@@ -5,8 +5,7 @@ Functions for parameterising ISSM models.
 import numpy as np
 import os
 import warnings
-from pyissm import model
-from pyissm import utils
+from pyissm import model, tools
 
 def set_mask(md,
              floating_ice_name = None,
@@ -80,8 +79,8 @@ def set_mask(md,
         md.mask.ice_levelset = np.ones(md.mesh.numberofvertices)
         
         ### Get vertices inside the ice domain contour and set ice_levelset to -1 (ice)
-        if utils.wrappers.check_wrappers_installed():
-            vertex_inside = utils.wrappers.ContourToMesh(elements, x, y, ice_domain, 'node', 1)
+        if tools.wrappers.check_wrappers_installed():
+            vertex_inside = tools.wrappers.ContourToMesh(elements, x, y, ice_domain, 'node', 1)
             md.mask.ice_levelset[vertex_inside.astype(bool)] = -1.
         else:
             raise ImportError("pyissm.tools.param.set_mask: Wrappers are not installed. Cannot use ice_domain option.")

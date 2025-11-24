@@ -1,6 +1,6 @@
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 ## ------------------------------------------------------
 ## timestepping.default
@@ -61,7 +61,7 @@ class default(class_registry.manage_state):
 
     Examples
     --------
-    md.timestepping = pyissm.param.timestepping.default()
+    md.timestepping = pyissm.model.classes.timestepping.default()
     md.timestepping.start_time = 0
     md.timestepping.final_time = 100
     md.timestepping.time_step = 1.0
@@ -84,13 +84,13 @@ class default(class_registry.manage_state):
     def __repr__(self):
         s = '   timestepping parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'start_time', 'simulation starting time [yr]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'final_time', 'final time to stop the simulation [yr]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'time_step', 'length of time steps [yr]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'interp_forcing', 'interpolate in time between requested forcing values? (0 or 1)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'average_forcing', 'average in time if there are several forcing values between steps? (0 or 1, default is 0)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'cycle_forcing', 'cycle through forcing? (0 or 1)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'coupling_time', 'length of coupling time steps with ocean model [yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'start_time', 'simulation starting time [yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'final_time', 'final time to stop the simulation [yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'time_step', 'length of time steps [yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'interp_forcing', 'interpolate in time between requested forcing values? (0 or 1)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'average_forcing', 'average in time if there are several forcing values between steps? (0 or 1, default is 0)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'cycle_forcing', 'cycle through forcing? (0 or 1)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'coupling_time', 'length of coupling time steps with ocean model [yr]'))
         return s
 
     # Define class string
@@ -100,18 +100,18 @@ class default(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        param_utils.check_field(md, fieldname = 'timestepping.start_time', scalar = True, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'timestepping.final_time', scalar = True, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'timestepping.time_step', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'timestepping.interp_forcing', scalar = True, values = [0, 1])
-        param_utils.check_field(md, fieldname = 'timestepping.average_forcing', scalar = True, values = [0, 1])
-        param_utils.check_field(md, fieldname = 'timestepping.cycle_forcing', scalar = True, values = [0, 1])
+        class_utils.check_field(md, fieldname = 'timestepping.start_time', scalar = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'timestepping.final_time', scalar = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'timestepping.time_step', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'timestepping.interp_forcing', scalar = True, values = [0, 1])
+        class_utils.check_field(md, fieldname = 'timestepping.average_forcing', scalar = True, values = [0, 1])
+        class_utils.check_field(md, fieldname = 'timestepping.cycle_forcing', scalar = True, values = [0, 1])
         
         if (self.final_time - self.start_time) < 0:
             md.checkmessage('timestepping.final_time should be larger than timestepping.start_time')
         
         if solution == 'TransientSolution':
-            param_utils.check_field(md, fieldname = 'timestepping.time_step', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'timestepping.time_step', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
 
         return md
 
@@ -217,7 +217,7 @@ class adaptive(class_registry.manage_state):
 
     Examples
     --------
-    md.timestepping = pyissm.param.timestepping.adaptive()
+    md.timestepping = pyissm.model.classes.timestepping.adaptive()
     md.timestepping.time_step_min = 0.001
     md.timestepping.time_step_max = 5.0
     md.timestepping.cfl_coefficient = 0.8
@@ -242,16 +242,16 @@ class adaptive(class_registry.manage_state):
     def __repr__(self):
         s = '   timestepping.adaptive parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'start_time', 'simulation starting time [yr]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, "start_time", "simulation starting time [yr]"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, "final_time", "final time to stop the simulation [yr]"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, "time_step_min", "minimum length of time steps [yr]"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, "time_step_max", "maximum length of time steps [yr]"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, "cfl_coefficient", "coefficient applied to cfl condition"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, "interp_forcing", "interpolate in time between requested forcing values ? (0 or 1)"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'average_forcing', 'average in time if there are several forcing values between steps? (0 or 1, default is 0)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, "cycle_forcing", "cycle through forcing ? (0 or 1)"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, "coupling_time", "coupling time steps with ocean model [yr]"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'start_time', 'simulation starting time [yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, "start_time", "simulation starting time [yr]"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, "final_time", "final time to stop the simulation [yr]"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, "time_step_min", "minimum length of time steps [yr]"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, "time_step_max", "maximum length of time steps [yr]"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, "cfl_coefficient", "coefficient applied to cfl condition"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, "interp_forcing", "interpolate in time between requested forcing values ? (0 or 1)"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'average_forcing', 'average in time if there are several forcing values between steps? (0 or 1, default is 0)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, "cycle_forcing", "cycle through forcing ? (0 or 1)"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, "coupling_time", "coupling time steps with ocean model [yr]"))
         return s
 
     # Define class string
@@ -261,17 +261,17 @@ class adaptive(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        param_utils.check_field(md, fieldname = 'timestepping.start_time', scalar = True, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'timestepping.final_time', scalar = True, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'timestepping.time_step_min', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'timestepping.time_step_max', scalar = True, ge = md.timestepping.time_step_min, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'timestepping.cfl_coefficient', scalar = True, gt = 0, le = 1)
+        class_utils.check_field(md, fieldname = 'timestepping.start_time', scalar = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'timestepping.final_time', scalar = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'timestepping.time_step_min', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'timestepping.time_step_max', scalar = True, ge = md.timestepping.time_step_min, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'timestepping.cfl_coefficient', scalar = True, gt = 0, le = 1)
         if self.final_time - self.start_time < 0:
             md.checkmessage("timestepping.final_time should be larger than timestepping.start_time")
-        param_utils.check_field(md, fieldname = 'timestepping.interp_forcing', scalar = True, values = [0, 1])
-        param_utils.check_field(md, fieldname = 'timestepping.average_forcing', scalar = True, values = [0, 1])
-        param_utils.check_field(md, fieldname = 'timestepping.cycle_forcing', scalar = True, values = [0, 1])
-        param_utils.check_field(md, fieldname = 'timestepping.coupling_time', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'timestepping.interp_forcing', scalar = True, values = [0, 1])
+        class_utils.check_field(md, fieldname = 'timestepping.average_forcing', scalar = True, values = [0, 1])
+        class_utils.check_field(md, fieldname = 'timestepping.cycle_forcing', scalar = True, values = [0, 1])
+        class_utils.check_field(md, fieldname = 'timestepping.coupling_time', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
 
         return md
 

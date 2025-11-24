@@ -1,6 +1,6 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
 
 ## ------------------------------------------------------
 ## results.default
@@ -36,7 +36,7 @@ class default(class_registry.manage_state):
 
     Examples
     --------
-    results = pyissm.param.results.default()
+    results = pyissm.model.classes.results.default()
     """
 
     # Initialise with default parameters
@@ -101,7 +101,7 @@ class resultsdakota(class_registry.manage_state):
 
     Examples
     --------
-    results = pyissm.param.results.resultsdakota()
+    results = pyissm.model.classes.results.resultsdakota()
     """
 
     # Initialise with default parameters
@@ -167,7 +167,7 @@ class solution(class_registry.manage_state):
 
     Examples
     --------
-    results = pyissm.param.results.solution()
+    results = pyissm.model.classes.results.solution()
     """
 
     # Initialise with default parameters
@@ -301,7 +301,7 @@ class solutionstep(class_registry.manage_state):
 
     Examples
     --------
-    step = pyissm.param.results.solutionstep()
+    step = pyissm.model.classes.results.solutionstep()
     """
 
     # Initialise with default parameters
@@ -311,7 +311,7 @@ class solutionstep(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = ''
-        width = param_utils.getlongestfieldname(self)
+        width = class_utils.getlongestfieldname(self)
         for key, value in self.__dict__.items():
             s += '    {:{width}s}: {}\n'.format(key, value, width=width)
         return s

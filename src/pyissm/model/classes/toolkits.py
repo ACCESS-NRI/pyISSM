@@ -1,8 +1,8 @@
 import warnings
 import numpy as np
-from pyissm.param import class_registry
-from pyissm.param import param_utils
-from pyissm import utils
+from pyissm.model.classes import class_registry
+from pyissm.model.classes import class_utils
+from pyissm import tools
 
 @class_registry.register_class
 class toolkits(class_registry.manage_state):
@@ -36,7 +36,7 @@ class toolkits(class_registry.manage_state):
 
     Examples
     --------
-    md.toolkits = pyissm.param.toolkits()
+    md.toolkits = pyissm.model.classes.toolkits()
     # Toolkit configurations are automatically set based on available libraries
     # Additional analysis-specific toolkits can be added as needed
     """
@@ -45,22 +45,22 @@ class toolkits(class_registry.manage_state):
     def __init__(self, other = None):
 
         ## If wrappers are installed, set default toolkits based on available libraries
-        if utils.wrappers.check_wrappers_installed():
+        if tools.wrappers.check_wrappers_installed():
             
             ## Check for PETSc
-            if utils.wrappers.IssmConfig('_HAVE_PETSC_')[0]:
+            if tools.wrappers.IssmConfig('_HAVE_PETSC_')[0]:
                 
                 ## Check for toolkit
-                if utils.wrappers.IssmConfig('_HAVE_MUMPS_')[0]:
-                    self.DefaultAnalysis = utils.config.mumps_options()
+                if tools.wrappers.IssmConfig('_HAVE_MUMPS_')[0]:
+                    self.DefaultAnalysis = tools.config.mumps_options()
                 else:
-                    self.DefaultAnalysis = utils.config.iluasm_options()
+                    self.DefaultAnalysis = tools.config.iluasm_options()
 
             else:
-                if utils.wrappers.IssmConfig('_HAVE_MUMPS_')[0]:
-                    self.DefaultAnalysis = utils.config.issm_mumps_solver()
-                elif utils.wrappers.IssmConfig('_HAVE_GSL_')[0]:
-                    self.DefaultAnalysis = utils.config.issm_gsl_solver()
+                if tools.wrappers.IssmConfig('_HAVE_MUMPS_')[0]:
+                    self.DefaultAnalysis = tools.config.issm_mumps_solver()
+                elif tools.wrappers.IssmConfig('_HAVE_GSL_')[0]:
+                    self.DefaultAnalysis = tools.config.issm_gsl_solver()
                 else:
                     raise IOError(f'toolkits: need at least MUMPS or GSL to define ISSM solver type, no default solver assigned')
 
@@ -72,7 +72,7 @@ class toolkits(class_registry.manage_state):
 
         else:
             ## If wrappers are not installed, return empty toolkits class
-            warnings.warn('pyissm.param.toolkits: Python wrappers not installed. Unable to automatically determine toolkit information.\n'
+            warnings.warn('pyissm.model.classes.toolkits: Python wrappers not installed. Unable to automatically determine toolkit information.\n'
                           'Returning empty toolkits class to be defined manually.')
             self.DefaultAnalysis = {'toolkit': '',         
                                     'mat_type': '',
@@ -85,7 +85,7 @@ class toolkits(class_registry.manage_state):
     def __repr__(self):
         s = "List of toolkits options per analysis:\n\n"
         for analysis in list(vars(self).keys()):
-            s += "{}\n".format(param_utils.fielddisplay(self, analysis, ''))
+            s += "{}\n".format(class_utils.fielddisplay(self, analysis, ''))
         return s
 
     # Define class string
@@ -96,7 +96,7 @@ class toolkits(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
 
-        supported_analyses = param_utils.supported_analyses()
+        supported_analyses = class_utils.supported_analyses()
 
         analyses = list(vars(self).keys())
         for analysis in analyses:

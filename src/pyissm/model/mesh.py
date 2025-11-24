@@ -9,10 +9,7 @@ import collections
 import matplotlib.tri as tri
 from scipy.interpolate import griddata
 import warnings
-from pyissm import utils
-from pyissm import param
-from pyissm import core
-from pyissm.tools import exp
+from pyissm import model, tools
 
 def get_mesh(mesh_x,
              mesh_y,
@@ -94,7 +91,7 @@ def process_mesh(md):
     is3d = False
 
     ## Process a 3D model
-    if utils.general.has_nested_attr(md, 'mesh', 'elements2d'):
+    if tools.general.has_nested_attr(md, 'mesh', 'elements2d'):
 
         # Create mesh object
         mesh = get_mesh(md.mesh.x2d, md.mesh.y2d, md.mesh.elements2d)
@@ -1019,8 +1016,8 @@ def flag_elements(md, region = 'all', inside = True):
 
         ## If a file path, load polygon and flag elements inside or outside
         elif region.endswith('.exp'):
-            if utils.wrappers.check_wrappers_installed():
-                flag = utils.wrappers.ContourToMesh(md.mesh.elements, md.mesh.x, md.mesh.y, region, 'element', 1).astype(bool)
+            if tools.wrappers.check_wrappers_installed():
+                flag = tools.wrappers.ContourToMesh(md.mesh.elements, md.mesh.x, md.mesh.y, region, 'element', 1).astype(bool)
             else:
                 raise RuntimeError('pyissm.model.mesh.flag_elements: Python wrappers not installed. Cannot flag elements from *.exp file.')
 
@@ -1121,7 +1118,7 @@ def triangle(md,
     # Error checks
     ## Check if md mesh is empty
     if md.mesh.numberofelements:
-        raise RuntimeError('md.mesh is not empty. Use md.mesh = pyissm.param.mesh.mesh2d() to reset the mesh.')
+        raise RuntimeError('md.mesh is not empty. Use md.mesh = pyissm.model.classes.mesh.mesh2d() to reset the mesh.')
 
     ## Check if file(s) exist
     if not os.path.exists(domain_name):
@@ -1131,7 +1128,7 @@ def triangle(md,
         raise IOError(f"Rift file {rift_name} does not exist.")
     
     ## Check if wrappers are installed
-    if not utils.wrappers.check_wrappers_installed():
+    if not tools.wrappers.check_wrappers_installed():
         raise RuntimeError('pyissm.tools.mesh.triangle: Python wrappers not installed. Cannot create mesh.')
 
 
@@ -1140,7 +1137,7 @@ def triangle(md,
 
     # Make the mesh using Triangle_python
     ## NOTE: Check for wrappers already done above
-    elements, x, y, segments, segmentmarkers = utils.wrappers.Triangle(domain_name, rift_name, area)
+    elements, x, y, segments, segmentmarkers = tools.wrappers.Triangle(domain_name, rift_name, area)
 
     # Check that all created nodes belong to at least one element
     ## NOTE: Orphan node removal taken from $ISSM_DIR/src/m/mesh/triangle.m
@@ -1168,7 +1165,7 @@ def triangle(md,
             segments[pos2, 1] -= 1
     
     # Assign to md structure
-    md.mesh = param.mesh.mesh2d()
+    md.mesh = model.classes.mesh.mesh2d()
     md.mesh.x = x
     md.mesh.y = y
     md.mesh.elements = elements.astype(int)
@@ -1181,8 +1178,8 @@ def triangle(md,
 
     ## Build connectivity arrays
     ### NOTE: Check for wrappers already done above
-    md.mesh.vertexconnectivity = utils.wrappers.NodeConnectivity(md.mesh.elements, md.mesh.numberofvertices)
-    md.mesh.elementconnectivity = utils.wrappers.ElementConnectivity(md.mesh.elements, md.mesh.vertexconnectivity)
+    md.mesh.vertexconnectivity = tools.wrappers.NodeConnectivity(md.mesh.elements, md.mesh.numberofvertices)
+    md.mesh.elementconnectivity = tools.wrappers.ElementConnectivity(md.mesh.elements, md.mesh.vertexconnectivity)
 
     return md
 
@@ -1243,7 +1240,7 @@ def square_mesh(md,
         warnings.warn('md.mesh is not empty. Overwriting existing mesh.')
 
     ## Check if wrappers are installed
-    if not utils.wrappers.check_wrappers_installed():
+    if not tools.wrappers.check_wrappers_installed():
         raise RuntimeError('pyissm.tools.mesh.square_mesh: Python wrappers not installed. Cannot create mesh.')
 
     # Get number of elements and nodes
@@ -1283,7 +1280,7 @@ def square_mesh(md,
     segments[2 * (ny - 1) + (nx - 1):2 * (nx - 1) + 2 * (ny - 1), :] = np.vstack((np.arange(1, (nx - 2) * ny + 2, ny), np.arange(ny + 1, ny * (nx - 1) + 2, ny), np.arange(1, 2 * (nx - 2) * (ny - 1) + 2, 2 * (ny - 1)))).T
 
     # Populate md structure
-    md.mesh = param.mesh.mesh2d()
+    md.mesh = model.classes.mesh.mesh2d()
     md.mesh.x = x
     md.mesh.y = y
     md.mesh.elements = index.astype(int)
@@ -1295,8 +1292,8 @@ def square_mesh(md,
 
     ## Build connectivity arrays
     ### NOTE: Check for wrappers already done above
-    md.mesh.vertexconnectivity = utils.wrappers.NodeConnectivity(md.mesh.elements, md.mesh.numberofvertices)
-    md.mesh.elementconnectivity = utils.wrappers.ElementConnectivity(md.mesh.elements, md.mesh.vertexconnectivity)
+    md.mesh.vertexconnectivity = tools.wrappers.NodeConnectivity(md.mesh.elements, md.mesh.numberofvertices)
+    md.mesh.elementconnectivity = tools.wrappers.ElementConnectivity(md.mesh.elements, md.mesh.vertexconnectivity)
 
     return md
 
@@ -1415,7 +1412,7 @@ def round_mesh(md,
     contour['density'] = 1.
 
     ## Write the contour to an exp file
-    exp.exp_write(contour, exp_output_name)
+    tools.exp.exp_write(contour, exp_output_name)
 
     ## Create the mesh using triangle
     md = triangle(md, exp_output_name, resolution)
@@ -1732,7 +1729,7 @@ def bamg(md, **kwargs):
             if isinstance(component, str):
                 if not os.path.exists(component):
                     raise IOError(f"BAMG spatial component file {component} does not exist.")
-                return exp.exp_read(component)
+                return tools.exp.exp_read(component)
             
             ## If a list or dict is provided, it must be a list of dictionaries
             elif isinstance(component, list):
@@ -1767,7 +1764,7 @@ def bamg(md, **kwargs):
             ## NOTE: This check differs from existing bamg.m and bamg.py which only checks the domain contours (not holes)
             if is_hole or is_subdomain:
                 for c in component:
-                    flags = utils.wrappers.ContourToNodes(c['x'], c['y'], [domain[0]], 0)[0]
+                    flags = tools.wrappers.ContourToNodes(c['x'], c['y'], [domain[0]], 0)[0]
                     if np.any(np.logical_not(flags)):
                         raise Exception("pyissm.tools.mesh.bamg: all contours in 'holes' and 'subdomains' must be inside the first contour of 'domain'.")
 
@@ -1910,13 +1907,13 @@ def bamg(md, **kwargs):
             raise IOError(f"pyissm.tools.mesh.bamg: rift file {rift_file} does not exist.")
 
         # Read rift file
-        rift = exp.exp_read(rift_file)
+        rift = tools.exp.exp_read(rift_file)
 
         # Process each rift
         for i in range(len(rift)):
 
             ## Check whether all points of the rift are inside the domain
-            flags = utils.wrappers.ContourToNodes(rift[i]['x'], rift[i]['y'], [domain[0]], 0)[0]
+            flags = tools.wrappers.ContourToNodes(rift[i]['x'], rift[i]['y'], [domain[0]], 0)[0]
             if np.all(np.logical_not(flags)):
                 raise RuntimeError("pyissm.tools.mesh.bamg: one rift has all its points outside of the domain outline")
             
@@ -2058,7 +2055,7 @@ def bamg(md, **kwargs):
                 
         # Read tracks
         if all(isinstance(track, str)):
-            track = exp.expread(track)
+            track = tools.exp.expread(track)
             track = np.hstack((track.x.reshape(-1, ), track.y.reshape(-1, )))
         else:
             track = float(track)
@@ -2067,7 +2064,7 @@ def bamg(md, **kwargs):
             track = np.hstack((track, 3. * np.ones((np.size(track, axis=0), 1))))
 
         # Only keep those inside
-        flags = utils.wrappers.ContourToNodes(track[:, 0], track[:, 1], [domain[0]], 0)[0]
+        flags = tools.wrappers.ContourToNodes(track[:, 0], track[:, 1], [domain[0]], 0)[0]
         track = track[np.nonzero(flags), :]
 
         # Add all points to bamg_geometry
@@ -2096,7 +2093,7 @@ def bamg(md, **kwargs):
             required_vertices = np.hstack((required_vertices, 4. * np.ones((np.size(required_vertices, axis=0), 1))))
 
         # Only keep those inside
-        flags = utils.wrappers.ContourToNodes(required_vertices[:, 0], required_vertices[:, 1], [domain[0]], 0)[0]
+        flags = tools.wrappers.ContourToNodes(required_vertices[:, 0], required_vertices[:, 1], [domain[0]], 0)[0]
         required_vertices = required_vertices[np.nonzero(flags)[0], :]
 
         # Add all points to bamg_geom
@@ -2202,12 +2199,12 @@ def bamg(md, **kwargs):
             raise TypeError('pyissm.tools.mesh.bamg: rifts not supported yet. Do meshprocessrift after bamg.')
     
     # Call the BAMG mesher
-    bamg_mesh_out, bamg_geom_out = utils.wrappers.BamgMesher(bamg_mesh, bamg_geom, options)
+    bamg_mesh_out, bamg_geom_out = tools.wrappers.BamgMesher(bamg_mesh, bamg_geom, options)
 
     # Populate md structure
     if options['vertical'] == 1:
         ## Create 2D vertical mesh
-        md.mesh = param.mesh.mesh2dvertical()
+        md.mesh = model.classes.mesh.mesh2dvertical()
         md.mesh.x = bamg_mesh_out['Vertices'][:, 0].copy()
         md.mesh.y = bamg_mesh_out['Vertices'][:, 1].copy()
         md.mesh.elements = bamg_mesh_out['Triangles'][:, 0:3].astype(int)
@@ -2222,7 +2219,7 @@ def bamg(md, **kwargs):
         md.mesh.vertexonboundary[md.mesh.segments[:, 0:2] - 1] = 1
 
     elif options['3dsurface'] == 1:
-        md.mesh = param.mesh.mesh3dsurface()
+        md.mesh = model.classes.mesh.mesh3dsurface()
         md.mesh.x = bamg_mesh_out['Vertices'][:, 0].copy()
         md.mesh.y = bamg_mesh_out['Vertices'][:, 1].copy()
         md.mesh.z = md.mesh.x
@@ -2240,7 +2237,7 @@ def bamg(md, **kwargs):
         md.mesh.vertexonboundary[md.mesh.segments[:, 0:2] - 1] = 1
 
     else:
-        md.mesh = param.mesh.mesh2d()
+        md.mesh = model.classes.mesh.mesh2d()
         md.mesh.x = bamg_mesh_out['Vertices'][:, 0].copy()
         md.mesh.y = bamg_mesh_out['Vertices'][:, 1].copy()
         md.mesh.elements = bamg_mesh_out['Triangles'][:, 0:3].astype(int)
@@ -2358,7 +2355,7 @@ def bamg_flowband(md,
     m[2 * np.size(x) - 1] = 4
 
     # Call bamg
-    md = core.Model()
+    md = model.Model()
     md = bamg(md, domain = [domain], Markers = m, vertical = 1, **kwargs)
 
     # Deal with vertices on bed
@@ -2443,7 +2440,7 @@ def mesh_convert(md, **kwargs):
     options.update(kwargs)
 
     # Call the BAMG mesh converter
-    bamg_mesh_out, bamg_geom_out = utils.wrappers.BamgConvertMesh(options['index'],
+    bamg_mesh_out, bamg_geom_out = tools.wrappers.BamgConvertMesh(options['index'],
                                                                   options['x'],
                                                                   options['y'])
     
@@ -2451,7 +2448,7 @@ def mesh_convert(md, **kwargs):
     md.private.bamg = collections.OrderedDict()
     md.private.bamg['mesh'] = _bamg_mesh(**bamg_mesh_out)
     md.private.bamg['geometry'] = _bamg_geom(**bamg_geom_out)
-    md.mesh = param.mesh.mesh2d()
+    md.mesh = model.classes.mesh.mesh2d()
     md.mesh.x = bamg_mesh_out['Vertices'][:, 0].copy()
     md.mesh.y = bamg_mesh_out['Vertices'][:, 1].copy()
     md.mesh.elements = bamg_mesh_out['Triangles'][:, 0:3].astype(int)

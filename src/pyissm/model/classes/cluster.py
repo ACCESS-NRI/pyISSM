@@ -1,9 +1,9 @@
 import yaml
 import subprocess
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import utils, model
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm import model, tools
 
 ## ------------------------------------------------------
 ## cluster.generic
@@ -83,16 +83,16 @@ class generic(class_registry.manage_state):
 
     # Initialise with default parameters
     def __init__(self, config_file = None, other = None):
-        self.name = utils.config.get_hostname()
-        self.login = utils.config.get_username()
+        self.name = tools.config.get_hostname()
+        self.login = tools.config.get_username()
         self.np = 1
         self.port = 0
         self.interactive = 1
-        self.codepath = utils.config.get_issm_dir() + '/bin'
-        self.executionpath = utils.config.get_issm_dir() + '/execution'
-        self.valgrind = utils.config.get_issm_dir() + '/externalpackages/valgrind/bin/valgrind'
-        self.valgrindlib = utils.config.get_issm_dir() + '/externalpackages/valgrind/install/lib/libmpidebug.so'
-        self.valgrindsup = [utils.config.get_issm_dir() + '/externalpackages/valgrind/issm.supp']  # add any .supp in list form as needed
+        self.codepath = tools.config.get_issm_dir() + '/bin'
+        self.executionpath = tools.config.get_issm_dir() + '/execution'
+        self.valgrind = tools.config.get_issm_dir() + '/externalpackages/valgrind/bin/valgrind'
+        self.valgrindlib = tools.config.get_issm_dir() + '/externalpackages/valgrind/install/lib/libmpidebug.so'
+        self.valgrindsup = [tools.config.get_issm_dir() + '/externalpackages/valgrind/issm.supp']  # add any .supp in list form as needed
         self.verbose = 1
         self.shell = '/bin/sh'
 
@@ -114,18 +114,18 @@ class generic(class_registry.manage_state):
     def __repr__(self):
         s = '   Cluster parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'name', 'name of the cluster'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'login', 'login name for the cluster'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'np', 'number of processors'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'port', 'port number'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'interactive', 'interactive mode'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'codepath', 'path to the code'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'executionpath', 'path to the execution directory'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'valgrind', 'path to valgrind'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'valgrindlib', 'path to valgrind library'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'valgrindsup', 'valgrind suppression files'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'verbose', 'verbose mode'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'shell', 'shell to use'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'name', 'name of the cluster'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'login', 'login name for the cluster'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'np', 'number of processors'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'port', 'port number'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'interactive', 'interactive mode'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'codepath', 'path to the code'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'executionpath', 'path to the execution directory'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'valgrind', 'path to valgrind'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'valgrindlib', 'path to valgrind library'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'valgrindsup', 'valgrind suppression files'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'verbose', 'verbose mode'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'shell', 'shell to use'))
 
         return s
 
@@ -196,14 +196,14 @@ class generic(class_registry.manage_state):
         """
         
         # Require wrappers when executing a model
-        if not utils.wrappers.check_wrappers_installed():
+        if not tools.wrappers.check_wrappers_installed():
             raise IOError('cluster.generic.build_queue_script: Python wrappers not installed. Unable to build queue script.')
 
         # DAKOTA EXECUTABLE
         if is_dakota:
             ## Check that ISSM has DAKOTA support and get version #
-            if utils.wrappers.IssmConfig('_HAVE_DAKOTA_')[0]:
-                version = float(utils.wrappers.IssmConfig('_DAKOTA_VERSION_')[0])
+            if tools.wrappers.IssmConfig('_HAVE_DAKOTA_')[0]:
+                version = float(tools.wrappers.IssmConfig('_DAKOTA_VERSION_')[0])
                 if version >= 6:
                     executable = 'issm_dakota.exe'
             else:
@@ -216,18 +216,18 @@ class generic(class_registry.manage_state):
 
         # BUILD SCRIPT
         ## Linux/Mac
-        if not utils.config.is_pc():
+        if not tools.config.is_pc():
             fid = open(model_name + '.queue', 'w')
             fid.write('#!/bin/bash\n')
 
             if not is_valgrind:
                 if self.interactive:
-                    if utils.wrappers.IssmConfig('_HAVE_MPI_')[0]:
+                    if tools.wrappers.IssmConfig('_HAVE_MPI_')[0]:
                         fid.write('mpiexec -np {} {}/{} {} {}/{} {}'.format(self.np, self.codepath, executable, solution, self.executionpath, dir_name, model_name))
                     else:
                         fid.write('{}/{} {} {}/{} {}'.format(self.codepath, executable, solution, self.executionpath, dir_name, model_name))
                 else:
-                    if utils.wrappers.IssmConfig('_HAVE_MPI_')[0]:
+                    if tools.wrappers.IssmConfig('_HAVE_MPI_')[0]:
                         fid.write('mpiexec -np {} {}/{} {} {}/{} {} 2> {}.errlog > {}.outlog'.format(self.np, self.codepath, executable, solution, self.executionpath, dir_name, model_name, model_name, model_name))
                     else:
                         fid.write('{}/{} {} {}/{} {} 2> {}.errlog > {}.outlog '.format(self.codepath, executable, solution, self.executionpath, dir_name, model_name, model_name, model_name))
@@ -238,7 +238,7 @@ class generic(class_registry.manage_state):
                 for supfile in self.valgrindsup:
                     supstring += ' --suppressions=' + supfile
                 
-                if utils.wrappers.IssmConfig('_HAVE_MPI_')[0]:
+                if tools.wrappers.IssmConfig('_HAVE_MPI_')[0]:
                     fid.write('mpiexec -np {} {} --leak-check=full {} {}/{} {} {}/{} {} 2> {}.errlog > {}.outlog '.format(self.np, self.valgrind, supstring, self.codepath, executable, solution, self.executionpath, dir_name, model_name, model_name, model_name))
                 else:
                     fid.write('{} --leak-check=full {} {}/{} {} {}/{} {} 2> {}.errlog > {}.outlog '.format(self.valgrind, supstring, self.codepath, executable, solution, self.executionpath, dir_name, model_name, model_name, model_name))
@@ -312,12 +312,12 @@ class generic(class_registry.manage_state):
         """
         
         # Require wrappers when executing a model
-        if not utils.wrappers.check_wrappers_installed():
+        if not tools.wrappers.check_wrappers_installed():
             raise IOError('cluster.generic.build_kriging_queue_script: Python wrappers not installed. Unable to build queue script.')
         
         # BUILD SCRIPT
         ## Linux/Mac
-        if not utils.config.is_pc():
+        if not tools.config.is_pc():
             fid = open(model_name + '.queue', 'w')
             fid.write('#!/bin/bash\n')
         
@@ -486,7 +486,7 @@ class generic(class_registry.manage_state):
         - The actual file transfer is handled by the `model.io.issm_scp_in` function.
         """
 
-        if utils.config.is_pc():
+        if tools.config.is_pc():
             ## Do nothing on Windows
             return
         

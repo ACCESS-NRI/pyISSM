@@ -1,7 +1,7 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class thermal(class_registry.manage_state):
@@ -61,7 +61,7 @@ class thermal(class_registry.manage_state):
 
     Examples
     --------
-    md.thermal = pyissm.param.thermal()
+    md.thermal = pyissm.model.classes.thermal()
     md.thermal.isenthalpy = 1
     md.thermal.stabilization = 2
     md.thermal.maxiter = 200
@@ -90,18 +90,18 @@ class thermal(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   Thermal solution parameters:\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'spctemperature', 'temperature constraints (NaN means no constraint) [K]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'stabilization', '0: no, 1: artificial_diffusivity, 2: SUPG'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'maxiter', 'maximum number of non linear iterations'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'reltol', 'relative tolerance criterion'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'penalty_lock', 'stabilize unstable thermal constraints that keep zigzagging after n iteration (default is 0, no stabilization)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'penalty_threshold', 'threshold to declare convergence of thermal solution (default is 0)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'isenthalpy', 'use an enthalpy formulation to include temperate ice (default is 0)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'isdynamicbasalspc', 'enable dynamic setting of basal forcing. required for enthalpy formulation (default is 0)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'isdrainicecolumn', 'wether waterfraction drainage is enabled for enthalpy formulation (default is 1)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'watercolumn_upperlimit', 'upper limit of basal watercolumn for enthalpy formulation (default is 1000m)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'fe', 'Finite Element type: ''P1'' (default), ''P1xP2'''))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'spctemperature', 'temperature constraints (NaN means no constraint) [K]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'stabilization', '0: no, 1: artificial_diffusivity, 2: SUPG'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'maxiter', 'maximum number of non linear iterations'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'reltol', 'relative tolerance criterion'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'penalty_lock', 'stabilize unstable thermal constraints that keep zigzagging after n iteration (default is 0, no stabilization)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'penalty_threshold', 'threshold to declare convergence of thermal solution (default is 0)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'isenthalpy', 'use an enthalpy formulation to include temperate ice (default is 0)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'isdynamicbasalspc', 'enable dynamic setting of basal forcing. required for enthalpy formulation (default is 0)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'isdrainicecolumn', 'wether waterfraction drainage is enabled for enthalpy formulation (default is 1)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'watercolumn_upperlimit', 'upper limit of basal watercolumn for enthalpy formulation (default is 1000m)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'fe', 'Finite Element type: ''P1'' (default), ''P1xP2'''))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -115,13 +115,13 @@ class thermal(class_registry.manage_state):
         if ('ThermalAnalysis' not in analyses and 'EnthalpyAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isthermal):
             return md
         
-        param_utils.check_field(md, fieldname = 'thermal.stabilization', scalar = True, values = [0, 1, 2, 3])
-        param_utils.check_field(md, fieldname = 'thermal.spctemperature', timeseries = True, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'thermal.fe', values = ['P1', 'P1xP2', 'P1xP3'])
-        param_utils.check_field(md, fieldname = 'thermal.requested_outputs', string_list = True)
+        class_utils.check_field(md, fieldname = 'thermal.stabilization', scalar = True, values = [0, 1, 2, 3])
+        class_utils.check_field(md, fieldname = 'thermal.spctemperature', timeseries = True, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'thermal.fe', values = ['P1', 'P1xP2', 'P1xP3'])
+        class_utils.check_field(md, fieldname = 'thermal.requested_outputs', string_list = True)
         if 'EnthalpyAnalysis' in analyses and md.thermal.isenthalpy and md.mesh.dimension() == 3:
-            param_utils.check_field(md, fieldname = 'thermal.isdrainicecolumn', scalar = True, values = [0, 1])
-            param_utils.check_field(md, fieldname = 'thermal.watercolumn_upperlimit', ge = 0)
+            class_utils.check_field(md, fieldname = 'thermal.isdrainicecolumn', scalar = True, values = [0, 1])
+            class_utils.check_field(md, fieldname = 'thermal.watercolumn_upperlimit', ge = 0)
 
             TEMP = md.thermal.spctemperature[:-1].flatten()
             pos = np.where(~np.isnan(TEMP))
@@ -132,13 +132,13 @@ class thermal(class_registry.manage_state):
 
             replicate = np.tile(md.geometry.surface - md.mesh.z, (spccol)).flatten()
             control = md.materials.meltingpoint - md.materials.beta * md.materials.rho_ice * md.constants.g * replicate + 1.0e-5
-            param_utils.check_field(md, fieldname = 'thermal.spctemperature', field = md.thermal.spctemperature.flatten()[pos], le = control[pos], message = "spctemperature should be below the adjusted melting point")
-            param_utils.check_field(md, fieldname = 'thermal.isenthalpy', scalar = True, values = [0, 1])
-            param_utils.check_field(md, fieldname = 'thermal.isdynamicbasalspc', scalar = True, values = [0, 1])
+            class_utils.check_field(md, fieldname = 'thermal.spctemperature', field = md.thermal.spctemperature.flatten()[pos], le = control[pos], message = "spctemperature should be below the adjusted melting point")
+            class_utils.check_field(md, fieldname = 'thermal.isenthalpy', scalar = True, values = [0, 1])
+            class_utils.check_field(md, fieldname = 'thermal.isdynamicbasalspc', scalar = True, values = [0, 1])
             if(md.thermal.isenthalpy):
                 if np.isnan(md.stressbalance.reltol):
                     md.checkmessage("for a steadystate computation, thermal.reltol (relative convergence criterion) must be defined!")
-                param_utils.check_field(md, fieldname = 'thermal.reltol', gt = 0. , message = "reltol must be larger than zero")
+                class_utils.check_field(md, fieldname = 'thermal.reltol', gt = 0. , message = "reltol must be larger than zero")
 
         return md
     

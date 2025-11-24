@@ -1,7 +1,7 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class debris(class_registry.manage_state):
@@ -57,7 +57,7 @@ class debris(class_registry.manage_state):
 
     Examples
     --------
-    md.debris = pyissm.param.debris()
+    md.debris = pyissm.model.classes.debris()
     md.debris.min_thickness = 0.001
     md.debris.packingfraction = 0.02
     md.debris.stabilization = 2
@@ -84,19 +84,19 @@ class debris(class_registry.manage_state):
     def __repr__(self):
         s = '   debris solution parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self,'spcthickness','debris thickness constraints (NaN means no constraint) [m]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self,'min_thickness','minimum debris thickness allowed [m]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self,'packingfraction','fraction of debris covered in the ice'))
-        s += '{}\n'.format(param_utils.fielddisplay(self,'stabilization','0: no stabilization, 1: artificial diffusion, 2: streamline upwinding, 3: streamline upwind Petrov-Galerkin (SUPG)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self,'removalmodel','frontal removal of debris. 0: no removal, 1: Slope-triggered debris removal, 2: driving-stress triggered debris removal'))
-        s += '{}\n'.format(param_utils.fielddisplay(self,'displacementmodel','debris displacement. 0: no displacement, 1: ...'))
-        s += '{}\n'.format(param_utils.fielddisplay(self,'max_displacementvelocity','maximum velocity of debris transport (v_ice + v_displacement) (m/a)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self,'removal_slope_threshold','critical slope (degrees) for removalmodel (1)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self,'removal_stress_threshold','critical stress (Pa) for removalmodel (2)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self,'spcthickness','debris thickness constraints (NaN means no constraint) [m]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self,'min_thickness','minimum debris thickness allowed [m]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self,'packingfraction','fraction of debris covered in the ice'))
+        s += '{}\n'.format(class_utils.fielddisplay(self,'stabilization','0: no stabilization, 1: artificial diffusion, 2: streamline upwinding, 3: streamline upwind Petrov-Galerkin (SUPG)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self,'removalmodel','frontal removal of debris. 0: no removal, 1: Slope-triggered debris removal, 2: driving-stress triggered debris removal'))
+        s += '{}\n'.format(class_utils.fielddisplay(self,'displacementmodel','debris displacement. 0: no displacement, 1: ...'))
+        s += '{}\n'.format(class_utils.fielddisplay(self,'max_displacementvelocity','maximum velocity of debris transport (v_ice + v_displacement) (m/a)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self,'removal_slope_threshold','critical slope (degrees) for removalmodel (1)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self,'removal_stress_threshold','critical stress (Pa) for removalmodel (2)'))
 
         s += '\n      {}\n'.format('Penalty options:')
-        s += '{}\n'.format(param_utils.fielddisplay(self,'vertex_pairing','pairs of vertices that are penalized'))
-        s += '{}\n'.format(param_utils.fielddisplay(self,'requested_outputs','additional outputs requested'))
+        s += '{}\n'.format(class_utils.fielddisplay(self,'vertex_pairing','pairs of vertices that are penalized'))
+        s += '{}\n'.format(class_utils.fielddisplay(self,'requested_outputs','additional outputs requested'))
         return s
 
     # Define class string
@@ -111,18 +111,18 @@ class debris(class_registry.manage_state):
         if not 'MassTransportAnalysis' in analyses or solution == 'TransientSolution' and not md.transient.isdebris:
             return md
 
-        param_utils.check_field(md, fieldname = "debris.spcthickness")
-        param_utils.check_field(md, fieldname = "debris.stabilization", scalar = True, values = [0, 1, 2, 3, 4, 5])
-        param_utils.check_field(md, fieldname = "debris.min_thickness", ge = 0)
-        param_utils.check_field(md, fieldname = "debris.packingfraction", ge = 0)
-        param_utils.check_field(md, fieldname = "debris.removalmodel", values = [0, 1, 2])
-        param_utils.check_field(md, fieldname = "debris.displacementmodel", values = [0, 1, 2])
-        param_utils.check_field(md, fieldname = "debris.max_displacementvelocity", ge = 0)
-        param_utils.check_field(md, fieldname = "debris.removal_slope_threshold", ge = 0)
-        param_utils.check_field(md, fieldname = "debris.removal_stress_threshold", ge = 0)
-        param_utils.check_field(md, fieldname = "debris.requested_outputs", string_list = True)
+        class_utils.check_field(md, fieldname = "debris.spcthickness")
+        class_utils.check_field(md, fieldname = "debris.stabilization", scalar = True, values = [0, 1, 2, 3, 4, 5])
+        class_utils.check_field(md, fieldname = "debris.min_thickness", ge = 0)
+        class_utils.check_field(md, fieldname = "debris.packingfraction", ge = 0)
+        class_utils.check_field(md, fieldname = "debris.removalmodel", values = [0, 1, 2])
+        class_utils.check_field(md, fieldname = "debris.displacementmodel", values = [0, 1, 2])
+        class_utils.check_field(md, fieldname = "debris.max_displacementvelocity", ge = 0)
+        class_utils.check_field(md, fieldname = "debris.removal_slope_threshold", ge = 0)
+        class_utils.check_field(md, fieldname = "debris.removal_stress_threshold", ge = 0)
+        class_utils.check_field(md, fieldname = "debris.requested_outputs", string_list = True)
         if not np.any(np.isnan(md.stressbalance.vertex_pairing)) and len(md.stressbalance.vertex_pairing) > 0:
-            md = param_utils.check_field(md, fieldname = "stressbalance.vertex_pairing", gt = 0)
+            md = class_utils.check_field(md, fieldname = "stressbalance.vertex_pairing", gt = 0)
             
         return md
     

@@ -1,7 +1,7 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 ## ------------------------------------------------------
 ## materials.ice
@@ -68,7 +68,7 @@ class ice(class_registry.manage_state):
 
     Examples
     --------
-    md.materials = pyissm.param.materials.ice()
+    md.materials = pyissm.model.classes.materials.ice()
     """
 
     # Initialise with default parameters
@@ -98,21 +98,21 @@ class ice(class_registry.manage_state):
     def __repr__(self):
         s = '   Materials (ice):\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rho_ice', 'ice density [kg/m^3]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rho_water', 'ocean water density [kg/m^3]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rho_freshwater', 'fresh water density [kg/m^3]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'mu_water', 'water viscosity [N s/m^2]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'heatcapacity', 'heat capacity [J/kg/K]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'thermalconductivity', 'ice thermal conductivity [W/m/K]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'temperateiceconductivity', 'temperate ice thermal conductivity [W/m/K]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'meltingpoint', 'melting point of ice at 1atm in K'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'latentheat', 'latent heat of fusion [J/m^3]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'beta', 'rate of change of melting point with pressure [K/Pa]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'mixed_layer_capacity', 'mixed layer capacity [W/kg/K]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'thermal_exchange_velocity', 'thermal exchange velocity [m/s]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rheology_B', 'flow law parameter [Pa s^(1/n)]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rheology_n', 'Glen\'s flow law exponent'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rheology_law', 'law for the temperature dependance of the rheology: \'None\', \'BuddJacka\', \'Cuffey\', \'CuffeyTemperate\', \'Paterson\', \'Arrhenius\', \'LliboutryDuval\', \'NyeCO2\', or \'NyeH2O\''))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rho_ice', 'ice density [kg/m^3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rho_water', 'ocean water density [kg/m^3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rho_freshwater', 'fresh water density [kg/m^3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'mu_water', 'water viscosity [N s/m^2]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'heatcapacity', 'heat capacity [J/kg/K]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'thermalconductivity', 'ice thermal conductivity [W/m/K]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'temperateiceconductivity', 'temperate ice thermal conductivity [W/m/K]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'meltingpoint', 'melting point of ice at 1atm in K'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'latentheat', 'latent heat of fusion [J/m^3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'beta', 'rate of change of melting point with pressure [K/Pa]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'mixed_layer_capacity', 'mixed layer capacity [W/kg/K]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'thermal_exchange_velocity', 'thermal exchange velocity [m/s]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rheology_B', 'flow law parameter [Pa s^(1/n)]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rheology_n', 'Glen\'s flow law exponent'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rheology_law', 'law for the temperature dependance of the rheology: \'None\', \'BuddJacka\', \'Cuffey\', \'CuffeyTemperate\', \'Paterson\', \'Arrhenius\', \'LliboutryDuval\', \'NyeCO2\', or \'NyeH2O\''))
         return s
 
     # Define class string
@@ -123,16 +123,16 @@ class ice(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         if solution == 'TransientSolution' and md.transient.isslc:
-            param_utils.check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
+            class_utils.check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
         else:
-            param_utils.check_field(md, fieldname = 'materials.rho_ice', gt = 0)
-            param_utils.check_field(md, fieldname = 'materials.rho_water', gt = 0)
-            param_utils.check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
-            param_utils.check_field(md, fieldname = 'materials.mu_water', gt = 0)
-            param_utils.check_field(md, fieldname = 'materials.rheology_B', gt = 0, size = 'universal', allow_nan = False, allow_inf = False)
-            param_utils.check_field(md, fieldname = 'materials.rheology_n', gt = 0, size = 'universal', allow_nan = False, allow_inf = False)
-            param_utils.check_field(md, fieldname = 'materials.rheology_law', values = ['None', 'BuddJacka', 'Cuffey', 'CuffeyTemperate', 'Paterson', 'Arrhenius', 'LliboutryDuval', 'NyeCO2', 'NyeH2O'])
-            param_utils.check_field(md, fieldname = 'materials.effectiveconductivity_averaging', scalar = True, values = [0, 1, 2])
+            class_utils.check_field(md, fieldname = 'materials.rho_ice', gt = 0)
+            class_utils.check_field(md, fieldname = 'materials.rho_water', gt = 0)
+            class_utils.check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
+            class_utils.check_field(md, fieldname = 'materials.mu_water', gt = 0)
+            class_utils.check_field(md, fieldname = 'materials.rheology_B', gt = 0, size = 'universal', allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'materials.rheology_n', gt = 0, size = 'universal', allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'materials.rheology_law', values = ['None', 'BuddJacka', 'Cuffey', 'CuffeyTemperate', 'Paterson', 'Arrhenius', 'LliboutryDuval', 'NyeCO2', 'NyeH2O'])
+            class_utils.check_field(md, fieldname = 'materials.effectiveconductivity_averaging', scalar = True, values = [0, 1, 2])
 
         return md
     
@@ -212,7 +212,7 @@ class hydro(class_registry.manage_state):
 
     Examples
     --------
-    md.materials = pyissm.param.materials.hydro()
+    md.materials = pyissm.model.classes.materials.hydro()
     """
 
     # Initialise with default parameters
@@ -229,10 +229,10 @@ class hydro(class_registry.manage_state):
     def __repr__(self):
         s = '   Materials (hydro):\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rho_ice', 'ice density [kg/m^3]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rho_water', 'ocean water density [kg/m^3]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rho_freshwater', 'fresh water density [kg/m^3]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'earth_density', 'mantle density [kg/m^3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rho_ice', 'ice density [kg/m^3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rho_water', 'ocean water density [kg/m^3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rho_freshwater', 'fresh water density [kg/m^3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'earth_density', 'mantle density [kg/m^3]'))
         return s
 
     # Define class string
@@ -242,10 +242,10 @@ class hydro(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        param_utils.check_field(md, fieldname = 'materials.rho_ice', gt = 0)
-        param_utils.check_field(md, fieldname = 'materials.rho_water', gt = 0)
-        param_utils.check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
-        param_utils.check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
+        class_utils.check_field(md, fieldname = 'materials.rho_ice', gt = 0)
+        class_utils.check_field(md, fieldname = 'materials.rho_water', gt = 0)
+        class_utils.check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
+        class_utils.check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
 
         return md
     
@@ -339,7 +339,7 @@ class litho(class_registry.manage_state):
 
     Examples
     --------
-    md.materials = pyissm.param.materials.litho()
+    md.materials = pyissm.model.classes.materials.litho()
     """
 
     # Initialise with default parameters
@@ -367,21 +367,21 @@ class litho(class_registry.manage_state):
     def __repr__(self):
         s = '   Materials (litho):\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'numlayers', 'number of layers (default: 2)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'radius', 'array describing the radius for each interface (numlayers + 1) [m]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'viscosity', 'array describing each layer\'s viscosity (numlayers) [Pa.s]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'lame_lambda', 'array describing the lame lambda parameter (numlayers) [Pa]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'lame_mu', 'array describing the shear modulus for each layers (numlayers) [Pa]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'burgers_viscosity', 'array describing each layer\'s transient viscosity, only for Burgers rheologies  (numlayers) [Pa.s]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'burgers_mu', 'array describing each layer\'s transient shear modulus, only for Burgers rheologies  (numlayers) [Pa]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'ebm_alpha', 'array describing each layer\'s exponent parameter controlling the shape of shear modulus curve between taul and tauh, only for EBM rheology (numlayers)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'ebm_delta', 'array describing each layer\'s amplitude of the transient relaxation (ratio between elastic rigity to pre-maxwell relaxation rigity), only for EBM rheology (numlayers)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'ebm_taul', 'array describing each layer\'s starting period for transient relaxation, only for EBM rheology  (numlayers) [s]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'ebm_tauh', 'array describing each layer''s array describing each layer\'s end period for transient relaxation, only for Burgers rheology (numlayers) [s]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rheologymodel', 'array describing whether we adopt a Maxwell (0), Burgers (1) or EBM (2) rheology (default: 0)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'density', 'array describing each layer\'s density (numlayers) [kg/m^3]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'issolid', 'array describing whether the layer is solid or liquid (default: 1) (numlayers)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'earth_density', 'mantle density [kg/m^3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'numlayers', 'number of layers (default: 2)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'radius', 'array describing the radius for each interface (numlayers + 1) [m]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'viscosity', 'array describing each layer\'s viscosity (numlayers) [Pa.s]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'lame_lambda', 'array describing the lame lambda parameter (numlayers) [Pa]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'lame_mu', 'array describing the shear modulus for each layers (numlayers) [Pa]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'burgers_viscosity', 'array describing each layer\'s transient viscosity, only for Burgers rheologies  (numlayers) [Pa.s]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'burgers_mu', 'array describing each layer\'s transient shear modulus, only for Burgers rheologies  (numlayers) [Pa]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'ebm_alpha', 'array describing each layer\'s exponent parameter controlling the shape of shear modulus curve between taul and tauh, only for EBM rheology (numlayers)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'ebm_delta', 'array describing each layer\'s amplitude of the transient relaxation (ratio between elastic rigity to pre-maxwell relaxation rigity), only for EBM rheology (numlayers)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'ebm_taul', 'array describing each layer\'s starting period for transient relaxation, only for EBM rheology  (numlayers) [s]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'ebm_tauh', 'array describing each layer''s array describing each layer\'s end period for transient relaxation, only for Burgers rheology (numlayers) [s]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rheologymodel', 'array describing whether we adopt a Maxwell (0), Burgers (1) or EBM (2) rheology (default: 0)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'density', 'array describing each layer\'s density (numlayers) [kg/m^3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'issolid', 'array describing whether the layer is solid or liquid (default: 1) (numlayers)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'earth_density', 'mantle density [kg/m^3]'))
         return s
 
     # Define class string
@@ -395,31 +395,31 @@ class litho(class_registry.manage_state):
         if 'LoveAnalysis' not in analyses:
             return md
         
-        param_utils.check_field(md, fieldname = 'materials.numlayers', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'materials.radius', size = (md.materials.numlayers + 1, 1), gt = 0, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'materials.lame_mu', size = (md.materials.numlayers, 1), ge = 0, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'materials.lame_lambda', size = (md.materials.numlayers, 1), ge = 0, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'materials.issolid', size = (md.materials.numlayers, 1), ge = 0, lt = 2, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'materials.density', size = (md.materials.numlayers, 1), gt = 0, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'materials.viscosity', size = (md.materials.numlayers, 1), ge = 0, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'materials.rheologymodel', size = (md.materials.layers, 1), ge = 0, le = 2, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'materials.numlayers', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'materials.radius', size = (md.materials.numlayers + 1, 1), gt = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'materials.lame_mu', size = (md.materials.numlayers, 1), ge = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'materials.lame_lambda', size = (md.materials.numlayers, 1), ge = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'materials.issolid', size = (md.materials.numlayers, 1), ge = 0, lt = 2, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'materials.density', size = (md.materials.numlayers, 1), gt = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'materials.viscosity', size = (md.materials.numlayers, 1), ge = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'materials.rheologymodel', size = (md.materials.layers, 1), ge = 0, le = 2, allow_nan = False, allow_inf = False)
 
         if np.any(self.rheologymodel == 1):
-            param_utils.check_field(md, fieldname = 'materials.burgers_viscosity', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
-            param_utils.check_field(md, fieldname = 'materials.burgers_mu', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'materials.burgers_viscosity', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'materials.burgers_mu', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
 
         if np.any(self.rheologymodel == 2):
-            param_utils.check_field(md, fieldname = 'materials.ebm_alpha', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
-            param_utils.check_field(md, fieldname = 'materials.ebm_delta', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
-            param_utils.check_field(md, fieldname = 'materials.ebm_taul', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
-            param_utils.check_field(md, fieldname = 'materials.ebm_tauh', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'materials.ebm_alpha', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'materials.ebm_delta', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'materials.ebm_taul', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'materials.ebm_tauh', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
 
         for i in range(md.materials.numlayers):
             if md.materials.rheologymodel[i] == 1 and (np.isnan(md.materials.burgers_viscosity[i] or np.isnan(md.materials.burgers_mu[i]))):
-                raise RuntimeError('pyissm.param.materials.litho.check_consistency: Litho burgers_viscosity or burgers_mu has NaN values, inconsistent with rheologymodel choice')
+                raise RuntimeError('pyissm.model.classes.materials.litho.check_consistency: Litho burgers_viscosity or burgers_mu has NaN values, inconsistent with rheologymodel choice')
 
             if md.materials.rheologymodel[i] == 2 and (np.isnan(md.materials.ebm_alpha[i]) or np.isnan(md.materials.ebm_delta[i]) or np.isnan(md.materials.ebm_taul[i]) or np.isnan(md.materials.ebm_tauh[i])):
-                raise RuntimeError('pyissm.param.materials.litho.check_consistency: Litho ebm_alpha, ebm_delta, ebm_taul or ebm_tauh has NaN values, inconsistent with rheologymodel choice')
+                raise RuntimeError('pyissm.model.classes.materials.litho.check_consistency: Litho ebm_alpha, ebm_delta, ebm_taul or ebm_tauh has NaN values, inconsistent with rheologymodel choice')
         if md.materials.issolid[0] == 0 or md.materials.lame_mu[0] == 0:
             raise RuntimeError('First layer must be solid (issolid[0] > 0 AND lame_mu[0] > 0). Add a weak inner core if necessary.')
         ind = np.where(md.materials.issolid == 0)[0]
@@ -532,7 +532,7 @@ class damageice(class_registry.manage_state):
 
     Examples
     --------
-    md.materials = pyissm.param.materials.damageice()
+    md.materials = pyissm.model.classes.materials.damageice()
     """
 
     # Initialise with default parameters
@@ -562,23 +562,23 @@ class damageice(class_registry.manage_state):
     def __repr__(self):
         s = '   Materials (damage ice):\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rho_ice', 'ice density [kg/m^3]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rho_water', 'water density [kg/m^3]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rho_freshwater', 'fresh water density [kg/m^3]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'mu_water', 'water viscosity [N s/m^2]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'heatcapacity', 'heat capacity [J/kg/K]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'thermalconductivity', 'ice thermal conductivity [W/m/K]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'temperateiceconductivity', 'temperate ice thermal conductivity [W/m/K]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'effectiveconductivity_averaging', 'computation of effectiveconductivity: (0) arithmetic mean, (1) harmonic mean, (2) geometric mean (default)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'meltingpoint', 'melting point of ice at 1atm in K'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'latentheat', 'latent heat of fusion [J/m^3]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'beta', 'rate of change of melting point with pressure [K/Pa]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'mixed_layer_capacity', 'mixed layer capacity [W/ kg/K]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'thermal_exchange_velocity', 'thermal exchange velocity [m/s]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rheology_B', 'flow law parameter [Pa s^(1/n)]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rheology_n', 'Glen\'s flow law exponent'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rheology_law', 'law for the temperature dependance of the rheology: \'None\', \'BuddJacka\', \'Cuffey\', \'CuffeyTemperate\', \'Paterson\', \'Arrhenius\' or \'LliboutryDuval\''))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'earth_density', 'Mantle density [kg m^-3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rho_ice', 'ice density [kg/m^3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rho_water', 'water density [kg/m^3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rho_freshwater', 'fresh water density [kg/m^3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'mu_water', 'water viscosity [N s/m^2]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'heatcapacity', 'heat capacity [J/kg/K]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'thermalconductivity', 'ice thermal conductivity [W/m/K]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'temperateiceconductivity', 'temperate ice thermal conductivity [W/m/K]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'effectiveconductivity_averaging', 'computation of effectiveconductivity: (0) arithmetic mean, (1) harmonic mean, (2) geometric mean (default)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'meltingpoint', 'melting point of ice at 1atm in K'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'latentheat', 'latent heat of fusion [J/m^3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'beta', 'rate of change of melting point with pressure [K/Pa]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'mixed_layer_capacity', 'mixed layer capacity [W/ kg/K]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'thermal_exchange_velocity', 'thermal exchange velocity [m/s]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rheology_B', 'flow law parameter [Pa s^(1/n)]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rheology_n', 'Glen\'s flow law exponent'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rheology_law', 'law for the temperature dependance of the rheology: \'None\', \'BuddJacka\', \'Cuffey\', \'CuffeyTemperate\', \'Paterson\', \'Arrhenius\' or \'LliboutryDuval\''))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'earth_density', 'Mantle density [kg m^-3]'))
         return s
 
     # Define class string
@@ -588,17 +588,17 @@ class damageice(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        param_utils.check_field(md, fieldname = 'materials.rho_ice', gt = 0)
-        param_utils.check_field(md, fieldname = 'materials.rho_water', gt = 0)
-        param_utils.check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
-        param_utils.check_field(md, fieldname = 'materials.mu_water', gt = 0)
-        param_utils.check_field(md, fieldname = 'materials.rheology_B', size = (md.mesh.numberofvertices, ), gt = 0)
-        param_utils.check_field(md, fieldname = 'materials.rheology_n', size = (md.mesh.numberofelements, ), gt = 0)
-        param_utils.check_field(md, fieldname = 'materials.rheology_law', values = ['None', 'BuddJacka', 'Cuffey', 'CuffeyTemperate', 'Paterson', 'Arrhenius', 'LliboutryDuval'])
-        param_utils.check_field(md, fieldname = 'materials.effectiveconductivity_averaging', scalar = True, values = [0, 1, 2])
+        class_utils.check_field(md, fieldname = 'materials.rho_ice', gt = 0)
+        class_utils.check_field(md, fieldname = 'materials.rho_water', gt = 0)
+        class_utils.check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
+        class_utils.check_field(md, fieldname = 'materials.mu_water', gt = 0)
+        class_utils.check_field(md, fieldname = 'materials.rheology_B', size = (md.mesh.numberofvertices, ), gt = 0)
+        class_utils.check_field(md, fieldname = 'materials.rheology_n', size = (md.mesh.numberofelements, ), gt = 0)
+        class_utils.check_field(md, fieldname = 'materials.rheology_law', values = ['None', 'BuddJacka', 'Cuffey', 'CuffeyTemperate', 'Paterson', 'Arrhenius', 'LliboutryDuval'])
+        class_utils.check_field(md, fieldname = 'materials.effectiveconductivity_averaging', scalar = True, values = [0, 1, 2])
 
         if 'SealevelchangeAnalysis' in analyses:
-            param_utils.check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
+            class_utils.check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
 
         return md
     
@@ -706,7 +706,7 @@ class enhancedice(class_registry.manage_state):
 
     Examples
     --------
-    md.materials = pyissm.param.materials.enhancedice()
+    md.materials = pyissm.model.classes.materials.enhancedice()
     """
 
     # Initialise with default parameters
@@ -737,24 +737,24 @@ class enhancedice(class_registry.manage_state):
     def __repr__(self):
         s = '   Materials (enhanced ice):\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rho_ice', 'ice density [kg/m^3]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rho_water', 'water density [kg/m^3]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rho_freshwater', 'fresh water density [kg/m^3]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'mu_water', 'water viscosity [N s/m^2]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'heatcapacity', 'heat capacity [J/kg/K]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'thermalconductivity', 'ice thermal conductivity [W/m/K]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'temperateiceconductivity', 'temperate ice thermal conductivity [W/m/K]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'effectiveconductivity_averaging', 'computation of effectiveconductivity: (0) arithmetic mean, (1) harmonic mean, (2) geometric mean (default)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'meltingpoint', 'melting point of ice at 1atm in K'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'latentheat', 'latent heat of fusion [J/m^3]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'beta', 'rate of change of melting point with pressure [K/Pa]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'mixed_layer_capacity', 'mixed layer capacity [W/kg/K]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'thermal_exchange_velocity', 'thermal exchange velocity [m/s]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rheology_E', 'enhancement factor'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rheology_B', 'flow law parameter [Pa s^(1/n)]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rheology_n', 'Glen\'s flow law exponent'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rheology_law', 'law for the temperature dependance of the rheology: \'None\', \'BuddJacka\', \'Cuffey\', \'CuffeyTemperate\', \'Paterson\', \'Arrhenius\' or \'LliboutryDuval\''))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'earth_density', 'Mantle density [kg/m^-3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rho_ice', 'ice density [kg/m^3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rho_water', 'water density [kg/m^3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rho_freshwater', 'fresh water density [kg/m^3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'mu_water', 'water viscosity [N s/m^2]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'heatcapacity', 'heat capacity [J/kg/K]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'thermalconductivity', 'ice thermal conductivity [W/m/K]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'temperateiceconductivity', 'temperate ice thermal conductivity [W/m/K]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'effectiveconductivity_averaging', 'computation of effectiveconductivity: (0) arithmetic mean, (1) harmonic mean, (2) geometric mean (default)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'meltingpoint', 'melting point of ice at 1atm in K'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'latentheat', 'latent heat of fusion [J/m^3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'beta', 'rate of change of melting point with pressure [K/Pa]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'mixed_layer_capacity', 'mixed layer capacity [W/kg/K]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'thermal_exchange_velocity', 'thermal exchange velocity [m/s]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rheology_E', 'enhancement factor'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rheology_B', 'flow law parameter [Pa s^(1/n)]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rheology_n', 'Glen\'s flow law exponent'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rheology_law', 'law for the temperature dependance of the rheology: \'None\', \'BuddJacka\', \'Cuffey\', \'CuffeyTemperate\', \'Paterson\', \'Arrhenius\' or \'LliboutryDuval\''))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'earth_density', 'Mantle density [kg/m^-3]'))
         return s
 
     # Define class string
@@ -764,18 +764,18 @@ class enhancedice(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        param_utils.check_field(md, fieldname = 'materials.rho_ice', gt = 0)
-        param_utils.check_field(md, fieldname = 'materials.rho_water', gt = 0)
-        param_utils.check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
-        param_utils.check_field(md, fieldname = 'materials.mu_water', gt = 0)
-        param_utils.check_field(md, fieldname = 'materials.rheology_E', timeseries = True, gt = 0, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'materials.rheology_B', timeseries = True, gt = 0, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'materials.rheology_n', size = (md.mesh.numberofelements, ), gt = 0)
-        param_utils.check_field(md, fieldname = 'materials.rheology_law', values = ['None', 'BuddJacka', 'Cuffey', 'CuffeyTemperate', 'Paterson', 'Arrhenius', 'LliboutryDuval'])
-        param_utils.check_field(md, fieldname = 'materials.effectiveconductivity_averaging', scalar = True, values = [0, 1, 2])
+        class_utils.check_field(md, fieldname = 'materials.rho_ice', gt = 0)
+        class_utils.check_field(md, fieldname = 'materials.rho_water', gt = 0)
+        class_utils.check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
+        class_utils.check_field(md, fieldname = 'materials.mu_water', gt = 0)
+        class_utils.check_field(md, fieldname = 'materials.rheology_E', timeseries = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'materials.rheology_B', timeseries = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'materials.rheology_n', size = (md.mesh.numberofelements, ), gt = 0)
+        class_utils.check_field(md, fieldname = 'materials.rheology_law', values = ['None', 'BuddJacka', 'Cuffey', 'CuffeyTemperate', 'Paterson', 'Arrhenius', 'LliboutryDuval'])
+        class_utils.check_field(md, fieldname = 'materials.effectiveconductivity_averaging', scalar = True, values = [0, 1, 2])
 
         if 'SealevelchangeAnalysis' in analyses:
-            param_utils.check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
+            class_utils.check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
 
         return md
     
@@ -884,7 +884,7 @@ class estar(class_registry.manage_state):
 
     Examples
     --------
-    md.materials = pyissm.param.materials.estar()
+    md.materials = pyissm.model.classes.materials.estar()
     """
 
     # Initialise with default parameters
@@ -915,24 +915,24 @@ class estar(class_registry.manage_state):
     def __repr__(self):
         s = '   Materials (estar):\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rho_ice', 'ice density [kg/m^3]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rho_water', 'ocean water density [kg/m^3]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rho_freshwater', 'fresh water density [kg/m^3]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'mu_water', 'water viscosity [N s/m^2]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'heatcapacity', 'heat capacity [J/kg/K]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'thermalconductivity', ['ice thermal conductivity [W/m/K]']))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'temperateiceconductivity', 'temperate ice thermal conductivity [W/m/K]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, "effectiveconductivity_averaging", "computation of effectiveconductivity: (0) arithmetic mean, (1) harmonic mean, (2) geometric mean (default)"))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'meltingpoint', 'melting point of ice at 1atm in K'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'latentheat', 'latent heat of fusion [J/kg]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'beta', 'rate of change of melting point with pressure [K/Pa]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'mixed_layer_capacity', 'mixed layer capacity [W/kg/K]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'thermal_exchange_velocity', 'thermal exchange velocity [m/s]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rheology_B', 'flow law parameter [Pa s^(1/3)]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rheology_Ec', 'compressive enhancement factor'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rheology_Es', 'shear enhancement factor'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rheology_law', ['law for the temperature dependance of the rheology: \'None\', \'BuddJacka\', \'Cuffey\', \'CuffeyTemperate\', \'Paterson\', \'Arrhenius\' or \'LliboutryDuval\'']))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'earth_density', 'Mantle density [kg/m^-3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rho_ice', 'ice density [kg/m^3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rho_water', 'ocean water density [kg/m^3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rho_freshwater', 'fresh water density [kg/m^3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'mu_water', 'water viscosity [N s/m^2]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'heatcapacity', 'heat capacity [J/kg/K]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'thermalconductivity', ['ice thermal conductivity [W/m/K]']))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'temperateiceconductivity', 'temperate ice thermal conductivity [W/m/K]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, "effectiveconductivity_averaging", "computation of effectiveconductivity: (0) arithmetic mean, (1) harmonic mean, (2) geometric mean (default)"))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'meltingpoint', 'melting point of ice at 1atm in K'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'latentheat', 'latent heat of fusion [J/kg]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'beta', 'rate of change of melting point with pressure [K/Pa]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'mixed_layer_capacity', 'mixed layer capacity [W/kg/K]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'thermal_exchange_velocity', 'thermal exchange velocity [m/s]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rheology_B', 'flow law parameter [Pa s^(1/3)]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rheology_Ec', 'compressive enhancement factor'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rheology_Es', 'shear enhancement factor'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rheology_law', ['law for the temperature dependance of the rheology: \'None\', \'BuddJacka\', \'Cuffey\', \'CuffeyTemperate\', \'Paterson\', \'Arrhenius\' or \'LliboutryDuval\'']))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'earth_density', 'Mantle density [kg/m^-3]'))
         return s
 
     # Define class string
@@ -942,18 +942,18 @@ class estar(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        param_utils.check_field(md, fieldname = 'materials.rho_ice', gt = 0)
-        param_utils.check_field(md, fieldname = 'materials.rho_water', gt = 0)
-        param_utils.check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
-        param_utils.check_field(md, fieldname = 'materials.mu_water', gt = 0)
-        param_utils.check_field(md, fieldname = 'materials.rheology_B', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'materials.rheology_Ec', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'materials.rheology_Es', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'materials.rheology_law', values = ['None', 'BuddJacka', 'Cuffey', 'CuffeyTemperate', 'Paterson', 'Arrhenius', 'LliboutryDuval'])
-        param_utils.check_field(md, fieldname = 'materials.effectiveconductivity_averaging', scalar = True, values = [0, 1, 2])
+        class_utils.check_field(md, fieldname = 'materials.rho_ice', gt = 0)
+        class_utils.check_field(md, fieldname = 'materials.rho_water', gt = 0)
+        class_utils.check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
+        class_utils.check_field(md, fieldname = 'materials.mu_water', gt = 0)
+        class_utils.check_field(md, fieldname = 'materials.rheology_B', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'materials.rheology_Ec', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'materials.rheology_Es', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'materials.rheology_law', values = ['None', 'BuddJacka', 'Cuffey', 'CuffeyTemperate', 'Paterson', 'Arrhenius', 'LliboutryDuval'])
+        class_utils.check_field(md, fieldname = 'materials.effectiveconductivity_averaging', scalar = True, values = [0, 1, 2])
 
         if 'SealevelchangeAnalysis' in analyses:
-            param_utils.check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
+            class_utils.check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
 
         return md
 

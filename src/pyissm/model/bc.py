@@ -5,7 +5,7 @@ Tools for setting boundary conditions on ISSM models.
 import warnings
 import numpy as np
 import os
-from pyissm import utils
+from pyissm import tools
 
 def get_ice_front_nodes(md, ice_front_exp):
     """Identify nodes on the ice front from the provided contour file."""
@@ -16,8 +16,8 @@ def get_ice_front_nodes(md, ice_front_exp):
     
     # Identify nodes inside the contour
     ## If Python wrappers are installed, use them to identify nodes inside the contour
-    if utils.wrappers.check_wrappers_installed():
-        node_inside_ice_front = utils.wrappers.ContourToMesh(md.mesh.elements,
+    if tools.wrappers.check_wrappers_installed():
+        node_inside_ice_front = tools.wrappers.ContourToMesh(md.mesh.elements,
                                                                     md.mesh.x,
                                                                     md.mesh.y,
                                                                     ice_front_exp,

@@ -1,11 +1,11 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm.param import rotational
-from pyissm.param import lovenumbers
-from pyissm.param import mesh
-from pyissm import utils
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model.classes import rotational
+from pyissm.model.classes import lovenumbers
+from pyissm.model.classes import mesh
+from pyissm import tools
+from pyissm.model import execute
 
 ## ------------------------------------------------------
 ## solidearth.earth
@@ -37,7 +37,7 @@ class earth(class_registry.manage_state):
     rotational : rotational
         Rotational parameters object for polar motion calculations.
     planetradius : float
-        Earth's radius [m]. Automatically set using utils.general.planetradius('earth').
+        Earth's radius [m]. Automatically set using tools.general.planetradius('earth').
     requested_outputs : ilst, default=['default']
         Additional outputs requested from the solid earth model.
     transfercount : str, default='List of transfer count'
@@ -77,7 +77,7 @@ class earth(class_registry.manage_state):
 
     Examples
     --------
-    md.solidearth = pyissm.param.solidearth.earth()
+    md.solidearth = pyissm.model.classes.solidearth.earth()
     md.solidearth.settings.elastic = 1
     md.solidearth.settings.viscous = 1
     """
@@ -88,7 +88,7 @@ class earth(class_registry.manage_state):
         self.external          = None
         self.lovenumbers       = lovenumbers()
         self.rotational        = rotational()
-        self.planetradius      = utils.general.planetradius('earth')
+        self.planetradius      = tools.general.planetradius('earth')
         self.requested_outputs = []
         self.transfercount     = []
         self.transitions       = []
@@ -102,15 +102,15 @@ class earth(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   solidearth inputs, forcings, and settings:\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'planetradius', 'planet radius [m]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'transitions', 'indices into parts of the mesh that will be icecaps'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'transfercount', 'number of icecaps vertices are part of'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'partitionice', 'ice partition vector for barystatic contribution'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'partitionhydro', 'hydro partition vector for barystatic contribution'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'partitionocean', 'ocean partition vector for barystatic contribution'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'planetradius', 'planet radius [m]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'transitions', 'indices into parts of the mesh that will be icecaps'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'transfercount', 'number of icecaps vertices are part of'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'partitionice', 'ice partition vector for barystatic contribution'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'partitionhydro', 'hydro partition vector for barystatic contribution'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'partitionocean', 'ocean partition vector for barystatic contribution'))
         if not self.external:
-            s += '{}\n'.format(param_utils.fielddisplay(self, 'external', 'external solution, of the type solidearthsolution'))
+            s += '{}\n'.format(class_utils.fielddisplay(self, 'external', 'external solution, of the type solidearthsolution'))
         return s
 
     # Define class string
@@ -124,14 +124,14 @@ class earth(class_registry.manage_state):
         if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc):
             return md
 
-        param_utils.check_field(md, fieldname = 'solidearth.requested_outputs', string_list = True)
+        class_utils.check_field(md, fieldname = 'solidearth.requested_outputs', string_list = True)
 
         settings.check_consistency(md, solution, analyses)
         lovenumbers.check_consistency(md, solution, analyses)
         rotational.check_consistency(md, solution, analyses)
         if self.external:
             if not isinstance(self.external, solution):
-                raise Exception('pyissm.param.solidearth.earth.check_consistency: external field should be a pyissm.param.solidearth.solution')
+                raise Exception('pyissm.model.classes.solidearth.earth.check_consistency: external field should be a pyissm.model.classes.solidearth.solution')
             self.external.check_consistency(md, solution, analyses)
         return md
 
@@ -268,7 +268,7 @@ class europa(class_registry.manage_state):
     rotational : rotational
         Rotational parameters object for Europa's rotation and tidal effects.
     planetradius : float
-        Europa's radius [m]. Automatically set using utils.general.planetradius('europa').
+        Europa's radius [m]. Automatically set using tools.general.planetradius('europa').
     requested_outputs : list, default=['default']
         Additional outputs requested from the solid body model.
     transfercount : str, default='List of transfer count'
@@ -309,7 +309,7 @@ class europa(class_registry.manage_state):
 
     Examples
     --------
-    md.solidearth = pyissm.param.solidearth.europa()
+    md.solidearth = pyissm.model.classes.solidearth.europa()
     md.solidearth.settings.elastic = 1
     md.solidearth.lovenumbers = custom_europa_lovenumbers
     """
@@ -320,7 +320,7 @@ class europa(class_registry.manage_state):
         self.external          = None
         self.lovenumbers       = lovenumbers()
         self.rotational        = rotational()
-        self.planetradius      = utils.general.planetradius('europa')
+        self.planetradius      = tools.general.planetradius('europa')
         self.requested_outputs = ['default']
         self.transfercount     = []
         self.transitions       = []
@@ -334,15 +334,15 @@ class europa(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   solidearth inputs, forcings, and settings:\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'planetradius', 'planet radius [m]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'transitions', 'indices into parts of the mesh that will be icecaps'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'transfercount', 'number of icecaps vertices are part of'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'partitionice', 'ice partition vector for barystatic contribution'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'partitionhydro', 'hydro partition vector for barystatic contribution'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'partitionocean', 'ocean partition vector for barystatic contribution'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'planetradius', 'planet radius [m]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'transitions', 'indices into parts of the mesh that will be icecaps'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'transfercount', 'number of icecaps vertices are part of'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'partitionice', 'ice partition vector for barystatic contribution'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'partitionhydro', 'hydro partition vector for barystatic contribution'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'partitionocean', 'ocean partition vector for barystatic contribution'))
         if not self.external:
-            s += '{}\n'.format(param_utils.fielddisplay(self, 'external', 'external solution, of the type solidearthsolution'))
+            s += '{}\n'.format(class_utils.fielddisplay(self, 'external', 'external solution, of the type solidearthsolution'))
         return s
 
     # Define class string
@@ -356,14 +356,14 @@ class europa(class_registry.manage_state):
         if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc):
             return md
 
-        param_utils.check_field(md, fieldname = 'solidearth.requested_outputs', string_list = True)
+        class_utils.check_field(md, fieldname = 'solidearth.requested_outputs', string_list = True)
 
         settings.check_consistency(md, solution, analyses)
         lovenumbers.check_consistency(md, solution, analyses)
         rotational.check_consistency(md, solution, analyses)
         if self.external:
             if not isinstance(self.external, solution):
-                raise Exception('pyissm.param.solidearth.earth.check_consistency: external field should be a pyissm.param.solidearth.solution')
+                raise Exception('pyissm.model.classes.solidearth.earth.check_consistency: external field should be a pyissm.model.classes.solidearth.solution')
             self.external.check_consistency(md, solution, analyses)
         return md
     
@@ -553,7 +553,7 @@ class settings(class_registry.manage_state):
 
     Examples
     --------
-    md.solidearth.settings = pyissm.param.solidearth.settings()
+    md.solidearth.settings = pyissm.model.classes.solidearth.settings()
     md.solidearth.settings.elastic = 1
     md.solidearth.settings.viscous = 1
     md.solidearth.settings.grdmodel = 1
@@ -587,23 +587,23 @@ class settings(class_registry.manage_state):
     def __repr__(self):
         s = '   solidearth settings:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'reltol', 'sea level change relative convergence criterion (default, NaN: not applied)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'abstol', 'sea level change absolute convergence criterion (default, NaN: not applied)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'maxiter', 'maximum number of nonlinear iterations'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'grdocean', 'does this planet have an ocean, if set to 1: global water mass is conserved in GRD module (default: 1)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'ocean_area_scaling', 'correction for model representation of ocean area (default: No correction)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'sealevelloading', 'enables surface loading from sea-level change (default: 1)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'isgrd', 'compute GRD patterns (default: 1'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'compute_bp_grd', 'compute GRD patterns for bottom pressure loads (default 1)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'runfrequency', 'how many time steps we skip before we run solidearthsettings solver during transient (default: 1)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'selfattraction', 'enables surface mass load to perturb the gravity field'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'elastic', 'enables elastic deformation from surface loading'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'viscous', 'enables viscous deformation from surface loading'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rotation', 'enables polar motion to feedback on the GRD fields'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'degacc', 'accuracy (default: .01 deg) for numerical discretization of the Green\'s functions'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'timeacc', 'time accuracy (default: 1 year) for numerical discretization of the Green\'s functions'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'grdmodel', 'type of deformation model, 0 for no GRD, 1 for spherical GRD model (SESAW model), 2 for half-space planar GRD (visco-elastic model from Ivins)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'cross_section_shape', '1: square-edged (default). 2: elliptical. See iedge in GiaDeflectionCore'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'reltol', 'sea level change relative convergence criterion (default, NaN: not applied)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'abstol', 'sea level change absolute convergence criterion (default, NaN: not applied)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'maxiter', 'maximum number of nonlinear iterations'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'grdocean', 'does this planet have an ocean, if set to 1: global water mass is conserved in GRD module (default: 1)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'ocean_area_scaling', 'correction for model representation of ocean area (default: No correction)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'sealevelloading', 'enables surface loading from sea-level change (default: 1)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'isgrd', 'compute GRD patterns (default: 1'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'compute_bp_grd', 'compute GRD patterns for bottom pressure loads (default 1)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'runfrequency', 'how many time steps we skip before we run solidearthsettings solver during transient (default: 1)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'selfattraction', 'enables surface mass load to perturb the gravity field'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'elastic', 'enables elastic deformation from surface loading'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'viscous', 'enables viscous deformation from surface loading'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rotation', 'enables polar motion to feedback on the GRD fields'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'degacc', 'accuracy (default: .01 deg) for numerical discretization of the Green\'s functions'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'timeacc', 'time accuracy (default: 1 year) for numerical discretization of the Green\'s functions'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'grdmodel', 'type of deformation model, 0 for no GRD, 1 for spherical GRD model (SESAW model), 2 for half-space planar GRD (visco-elastic model from Ivins)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'cross_section_shape', '1: square-edged (default). 2: elliptical. See iedge in GiaDeflectionCore'))
         return s
 
     # Define class string
@@ -617,34 +617,34 @@ class settings(class_registry.manage_state):
         if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc):
             return md
 
-        param_utils.check_field(md, fieldname = 'solidearth.settings.reltol', scalar = True)
-        param_utils.check_field(md, fieldname = 'solidearth.settings.abstol', scalar = True)
-        param_utils.check_field(md, fieldname = 'solidearth.settings.maxiter', scalar = True, ge = 1)
-        param_utils.check_field(md, fieldname = 'solidearth.settings.runfrequency', scalar = True, ge = 1)
-        param_utils.check_field(md, fieldname = 'solidearth.settings.degacc', scalar = True, ge = 1e-10)
-        param_utils.check_field(md, fieldname = 'solidearth.settings.timeacc', scalar = True, gt = 0)
-        param_utils.check_field(md, fieldname = 'solidearth.settings.horiz', values = [0, 1], allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'solidearth.settings.grdmodel', ge = 0, le = 2)
-        param_utils.check_field(md, fieldname = 'solidearth.settings.cross_section_shape', scalar = True, values = [1, 2])
+        class_utils.check_field(md, fieldname = 'solidearth.settings.reltol', scalar = True)
+        class_utils.check_field(md, fieldname = 'solidearth.settings.abstol', scalar = True)
+        class_utils.check_field(md, fieldname = 'solidearth.settings.maxiter', scalar = True, ge = 1)
+        class_utils.check_field(md, fieldname = 'solidearth.settings.runfrequency', scalar = True, ge = 1)
+        class_utils.check_field(md, fieldname = 'solidearth.settings.degacc', scalar = True, ge = 1e-10)
+        class_utils.check_field(md, fieldname = 'solidearth.settings.timeacc', scalar = True, gt = 0)
+        class_utils.check_field(md, fieldname = 'solidearth.settings.horiz', values = [0, 1], allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'solidearth.settings.grdmodel', ge = 0, le = 2)
+        class_utils.check_field(md, fieldname = 'solidearth.settings.cross_section_shape', scalar = True, values = [1, 2])
 
         if self.elastic and not self.selfattraction:
-            raise Exception('pyissm.param.solidearth.settings.check_consistency: need selfattraction on if elastic flag is set')
+            raise Exception('pyissm.model.classes.solidearth.settings.check_consistency: need selfattraction on if elastic flag is set')
         if self.viscous and not self.elastic:
-            raise Exception('pyissm.param.solidearth.settings.check_consistency: need elastic on if viscous flag is set')
+            raise Exception('pyissm.model.classes.solidearth.settings.check_consistency: need elastic on if viscous flag is set')
 
         # A GRD computation has been requested, make some checks on the nature of the meshes provided
         if self.isgrd:
             if isinstance(md.mesh, mesh.mesh3dsurface):
                 if self.grdmodel == 2:
-                    raise Exception('pyissm.param.solidearth.settings.check_consistency: model requires a 2D mesh to run gia Ivins computations (change mesh from mesh3dsurface to mesh2d)')
+                    raise Exception('pyissm.model.classes.solidearth.settings.check_consistency: model requires a 2D mesh to run gia Ivins computations (change mesh from mesh3dsurface to mesh2d)')
             else:
                 if self.grdmodel == 1:
-                    raise Exception('pyissm.param.solidearth.settings.check_consistency: model requires a 3D surface mesh to run GRD computations (change mesh from mesh2d to mesh3dsurface)')
+                    raise Exception('pyissm.model.classes.solidearth.settings.check_consistency: model requires a 3D surface mesh to run GRD computations (change mesh from mesh2d to mesh3dsurface)')
             if self.sealevelloading and not self.grdocean:
                 raise Exception('solidearthsettings checkconsistency error message: need grdocean on if sealevelloading flag is set')
 
         if self.compute_bp_grd and not md.solidearth.settings.isgrd:
-            raise Exception('pyissm.param.solidearth.settings.check_consistency: if bottom pressure grd patterns are requested, solidearth settings class should have isgrd flag on')
+            raise Exception('pyissm.model.classes.solidearth.settings.check_consistency: if bottom pressure grd patterns are requested, solidearth settings class should have isgrd flag on')
 
         return md
 
@@ -760,10 +760,10 @@ class solution(class_registry.manage_state):
         s = '   solidearth solution:\n'
         s += '         units for time series is (yr)\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'displacementeast', 'solid-Earth Eastwards bedrock displacement series (m)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'displacementnorth', 'solid-Earth Northwards bedrock displacement time series (m)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'displacementup', 'solid-Earth bedrock uplift time series (m)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'geoid', 'solid-Earth geoid time series (m)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'displacementeast', 'solid-Earth Eastwards bedrock displacement series (m)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'displacementnorth', 'solid-Earth Northwards bedrock displacement time series (m)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'displacementup', 'solid-Earth bedrock uplift time series (m)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'geoid', 'solid-Earth geoid time series (m)'))
         return s
 
     # Define class string
@@ -773,10 +773,10 @@ class solution(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        param_utils.check_field(md, fieldname = 'solidearth.external.displacementeast', timeseries = True, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'solidearth.external.displacementnorth', timeseries = True, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'solidearth.external.displacementup', timeseries = True, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'solidearth.external.geoid', timeseries = True, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'solidearth.external.displacementeast', timeseries = True, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'solidearth.external.displacementnorth', timeseries = True, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'solidearth.external.displacementup', timeseries = True, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'solidearth.external.geoid', timeseries = True, allow_inf = False)
 
         return md
 

@@ -1,6 +1,6 @@
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class debug(class_registry.manage_state):
@@ -38,7 +38,7 @@ class debug(class_registry.manage_state):
 
     Examples
     --------
-    md.debug = pyissm.param.debug()
+    md.debug = pyissm.model.classes.debug()
     md.debug.valgrind = 1
     md.debug.profiling = 1
     """
@@ -56,9 +56,9 @@ class debug(class_registry.manage_state):
     def __repr__(self):
         s = '   debug parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'valgrind', 'use valgrind to debug (0 or 1)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'gprof', 'use gnu - profiler to find out where the time is spent'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'profiling', 'enables profiling (memory, flops, time)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'valgrind', 'use valgrind to debug (0 or 1)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'gprof', 'use gnu - profiler to find out where the time is spent'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'profiling', 'enables profiling (memory, flops, time)'))
         return s
 
     # Define class string

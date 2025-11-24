@@ -1,11 +1,11 @@
 import numpy as np
 import warnings
 
-from pyissm.param import friction
-from pyissm.param import hydrology
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import friction
+from pyissm.model.classes import hydrology
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class stochasticforcing(class_registry.manage_state):
@@ -51,7 +51,7 @@ class stochasticforcing(class_registry.manage_state):
 
     Examples
     --------
-    md.stochasticforcing = pyissm.param.stochasticforcing()
+    md.stochasticforcing = pyissm.model.classes.stochasticforcing()
     md.stochasticforcing.isstochasticforcing = 1
     md.stochasticforcing.fields = ['SMBforcing']
     md.stochasticforcing.defaultdimension = 1
@@ -75,14 +75,14 @@ class stochasticforcing(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   stochasticforcing parameters:\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'isstochasticforcing', 'is stochasticity activated?'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'fields', 'fields with stochasticity applied, ex: [\'smb.default\',\'calving.default\']'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'defaultdimension', 'dimensionality of the noise terms (does not apply to fields with their specific dimension)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'default_id', 'id of each element for partitioning of the noise terms (does not apply to fields with their specific partition)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'covariance', 'covariance matrix for within- and between-fields covariance (units must be squared field units),multiple matrices can be concatenated along 3rd dimension to apply different covariances in time'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'timecovariance', 'starting dates at which covariances apply (only applicabe if multiple covariance matrices are prescribed)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'stochastictimestep', 'timestep at which new stochastic noise terms are generated (default: md.timestepping.time_step)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'randomflag', 'whether to apply real randomness (true) or pseudo-randomness with fixed seed (false)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'isstochasticforcing', 'is stochasticity activated?'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'fields', 'fields with stochasticity applied, ex: [\'smb.default\',\'calving.default\']'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'defaultdimension', 'dimensionality of the noise terms (does not apply to fields with their specific dimension)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'default_id', 'id of each element for partitioning of the noise terms (does not apply to fields with their specific partition)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'covariance', 'covariance matrix for within- and between-fields covariance (units must be squared field units),multiple matrices can be concatenated along 3rd dimension to apply different covariances in time'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'timecovariance', 'starting dates at which covariances apply (only applicabe if multiple covariance matrices are prescribed)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'stochastictimestep', 'timestep at which new stochastic noise terms are generated (default: md.timestepping.time_step)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'randomflag', 'whether to apply real randomness (true) or pseudo-randomness with fixed seed (false)'))
         s += 'Available fields:\n'
         s += '   BasalforcingsDeepwaterMeltingRatearma\n'
         s += '   BasalforcingsSpatialDeepwaterMeltingRate\n'
@@ -113,7 +113,7 @@ class stochasticforcing(class_registry.manage_state):
         # If not specified, set stochastictimestep to md.timestepping.time_step
         if self.stochastictimestep == 0:
             md.stochasticforcing.stochastictimestep = md.timestepping.time_step
-            warnings.warn('pyissm.param.stochasticforcing.check_consistency: stochasticforcing.stochastictimestep not specified -- set to md.timestepping.time_step')
+            warnings.warn('pyissm.model.classes.stochasticforcing.check_consistency: stochasticforcing.stochastictimestep not specified -- set to md.timestepping.time_step')
 
         # Covariance matrix checks
         if(len(np.shape(self.covariance))==3):
@@ -125,7 +125,7 @@ class stochasticforcing(class_registry.manage_state):
                try:
                    np.linalg.cholesky(self.covariance[:,:,ii])
                except:
-                   raise TypeError('pyissm.param.stochasticforcing.check_consistency: an entry in md.stochasticforcing.covariance is not positive definite')
+                   raise TypeError('pyissm.model.classes.stochasticforcing.check_consistency: an entry in md.stochasticforcing.covariance is not positive definite')
         elif(len(np.shape(self.covariance))==2):
             numtcovmat = 1
             lsCovmats = [self.covariance]
@@ -133,11 +133,11 @@ class stochasticforcing(class_registry.manage_state):
             try:
                 np.linalg.cholesky(self.covariance)
             except:
-                raise TypeError('pyissm.param.stochasticforcing.check_consistency:md.stochasticforcing.covariance is not positive definite')
+                raise TypeError('pyissm.model.classes.stochasticforcing.check_consistency:md.stochasticforcing.covariance is not positive definite')
 
         # Check that all fields agree with the corresponding md class and if any field needs the default params
         checkdefaults = False  # Need to check defaults only if one of the fields does not have its own dimensionality
-        structstoch = param_utils.supported_stochastic_forcings(return_dict = True)
+        structstoch = class_utils.supported_stochastic_forcings(return_dict = True)
         
         # Check if hydrologyarmapw is used
         if isinstance(md.hydrology, hydrology.armapw) and md.transient.ishydrology==1:
@@ -239,16 +239,16 @@ class stochasticforcing(class_registry.manage_state):
                             f"{f1} and {f2} have different arma_timestep and non-zero covariance"
                         )
 
-        param_utils.check_field(md, fieldname = 'stochasticforcing.isstochasticforcing', values = [0, 1])
-        param_utils.check_field(md, fieldname = 'stochasticforcing.fields', numel = num_fields, cell = True, values = param_utils.supported_stochastic_forcings())
-        param_utils.check_field(md, fieldname = 'stochasticforcing.covariance', size = (size_tot, size_tot, numtcovmat), allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'stochasticforcing.stochastictimestep', ge = md.timestepping.time_step, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'stochasticforcing.randomflag', scalar = True, values = [0, 1])
+        class_utils.check_field(md, fieldname = 'stochasticforcing.isstochasticforcing', values = [0, 1])
+        class_utils.check_field(md, fieldname = 'stochasticforcing.fields', numel = num_fields, cell = True, values = class_utils.supported_stochastic_forcings())
+        class_utils.check_field(md, fieldname = 'stochasticforcing.covariance', size = (size_tot, size_tot, numtcovmat), allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'stochasticforcing.stochastictimestep', ge = md.timestepping.time_step, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'stochasticforcing.randomflag', scalar = True, values = [0, 1])
         if(numtcovmat > 1):
-            param_utils.check_field(md, fieldname = 'stochasticforcing.timecovariance', ge = md.timestepping.start_time, le = md.timestepping.final_time, size = (1, numtcovmat), allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'stochasticforcing.timecovariance', ge = md.timestepping.start_time, le = md.timestepping.final_time, size = (1, numtcovmat), allow_nan = False, allow_inf = False)
         if checkdefaults:
-            param_utils.check_field(md, fieldname = 'stochasticforcing.defaultdimension', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-            param_utils.check_field(md, fieldname = 'stochasticforcing.default_id', ge = 0, le = self.defaultdimension, size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'stochasticforcing.defaultdimension', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'stochasticforcing.default_id', ge = 0, le = self.defaultdimension, size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
 
         return md
 

@@ -1,8 +1,8 @@
 import numpy as np
 import collections
 import warnings
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 ## ------------------------------------------------------
 ## qmu.default
@@ -83,7 +83,7 @@ class default(class_registry.manage_state):
         execute.WriteData(fid, prefix, name = 'md.qmu.isdakota', data = False, format = 'Boolean')
         execute.WriteData(fid, prefix, name = 'md.qmu.mass_flux_segments_present', data = False, format = 'Boolean')
 
-        warnings.warn('pyissm.param.qmu::qmu not yet implemented. Turning off qmu.')
+        warnings.warn('pyissm.model.classes.qmu::qmu not yet implemented. Turning off qmu.')
 
 
 ## ------------------------------------------------------

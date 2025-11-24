@@ -1,7 +1,7 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class esa(class_registry.manage_state):
@@ -49,7 +49,7 @@ class esa(class_registry.manage_state):
 
     Examples
     --------
-    md.esa = pyissm.param.esa()
+    md.esa = pyissm.model.classes.esa()
     md.esa.deltathickness = thickness_change
     md.esa.love_h = 0.6
     md.esa.love_l = 0.1
@@ -73,13 +73,13 @@ class esa(class_registry.manage_state):
     def __repr__(self):
         s = '   esa parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'deltathickness', 'thickness change: ice height equivalent [m]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'love_h', 'load Love number for radial displacement'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'love_l', 'load Love number for horizontal displaements'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'hemisphere', 'North-south, East-west components of 2-D horiz displacement vector:-1 south, 1 north'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'degacc', 'accuracy (default .01 deg) for numerical discretization of the Green''s functions'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'transitions', 'indices into parts of the mesh that will be icecaps'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested (default: EsaUmotion)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'deltathickness', 'thickness change: ice height equivalent [m]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'love_h', 'load Love number for radial displacement'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'love_l', 'load Love number for horizontal displaements'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'hemisphere', 'North-south, East-west components of 2-D horiz displacement vector:-1 south, 1 north'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'degacc', 'accuracy (default .01 deg) for numerical discretization of the Green''s functions'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'transitions', 'indices into parts of the mesh that will be icecaps'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested (default: EsaUmotion)'))
         return s
 
     # Define class string
@@ -93,15 +93,15 @@ class esa(class_registry.manage_state):
         if (solution != 'EsaAnalysis'):
             return md
         
-        param_utils.check_field(md, fieldname = "esa.deltathickness", allow_nan = True, allow_inf = True, size = (md.mesh.numberofelements, 1))
-        param_utils.check_field(md, fieldname = "esa.love_h", allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "esa.love_l", allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "esa.hemisphere", allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "esa.degacc", size = (1, 1), ge = 1e-10)
-        param_utils.check_field(md, fieldname = "esa.requested_outputs", string_list = True)
+        class_utils.check_field(md, fieldname = "esa.deltathickness", allow_nan = True, allow_inf = True, size = (md.mesh.numberofelements, 1))
+        class_utils.check_field(md, fieldname = "esa.love_h", allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "esa.love_l", allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "esa.hemisphere", allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "esa.degacc", size = (1, 1), ge = 1e-10)
+        class_utils.check_field(md, fieldname = "esa.requested_outputs", string_list = True)
 
         if (np.size(self.love_h, 1) != np.size(self.love_l, 0)):
-            raise ValueError('pyissm.param.esa.check_consistency: love_h and love_l must be the same size.')
+            raise ValueError('pyissm.model.classes.esa.check_consistency: love_h and love_l must be the same size.')
 
 
     # Process requested outputs, expanding 'default' to appropriate outputs

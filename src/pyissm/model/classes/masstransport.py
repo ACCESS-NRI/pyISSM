@@ -1,7 +1,7 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class masstransport(class_registry.manage_state):
@@ -51,7 +51,7 @@ class masstransport(class_registry.manage_state):
 
     Examples
     --------
-    md.masstransport = pyissm.param.masstransport()
+    md.masstransport = pyissm.model.classes.masstransport()
     md.masstransport.min_thickness = 10.0
     md.masstransport.stabilization = 2
     md.masstransport.hydrostatic_adjustment = 'Incremental'
@@ -75,12 +75,12 @@ class masstransport(class_registry.manage_state):
     def __repr__(self):
         s = '   Masstransport solution parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'spcthickness', 'thickness constraints (NaN means no constraint) [m]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'isfreesurface', 'do we use free surfaces (FS only) or mass conservation'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'min_thickness', 'minimum ice thickness allowed [m]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'hydrostatic_adjustment', 'adjustment of ice shelves surface and bed elevations: ''Incremental'' or ''Absolute'' '))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'stabilization', '0: no stabilization, 1: artificial diffusion, 2: streamline upwinding, 3: discontinuous Galerkin, 4: flux corrected transport, 5: streamline upwind Petrov-Galerkin (SUPG)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'spcthickness', 'thickness constraints (NaN means no constraint) [m]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'isfreesurface', 'do we use free surfaces (FS only) or mass conservation'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'min_thickness', 'minimum ice thickness allowed [m]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'hydrostatic_adjustment', 'adjustment of ice shelves surface and bed elevations: ''Incremental'' or ''Absolute'' '))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'stabilization', '0: no stabilization, 1: artificial diffusion, 2: streamline upwinding, 3: discontinuous Galerkin, 4: flux corrected transport, 5: streamline upwind Petrov-Galerkin (SUPG)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -94,14 +94,14 @@ class masstransport(class_registry.manage_state):
         if ('MasstransportAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.ismasstransport):
             return md
 
-        param_utils.check_field(md, fieldname = 'masstransport.spcthickness', timeseries = True, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'masstransport.isfreesurface', values = [0, 1])
-        param_utils.check_field(md, fieldname = 'masstransport.hydrostatic_adjustment', values = ['Absolute', 'Incremental'])
-        param_utils.check_field(md, fieldname = 'masstransport.stabilization', values = [0, 1, 2, 3, 4, 5])
-        param_utils.check_field(md, fieldname = 'masstransport.min_thickness', gt = 0)
-        param_utils.check_field(md, fieldname = 'masstransport.requested_outputs', string_list = True)
+        class_utils.check_field(md, fieldname = 'masstransport.spcthickness', timeseries = True, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'masstransport.isfreesurface', values = [0, 1])
+        class_utils.check_field(md, fieldname = 'masstransport.hydrostatic_adjustment', values = ['Absolute', 'Incremental'])
+        class_utils.check_field(md, fieldname = 'masstransport.stabilization', values = [0, 1, 2, 3, 4, 5])
+        class_utils.check_field(md, fieldname = 'masstransport.min_thickness', gt = 0)
+        class_utils.check_field(md, fieldname = 'masstransport.requested_outputs', string_list = True)
         if not np.any(np.isnan(self.vertex_pairing)) and len(self.vertex_pairing) > 0:
-            param_utils.check_field(md, fieldname = 'stressbalance.vertex_pairing', gt = 0)
+            class_utils.check_field(md, fieldname = 'stressbalance.vertex_pairing', gt = 0)
 
         return md
     

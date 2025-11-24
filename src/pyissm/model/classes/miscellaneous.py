@@ -1,6 +1,6 @@
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm.param import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 import collections
 
 @class_registry.register_class
@@ -38,7 +38,7 @@ class miscellaneous(class_registry.manage_state):
 
     Examples
     --------
-    md.miscellaneous = pyissm.param.miscellaneous()
+    md.miscellaneous = pyissm.model.classes.miscellaneous()
     md.miscellaneous.notes = 'Model run for Antarctic ice sheet'
     md.miscellaneous.name = 'Antarctica_2024'
     """
@@ -56,9 +56,9 @@ class miscellaneous(class_registry.manage_state):
     def __repr__(self):
         s = '   miscellaneous parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'notes', 'notes in a cell of strings'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'name', 'model name'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'dummy', 'empty field to store some data'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'notes', 'notes in a cell of strings'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'name', 'model name'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'dummy', 'empty field to store some data'))
         return s
 
     # Define class string
@@ -68,7 +68,7 @@ class miscellaneous(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        param_utils.check_field(md, fieldname = 'miscellaneous.name', allow_empty = False)
+        class_utils.check_field(md, fieldname = 'miscellaneous.name', allow_empty = False)
         return md
 
     # Marshall method for saving the miscellaneous parameters

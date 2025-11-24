@@ -1,6 +1,6 @@
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class constants(class_registry.manage_state):
@@ -42,7 +42,7 @@ class constants(class_registry.manage_state):
 
     Examples
     --------
-    md.constants = pyissm.param.constants()
+    md.constants = pyissm.model.classes.constants()
     md.constants.g = 9.81
     md.constants.yts = 365.25 * 24.0 * 3600.0
     """
@@ -61,11 +61,11 @@ class constants(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   constants parameters:\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'g', 'gravitational acceleration [m/s^2]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'omega', 'angular velocity of Earth [rad/s]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'yts', 'number of seconds in a year [s/yr]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'referencetemperature', 'reference temperature used in the enthalpy model [K]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'gravitational_constant', 'Newtonian constant of gravitation [m^3/kg/s^2]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'g', 'gravitational acceleration [m/s^2]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'omega', 'angular velocity of Earth [rad/s]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'yts', 'number of seconds in a year [s/yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'referencetemperature', 'reference temperature used in the enthalpy model [K]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'gravitational_constant', 'Newtonian constant of gravitation [m^3/kg/s^2]'))
         return s
 
     # Define class string
@@ -75,11 +75,11 @@ class constants(class_registry.manage_state):
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        param_utils.check_field(md, fieldname = 'constants.g', ge = 0, scalar = True) # We allow 0 for validation tests
-        param_utils.check_field(md, fieldname = 'constants.omega', ge = 0, scalar = True)
-        param_utils.check_field(md, fieldname = 'constants.yts', ge = 0, scalar = True)
-        param_utils.check_field(md, fieldname = 'constants.referencetemperature', scalar = True)
-        param_utils.check_field(md, fieldname = 'constants.gravitational_constant', scalar = True)
+        class_utils.check_field(md, fieldname = 'constants.g', ge = 0, scalar = True) # We allow 0 for validation tests
+        class_utils.check_field(md, fieldname = 'constants.omega', ge = 0, scalar = True)
+        class_utils.check_field(md, fieldname = 'constants.yts', ge = 0, scalar = True)
+        class_utils.check_field(md, fieldname = 'constants.referencetemperature', scalar = True)
+        class_utils.check_field(md, fieldname = 'constants.gravitational_constant', scalar = True)
 
         return md
 

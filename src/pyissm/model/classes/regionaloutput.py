@@ -1,9 +1,9 @@
 import numpy as np
 import os
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
-from pyissm import utils
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
+from pyissm import tools
 
 @class_registry.register_class
 class regionaloutput(class_registry.manage_state):
@@ -43,7 +43,7 @@ class regionaloutput(class_registry.manage_state):
 
     Examples
     --------
-    md.regionaloutput = pyissm.param.regionaloutput()
+    md.regionaloutput = pyissm.model.classes.regionaloutput()
     md.regionaloutput.name = 'west_antarctica_volume'
     md.regionaloutput.outputnamestring = 'IceVolume'
     md.regionaloutput.mask = west_antarctica_mask
@@ -65,11 +65,11 @@ class regionaloutput(class_registry.manage_state):
     def __repr__(self):
         s = '   regionaloutput parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'name', 'identifier for this regional response'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'definitionstring', 'string that identifies this output definition uniquely, from Outputdefinition[1 - 100]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'outputnamestring', 'string that identifies the type of output you want, eg. IceVolume, TotalSmb, GroudedArea'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'mask', 'mask vectorial field which identifies the region of interest (value > 0 will be included)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'maskexpstring', 'name of Argus file that can be passed in to define the regional mask'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'name', 'identifier for this regional response'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'definitionstring', 'string that identifies this output definition uniquely, from Outputdefinition[1 - 100]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'outputnamestring', 'string that identifies the type of output you want, eg. IceVolume, TotalSmb, GroudedArea'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'mask', 'mask vectorial field which identifies the region of interest (value > 0 will be included)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'maskexpstring', 'name of Argus file that can be passed in to define the regional mask'))
         return s
 
     # Define class string
@@ -81,14 +81,14 @@ class regionaloutput(class_registry.manage_state):
     def check_consistency(self, md, solution, analyses):
 
         if not isinstance(self.name, str):
-            raise RuntimeError("pyissm.param.regionaloutput.check_consistency: 'name' field should be a string!")
+            raise RuntimeError("pyissm.model.classes.regionaloutput.check_consistency: 'name' field should be a string!")
 
         if not isinstance(self.outputnamestring, str):
-            raise RuntimeError("pyissm.param.regionaloutput.check_consistency: 'outputnamestring' field should be a string!")
+            raise RuntimeError("pyissm.model.classes.regionaloutput.check_consistency: 'outputnamestring' field should be a string!")
 
         if len(self.maskexpstring) > 0:
             if not os.path.isfile(self.maskexpstring):
-                raise RuntimeError("pyissm.param.regionaloutput.check_consistency: file name for mask exp does not point to a legitimate file on disk!")
+                raise RuntimeError("pyissm.model.classes.regionaloutput.check_consistency: file name for mask exp does not point to a legitimate file on disk!")
             else:
                 self.setmaskfromexp(md)
 
@@ -97,8 +97,8 @@ class regionaloutput(class_registry.manage_state):
             x = 'Outputdefinition' + str(i)
             OutputdefinitionStringArray.append(x)
 
-        param_utils.check_field(md, field = self.definitionstring, values = OutputdefinitionStringArray)
-        param_utils.check_field(md, field = self.mask, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, field = self.definitionstring, values = OutputdefinitionStringArray)
+        class_utils.check_field(md, field = self.mask, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         
         return md
     
@@ -122,8 +122,8 @@ class regionaloutput(class_registry.manage_state):
         """
 
         ## Create mask from exp
-        if utils.wrappers.check_wrappers_installed():
-            self.mask = utils.wrappers.ContourToMesh(index = md.mesh.elements,
+        if tools.wrappers.check_wrappers_installed():
+            self.mask = tools.wrappers.ContourToMesh(index = md.mesh.elements,
                                                     x = md.mesh.x,
                                                     y = md.mesh.y,
                                                     contour_name = self.maskexpstring,

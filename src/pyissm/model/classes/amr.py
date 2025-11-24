@@ -1,6 +1,6 @@
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class amr(class_registry.manage_state):
@@ -70,7 +70,7 @@ class amr(class_registry.manage_state):
 
     Examples
     -------
-    md.amr = pyissm.param.amr()
+    md.amr = pyissm.model.classes.amr()
     md.amr.hmin = 50
     md.amr.fieldname = 'Thickness'
     """ 
@@ -103,24 +103,24 @@ class amr(class_registry.manage_state):
     def __repr__(self):
         s = '   amr parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'hmin', 'minimum element length'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'hmax', 'maximum element length'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'fieldname', 'name of input that will be used to compute the metric (should be an input of FemModel)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'keepmetric', 'indicates whether the metric should be kept every remeshing time'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'gradation', 'maximum ratio between two adjacent edges'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'groundingline_resolution', 'element length near the grounding line'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'groundingline_distance', 'distance around the grounding line which elements will be refined'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'icefront_resolution', 'element length near the ice front'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'icefront_distance', 'distance around the ice front which elements will be refined'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'thicknesserror_resolution', 'element length when thickness error estimator is used'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'thicknesserror_threshold', 'maximum threshold thickness error permitted'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'thicknesserror_groupthreshold', 'maximum group threshold thickness error permitted'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'thicknesserror_maximum', 'maximum thickness error permitted'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'deviatoricerror_resolution', 'element length when deviatoric stress error estimator is used'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'deviatoricerror_threshold', 'maximum threshold deviatoricstress error permitted'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'deviatoricerror_groupthreshold', 'maximum group threshold deviatoric stress error permitted'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'deviatoricerror_maximum', 'maximum deviatoricstress error permitted'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'restart', 'indicates if ReMesh() will call before first time step'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'hmin', 'minimum element length'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'hmax', 'maximum element length'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'fieldname', 'name of input that will be used to compute the metric (should be an input of FemModel)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'keepmetric', 'indicates whether the metric should be kept every remeshing time'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'gradation', 'maximum ratio between two adjacent edges'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'groundingline_resolution', 'element length near the grounding line'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'groundingline_distance', 'distance around the grounding line which elements will be refined'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'icefront_resolution', 'element length near the ice front'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'icefront_distance', 'distance around the ice front which elements will be refined'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'thicknesserror_resolution', 'element length when thickness error estimator is used'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'thicknesserror_threshold', 'maximum threshold thickness error permitted'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'thicknesserror_groupthreshold', 'maximum group threshold thickness error permitted'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'thicknesserror_maximum', 'maximum thickness error permitted'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'deviatoricerror_resolution', 'element length when deviatoric stress error estimator is used'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'deviatoricerror_threshold', 'maximum threshold deviatoricstress error permitted'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'deviatoricerror_groupthreshold', 'maximum group threshold deviatoric stress error permitted'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'deviatoricerror_maximum', 'maximum deviatoricstress error permitted'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'restart', 'indicates if ReMesh() will call before first time step'))
         return s
 
     # Define class string
@@ -130,23 +130,23 @@ class amr(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        param_utils.check_field(md, fieldname = "amr.hmax", scalar = True, gt = 0, allow_nan = False)
-        param_utils.check_field(md, fieldname = "amr.hmin", scalar = True, gt = 0, lt = self.hmax, allow_nan = False)
-        param_utils.check_field(md, fieldname = "amr.keepmetric", scalar = True, ge = 0, le = 1, allow_nan = False)
-        param_utils.check_field(md, fieldname = "amr.gradation", scalar = True, ge = 1.1, le = 5, allow_nan = False)
-        param_utils.check_field(md, fieldname = "amr.groundingline_resolution", scalar = True, gt = 0, lt = self.hmax, allow_nan = False)
-        param_utils.check_field(md, fieldname = "amr.groundingline_distance", scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "amr.icefront_resolution", scalar = True, gt = 0, lt = self.hmax, allow_nan = False)
-        param_utils.check_field(md, fieldname = "amr.icefront_distance", scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "amr.thicknesserror_resolution", scalar = True, gt = 0, lt = self.hmax, allow_nan = False)
-        param_utils.check_field(md, fieldname = "amr.thicknesserror_threshold", scalar = True, ge = 0, le = 1, allow_nan = False)
-        param_utils.check_field(md, fieldname = "amr.thicknesserror_groupthreshold", scalar = True, ge = 0, le = 1, allow_nan = False)
-        param_utils.check_field(md, fieldname = "amr.thicknesserror_maximum", scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "amr.deviatoricerror_resolution", scalar = True, gt = 0, lt = self.hmax, allow_nan = False)
-        param_utils.check_field(md, fieldname = "amr.deviatoricerror_threshold", scalar = True, ge = 0, le = 1, allow_nan = False)
-        param_utils.check_field(md, fieldname = "amr.deviatoricerror_groupthreshold", scalar = True, ge = 0, le = 1, allow_nan = False)
-        param_utils.check_field(md, fieldname = "amr.deviatoricerror_maximum", scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = "amr.restart", scalar = True, ge = 0, le = 1, allow_nan = False)
+        class_utils.check_field(md, fieldname = "amr.hmax", scalar = True, gt = 0, allow_nan = False)
+        class_utils.check_field(md, fieldname = "amr.hmin", scalar = True, gt = 0, lt = self.hmax, allow_nan = False)
+        class_utils.check_field(md, fieldname = "amr.keepmetric", scalar = True, ge = 0, le = 1, allow_nan = False)
+        class_utils.check_field(md, fieldname = "amr.gradation", scalar = True, ge = 1.1, le = 5, allow_nan = False)
+        class_utils.check_field(md, fieldname = "amr.groundingline_resolution", scalar = True, gt = 0, lt = self.hmax, allow_nan = False)
+        class_utils.check_field(md, fieldname = "amr.groundingline_distance", scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "amr.icefront_resolution", scalar = True, gt = 0, lt = self.hmax, allow_nan = False)
+        class_utils.check_field(md, fieldname = "amr.icefront_distance", scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "amr.thicknesserror_resolution", scalar = True, gt = 0, lt = self.hmax, allow_nan = False)
+        class_utils.check_field(md, fieldname = "amr.thicknesserror_threshold", scalar = True, ge = 0, le = 1, allow_nan = False)
+        class_utils.check_field(md, fieldname = "amr.thicknesserror_groupthreshold", scalar = True, ge = 0, le = 1, allow_nan = False)
+        class_utils.check_field(md, fieldname = "amr.thicknesserror_maximum", scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "amr.deviatoricerror_resolution", scalar = True, gt = 0, lt = self.hmax, allow_nan = False)
+        class_utils.check_field(md, fieldname = "amr.deviatoricerror_threshold", scalar = True, ge = 0, le = 1, allow_nan = False)
+        class_utils.check_field(md, fieldname = "amr.deviatoricerror_groupthreshold", scalar = True, ge = 0, le = 1, allow_nan = False)
+        class_utils.check_field(md, fieldname = "amr.deviatoricerror_maximum", scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "amr.restart", scalar = True, ge = 0, le = 1, allow_nan = False)
 
         return md
 

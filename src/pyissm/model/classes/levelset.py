@@ -1,7 +1,7 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class levelset(class_registry.manage_state):
@@ -45,7 +45,7 @@ class levelset(class_registry.manage_state):
 
     Examples
     --------
-    md.levelset = pyissm.param.levelset()
+    md.levelset = pyissm.model.classes.levelset()
     md.levelset.stabilization = 5
     md.levelset.reinit_frequency = 5
     md.levelset.kill_icebergs = 0
@@ -68,15 +68,15 @@ class levelset(class_registry.manage_state):
     def __repr__(self):
         s = '   Level-set parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'stabilization', '0: No Stabilization - No stabilization techniques applied.'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'stabilization', '0: No Stabilization - No stabilization techniques applied.'))
         s += '{}\n'.format('                             1: Artificial Diffusivity - Most stable, but least accurate.')
         s += '{}\n'.format('                             2: Streamline Upwinding')
         s += '{}\n'.format('                             5: SUPG - Most accurate, but may be unstable in some applications.')
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'spclevelset', 'Levelset constraints (NaN means no constraint)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'reinit_frequency', 'Amount of time steps after which the levelset function in re-initialized'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'kill_icebergs', 'remove floating icebergs to prevent rigid body motions (1: true, 0: false)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'migration_max', 'maximum allowed migration rate (m/a)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'fe', 'Finite Element type: \'P1\' (default), or \'P2\''))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'spclevelset', 'Levelset constraints (NaN means no constraint)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'reinit_frequency', 'Amount of time steps after which the levelset function in re-initialized'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'kill_icebergs', 'remove floating icebergs to prevent rigid body motions (1: true, 0: false)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'migration_max', 'maximum allowed migration rate (m/a)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'fe', 'Finite Element type: \'P1\' (default), or \'P2\''))
         return s
 
     # Define class string
@@ -90,11 +90,11 @@ class levelset(class_registry.manage_state):
         if (solution != 'TransientSolution') or (not md.transient.ismovingfront):
             return md
 
-        param_utils.check_field(md, fieldname = 'levelset.spclevelset', timeseries = True, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'levelset.stabilization', scalar = True, values = [0, 1, 2, 5, 6])
-        param_utils.check_field(md, fieldname = 'levelset.kill_icebergs', scalar = True, values = [0, 1])
-        param_utils.check_field(md, fieldname = 'levelset.migration_max', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'levelset.fe', values = ['P1', 'P2'])
+        class_utils.check_field(md, fieldname = 'levelset.spclevelset', timeseries = True, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'levelset.stabilization', scalar = True, values = [0, 1, 2, 5, 6])
+        class_utils.check_field(md, fieldname = 'levelset.kill_icebergs', scalar = True, values = [0, 1])
+        class_utils.check_field(md, fieldname = 'levelset.migration_max', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'levelset.fe', values = ['P1', 'P2'])
 
         return md
 

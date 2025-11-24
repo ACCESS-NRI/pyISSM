@@ -1,7 +1,7 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class mask(class_registry.manage_state):
@@ -37,7 +37,7 @@ class mask(class_registry.manage_state):
 
     Examples
     --------
-    md.mask = pyissm.param.mask()
+    md.mask = pyissm.model.classes.mask()
     md.mask.ice_levelset = ice_levelset_field
     md.mask.ocean_levelset = ocean_levelset_field
     """
@@ -53,8 +53,8 @@ class mask(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   mask parameters:\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'ice_levelset', 'presence of ice if < 0, icefront position if = 0, no ice if > 0'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'ocean_levelset', 'presence of ocean if < 0, coastline/grounding line if = 0, no ocean if > 0'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'ice_levelset', 'presence of ice if < 0, icefront position if = 0, no ice if > 0'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'ocean_levelset', 'presence of ocean if < 0, coastline/grounding line if = 0, no ocean if > 0'))
         return s
 
     # Define class string
@@ -68,10 +68,10 @@ class mask(class_registry.manage_state):
         if solution == 'LoveSolution':
             return md
 
-        param_utils.check_field(md, fieldname = 'mask.ice_levelset', size = (md.mesh.numberofvertices, ))
+        class_utils.check_field(md, fieldname = 'mask.ice_levelset', size = (md.mesh.numberofvertices, ))
         is_ice = np.array(md.mask.ice_levelset <= 0, int)
         if np.sum(is_ice) == 0:
-            raise ValueError('pyissm.param.mask.check_consistency: mask.ice_levelset does not contain any ice (all values > 0)')
+            raise ValueError('pyissm.model.classes.mask.check_consistency: mask.ice_levelset does not contain any ice (all values > 0)')
 
         return md
 

@@ -1,9 +1,9 @@
 import numpy as np
 import warnings
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
-from pyissm import utils
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
+from pyissm import tools
 
 ## ------------------------------------------------------
 ## inversion.default
@@ -72,7 +72,7 @@ class default(class_registry.manage_state):
 
     Examples
     --------
-    md.inversion = pyissm.param.inversion.default()
+    md.inversion = pyissm.model.classes.inversion.default()
     """
 
     # Initialise with default parameters
@@ -103,23 +103,23 @@ class default(class_registry.manage_state):
     def __repr__(self):
         s = '   inversion parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'iscontrol', 'is inversion activated?'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'incomplete_adjoint', '1: linear viscosity, 0: non - linear viscosity'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'control_parameters', 'ex: {''FrictionCoefficient''}, or {''MaterialsRheologyBbar''}'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'nsteps', 'number of optimization searches'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'cost_functions', 'indicate the type of response for each optimization step'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'cost_functions_coefficients', 'cost_functions_coefficients applied to the misfit of each vertex and for each control_parameter'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'cost_function_threshold', 'misfit convergence criterion. Default is 1%, NaN if not applied'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'maxiter_per_step', 'maximum iterations during each optimization step'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'gradient_scaling', 'scaling factor on gradient direction during optimization, for each optimization step'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'step_threshold', 'decrease threshold for misfit, default is 30%'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'min_parameters', 'absolute minimum acceptable value of the inversed parameter on each vertex'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'max_parameters', 'absolute maximum acceptable value of the inversed parameter on each vertex'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'vx_obs', 'observed velocity x component [m/yr]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'vy_obs', 'observed velocity y component [m/yr]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'vel_obs', 'observed velocity magnitude [m/yr]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'thickness_obs', 'observed thickness [m]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'surface_obs', 'observed surface elevation [m]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'iscontrol', 'is inversion activated?'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'incomplete_adjoint', '1: linear viscosity, 0: non - linear viscosity'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'control_parameters', 'ex: {''FrictionCoefficient''}, or {''MaterialsRheologyBbar''}'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'nsteps', 'number of optimization searches'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'cost_functions', 'indicate the type of response for each optimization step'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'cost_functions_coefficients', 'cost_functions_coefficients applied to the misfit of each vertex and for each control_parameter'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'cost_function_threshold', 'misfit convergence criterion. Default is 1%, NaN if not applied'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'maxiter_per_step', 'maximum iterations during each optimization step'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'gradient_scaling', 'scaling factor on gradient direction during optimization, for each optimization step'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'step_threshold', 'decrease threshold for misfit, default is 30%'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'min_parameters', 'absolute minimum acceptable value of the inversed parameter on each vertex'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'max_parameters', 'absolute maximum acceptable value of the inversed parameter on each vertex'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'vx_obs', 'observed velocity x component [m/yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'vy_obs', 'observed velocity y component [m/yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'vel_obs', 'observed velocity magnitude [m/yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'thickness_obs', 'observed thickness [m]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'surface_obs', 'observed surface elevation [m]'))
         s += '{}\n'.format('Available cost functions:')
         s += '{}\n'.format('   101: SurfaceAbsVelMisfit')
         s += '{}\n'.format('   102: SurfaceRelVelMisfit')
@@ -138,7 +138,7 @@ class default(class_registry.manage_state):
         return s
 
     # Check model consistency
-    def check_consistency(self, md, solution, analyses):  # {{{
+    def check_consistency(self, md, solution, analyses):
         # Early return if inversion disabled
         if not self.iscontrol:
             return md
@@ -146,30 +146,30 @@ class default(class_registry.manage_state):
         num_controls = np.size(md.inversion.control_parameters)
         num_costfunc = np.size(md.inversion.cost_functions)
 
-        param_utils.check_field(md, fieldname = 'inversion.iscontrol', values = [0, 1])
-        param_utils.check_field(md, fieldname = 'inversion.incomplete_adjoint', values = [0, 1])
-        param_utils.check_field(md, fieldname = 'inversion.control_parameters', cell = True, values = param_utils.supported_inversion_control_parameters())
-        param_utils.check_field(md, fieldname = 'inversion.nsteps', scalar = True, ge = 0)
-        param_utils.check_field(md, fieldname = 'inversion.maxiter_per_step', size = (md.inversion.nsteps, 1), ge = 0)
-        param_utils.check_field(md, fieldname = 'inversion.step_threshold', size = (md.inversion.nsteps, ))
-        param_utils.check_field(md, fieldname = 'inversion.cost_functions', size = (num_costfunc, ), values = param_utils.supported_inversion_cost_functions())
+        class_utils.check_field(md, fieldname = 'inversion.iscontrol', values = [0, 1])
+        class_utils.check_field(md, fieldname = 'inversion.incomplete_adjoint', values = [0, 1])
+        class_utils.check_field(md, fieldname = 'inversion.control_parameters', cell = True, values = class_utils.supported_inversion_control_parameters())
+        class_utils.check_field(md, fieldname = 'inversion.nsteps', scalar = True, ge = 0)
+        class_utils.check_field(md, fieldname = 'inversion.maxiter_per_step', size = (md.inversion.nsteps, ), ge = 0)
+        class_utils.check_field(md, fieldname = 'inversion.step_threshold', size = (md.inversion.nsteps, ))
+        class_utils.check_field(md, fieldname = 'inversion.cost_functions', size = (num_costfunc, ), values = class_utils.supported_inversion_cost_functions())
         if num_costfunc == 1:
             md.inversion.cost_functions_coefficients = np.squeeze(md.inversion.cost_functions_coefficients)
-            param_utils.check_field(md, fieldname = 'inversion.cost_functions_coefficients', size = (md.mesh.numberofvertices, ), ge = 0)
+            class_utils.check_field(md, fieldname = 'inversion.cost_functions_coefficients', size = (md.mesh.numberofvertices, ), ge = 0)
         else:
-            param_utils.check_field(md, fieldname = 'inversion.cost_functions_coefficients', size = (md.mesh.numberofvertices, num_costfunc), ge = 0)
+            class_utils.check_field(md, fieldname = 'inversion.cost_functions_coefficients', size = (md.mesh.numberofvertices, num_costfunc), ge = 0)
 
         if num_controls == 1:
             md.inversion.gradient_scaling = np.squeeze(md.inversion.gradient_scaling)
             md.inversion.min_parameters = np.squeeze(md.inversion.min_parameters)
             md.inversion.max_parameters = np.squeeze(md.inversion.max_parameters)
-            param_utils.check_field(md, fieldname = 'inversion.gradient_scaling', size = (md.inversion.nsteps, ))
-            param_utils.check_field(md, fieldname = 'inversion.min_parameters', size = (md.mesh.numberofvertices, ))
-            param_utils.check_field(md, fieldname = 'inversion.max_parameters', size = (md.mesh.numberofvertices, ))
+            class_utils.check_field(md, fieldname = 'inversion.gradient_scaling', size = (md.inversion.nsteps, ))
+            class_utils.check_field(md, fieldname = 'inversion.min_parameters', size = (md.mesh.numberofvertices, ))
+            class_utils.check_field(md, fieldname = 'inversion.max_parameters', size = (md.mesh.numberofvertices, ))
         else:
-            param_utils.check_field(md, fieldname = 'inversion.gradient_scaling', size = (md.inversion.nsteps, num_controls))
-            param_utils.check_field(md, fieldname = 'inversion.min_parameters', size = (md.mesh.numberofvertices, num_controls))
-            param_utils.check_field(md, fieldname = 'inversion.max_parameters', size = (md.mesh.numberofvertices, num_controls))
+            class_utils.check_field(md, fieldname = 'inversion.gradient_scaling', size = (md.inversion.nsteps, num_controls))
+            class_utils.check_field(md, fieldname = 'inversion.min_parameters', size = (md.mesh.numberofvertices, num_controls))
+            class_utils.check_field(md, fieldname = 'inversion.max_parameters', size = (md.mesh.numberofvertices, num_controls))
 
         # Only SSA, MMOLHO, L1L2, HO and FS are supported right now
         if solution == 'StressbalanceSolution':
@@ -178,12 +178,12 @@ class default(class_registry.manage_state):
         
         # Balancethicknesssolution
         if solution == 'BalancethicknessSolution':
-            param_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         elif solution == 'BalancethicknessSoftSolution':
-            param_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         else:
-            param_utils.check_field(md, fieldname = 'inversion.vx_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-            param_utils.check_field(md, fieldname = 'inversion.vy_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'inversion.vx_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'inversion.vy_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         return md
     
     # Marshall method for saving the inversion.default parameters
@@ -235,7 +235,7 @@ class default(class_registry.manage_state):
             execute.WriteData(fid, prefix, obj = self, fieldname = 'maxiter_per_step', format = 'IntMat', mattype = 3)
             execute.WriteData(fid, prefix, obj = self, fieldname = 'control_parameters', format = 'StringArray')
             execute.WriteData(fid, prefix, name = 'md.inversion.num_control_parameters', data = len(self.control_parameters), format = 'Integer')
-            execute.WriteData(fid, prefix, name = 'md.inversion.cost_functions', data = param_utils.marshall_inversion_cost_functions(self.cost_functions), format = 'StringArray')
+            execute.WriteData(fid, prefix, name = 'md.inversion.cost_functions', data = class_utils.marshall_inversion_cost_functions(self.cost_functions), format = 'StringArray')
             execute.WriteData(fid, prefix, name = 'md.inversion.num_cost_functions', data = np.size(self.cost_functions), format = 'Integer')
 
 
@@ -308,7 +308,7 @@ class m1qn3(class_registry.manage_state):
 
     Examples
     --------
-    md.inversion = pyissm.param.inversion.m1qn3()
+    md.inversion = pyissm.model.classes.inversion.m1qn3()
     """
 
     # Initialise with default parameters
@@ -339,23 +339,23 @@ class m1qn3(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   m1qn3 inversion parameters:\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'iscontrol', 'is inversion activated?'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'incomplete_adjoint', '1: linear viscosity, 0: non - linear viscosity'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'control_parameters', 'ex: [''FrictionCoefficient''], or [''MaterialsRheologyBbar'']'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'control_scaling_factors', 'order of magnitude of each control (useful for multi - parameter optimization)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'maxsteps', 'maximum number of iterations (gradient computation)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'maxiter', 'maximum number of Function evaluation (forward run)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'dxmin', 'convergence criterion: two points less than dxmin from eachother (sup - norm) are considered identical'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'dfmin_frac', 'expected reduction of J during the first step (e.g., 0.3=30% reduction in cost function)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'gttol', '||g(X)||/||g(X0)|| (g(X0): gradient at initial guess X0)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'cost_functions', 'indicate the type of response for each optimization step'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'cost_functions_coefficients', 'cost_functions_coefficients applied to the misfit of each vertex and for each control_parameter'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'min_parameters', 'absolute minimum acceptable value of the inversed parameter on each vertex'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'max_parameters', 'absolute maximum acceptable value of the inversed parameter on each vertex'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'vx_obs', 'observed velocity x component [m / yr]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'vy_obs', 'observed velocity y component [m / yr]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'vel_obs', 'observed velocity magnitude [m / yr]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'thickness_obs', 'observed thickness [m]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'iscontrol', 'is inversion activated?'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'incomplete_adjoint', '1: linear viscosity, 0: non - linear viscosity'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'control_parameters', 'ex: [''FrictionCoefficient''], or [''MaterialsRheologyBbar'']'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'control_scaling_factors', 'order of magnitude of each control (useful for multi - parameter optimization)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'maxsteps', 'maximum number of iterations (gradient computation)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'maxiter', 'maximum number of Function evaluation (forward run)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'dxmin', 'convergence criterion: two points less than dxmin from eachother (sup - norm) are considered identical'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'dfmin_frac', 'expected reduction of J during the first step (e.g., 0.3=30% reduction in cost function)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'gttol', '||g(X)||/||g(X0)|| (g(X0): gradient at initial guess X0)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'cost_functions', 'indicate the type of response for each optimization step'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'cost_functions_coefficients', 'cost_functions_coefficients applied to the misfit of each vertex and for each control_parameter'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'min_parameters', 'absolute minimum acceptable value of the inversed parameter on each vertex'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'max_parameters', 'absolute maximum acceptable value of the inversed parameter on each vertex'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'vx_obs', 'observed velocity x component [m / yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'vy_obs', 'observed velocity y component [m / yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'vel_obs', 'observed velocity magnitude [m / yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'thickness_obs', 'observed thickness [m]'))
         s += '{}\n'.format('Available cost functions:')
         s += '{}\n'.format('   101: SurfaceAbsVelMisfit')
         s += '{}\n'.format('   102: SurfaceRelVelMisfit')
@@ -382,27 +382,27 @@ class m1qn3(class_registry.manage_state):
         num_controls = np.size(md.inversion.control_parameters)
         num_costfunc = np.size(md.inversion.cost_functions)
 
-        param_utils.check_field(md, fieldname = 'inversion.iscontrol', values = [0, 1])
-        param_utils.check_field(md, fieldname = 'inversion.incomplete_adjoint', values = [0, 1])
-        param_utils.check_field(md, fieldname = 'inversion.control_parameters', cell = True, values = param_utils.supported_inversion_control_parameters())
-        param_utils.check_field(md, fieldname = 'inversion.control_scaling_factors', size = (num_controls, ), gt = 0, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'inversion.maxsteps', scalar = True, ge = 0)
-        param_utils.check_field(md, fieldname = 'inversion.maxiter', scalar = True, ge = 0)
-        param_utils.check_field(md, fieldname = 'inversion.dxmin', scalar = True, gt = 0.)
-        param_utils.check_field(md, fieldname = 'inversion.dfmin_frac', scalar = True, ge = 0., le = 1.)
-        param_utils.check_field(md, fieldname = 'inversion.gttol', scalar = True, gt = 0.)
-        param_utils.check_field(md, fieldname = 'inversion.cost_functions', size = (num_costfunc, 1), values = param_utils.supported_inversion_cost_functions())
-        param_utils.check_field(md, fieldname = 'inversion.cost_functions_coefficients', size = (md.mesh.numberofvertices, num_costfunc), ge = 0)
-        param_utils.check_field(md, fieldname = 'inversion.min_parameters', size = (md.mesh.numberofvertices, num_controls))
-        param_utils.check_field(md, fieldname = 'inversion.max_parameters', size = (md.mesh.numberofvertices, num_controls))
+        class_utils.check_field(md, fieldname = 'inversion.iscontrol', values = [0, 1])
+        class_utils.check_field(md, fieldname = 'inversion.incomplete_adjoint', values = [0, 1])
+        class_utils.check_field(md, fieldname = 'inversion.control_parameters', cell = True, values = class_utils.supported_inversion_control_parameters())
+        class_utils.check_field(md, fieldname = 'inversion.control_scaling_factors', size = (num_controls, ), gt = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'inversion.maxsteps', scalar = True, ge = 0)
+        class_utils.check_field(md, fieldname = 'inversion.maxiter', scalar = True, ge = 0)
+        class_utils.check_field(md, fieldname = 'inversion.dxmin', scalar = True, gt = 0.)
+        class_utils.check_field(md, fieldname = 'inversion.dfmin_frac', scalar = True, ge = 0., le = 1.)
+        class_utils.check_field(md, fieldname = 'inversion.gttol', scalar = True, gt = 0.)
+        class_utils.check_field(md, fieldname = 'inversion.cost_functions', size = (num_costfunc, 1), values = class_utils.supported_inversion_cost_functions())
+        class_utils.check_field(md, fieldname = 'inversion.cost_functions_coefficients', size = (md.mesh.numberofvertices, num_costfunc), ge = 0)
+        class_utils.check_field(md, fieldname = 'inversion.min_parameters', size = (md.mesh.numberofvertices, num_controls))
+        class_utils.check_field(md, fieldname = 'inversion.max_parameters', size = (md.mesh.numberofvertices, num_controls))
 
         if solution == 'BalancethicknessSolution':
-            param_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         elif solution == 'BalancethicknessSoftSolution':
-            param_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         else:
-            param_utils.check_field(md, fieldname = 'inversion.vx_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-            param_utils.check_field(md, fieldname = 'inversion.vy_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'inversion.vx_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'inversion.vy_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         
         return md
 
@@ -455,7 +455,7 @@ class m1qn3(class_registry.manage_state):
             execute.WriteData(fid, prefix, obj = self, fieldname = 'gttol', format = 'Double')
             execute.WriteData(fid, prefix, obj = self, fieldname = 'control_parameters', format = 'StringArray')
             execute.WriteData(fid, prefix, name = 'md.inversion.num_control_parameters', data = len(self.control_parameters), format = 'Integer')
-            execute.WriteData(fid, prefix, name = 'md.inversion.cost_functions', data = param_utils.marshall_inversion_cost_functions(self.cost_functions), format = 'StringArray')
+            execute.WriteData(fid, prefix, name = 'md.inversion.cost_functions', data = class_utils.marshall_inversion_cost_functions(self.cost_functions), format = 'StringArray')
             execute.WriteData(fid, prefix, name = 'md.inversion.num_cost_functions', data = np.size(self.cost_functions), format = 'Integer')
 
 ## ------------------------------------------------------
@@ -531,7 +531,7 @@ class tao(class_registry.manage_state):
 
     Examples
     --------
-    md.inversion = pyissm.param.inversion.tao()
+    md.inversion = pyissm.model.classes.inversion.tao()
     """
 
     # Initialise with default parameters
@@ -565,26 +565,26 @@ class tao(class_registry.manage_state):
     def __repr__(self):
         s = '   taoinversion parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'iscontrol', 'is inversion activated?'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'incomplete_adjoint', '1: linear viscosity, 0: non - linear viscosity'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'control_parameters', 'ex: {''FrictionCoefficient''}, or {''MaterialsRheologyBbar''}'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'maxsteps', 'maximum number of iterations (gradient computation)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'maxiter', 'maximum number of Function evaluation (forward run)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'fatol', 'convergence criterion: f(X) - f(X * ) (X: current iteration, X * : "true" solution, f: cost function)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'frtol', 'convergence criterion: |f(X) - f(X * )| / |f(X * )|'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'gatol', 'convergence criterion: ||g(X)|| (g: gradient of the cost function)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'grtol', 'convergence criterion: ||g(X)|| / |f(X)|'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'gttol', 'convergence criterion: ||g(X)|| / ||g(X0)|| (g(X0): gradient at initial guess X0)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'algorithm', 'minimization algorithm: ''tao_blmvm'', ''tao_cg'', ''tao_lmvm'''))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'cost_functions', 'indicate the type of response for each optimization step'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'cost_functions_coefficients', 'cost_functions_coefficients applied to the misfit of each vertex and for each control_parameter'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'min_parameters', 'absolute minimum acceptable value of the inversed parameter on each vertex'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'max_parameters', 'absolute maximum acceptable value of the inversed parameter on each vertex'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'vx_obs', 'observed velocity x component [m / yr]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'vy_obs', 'observed velocity y component [m / yr]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'vel_obs', 'observed velocity magnitude [m / yr]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'thickness_obs', 'observed thickness [m]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'surface_obs', 'observed surface elevation [m]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'iscontrol', 'is inversion activated?'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'incomplete_adjoint', '1: linear viscosity, 0: non - linear viscosity'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'control_parameters', 'ex: {''FrictionCoefficient''}, or {''MaterialsRheologyBbar''}'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'maxsteps', 'maximum number of iterations (gradient computation)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'maxiter', 'maximum number of Function evaluation (forward run)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'fatol', 'convergence criterion: f(X) - f(X * ) (X: current iteration, X * : "true" solution, f: cost function)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'frtol', 'convergence criterion: |f(X) - f(X * )| / |f(X * )|'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'gatol', 'convergence criterion: ||g(X)|| (g: gradient of the cost function)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'grtol', 'convergence criterion: ||g(X)|| / |f(X)|'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'gttol', 'convergence criterion: ||g(X)|| / ||g(X0)|| (g(X0): gradient at initial guess X0)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'algorithm', 'minimization algorithm: ''tao_blmvm'', ''tao_cg'', ''tao_lmvm'''))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'cost_functions', 'indicate the type of response for each optimization step'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'cost_functions_coefficients', 'cost_functions_coefficients applied to the misfit of each vertex and for each control_parameter'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'min_parameters', 'absolute minimum acceptable value of the inversed parameter on each vertex'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'max_parameters', 'absolute maximum acceptable value of the inversed parameter on each vertex'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'vx_obs', 'observed velocity x component [m / yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'vy_obs', 'observed velocity y component [m / yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'vel_obs', 'observed velocity magnitude [m / yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'thickness_obs', 'observed thickness [m]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'surface_obs', 'observed surface elevation [m]'))
         s += '{}\n'.format('Available cost functions:')
         s += '{}\n'.format('   101: SurfaceAbsVelMisfit')
         s += '{}\n'.format('   102: SurfaceRelVelMisfit')
@@ -609,50 +609,50 @@ class tao(class_registry.manage_state):
         if not self.iscontrol:
             return md
         
-        if utils.wrappers.check_wrappers_installed():                
-            if not utils.wrappers.IssmConfig('_HAVE_TAO_')[0]:
+        if tools.wrappers.check_wrappers_installed():                
+            if not tools.wrappers.IssmConfig('_HAVE_TAO_')[0]:
                 md = md.checkmessage('TAO has not been installed, ISSM needs to be reconfigured and recompiled with TAO')
         else:
-            warnings.warn('pyissm.param.inversion.tao.check_consistency: Python wrappers not installed. Unable to check for TAO installation.\n'
+            warnings.warn('pyissm.model.classes.inversion.tao.check_consistency: Python wrappers not installed. Unable to check for TAO installation.\n'
                           'Proceeding without TAO installation check.')
             
         num_controls = np.size(md.inversion.control_parameters)
         num_costfunc = np.size(md.inversion.cost_functions)
 
-        param_utils.check_field(md, fieldname = 'inversion.iscontrol', values = [0, 1])
-        param_utils.check_field(md, fieldname = 'inversion.incomplete_adjoint', values = [0, 1])
-        param_utils.check_field(md, fieldname = 'inversion.control_parameters', cell = True, values = param_utils.supported_inversion_control_parameters())
-        param_utils.check_field(md, fieldname = 'inversion.maxsteps', scalar = True, ge = 0)
-        param_utils.check_field(md, fieldname = 'inversion.maxiter', scalar = True, ge = 0)
-        param_utils.check_field(md, fieldname = 'inversion.fatol', scalar = True, ge = 0)
-        param_utils.check_field(md, fieldname = 'inversion.frtol', scalar = True, ge = 0)
-        param_utils.check_field(md, fieldname = 'inversion.gatol', scalar = True, ge = 0)
-        param_utils.check_field(md, fieldname = 'inversion.grtol', scalar = True, ge = 0)
-        param_utils.check_field(md, fieldname = 'inversion.gttol', scalar = True, ge = 0)
+        class_utils.check_field(md, fieldname = 'inversion.iscontrol', values = [0, 1])
+        class_utils.check_field(md, fieldname = 'inversion.incomplete_adjoint', values = [0, 1])
+        class_utils.check_field(md, fieldname = 'inversion.control_parameters', cell = True, values = class_utils.supported_inversion_control_parameters())
+        class_utils.check_field(md, fieldname = 'inversion.maxsteps', scalar = True, ge = 0)
+        class_utils.check_field(md, fieldname = 'inversion.maxiter', scalar = True, ge = 0)
+        class_utils.check_field(md, fieldname = 'inversion.fatol', scalar = True, ge = 0)
+        class_utils.check_field(md, fieldname = 'inversion.frtol', scalar = True, ge = 0)
+        class_utils.check_field(md, fieldname = 'inversion.gatol', scalar = True, ge = 0)
+        class_utils.check_field(md, fieldname = 'inversion.grtol', scalar = True, ge = 0)
+        class_utils.check_field(md, fieldname = 'inversion.gttol', scalar = True, ge = 0)
 
-        if utils.wrappers.check_wrappers_installed():
-            PETSCMAJOR = utils.wrappers.IssmConfig('_PETSC_MAJOR_')[0]
-            PETSCMINOR = utils.wrappers.IssmConfig('_PETSC_MINOR_')[0]
+        if tools.wrappers.check_wrappers_installed():
+            PETSCMAJOR = tools.wrappers.IssmConfig('_PETSC_MAJOR_')[0]
+            PETSCMINOR = tools.wrappers.IssmConfig('_PETSC_MINOR_')[0]
             if(PETSCMAJOR > 3 or (PETSCMAJOR == 3 and PETSCMINOR >= 5)):
-                param_utils.check_field(md, fieldname = 'inversion.algorithm', values = ['blmvm', 'cg', 'lmvm'])
+                class_utils.check_field(md, fieldname = 'inversion.algorithm', values = ['blmvm', 'cg', 'lmvm'])
             else:
-                param_utils.check_field(md, fieldname = 'inversion.algorithm', values = ['tao_blmvm', 'tao_cg', 'tao_lmvm'])
+                class_utils.check_field(md, fieldname = 'inversion.algorithm', values = ['tao_blmvm', 'tao_cg', 'tao_lmvm'])
         else:
-            warnings.warn('pyissm.param.inversion.tao.check_consistency: Python wrappers not installed. Unable to check PETSc version for algorithm validation.\n'
+            warnings.warn('pyissm.model.classes.inversion.tao.check_consistency: Python wrappers not installed. Unable to check PETSc version for algorithm validation.\n'
                           'Proceeding without algorithm validation.')
 
-        param_utils.check_field(md, fieldname = 'inversion.cost_functions', size = (num_costfunc, ), values = param_utils.supported_inversion_cost_functions())
-        param_utils.check_field(md, fieldname = 'inversion.cost_functions_coefficients', size = (md.mesh.numberofvertices, num_costfunc), ge = 0)
-        param_utils.check_field(md, fieldname = 'inversion.min_parameters', size = (md.mesh.numberofvertices, num_controls))
-        param_utils.check_field(md, fieldname = 'inversion.max_parameters', size = (md.mesh.numberofvertices, num_controls))
+        class_utils.check_field(md, fieldname = 'inversion.cost_functions', size = (num_costfunc, ), values = class_utils.supported_inversion_cost_functions())
+        class_utils.check_field(md, fieldname = 'inversion.cost_functions_coefficients', size = (md.mesh.numberofvertices, num_costfunc), ge = 0)
+        class_utils.check_field(md, fieldname = 'inversion.min_parameters', size = (md.mesh.numberofvertices, num_controls))
+        class_utils.check_field(md, fieldname = 'inversion.max_parameters', size = (md.mesh.numberofvertices, num_controls))
 
         if solution == 'BalancethicknessSolution':
-            param_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         elif solution == 'BalancethicknessSoftSolution':
-            param_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         else:
-            param_utils.check_field(md, fieldname = 'inversion.vx_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-            param_utils.check_field(md, fieldname = 'inversion.vy_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'inversion.vx_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'inversion.vy_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
 
         return md
     
@@ -660,9 +660,9 @@ class tao(class_registry.manage_state):
     def _get_algorithm(self):
 
         ## If python wrappers are installed, check PETSc version
-        if utils.wrappers.check_wrappers_installed():
-            petsc_major = utils.wrappers.IssmConfig('_PETSC_MAJOR_')[0]
-            petsc_minor = utils.wrappers.IssmConfig('_PETSC_MINOR_')[0]
+        if tools.wrappers.check_wrappers_installed():
+            petsc_major = tools.wrappers.IssmConfig('_PETSC_MAJOR_')[0]
+            petsc_minor = tools.wrappers.IssmConfig('_PETSC_MINOR_')[0]
 
             if petsc_major > 3 or (petsc_major == 3 and petsc_minor >= 5):
                 algorithm = 'blmvm'
@@ -670,7 +670,7 @@ class tao(class_registry.manage_state):
                 algorithm = 'tao_blmvm'
         else:
             ## If python wrappers are not installed, return empty string and let ISSM decide
-            warnings.warn('pyissm.param.inversion.tao: Python wrappers not installed. Unable to automatically determine algorithm.\n'
+            warnings.warn('pyissm.model.classes.inversion.tao: Python wrappers not installed. Unable to automatically determine algorithm.\n'
                           'Returning empty algorithm to be defined manually.')
             algorithm = ''
         
@@ -727,5 +727,5 @@ class tao(class_registry.manage_state):
             execute.WriteData(fid, prefix, obj = self, fieldname = 'algorithm', format = 'String')
             execute.WriteData(fid, prefix, obj = self, fieldname = 'control_parameters', format = 'StringArray')
             execute.WriteData(fid, prefix, name = 'md.inversion.num_control_parameters', data = len(self.control_parameters), format = 'Integer')
-            execute.WriteData(fid, prefix, name = 'md.inversion.cost_functions', data = param_utils.marshall_inversion_cost_functions(self.cost_functions), format = 'StringArray')
+            execute.WriteData(fid, prefix, name = 'md.inversion.cost_functions', data = class_utils.marshall_inversion_cost_functions(self.cost_functions), format = 'StringArray')
             execute.WriteData(fid, prefix, name = 'md.inversion.num_cost_functions', data = np.size(self.cost_functions), format = 'Integer')

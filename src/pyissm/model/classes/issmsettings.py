@@ -1,6 +1,6 @@
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class issmsettings(class_registry.manage_state):
@@ -48,7 +48,7 @@ class issmsettings(class_registry.manage_state):
 
     Examples
     --------
-    md.settings = pyissm.param.issmsettings()
+    md.settings = pyissm.model.classes.issmsettings()
     md.settings.output_frequency = 5
     md.settings.lowmem = 1
     md.settings.results_on_nodes = ['Vel', 'Thickness']
@@ -72,14 +72,14 @@ class issmsettings(class_registry.manage_state):
     def __repr__(self):
         s = '   general issmsettings parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'results_on_nodes', "list of output for which results will be output for all the nodes of each element, Use 'all' for all output on nodes."))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'io_gather', 'I / O gathering strategy for result outputs (default 1)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'lowmem', 'is the memory limited ? (0 or 1)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'output_frequency', 'number of time steps between two saves (e.g., 5 means that results are only saved every 5 time steps)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'sb_coupling_frequency', 'frequency at which StressBalance solver is coupled (default 1)'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'checkpoint_frequency', 'frequency at which the runs are being recorded, allowing for a restart'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'waitonlock', 'maximum number of minutes to wait for batch results, or return 0'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'solver_residue_threshold', 'throw an error if solver residue exceeds this value (NaN to deactivate)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'results_on_nodes', "list of output for which results will be output for all the nodes of each element, Use 'all' for all output on nodes."))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'io_gather', 'I / O gathering strategy for result outputs (default 1)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'lowmem', 'is the memory limited ? (0 or 1)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'output_frequency', 'number of time steps between two saves (e.g., 5 means that results are only saved every 5 time steps)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'sb_coupling_frequency', 'frequency at which StressBalance solver is coupled (default 1)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'checkpoint_frequency', 'frequency at which the runs are being recorded, allowing for a restart'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'waitonlock', 'maximum number of minutes to wait for batch results, or return 0'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'solver_residue_threshold', 'throw an error if solver residue exceeds this value (NaN to deactivate)'))
         return s
 
     # Define class string
@@ -89,14 +89,14 @@ class issmsettings(class_registry.manage_state):
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        param_utils.check_field(md, fieldname = 'settings.results_on_nodes', string_list = True)
-        param_utils.check_field(md, fieldname = 'settings.io_gather', scalar = True, values = [0, 1])
-        param_utils.check_field(md, fieldname = 'settings.lowmem', scalar = True, values = [0, 1])
-        param_utils.check_field(md, fieldname = 'settings.output_frequency', scalar = True, ge = 1)
-        param_utils.check_field(md, fieldname = 'settings.sb_coupling_frequency', scalar = True, ge = 1)
-        param_utils.check_field(md, fieldname = 'settings.checkpoint_frequency', scalar = True, ge = 0)
-        param_utils.check_field(md, fieldname = 'settings.waitonlock', scalar = True)
-        param_utils.check_field(md, fieldname = 'settings.solver_residue_threshold', scalar = True, gt = 0)
+        class_utils.check_field(md, fieldname = 'settings.results_on_nodes', string_list = True)
+        class_utils.check_field(md, fieldname = 'settings.io_gather', scalar = True, values = [0, 1])
+        class_utils.check_field(md, fieldname = 'settings.lowmem', scalar = True, values = [0, 1])
+        class_utils.check_field(md, fieldname = 'settings.output_frequency', scalar = True, ge = 1)
+        class_utils.check_field(md, fieldname = 'settings.sb_coupling_frequency', scalar = True, ge = 1)
+        class_utils.check_field(md, fieldname = 'settings.checkpoint_frequency', scalar = True, ge = 0)
+        class_utils.check_field(md, fieldname = 'settings.waitonlock', scalar = True)
+        class_utils.check_field(md, fieldname = 'settings.solver_residue_threshold', scalar = True, gt = 0)
 
         return md
 

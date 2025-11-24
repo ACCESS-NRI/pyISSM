@@ -1,8 +1,8 @@
 import numpy as np
 import sys
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class stressbalance(class_registry.manage_state):
@@ -80,7 +80,7 @@ class stressbalance(class_registry.manage_state):
 
     Examples
     --------
-    md.stressbalance = pyissm.param.stressbalance()
+    md.stressbalance = pyissm.model.classes.stressbalance()
     md.stressbalance.restol = 1e-5
     md.stressbalance.isnewton = 1
     md.stressbalance.maxiter = 200
@@ -120,40 +120,40 @@ class stressbalance(class_registry.manage_state):
         s = '   StressBalance solution parameters:\n'
 
         s += '      Convergence criteria:\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'restol', 'mechanical equilibrium residual convergence criterion'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'reltol', 'velocity relative convergence criterion, NaN: not applied'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'abstol', 'velocity absolute convergence criterion, NaN: not applied'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'isnewton', '0: Picard\'s fixed point, 1: Newton\'s method, 2: hybrid'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'maxiter', 'maximum number of nonlinear iterations'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'restol', 'mechanical equilibrium residual convergence criterion'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'reltol', 'velocity relative convergence criterion, NaN: not applied'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'abstol', 'velocity absolute convergence criterion, NaN: not applied'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'isnewton', '0: Picard\'s fixed point, 1: Newton\'s method, 2: hybrid'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'maxiter', 'maximum number of nonlinear iterations'))
         s += '\n'
         s += '      boundary conditions:\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'spcvx', 'x-axis velocity constraint (NaN means no constraint) [m / yr]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'spcvy', 'y-axis velocity constraint (NaN means no constraint) [m / yr]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'spcvz', 'z-axis velocity constraint (NaN means no constraint) [m / yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'spcvx', 'x-axis velocity constraint (NaN means no constraint) [m / yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'spcvy', 'y-axis velocity constraint (NaN means no constraint) [m / yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'spcvz', 'z-axis velocity constraint (NaN means no constraint) [m / yr]'))
         s += '\n'
         s += '      MOLHO boundary conditions:\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'spcvx_base', 'x-axis basal velocity constraint (NaN means no constraint) [m / yr]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'spcvy_base', 'y-axis basal velocity constraint (NaN means no constraint) [m / yr]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'spcvx_shear', 'x-axis shear velocity constraint (NaN means no constraint) [m / yr]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'spcvy_shear', 'y-axis shear velocity constraint (NaN means no constraint) [m / yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'spcvx_base', 'x-axis basal velocity constraint (NaN means no constraint) [m / yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'spcvy_base', 'y-axis basal velocity constraint (NaN means no constraint) [m / yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'spcvx_shear', 'x-axis shear velocity constraint (NaN means no constraint) [m / yr]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'spcvy_shear', 'y-axis shear velocity constraint (NaN means no constraint) [m / yr]'))
         s += '\n'
         s += '      Rift options:\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rift_penalty_threshold', 'threshold for instability of mechanical constraints'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'rift_penalty_lock', 'number of iterations before rift penalties are locked'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rift_penalty_threshold', 'threshold for instability of mechanical constraints'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rift_penalty_lock', 'number of iterations before rift penalties are locked'))
         s += '\n'
         s += '      Penalty options:\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'penalty_factor', 'offset used by penalties: penalty = Kmax * 10^offset'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'vertex_pairing', 'pairs of vertices that are penalized'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'penalty_factor', 'offset used by penalties: penalty = Kmax * 10^offset'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'vertex_pairing', 'pairs of vertices that are penalized'))
         s += '\n'
         s += '      Hydrology layer:\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'ishydrologylayer', '(SSA only) 0: no subglacial hydrology layer in driving stress, 1: hydrology layer in driving stress'));
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'ishydrologylayer', '(SSA only) 0: no subglacial hydrology layer in driving stress, 1: hydrology layer in driving stress'));
         s += '\n'
         s += '      Other:\n'
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'shelf_dampening', 'use dampening for floating ice ? Only for FS model'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'FSreconditioning', 'multiplier for incompressibility equation. Only for FS model'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'referential', 'local referential'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'loadingforce', 'loading force applied on each point [N/m^3]'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'shelf_dampening', 'use dampening for floating ice ? Only for FS model'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'FSreconditioning', 'multiplier for incompressibility equation. Only for FS model'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'referential', 'local referential'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'loadingforce', 'loading force applied on each point [N/m^3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -215,22 +215,22 @@ class stressbalance(class_registry.manage_state):
         if solution == 'TransientSolution' and not md.transient.isstressbalance:
             return md
 
-        param_utils.check_field(md, fieldname = 'stressbalance.spcvx', timeseries = True, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'stressbalance.spcvy', timeseries = True, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'stressbalance.spcvx', timeseries = True, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'stressbalance.spcvy', timeseries = True, allow_inf = False)
         if md.mesh.domain_type() == '3D':
-            param_utils.check_field(md, fieldname = 'stressbalance.spcvz', timeseries = True, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'stressbalance.restol', scalar = True, gt = 0)
-        param_utils.check_field(md, fieldname = 'stressbalance.reltol', scalar = True)
-        param_utils.check_field(md, fieldname = 'stressbalance.abstol', scalar = True)
-        param_utils.check_field(md, fieldname = 'stressbalance.ishydrologylayer', scalar = True, values = [0, 1])
-        param_utils.check_field(md, fieldname = 'stressbalance.isnewton', scalar = True, values = [0, 1, 2])
-        param_utils.check_field(md, fieldname = 'stressbalance.FSreconditioning', scalar = True, allow_nan = False, allow_inf = False)
-        param_utils.check_field(md, fieldname = 'stressbalance.maxiter', scalar = True, ge = 1)
-        param_utils.check_field(md, fieldname = 'stressbalance.referential', size = (md.mesh.numberofvertices, 6))
-        param_utils.check_field(md, fieldname = 'stressbalance.loadingforce', size = (md.mesh.numberofvertices, 3))
-        param_utils.check_field(md, fieldname = 'stressbalance.requested_outputs', string_list = True)
+            class_utils.check_field(md, fieldname = 'stressbalance.spcvz', timeseries = True, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'stressbalance.restol', scalar = True, gt = 0)
+        class_utils.check_field(md, fieldname = 'stressbalance.reltol', scalar = True)
+        class_utils.check_field(md, fieldname = 'stressbalance.abstol', scalar = True)
+        class_utils.check_field(md, fieldname = 'stressbalance.ishydrologylayer', scalar = True, values = [0, 1])
+        class_utils.check_field(md, fieldname = 'stressbalance.isnewton', scalar = True, values = [0, 1, 2])
+        class_utils.check_field(md, fieldname = 'stressbalance.FSreconditioning', scalar = True, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'stressbalance.maxiter', scalar = True, ge = 1)
+        class_utils.check_field(md, fieldname = 'stressbalance.referential', size = (md.mesh.numberofvertices, 6))
+        class_utils.check_field(md, fieldname = 'stressbalance.loadingforce', size = (md.mesh.numberofvertices, 3))
+        class_utils.check_field(md, fieldname = 'stressbalance.requested_outputs', string_list = True)
         if not np.any(np.isnan(self.vertex_pairing)) and len(self.vertex_pairing) > 0:
-            param_utils.check_field(md, fieldname = 'stressbalance.vertex_pairing', ge = 0)
+            class_utils.check_field(md, fieldname = 'stressbalance.vertex_pairing', ge = 0)
         # Singular solution
         if (not np.any(np.logical_or(np.logical_not(np.isnan(md.stressbalance.spcvx)), np.logical_not(np.isnan(md.stressbalance.spcvy))))) & (not np.any(md.mask.ocean_levelset>0)):
             print('\n !!! Warning: no spc applied, model might not be well posed if no basal friction is applied, check for solution crash\n')
@@ -249,10 +249,10 @@ class stressbalance(class_registry.manage_state):
             if np.any(np.logical_not(np.isnan(md.stressbalance.referential[pos, :]))):
                 md.checkmessage('no referential should be specified for basal vertices of grounded ice')
         if md.flowequation.isMOLHO:
-            param_utils.check_field(md, fieldname = 'stressbalance.spcvx_base', timeseries = True, allow_inf = False)
-            param_utils.check_field(md, fieldname = 'stressbalance.spcvy_base', timeseries = True, allow_inf = False)
-            param_utils.check_field(md, fieldname = 'stressbalance.spcvx_shear', timeseries = True, allow_inf = False)
-            param_utils.check_field(md, fieldname = 'stressbalance.spcvy_shear', timeseries = True, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'stressbalance.spcvx_base', timeseries = True, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'stressbalance.spcvy_base', timeseries = True, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'stressbalance.spcvx_shear', timeseries = True, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'stressbalance.spcvy_shear', timeseries = True, allow_inf = False)
             
         return md
     

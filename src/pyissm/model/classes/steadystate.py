@@ -1,7 +1,7 @@
 import numpy as np
-from pyissm.param import param_utils
-from pyissm.param import class_registry
-from pyissm import execute
+from pyissm.model.classes import class_utils
+from pyissm.model.classes import class_registry
+from pyissm.model import execute
 
 @class_registry.register_class
 class steadystate(class_registry.manage_state):
@@ -41,7 +41,7 @@ class steadystate(class_registry.manage_state):
 
     Examples
     --------
-    md.steadystate = pyissm.param.steadystate()
+    md.steadystate = pyissm.model.classes.steadystate()
     md.steadystate.reltol = 0.001
     md.steadystate.maxiter = 200
     md.steadystate.requested_outputs = ['IceVolume', 'IceVolumeAboveFloatation']
@@ -60,9 +60,9 @@ class steadystate(class_registry.manage_state):
     def __repr__(self):
         s = '   steadystate solution parameters:\n'
 
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'reltol', 'relative tolerance criterion'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'maxiter', 'maximum number of iterations'))
-        s += '{}\n'.format(param_utils.fielddisplay(self, 'requested_outputs', 'additional requested outputs'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'reltol', 'relative tolerance criterion'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'maxiter', 'maximum number of iterations'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional requested outputs'))
         return s
 
     # Define class string
@@ -82,7 +82,7 @@ class steadystate(class_registry.manage_state):
         if np.isnan(md.stressbalance.reltol):
             md.checkmessage("for a steadystate computation, stressbalance.reltol (relative convergence criterion) must be defined!")
 
-        param_utils.check_field(md, fieldname = 'steadystate.requested_outputs', string_list = True)
+        class_utils.check_field(md, fieldname = 'steadystate.requested_outputs', string_list = True)
 
         return md
 
