@@ -1,1 +1,1 @@
-from . import bc, mesh, exp, param
+from pyissm.tools import config, exp, general, wrappers

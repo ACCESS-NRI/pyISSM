@@ -14,7 +14,7 @@ import warnings
 import sys
 import shutil
 
-from .. import core, analysis, model, param, utils
+from pyissm import analysis, model, tools
 
 def load_model(path):
     """
@@ -32,7 +32,7 @@ def load_model(path):
     
     Returns
     -------
-    core.Model
+    model.Model
         The reconstructed ISSM model object with all components loaded
         from the NetCDF file.
     
@@ -86,7 +86,7 @@ def load_model(path):
     # Helper function to retrieve classtype and create new instance object
     def _get_class(group):
         classtype = group.getncattr("classtype")
-        obj = param.class_registry.create_instance(classtype)
+        obj = model.classes.class_registry.create_instance(classtype)
         return classtype, obj
 
     # Helper function to normalise NaN values (convert all NaN to np.nan)
@@ -184,7 +184,7 @@ def load_model(path):
                 _normalize_loaded_attributes(value)
 
     # Initialise empty model class
-    md = core.Model()
+    md = model.Model()
 
     # Open the model netcdf file
     with nc.Dataset(path, 'r') as ds:
@@ -234,7 +234,7 @@ def load_model(path):
                             continue
 
                         ## If the object is a collapsed solutionstep from TransientSolution, expand back into solution for consistency
-                        if isinstance(obj, param.results.solutionstep) and sub_grp_name == "TransientSolution":
+                        if isinstance(obj, model.classes.results.solutionstep) and sub_grp_name == "TransientSolution":
                             obj = _expand_step_to_solution(obj)
 
                         ## Normalize data types
@@ -304,7 +304,7 @@ def save_model(md, path):
 
     Parameters
     ----------
-    md : core.Model
+    md : model.Model
         The ISSM model object to be saved, containing all model components
         such as mesh, geometry, materials, boundary conditions, and results.
 
@@ -418,7 +418,7 @@ def save_model(md, path):
 
     def _get_registered_name(obj):
         classname = obj.__class__
-        matching_keys = [k for k, v in param.class_registry.CLASS_REGISTRY.items() if v is classname]
+        matching_keys = [k for k, v in model.classes.class_registry.CLASS_REGISTRY.items() if v is classname]
         if not matching_keys:
             raise ValueError(f"Class {classname} is not registered.")
         registered_name = min(matching_keys, key=len)
@@ -446,7 +446,7 @@ def save_model(md, path):
                     solution_group = results_group.createGroup(solution_name)
 
                     ## If it's a TransientSolution, collapse solution to a single step for writing
-                    if isinstance(solution_obj, param.results.solution) and solution_name == "TransientSolution":
+                    if isinstance(solution_obj, model.classes.results.solution) and solution_name == "TransientSolution":
                         solution_obj = _collapse_solution_to_step(solution_obj)
 
                     ## Attach class type metadata
@@ -481,13 +481,13 @@ def _collapse_solution_to_step(solution):
     
     Parameters
     ----------
-    solution : param.results.solution
+    solution : model.classes.results.solution
         A solution object containing a list of solutionstep instances, one for each
         timestep, with individual arrays and metadata that need to be consolidated.
     
     Returns
     -------
-    param.results.solutionstep
+    model.classes.results.solutionstep
         A collapsed solutionstep object containing time-stacked arrays and metadata
         from all timesteps, suitable for NetCDF storage.
     
@@ -508,7 +508,7 @@ def _collapse_solution_to_step(solution):
     """
     
     # Create empty solutionstep
-    step = param.results.solutionstep()
+    step = model.classes.results.solutionstep()
     steps = solution.steps or []
 
     # Skip if there are no steps
@@ -563,13 +563,13 @@ def _expand_step_to_solution(step_obj):
     
     Parameters
     ----------
-    step_obj : param.results.solutionstep
+    step_obj : model.classes.results.solutionstep
         A collapsed solutionstep object containing time-stacked arrays and metadata
         from multiple timesteps that were previously collapsed for NetCDF storage.
     
     Returns
     -------
-    param.results.solution
+    model.classes.results.solution
         A solution object containing a list of solutionstep instances, one for each
         timestep, with arrays split along the time axis and metadata appropriately 
         distributed.
@@ -609,8 +609,8 @@ def _expand_step_to_solution(step_obj):
         nt = 1
 
     # Create empty solution and steps
-    sol = param.results.solution([])
-    sol.steps = [param.results.solutionstep() for _ in range(nt)]
+    sol = model.classes.results.solution([])
+    sol.steps = [model.classes.results.solutionstep() for _ in range(nt)]
 
     # Loop over all fields in step_obj
     for field, value in step_obj.__dict__.items():
@@ -767,7 +767,7 @@ def export_gridded_model(md,
         var_y[:] = grid_y[:,0]
 
         # If TransientSolution is in the request and exists in the model, create the time dimension
-        if 'TransientSolution' in var_map['issmModelSubgroup'].values and utils.general.has_nested_attr(md, 'results', 'TransientSolution'):
+        if 'TransientSolution' in var_map['issmModelSubgroup'].values and tools.general.has_nested_attr(md, 'results', 'TransientSolution'):
             time = getattr(md.results.TransientSolution, 'time')
             nc_file.createDimension('time', len(time))
             var_time = nc_file.createVariable('time', 'f4', ('time'), fill_value=fill_value)
@@ -840,7 +840,7 @@ def export_gridded_model(md,
                 elif row['issmVariableUnit'] == row['outputVariableUnit']:
                     pass
                 else:
-                    variable = utils.general.convert_units(row['issmVariableUnit'], row['outputVariableUnit'], variable)
+                    variable = tools.general.convert_units(row['issmVariableUnit'], row['outputVariableUnit'], variable)
 
 
             ## ------------------------------------------------
@@ -972,7 +972,7 @@ def issm_scp_out(host,
     """
     
     # Get hostname
-    hostname = utils.config.get_hostname()
+    hostname = tools.config.get_hostname()
 
     # If host and hostname are the same, do a simple copy
     if host.lower() == hostname.lower():
@@ -1071,7 +1071,7 @@ def issm_ssh(host,
     """
         
     # Get hostname
-    hostname = utils.config.get_hostname()
+    hostname = tools.config.get_hostname()
 
     # If host and hostname are the same, just run the command
     if host.lower() == hostname.lower():
@@ -1080,8 +1080,8 @@ def issm_ssh(host,
     # If this is not a local machine, use ssh to run the command
     else:
         ## Windows requires plink.exe for ssh
-        if utils.config.is_pc():
-            issm_dir = utils.config.get_issm_dir()
+        if tools.config.is_pc():
+            issm_dir = tools.config.get_issm_dir()
 
             username = eval(input('Enter your username: '))
             key = eval(input('Enter your key: '))
@@ -1156,7 +1156,7 @@ def issm_scp_in(host,
     """
       
     # Get hostname
-    hostname = utils.config.get_hostname()
+    hostname = tools.config.get_hostname()
 
     # If host and hostname are the same, do a simple copy
     if host.lower() == hostname.lower():
