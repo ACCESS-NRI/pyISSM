@@ -806,7 +806,7 @@ def InterpFromMeshToMesh2d(index,
         raise Exception('pyissm.tools.wrappers.InterpFromMeshToMesh2d:: Something went wrong! Make sure you have provided all required arguments.')
 
     ## NOTE: Value returned from wrapper function is a tuple, the first element of which being the result we actually want
-    return data_prime[0]
+    return np.squeeze(data_prime[0])
 
 ## InterpFromMeshToMesh3d_python
 @load_issm_wrapper
