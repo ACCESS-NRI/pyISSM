@@ -4,8 +4,10 @@ Functions for parameterising ISSM models.
 
 import numpy as np
 import os
-import warnings
+from pathlib import Path
+from datetime import datetime
 from pyissm import model, tools
+import copy
 
 def set_mask(md,
              floating_ice_name = None,
@@ -354,3 +356,227 @@ def set_flow_equation(md,
     md.flowequation.isFS = int(any(md.flowequation.element_equation == 6))
 
     return md
+
+def parameterize(md, parameter_file):
+    """
+    Parameterize an ISSM model from a Python parameter file.
+
+    Parameters
+    ----------
+    md : object
+        ISSM model instance to populate. The parameter file is expected to
+        mutate this object in-place and may refer to it as ``md``.
+    parameter_file : str or pathlib.Path
+        Path to a Python file containing parameter-setting code. This file is
+        executed with an empty global namespace and a local namespace where
+        ``md`` is pre-defined.
+
+    Returns
+    -------
+    object
+        The modified model instance (same object passed in).
+
+    Raises
+    ------
+    FileNotFoundError
+        If the provided parameter_file does not exist.
+    Exception
+        Any exception raised while executing the parameter file is propagated.
+
+    Notes
+    -----
+    The parameter file must be a valid Python script that assigns values or
+    calls functions that modify the provided ``md`` object. For security,
+    be cautious when executing untrusted parameter files since they are run
+    with ``exec()`` and may perform arbitrary operations.
+
+    Examples
+    --------
+    >>> parameterize(md, "parameters.py")
+    """
+
+    # Get path
+    path = Path(parameter_file)
+
+    # Error checks
+    if not path.exists():
+        raise FileNotFoundError(f"pyissm.model.param.parameterize: Parameter file {parameter_file} not found.")
+    
+    # Execute the parameter file
+    # NOTE: Local execution namespace (parameter files expect "md" to exist)
+    local_env = {"md": md}
+
+    with path.open("r") as f:
+        code = compile(f.read(), str(path), "exec")
+        exec(code, {}, local_env)
+
+    # Set name if missing
+    if not getattr(md.miscellaneous, "name", None):
+        md.miscellaneous.name = path.stem
+
+    # Set timestamp note
+    timestamp = datetime.now().strftime("%c")
+    md.miscellaneous.notes = (
+        f"Model created using parameter file '{parameter_file}' on {timestamp}."
+    )
+
+    return md
+
+def contour_envelope(mh, flags = None):
+    """
+    Build a set of segments enveloping a contour.
+    This function computes segments that form the boundary envelope of a contour
+    within a given mesh. It identifies elements on the domain boundary and extracts
+    the segments that define the contour envelope.
+    Parameters
+    ----------
+    mh : ISSM model mesh object containing vertex and element information.
+
+    flags : {str, int, float, bool}, optional
+        Currently not supported. Reserved for future use. If provided, raises
+        NotImplementedError. Default is None.
+
+    Returns
+    -------
+    segments : ndarray
+        Array of shape (n_segments, 3) containing segment information where:
+        - Column 0: First node index of the segment
+        - Column 1: Second node index of the segment
+        - Column 2: Associated element index (1-indexed)
+
+    Raises
+    ------
+    NotImplementedError
+        If `flags` argument is provided (not yet supported).
+    ImportError
+        If ISSM wrappers are not installed.
+
+    Notes
+    -----
+    This function requires ISSM wrappers to be installed. It computes node and
+    element connectivity tables and identifies boundary elements that separate
+    interior from exterior regions.
+
+    Examples
+    --------
+    >>> segments = contour_envelope(mh)
+    """
+
+    # Some checks
+    if flags is not None:
+
+        ## NOTE: This function is taken from the original ISSM Python code: $ISSM_DIR/src/m/mesh/contour_envelope.py with only minor modifications for pyISSM integration.
+        ## It differs with MATLAB when Flags is provided as an array or file. For now, raise error if flags argument is used (not yet supported)
+        if flags is not None:
+            raise NotImplementedError("pyissm.model.param.contour_envelope: The `flags` argument is not yet supported. Contact ACCESS-NRI for assistance")
+
+        # Original checks below
+        if isinstance(flags, str):
+            file = flags
+            if not os.path.exists(file):
+                raise IOError(f"pyissm.model.param.contour_envelope: file {file} not found")
+            isfile = 1
+        elif isinstance(flags, (bool, int, float)):
+            #do nothing for now
+            isfile = 0
+        else:
+            raise TypeError("pyissm.model.param.contour_envelope: second argument should be a file or an elements flag")
+        
+    # Check that wrappers are installed
+    if not tools.wrappers.check_wrappers_installed():
+        raise ImportError("pyissm.model.param.contour_envelope: This function requires ISSM wrappers to be installed.")
+
+    # Now, build the connectivity tables for this mesh
+    # Computing connectivity
+    if np.size(mh.vertexconnectivity, axis=0) != mh.numberofvertices and np.size(mh.vertexconnectivity, axis=0) != mh.numberofvertices2d:
+        mh.vertexconnectivity = tools.wrappers.NodeConnectivity(mh.elements, mh.numberofvertices)
+    if np.size(mh.elementconnectivity, axis=0) != mh.numberofelements and np.size(mh.elementconnectivity, axis=0) != mh.numberofelements2d:
+        mh.elementconnectivity = tools.wrappers.ElementConnectivity(mh.elements, mh.vertexconnectivity)
+
+    #get nodes inside profile
+    elementconnectivity = copy.deepcopy(mh.elementconnectivity)
+    if mh.dimension() == 2:
+        elements = copy.deepcopy(mh.elements)
+        x = copy.deepcopy(mh.x)
+        y = copy.deepcopy(mh.y)
+        numberofvertices = copy.deepcopy(mh.numberofvertices)
+        numberofelements = copy.deepcopy(mh.numberofelements)
+    else:
+        elements = copy.deepcopy(mh.elements2d)
+        x = copy.deepcopy(mh.x2d)
+        y = copy.deepcopy(mh.y2d)
+        numberofvertices = copy.deepcopy(mh.numberofvertices2d)
+        numberofelements = copy.deepcopy(mh.numberofelements2d)
+
+    if flags is not None:
+        if isfile:
+            # Get flag list of elements and nodes inside the contour
+            nodein = tools.wrappers.ContourToMesh(elements, x, y, file, 'node', 1)
+            elemin = (np.sum(nodein(elements), axis=1) == np.size(elements, axis=1))
+            # Modify element connectivity
+            elemout = np.nonzero(np.logical_not(elemin))[0]
+            elementconnectivity[elemout, :] = 0
+            elementconnectivity[np.nonzero(np.isin(elementconnectivity, elemout + 1))] = 0
+        else:
+            # Get flag list of elements and nodes inside the contour
+            nodein = np.zeros(numberofvertices)
+            elemin = np.zeros(numberofelements)
+
+            pos = np.nonzero(flags)
+            elemin[pos] = 1
+            nodein[elements[pos, :] - 1] = 1
+
+            # Modify element connectivity
+            elemout = np.nonzero(np.logical_not(elemin))[0]
+            elementconnectivity[elemout, :] = 0
+            elementconnectivity[np.nonzero(np.isin(elementconnectivity, elemout + 1))] = 0
+
+    # Find element on boundary
+    # First: find elements on the boundary of the domain
+    flag = copy.deepcopy(elementconnectivity)
+    if flags is not None:
+        flag[np.nonzero(flag)] = elemin[flag[np.nonzero(flag)]]
+    elementonboundary = np.logical_and(np.prod(flag, axis=1) == 0, np.sum(flag, axis=1) > 0)
+
+    # Find segments on boundary
+    pos = np.nonzero(elementonboundary)[0]
+    num_segments = np.size(pos)
+    segments = np.zeros((num_segments * 3, 3), int)
+    count = 0
+
+    for el1 in pos:
+        els2 = elementconnectivity[el1, np.nonzero(elementconnectivity[el1, :])[0]] - 1
+        if np.size(els2) > 1:
+            flag = np.intersect1d(np.intersect1d(elements[els2[0], :], elements[els2[1], :]), elements[el1, :])
+            nods1 = elements[el1, :]
+            nods1 = np.delete(nods1, np.nonzero(nods1 == flag))
+            segments[count, :] = [nods1[0], nods1[1], el1 + 1]
+
+            ord1 = np.nonzero(nods1[0] == elements[el1, :])[0][0]
+            ord2 = np.nonzero(nods1[1] == elements[el1, :])[0][0]
+
+    #swap segment nodes if necessary
+            if ((ord1 == 0 and ord2 == 1) or (ord1 == 1 and ord2 == 2) or (ord1 == 2 and ord2 == 0)):
+                temp = segments[count, 0]
+                segments[count, 0] = segments[count, 1]
+                segments[count, 1] = temp
+            segments[count, 0:2] = np.flipud(segments[count, 0:2])
+            count += 1
+        else:
+            nods1 = elements[el1, :]
+            flag = np.setdiff1d(nods1, elements[els2, :])
+            for j in range(0, 3):
+                nods = np.delete(nods1, j)
+                if np.any(np.isin(flag, nods)):
+                    segments[count, :] = [nods[0], nods[1], el1 + 1]
+                    ord1 = np.nonzero(nods[0] == elements[el1, :])[0][0]
+                    ord2 = np.nonzero(nods[1] == elements[el1, :])[0][0]
+                    if ((ord1 == 0 and ord2 == 1) or (ord1 == 1 and ord2 == 2) or (ord1 == 2 and ord2 == 0)):
+                        temp = segments[count, 0]
+                        segments[count, 0] = segments[count, 1]
+                        segments[count, 1] = temp
+                    segments[count, 0:2] = np.flipud(segments[count, 0:2])
+                    count += 1
+    segments = segments[0:count, :]
+
+    return segments
