@@ -80,7 +80,12 @@ def load_model(path):
     def _get_attributes(state, group):
         for attr in group.ncattrs():
             if attr != "classtype":
-                state[attr] = group.getncattr(attr)
+                val = group.getncattr(attr)
+                if isinstance(val, str) and val == "__EMPTY_LIST__":
+                    state[attr] = []
+                    continue
+                else:
+                    state[attr] = val
         return state
 
     # Helper function to retrieve classtype and create new instance object
@@ -373,6 +378,11 @@ def save_model(md, path):
             elif isinstance(value, np.ndarray) or isinstance(value, list):
 
                 # If it's a list, convert to an array
+                if isinstance(value, list) and len(value) == 0:
+                    # Handle empty list case
+                    group.setncattr(attr_name, "__EMPTY_LIST__")
+                    continue
+                
                 if isinstance(value, list):
                     value = np.array(value, dtype='S')
                 # Otherwise, check the array type
