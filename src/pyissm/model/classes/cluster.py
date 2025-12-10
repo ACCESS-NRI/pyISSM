@@ -1,6 +1,7 @@
 import yaml
 import subprocess
 import numpy as np
+import warnings
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
 from pyissm import model, tools
@@ -88,11 +89,22 @@ class generic(class_registry.manage_state):
         self.np = 1
         self.port = 0
         self.interactive = 1
-        self.codepath = tools.config.get_issm_dir() + '/bin'
-        self.executionpath = tools.config.get_issm_dir() + '/execution'
-        self.valgrind = tools.config.get_issm_dir() + '/externalpackages/valgrind/bin/valgrind'
-        self.valgrindlib = tools.config.get_issm_dir() + '/externalpackages/valgrind/install/lib/libmpidebug.so'
-        self.valgrindsup = [tools.config.get_issm_dir() + '/externalpackages/valgrind/issm.supp']  # add any .supp in list form as needed
+
+        # Set paths based on ISSM_DIR
+        if tools.config.get_issm_dir() is None:
+            warnings.warn('pyissm.model.classes.cluster.generic: ISSM_DIR is not set. Returning empty cluster paths.\n')
+            self.codepath = ''
+            self.executionpath = ''
+            self.valgrind = ''
+            self.valgrindlib = ''
+            self.valgrindsup = []
+        else:
+            self.codepath = tools.config.get_issm_dir() + '/bin'
+            self.executionpath = tools.config.get_issm_dir() + '/execution'
+            self.valgrind = tools.config.get_issm_dir() + '/externalpackages/valgrind/bin/valgrind'
+            self.valgrindlib = tools.config.get_issm_dir() + '/externalpackages/valgrind/install/lib/libmpidebug.so'
+            self.valgrindsup = [tools.config.get_issm_dir() + '/externalpackages/valgrind/issm.supp']  # add any .supp in list form as needed
+        
         self.verbose = 1
         self.shell = '/bin/sh'
 
