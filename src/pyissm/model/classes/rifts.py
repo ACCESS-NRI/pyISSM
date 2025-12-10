@@ -72,7 +72,7 @@ class rifts(class_registry.manage_state):
             numrifts = len(self.riftstruct)
 
         if numrifts:
-            if not md.mesh.domaintype() == '2Dhorizontal':
+            if not md.mesh.domain_type() == '2Dhorizontal':
                 md.checkmessage("models with rifts are only supported in 2d for now!")
             if not isinstance(self.riftstruct, list):
                 md.checkmessage("rifts.riftstruct should be a list!")
