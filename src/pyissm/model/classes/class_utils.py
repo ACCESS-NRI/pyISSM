@@ -768,3 +768,58 @@ def check_field(
         _check_timeseries(md, field, fieldname, "mappedtimeseries", message)
 
     return md
+
+def cluster_queue_requirements(queue_dict, queue, np, time):
+    """
+    Validate cluster queue requirements.
+
+    Validates that the requested queue exists, the time is positive and does not
+    exceed the queue's maximum allowed time, and the number of processors is
+    positive and does not exceed the queue's maximum allowed processors.
+
+    Parameters
+    ----------
+    queue_dict : dict
+        Dictionary mapping queue names to (max_time, max_np) tuples, where
+        max_time is the maximum allowed time for the queue and max_np is the
+        maximum allowed number of processors.
+    queue : str
+        Name of the requested queue.
+    np : int
+        Number of processors requested. Must be positive and not exceed the
+        queue's maximum.
+    time : float or int
+        Requested time in minutes (or appropriate time unit). Must be positive
+        and not exceed the queue's maximum allowed time.
+
+    Raises
+    ------
+    Exception
+        If the queue name is not found in queue_dict.
+    Exception
+        If time is not positive.
+    Exception
+        If requested time exceeds the maximum allowed time for the queue.
+    Exception
+        If number of processors is not positive.
+    Exception
+        If requested number of processors exceeds the maximum allowed for the queue.
+    """
+
+    try:
+        rtime = queue_dict[queue][0]
+    except KeyError:
+        raise Exception(f'pyissm.classes.class_utils.cluster_queue_requirements: queue {queue} not recognized. Available queues are: {list(queue_dict.keys())}')
+    
+    if time <= 0:
+        raise Exception('pyissm.classes.class_utils.cluster_queue_requirements: time must be positive')
+    
+    if time > rtime:
+        raise Exception(f'pyissm.classes.class_utils.cluster_queue_requirements: requested time {time} exceeds maximum allowed time {rtime} for queue {queue}')
+    
+    if np <= 0:
+        raise Exception('pyissm.classes.class_utils.cluster_queue_requirements: number of processors must be positive')
+
+    max_np = queue_dict[queue][1]
+    if np > max_np:
+        raise Exception(f'pyissm.classes.class_utils.cluster_queue_requirements: requested number of processors {np} exceeds maximum allowed {max_np} for queue {queue}')
