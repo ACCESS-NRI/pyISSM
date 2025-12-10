@@ -912,6 +912,7 @@ def solve(md,
           check_consistency = True,
           restart = None,
           load_only = False,
+          no_log = False,
           runtime_name = True):
     """
     Solve an ISSM model with the specified solution type.
@@ -951,6 +952,8 @@ def solve(md,
         Directory name (relative to execution directory) where restart file is located, by default None.
     load_only : bool, optional
         Whether to only load the solution without executing, by default False.
+    no_log : bool, optional
+        Whether to suppress loading logs, by default False.
     runtime_name : bool, optional
         Whether to generate a unique runtime name based on timestamp and process ID,
         by default True. If False, uses md.miscellaneous.name as runtime name.
@@ -1041,7 +1044,7 @@ def solve(md,
     if load_only:
         if md.verbose.solution:
             print('Loading results from cluster...')
-        md = load_results_from_cluster(md)
+        md = load_results_from_cluster(md, no_log = no_log)
         return md
     
     # Write all input files (.bin, .toolkits, build queue script)
@@ -1309,7 +1312,7 @@ def wait_on_lock(md):
     return
 
 def load_results_from_cluster(md,
-                              nolog = False,
+                              no_log = False,
                               runtime_name = None):
     """
     Load results from cluster after job completion.
@@ -1322,7 +1325,7 @@ def load_results_from_cluster(md,
     ----------
     md : model
         ISSM model object containing cluster configuration and run parameters.
-    nolog : bool, optional
+    no_log : bool, optional
         If True, skip downloading log files (.outlog and .errlog).
         Default is False.
     runtime_name : str, optional
@@ -1338,7 +1341,7 @@ def load_results_from_cluster(md,
     -----
     This function performs the following operations:
     1. Downloads output files from the cluster including:
-    - Log files (.outlog, .errlog) unless nolog=True
+    - Log files (.outlog, .errlog) unless no_log=True
     - Binary output files (.outbin or multiple files for Dakota sampling)
     - Dakota-specific files (qmu.err, qmu.out, dakota_tabular.dat, .stats)
     2. Loads results from the binary output file into the model object
@@ -1356,7 +1359,7 @@ def load_results_from_cluster(md,
         runtime_name = md.private.runtimename
     
     # Create list of files to download
-    if nolog:
+    if no_log:
         file_list = []
     else:
         file_list = [md.miscellaneous.name + '.outlog', md.miscellaneous.name + '.errlog']
