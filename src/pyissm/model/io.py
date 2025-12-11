@@ -1192,42 +1192,50 @@ def issm_scp_in(host,
     # If this is not a local machine, use scp to transfer the files
     else:
 
-        ## Get current working directory and build full paths to package files
+        ## Get current working directory
         pwd = os.getcwd()
-        file_list = [os.path.join(path, x) for x in packages]
-        file_list_str = ' '.join([str(x) for x in file_list])
         
-        ## Handle scp with custom port
-        if port:
-            ## First attempt: try scp with custom port
-            subproc_cmd = 'scp -P {} {}@{}: {} {}'.format(port, login, host, file_list_str, pwd)
-            subproc = subprocess.Popen(subproc_cmd, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE, universal_newlines = True)
-            outs, errs = subproc.communicate()
-            
-            ## If first attempt failed, try with legacy SSH options
-            if errs != '':
-                subproc_cmd = 'scp -OT -P {} {}@{}: {} {}'.format(port, login, host, file_list_str, pwd)
-                subproc = subprocess.Popen(subproc_cmd, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE, universal_newlines = True)
-                outs, errs = subproc.communicate()
-        else:
-            ## Handle scp with default port (22)
-            ## First attempt: try standard scp
-            subproc_cmd = 'scp {}@{}:{} {}'.format(login, host, file_list_str, pwd)
-            subproc = subprocess.Popen(subproc_cmd, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE, universal_newlines = True)
-            outs, errs = subproc.communicate()
-            
-            ## If first attempt failed, try with legacy SSH options
-            if errs != '':
-                subproc_cmd = 'scp -OT {}@{}: {} {}'.format(login, host, file_list_str, pwd)
-                subproc = subprocess.Popen(subproc_cmd, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE, universal_newlines = True)
-                outs, errs = subproc.communicate()
-            
-        ## Check scp worked
-        if errs != '':
-            raise Exception(f'pyissm.model.io.issm_scp_in: scp failed with the following error: {errs}')
-        
-        ## Check that files were transferred
+        ## Transfer files individually to handle missing errlog files gracefully
         for package in packages:
-            ### Check package exists
-            if not os.path.exists(os.path.join('.', package)):
-                raise OSError(f'pyissm.model.io.issm_scp_in: {package} does not exist after transfer')
+            ## Build remote file path with proper host prefix
+            remote_file = f'{login}@{host}:{os.path.join(path, package)}'
+            
+            ## Handle scp with custom port
+            if port:
+                ## First attempt: try scp with custom port
+                subproc_cmd = 'scp -P {} {} {}'.format(port, remote_file, pwd)
+                subproc = subprocess.Popen(subproc_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                outs, errs = subproc.communicate()
+                
+                ## If first attempt failed, try with legacy SSH options
+                if errs != '':
+                    subproc_cmd = 'scp -OT -P {} {} {}'.format(port, remote_file, pwd)
+                    subproc = subprocess.Popen(subproc_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                    outs, errs = subproc.communicate()
+            else:
+                ## Handle scp with default port (22)
+                ## First attempt: try standard scp
+                subproc_cmd = 'scp {} {}'.format(remote_file, pwd)
+                subproc = subprocess.Popen(subproc_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                outs, errs = subproc.communicate()
+                
+                ## If first attempt failed, try with legacy SSH options
+                if errs != '':
+                    subproc_cmd = 'scp -OT {} {}'.format(remote_file, pwd)
+                    subproc = subprocess.Popen(subproc_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                    outs, errs = subproc.communicate()
+            
+            ## Check if transfer succeeded
+            if errs != '':
+                ## Check if this is an errlog file - these are optional
+                if package.endswith('.errlog'):
+                    warnings.warn(f'pyissm.model.io.issm_scp_in: {package} was not transferred (likely no errors occurred)')
+                else:
+                    raise Exception(f'pyissm.model.io.issm_scp_in: scp failed for {package} with error: {errs}')
+            
+            ## Verify file was transferred (only for successful transfers)
+            if errs == '' and not os.path.exists(os.path.join('.', package)):
+                if package.endswith('.errlog'):
+                    warnings.warn(f'pyissm.model.io.issm_scp_in: {package} was not transferred (likely no errors occurred)')
+                else:
+                    raise OSError(f'pyissm.model.io.issm_scp_in: {package} does not exist after transfer')
