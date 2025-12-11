@@ -1628,7 +1628,7 @@ def load_results_from_disk(md, filename):
 
         if os.path.exists(md.miscellaneous.name + '.outlog'):
             with open(md.miscellaneous.name + '.outlog', 'r') as f:
-                setattr(getattr(md.results, results[0].SolutionType)[0], 'outlog', [line[:-1] for line in f])
+                setattr(getattr(md.results, results[0].SolutionType)[0], 'outlog', f.read())
         else:
             setattr(getattr(md.results, results[0].SolutionType)[0], 'outlog', '')
 
