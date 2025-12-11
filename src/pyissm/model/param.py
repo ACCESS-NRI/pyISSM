@@ -580,3 +580,90 @@ def contour_envelope(mh, flags = None):
     segments = segments[0:count, :]
 
     return segments
+
+def kill_icebergs(md):
+    """
+    Remove isolated floating ice patches (icebergs) by setting their ice_levelset values to +1.
+
+    Parameters
+    ----------
+    md : ISSM model object
+        The model containing the mesh and mask information.
+
+    Returns
+    -------
+    ndarray
+        Modified ice_levelset array with isolated icebergs set to +1.
+        If no icebergs are found, returns a copy of the original ice_levelset.
+
+    Notes
+    -----
+    The algorithm works in three main steps:
+
+    1. Mark elements without ice as done
+    2. Initialize mask from grounded ice elements
+    3. Use flood-fill algorithm to propagate connectivity from grounded ice through 
+       floating ice patches
+    4. Set vertices that remain unconnected and have ice to +1 (removing icebergs)
+
+    Isolated floating ice patches are identified as ice vertices that cannot be 
+    reached through the flood-fill algorithm starting from grounded ice regions.
+    """
+
+    elements = md.mesh.elements - 1
+    ice_ls   = md.mask.ice_levelset
+    ocean_ls = md.mask.ocean_levelset
+
+    nverts = md.mesh.numberofvertices
+    nelems = md.mesh.numberofelements
+
+    mask = np.zeros(nverts, dtype=np.int8)
+    element_flag = np.zeros(nelems, dtype=np.int8)
+
+    print("Looking for isolated patches of floating ice (icebergs)")
+
+    # Identify and mark elements with ice
+    isice = np.min(ice_ls[elements], axis=1) < 0
+    element_flag[~isice] = 1
+
+    # Identify grounded ice elements
+    isgrounded = np.sum(ocean_ls[elements] > 0, axis=1) > 2
+    grounded_idx = np.where(isgrounded)[0]
+
+    if grounded_idx.size > 0:
+        mask[elements[grounded_idx].ravel()] = 1
+
+    # Ice-free vertices should stay 0
+    mask[ice_ls >= 0] = 0
+
+    # Flood-fill from grounded ice through floating ice
+    iteration = 1
+    more = True
+
+    while more:
+        print(f"   -- iteration {iteration}")
+        more = False
+
+        remaining_elems = np.where(element_flag == 0)[0]
+
+        for i in remaining_elems:
+            idx = elements[i]
+            # If at least 2 vertices are already connected → activate element
+            if np.sum(mask[idx] > 0) > 1:
+                element_flag[i] = 1
+                mask[idx] = 1
+                more = True
+
+        iteration += 1
+
+    # Set isolated floating ice to +1
+    pos = np.where((mask == 0) & (ice_ls < 0))[0]
+
+    if pos.size > 0:
+        print(f"REMOVING {pos.size} vertex{'es' if pos.size > 1 else ''} on icebergs")
+        new_ice_ls = ice_ls.copy()
+        new_ice_ls[pos] = +1
+        return new_ice_ls
+
+    print("No iceberg found!")
+    return ice_ls.copy()
