@@ -1,5 +1,6 @@
 name: CI
 
+# Trigger CI on pushes and pull requests to main branch
 on:
   push:
     branches:
@@ -8,6 +9,9 @@ on:
     branches:
       - main
 
+# Define jobs
 jobs:
+  
+  # Job 1: Check dependencies and installation
   check_dependencies:
     uses: access-nri/pyISSM/.github/workflows/check-dependencies.yml@lb/231225_workflows
