@@ -25,6 +25,7 @@ dependencies = [
     "xarray",
     "numpy",
     "scipy",
+    "netCDF4",
     "pandas",
     "matplotlib",
     "attrs",
