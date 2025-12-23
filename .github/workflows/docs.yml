@@ -28,7 +28,7 @@ jobs:
         # Step 3: Install dependencies and build docs
       - name: Install dependencies
         run: |
-          pip install sphinx sphinx-rtd-theme sphinx-autodoc-typehints sphinx-apidoc
+          pip install sphinx sphinx-rtd-theme sphinx-autodoc-typehints
        
         # Step 4: Generate .rst files from docstrings 
       - name: Generate .rst files
