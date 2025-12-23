@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyissm"
+version = "0.0.1.dev1"
+description = "Python API for the Ice-sheet and Sea-level System Model (ISSM), managed by ACCESS-NRI"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "Apache-2.0" }
+
+authors = [
+    { name = "ACCESS-NRI" },
+]
+
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "xarray",
+    "numpy",
+    "scipy",
+    "netCDF4",
+    "pandas",
+    "matplotlib",
+    "attrs",
+    "PyYAML"
+]
+
+[project.urls]
+Homepage = "https://github.com/ACCESS-NRI/pyISSM"
+Repository = "https://github.com/ACCESS-NRI/pyISSM"
+Issues = "https://github.com/ACCESS-NRI/pyISSM/issues"

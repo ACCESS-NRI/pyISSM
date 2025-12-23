@@ -1,5 +1,4 @@
 import warnings
-import numpy as np
 from pyissm.model.classes import class_registry
 from pyissm.model.classes import class_utils
 from pyissm import tools
