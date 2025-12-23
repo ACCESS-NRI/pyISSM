@@ -1,4 +1,3 @@
-from attrs import field
 import numpy as np
 import os
 import re

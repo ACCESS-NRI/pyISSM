@@ -14,7 +14,6 @@ import sys
 import pathlib
 import glob
 import numpy as np
-import warnings
 from pyissm.model import classes
 from pyissm.tools import config
 
