@@ -1,0 +1,50 @@
+name: Release access-cryosphere-data-pool
+
+# Trigger release on push to tags starting with 'v'
+on:
+  push:
+    tags:
+      - 'v*'
+
+# Define jobs
+jobs:
+
+  # Job 1: Check dependencies and installation
+  check_dependencies:
+    uses: access-nri/pyISSM/.github/workflows/check-dependencies.yml@lb/231225_workflows
+    
+  # Job 2: Publish Python package to PyPI and Conda
+  publish_python_package:
+    needs: check_dependencies
+    uses: access-nri/actions/.github/workflows/publish-python-package.yml@main
+    with:
+      pypi-package: true
+      conda-package: true
+    secrets: inherit
+    permissions:
+      actions: write
+
+  # Job 3: Create GitHub Release
+  create-github-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: publish_python_package
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: ${{ needs.publish_python_package.outputs.artifact-name }}
+          path: dist
+
+      - name: Create Release
+        uses: softprops/action-gh-release@6cbd405e2c4e67a21c47fa9e383d020e4e28b836 #v2.3.3
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: pyISSM ${{ github.ref_name }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: |
+            dist/*
