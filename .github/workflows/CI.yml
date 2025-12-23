@@ -10,4 +10,4 @@ on:
 
 jobs:
   check_dependencies:
-    uses: access-nri/pyISSM/.github/workflows/check-dependencies.yml@main
+    uses: access-nri/pyISSM/.github/workflows/check-dependencies.yml@lb/231225_workflows
