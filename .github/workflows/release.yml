@@ -1,4 +1,4 @@
-name: Release access-cryosphere-data-pool
+name: Release pyISSM
 
 # Trigger release on push to tags starting with 'v'
 on:
