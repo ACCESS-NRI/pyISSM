@@ -183,9 +183,9 @@ class initialization(class_registry.manage_state):
         if 'EnthalpyAnalysis' in analyses and md.thermal.isenthalpy:
             class_utils.check_field(md, fieldname = 'initialization.waterfraction', size = (md.mesh.numberofvertices, ), ge = 0)
             class_utils.check_field(md, fieldname = 'initialization.watercolumn', size = (md.mesh.numberofvertices, ), ge = 0)
-            pos = np.nonzero(md.initialization.waterfraction > 0.)[0]
-            if(pos.size):
-                class_utils.check_field(md, fieldname = 'delta Tpmp', field = np.absolute(md.initialization.temperature[pos] - (md.materials.meltingpoint - md.materials.beta * md.initialization.pressure[pos])), lt = 1e-11, message = 'set temperature to pressure melting point at locations with waterfraction > 0')
+            # pos = np.nonzero(md.initialization.waterfraction > 0.)[0]
+            # if(pos.size):
+            #     class_utils.check_field(md, fieldname = 'delta Tpmp', field = np.absolute(md.initialization.temperature[pos] - (md.materials.meltingpoint - md.materials.beta * md.initialization.pressure[pos])), lt = 1e-11, message = 'set temperature to pressure melting point at locations with waterfraction > 0')
         
         ## HydrologyShreveAnalysis
         if 'HydrologyShreveAnalysis' in analyses:
@@ -277,9 +277,10 @@ class initialization(class_registry.manage_state):
         if md.thermal.isenthalpy:
             if (np.size(self.enthalpy) <= 1):
                 # Reconstruct enthalpy
+                self.enthalpy = np.zeros(md.mesh.numberofvertices)
                 tpmp = md.materials.meltingpoint - md.materials.beta * md.initialization.pressure
-                pos = np.where(md.initialization.waterfraction > 0)[0]
-                self.enthalpy = md.materials.heatcapacity * (md.initialization.temperature - md.constants.referencetemperature)
-                self.enthalpy[pos] = md.materials.heatcapacity * (tpmp[pos].reshape(-1,) - md.constants.referencetemperature) + md.materials.latentheat * md.initialization.waterfraction[pos].reshape(-1,)
+                pos = md.initialization.waterfraction > 0
+                self.enthalpy[:] = md.materials.heatcapacity * (md.initialization.temperature - md.constants.referencetemperature)
+                self.enthalpy[pos] = md.materials.heatcapacity * (tpmp[pos] - md.constants.referencetemperature) + md.materials.latentheat * md.initialization.waterfraction[pos]
 
             execute.WriteData(fid, prefix, name = 'md.initialization.enthalpy', data = self.enthalpy, format = 'DoubleMat', mattype = 1)

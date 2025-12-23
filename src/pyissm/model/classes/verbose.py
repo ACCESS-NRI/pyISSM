@@ -49,15 +49,15 @@ class verbose(class_registry.manage_state):
 
     # Initialise with default parameters
     def __init__(self, other = None):
-        self.mprocessor = False
-        self.module = False
-        self.solution = True
-        self.solver = False
-        self.convergence = False
-        self.control = True
-        self.qmu = True
-        self.autodiff = False
-        self.smb = False
+        self.mprocessor = 0
+        self.module = 0
+        self.solution = 1
+        self.solver = 0
+        self.convergence = 0
+        self.control = 1
+        self.qmu = 1
+        self.autodiff = 0
+        self.smb = 0
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -131,6 +131,23 @@ class verbose(class_registry.manage_state):
             binary = binary | 256
 
         return binary
+
+    def deactivate_all(self):
+        """
+        Deactivate all verbose model components.
+        """
+
+        self.mprocessor = 0
+        self.module = 0
+        self.solution = 0
+        self.solver = 0
+        self.convergence = 0
+        self.control = 0
+        self.qmu = 0
+        self.autodiff = 0
+        self.smb = 0
+
+        return self
 
     # Marshall method for saving the verbose parameters
     def marshall_class(self, fid, prefix, md = None):

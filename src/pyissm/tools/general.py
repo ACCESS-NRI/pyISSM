@@ -7,7 +7,6 @@ This module contains various utility functions that are used throughout the ISSM
 import numpy as np
 from pyissm import model
 
-
 ## ------------------------------------------------------------------------------------
 ## UNIT CONVERSIONS
 ## ------------------------------------------------------------------------------------
@@ -309,3 +308,234 @@ def planetradius(planet):
 
     return radius
 
+def _wgs84_ellipsoid_constants():
+    """
+    Return constants for the WGS84 ellipsoid used in coordinate conversions.
+
+    Returns
+    -------
+    re : float
+        Equatorial radius of the WGS84 ellipsoid in meters.
+    f : float
+        Flattening of the WGS84 ellipsoid.
+    ex2 : float
+        Eccentricity squared of the WGS84 ellipsoid.
+    ex : float
+        Eccentricity of the WGS84 ellipsoid.
+    """
+    
+    # Equitorial radius of the earth in meters
+    re = 6378137
+
+    # Flattening for WGS84 ellipsoid
+    f  = 1./298.257223563
+    
+    # Eccentricity squared
+    ex2 = 2*f - f**2
+
+    # Eccentricity
+    ex = np.sqrt(ex2)
+
+    return re, f, ex2, ex
+
+def xy_to_ll(x,
+             y,
+             sign,
+             central_meridian = None,
+             standard_parallel = None):
+    
+    """
+    Convert Cartesian coordinates (x, y) to geographic coordinates (latitude, longitude)
+    using the polar stereographic projection.
+
+    Parameters
+    ----------
+    x : array_like
+        The x-coordinates in meters.
+    y : array_like
+        The y-coordinates in meters.
+    sign : int
+        The hemisphere indicator, where 1 indicates the northern hemisphere and -1 indicates the southern hemisphere.
+    central_meridian : float, optional
+        The central meridian in degrees. If not specified, defaults are used based on the hemisphere.
+    standard_parallel : float, optional
+        The standard parallel in degrees. If not specified, defaults are used based on the hemisphere.
+
+    Returns
+    -------
+    lat : ndarray
+        The latitude in degrees.
+    lon : ndarray
+        The longitude in degrees, adjusted by the central meridian.
+
+    Raises
+    ------
+    ValueError
+        If `sign` is not 1 or -1.
+        If only one of `central_meridian` or `standard_parallel` is specified.
+
+    Notes
+    -----
+    The function uses the WGS84 ellipsoid parameters for the conversion.
+    Special handling is included for the case when `standard_parallel` is 90 degrees.
+    """
+
+    # Error checks
+    if sign not in [1, -1]:
+        raise ValueError('pyissm.tools.general.xy_to_ll: sign should be either 1 (north) or -1 (south)')
+    
+    # Set defaults depending on hemisphere
+    if central_meridian is None and standard_parallel is None:
+        if sign == 1:
+            central_meridian = 45.
+            standard_parallel = 70.
+            print('pyissm.tools.general.xy_to_ll: creating coordinates in north polar stereographic (Std Latitude: 70degN Meridian: 45deg)')
+
+        elif sign == -1:
+            central_meridian = 0.
+            standard_parallel = 71.
+            print('pyissm.tools.general.xy_to_ll: creating coordinates in south polar stereographic (Std Latitude: 71degS Meridian: 0deg)')
+
+    elif (central_meridian is None) != (standard_parallel is None):
+        raise ValueError("Specify both central_meridian and standard_parallel, or neither.")
+    
+    # Ensure x and y are numpy arrays
+    x = np.asarray(x, dtype = float)
+    y = np.asarray(y, dtype = float)
+
+    # Define constants
+    re, _, ex2, ex = _wgs84_ellipsoid_constants()
+
+    # Convert
+    sl = np.deg2rad(standard_parallel)
+    rho = np.hypot(x, y)
+
+    cm = np.cos(sl) / np.sqrt(1 - ex2 * np.sin(sl)**2)
+    T = np.tan(np.pi/4 - sl/2) / ((1 - ex*np.sin(sl)) / (1 + ex*np.sin(sl)))**(ex/2)
+
+    # Special case: standard_parallel = 90deg
+    if np.isclose(standard_parallel, 90.0):
+        T = rho * np.sqrt((1 + ex)**(1 + ex) * (1 - ex)**(1 - ex)) / (2 * re)
+    else:
+        T = rho * T / (re * cm)
+
+    chi = np.pi/2 - 2 * np.arctan(T)
+
+    lat = (
+        chi
+        + (ex2/2 + 5*ex2**2/24 + ex2**3/12) * np.sin(2*chi)
+        + (7*ex2**2/48 + 29*ex2**3/240) * np.sin(4*chi)
+        + (7*ex2**3/120) * np.sin(6*chi)
+    )
+
+    lat *= sign
+    lon = sign * np.arctan2(sign*x, -sign*y)
+
+    # Handle near-origin
+    near_origin = rho <= 0.1
+    if np.any(near_origin):
+        lat = lat.copy()
+        lon = lon.copy()
+        lat[near_origin] = sign * (np.pi/2)
+        lon[near_origin] = 0.0
+
+    lat = np.rad2deg(lat)
+    lon = np.rad2deg(lon) - central_meridian
+
+    return lat, lon
+
+
+def ll_to_xy(lat,
+             lon,
+             sign,
+             central_meridian = None,
+             standard_parallel = None):
+    """
+    Convert geographic coordinates (latitude, longitude) to Cartesian coordinates (x, y)
+    using the polar stereographic projection.
+
+    Parameters
+    ----------
+    lat : array_like
+        The latitude in degrees.
+    lon : array_like
+        The longitude in degrees.
+    sign : int
+        The hemisphere indicator, where 1 indicates the northern hemisphere and -1 indicates the southern hemisphere.
+    central_meridian : float, optional
+        The central meridian in degrees. If not specified, defaults are used based on the hemisphere.
+    standard_parallel : float, optional
+        The standard parallel in degrees. If not specified, defaults are used based on the hemisphere.
+
+    Returns
+    -------
+    x : ndarray
+        The x-coordinates in meters.
+    y : ndarray
+        The y-coordinates in meters.
+
+    Raises
+    ------
+    ValueError
+        If `sign` is not 1 or -1.
+        If only one of `central_meridian` or `standard_parallel` is specified.
+
+    Notes
+    -----
+    The function uses the WGS84 ellipsoid parameters for the conversion.
+    Special handling is included for the case when `standard_parallel` is 90 degrees.
+    """
+
+    # Error checks
+    if sign not in [1, -1]:
+        raise ValueError('ll_to_xy: sign should be either 1 (north) or -1 (south)')
+
+    # Set defaults depending on hemisphere
+    if central_meridian is None and standard_parallel is None:
+        if sign == 1:
+            central_meridian = 45.
+            standard_parallel = 70.
+            print('ll_to_xy: using north polar stereographic (Std Lat: 70N, Meridian: 45E)')
+        else:
+            central_meridian = 0.
+            standard_parallel = 71.
+            print('ll_to_xy: using south polar stereographic (Std Lat: 71S, Meridian: 0E)')
+    elif (central_meridian is None) != (standard_parallel is None):
+        raise ValueError("Specify both central_meridian and standard_parallel, or neither.")
+
+    # Ensure lat/lon are numpy arrays
+    lat = np.asarray(lat, dtype=float)
+    lon = np.asarray(lon, dtype=float)
+
+    # Define constants
+    re, _, ex2, ex = _wgs84_ellipsoid_constants()
+
+    # Convert degrees to radians
+    lat_rad = np.deg2rad(np.abs(lat))
+    lon_rad = np.deg2rad(lon + central_meridian)
+
+    # Compute T
+    T = np.tan(np.pi/4 - lat_rad/2) / ((1 - ex*np.sin(lat_rad)) / (1 + ex*np.sin(lat_rad)))**(ex/2)
+
+    # Standard parallel calculations
+    sl_rad = np.deg2rad(standard_parallel)
+    if np.isclose(standard_parallel, 90.0):
+        rho = 2 * re * T / np.sqrt((1 + ex)**(1 + ex) * (1 - ex)**(1 - ex))
+    else:
+        mc = np.cos(sl_rad) / np.sqrt(1 - ex2 * np.sin(sl_rad)**2)
+        Tc = np.tan(np.pi/4 - sl_rad/2) / ((1 - ex*np.sin(sl_rad)) / (1 + ex*np.sin(sl_rad)))**(ex/2)
+        rho = re * mc * T / Tc
+
+    # Convert to X, Y
+    x = rho * sign * np.sin(sign * lon_rad)
+    y = -rho * sign * np.cos(sign * lon_rad)
+
+    # Handle near-pole points
+    near_pole = np.abs(lat_rad - np.pi/2) < 1e-10
+    if np.any(near_pole):
+        x = x.copy()
+        y = y.copy()
+        x[near_pole] = 0.0
+        y[near_pole] = 0.0
+
+    return x, y

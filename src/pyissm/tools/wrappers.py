@@ -16,44 +16,7 @@ import glob
 import numpy as np
 import warnings
 from pyissm.model import classes
-
-
-# Check for ISSM_DIR
-def check_issm_dir():
-    """
-    Check that the ISSM_DIR environment variable is set.
-    
-    This function verifies that the ISSM_DIR environment variable is properly
-    configured in the system environment. If the variable is not set, it issues
-    a warning with detailed instructions on how to properly configure the
-    ISSM environment.
-    
-    Returns
-    -------
-    bool
-        True if ISSM_DIR environment variable is set, False otherwise.
-        
-    Notes
-    -----
-    The ISSM_DIR environment variable should point to the root directory of
-    the ISSM (Ice Sheet System Model) installation. This is required for
-    proper functioning of ISSM-related operations.
-    
-    Examples
-    --------
-    >>> check_issm_dir()
-    True
-    >>> # If ISSM_DIR is not set, returns False and issues a warning
-    """
-
-    if "ISSM_DIR" not in os.environ:
-        warnings.warn('pyissm.wrappers.check_issm_dir: Environment variable ISSM_DIR is not set. This limits functionality of pyISSM.\n\n'
-                      'Ensure that ISSM is installed with Python wrappers and the environment is properly configured.\n\n'
-                      "add 'export ISSM_DIR=\"<path_to_issm_directory>\"'\n"
-                      "     source $ISSM_DIR/etc/environment.sh\n\n"
-                      "to your .bash_profile or .zprofile")
-        return False
-    return True
+from pyissm.tools import config
 
 # Check for ISSM Python wrappers installation
 def check_wrappers_installed():
@@ -85,7 +48,10 @@ def check_wrappers_installed():
     """
     
     ## Ensure $ISSM_DIR is set
-    if check_issm_dir():
+    issm_dir = config.get_issm_dir()
+    if issm_dir is None:
+        return False
+    else:
 
         ## Get the $ISSM_DIR/lib path
         issm_dir = os.environ["ISSM_DIR"]
@@ -105,9 +71,6 @@ def check_wrappers_installed():
             return False
         else:
             return True
-    else:
-        ## If $ISSM_DIR is not set, return False (cannot check for wrappers)
-        return False
 
 def load_issm_wrapper(func):
     """
@@ -806,7 +769,7 @@ def InterpFromMeshToMesh2d(index,
         raise Exception('pyissm.tools.wrappers.InterpFromMeshToMesh2d:: Something went wrong! Make sure you have provided all required arguments.')
 
     ## NOTE: Value returned from wrapper function is a tuple, the first element of which being the result we actually want
-    return data_prime[0]
+    return np.squeeze(data_prime[0])
 
 ## InterpFromMeshToMesh3d_python
 @load_issm_wrapper

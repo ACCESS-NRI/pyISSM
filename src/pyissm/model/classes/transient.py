@@ -203,6 +203,30 @@ class transient(class_registry.manage_state):
         if return_default_outputs:
             return outputs, default_outputs
         return outputs
+    
+    def deactivate_all(self):
+        """
+        Deactivate all transient model components.
+        """
+
+        self.isage = 0
+        self.issmb = 0
+        self.ismasstransport = 0
+        self.ismmemasstransport = 0
+        self.isoceantransport = 0
+        self.isstressbalance = 0
+        self.isthermal = 0
+        self.isgroundingline = 0
+        self.isesa = 0
+        self.isdamageevolution = 0
+        self.ismovingfront = 0
+        self.ishydrology = 0
+        self.isdebris = 0
+        self.issampling = 0
+        self.isslc = 0
+        self.requested_outputs = []
+
+        return self
 
     # Marshall method for saving the transient parameters
     def marshall_class(self, fid, prefix, md = None):

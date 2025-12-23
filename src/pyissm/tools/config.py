@@ -8,6 +8,7 @@ import collections
 import platform
 import os
 import socket
+import warnings
 from pyissm.tools import wrappers
 
 def mumps_options(**kwargs):
@@ -235,42 +236,30 @@ def is_pc():
 
 def get_issm_dir():
     """
-    Get the root directory of the ISSM installation.
+    Return the ISSM installation directory, or None if not configured.
 
-    This function retrieves the root directory path of the Ice Sheet System Model (ISSM)
-    installation by checking the appropriate environment variable based on the operating
-    system (ISSM_DIR_WIN for Windows, ISSM_DIR for other systems).
-
-    Returns
-    -------
-    str
-        The root directory path of the ISSM installation.
-
-    Raises
-    ------
-    EnvironmentError
-        If the ISSM_DIR environment variable is not set or is empty.
-
-    Examples
-    --------
-    >>> issm_dir = get_issm_dir()
-    >>> print(issm_dir)
-    '/usr/local/issm'
+    This function checks the appropriate ISSM_DIR environment variable
+    (ISSM_DIR_WIN on Windows, ISSM_DIR otherwise). If the variable is not
+    set, it issues a warning with instructions and returns None.
     """
 
-    # Determine ISSM_DIR based on operating system
+    # Choose the correct env var
     if is_pc():
-        issm_dir = os.environ['ISSM_DIR_WIN']
-        if issm_dir.endswith('/') or issm_dir.endswith('\\'):
-            issm_dir = issm_dir[:-1]
+        issm_dir = os.environ.get('ISSM_DIR_WIN')
     else:
-        issm_dir = os.environ['ISSM_DIR']
+        issm_dir = os.environ.get('ISSM_DIR')
 
-    # Raise error if ISSM_DIR is not set
+    # If missing, warn and return None
     if not issm_dir:
-        raise EnvironmentError("ISSM_DIR environment variable is not set. Please ensure ISSM is properly installed and configured.")
+        warnings.warn('pyissm.tools.config.get_issm_dir: Environment variable ISSM_DIR is not set. This limits functionality of pyISSM.\n\n'
+                      'Ensure that ISSM is installed with Python wrappers and the environment is properly configured. On Linux/MacOS, add:\n\n'
+                      "     export ISSM_DIR=\"<path_to_issm_directory>\"\n"
+                      "     source $ISSM_DIR/etc/environment.sh\n\n"
+                      "to your .bash_profile or .zprofile")
+        return None
 
-    return issm_dir
+    # Normalize trailing slashes
+    return issm_dir.rstrip('/\\')
 
 def get_hostname():
     """
