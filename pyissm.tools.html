@@ -18,7 +18,8 @@
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="pyissm.model.classes package" href="pyissm.model.classes.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -40,76 +41,27 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">pyissm.tools package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-pyissm.tools.config">pyissm.tools.config module</a><ul>
-<li><a class="reference internal" href="#pyissm.tools.config.get_hostname"><code class="docutils literal notranslate"><span class="pre">get_hostname()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.config.get_issm_dir"><code class="docutils literal notranslate"><span class="pre">get_issm_dir()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.config.get_username"><code class="docutils literal notranslate"><span class="pre">get_username()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.config.iluasm_options"><code class="docutils literal notranslate"><span class="pre">iluasm_options()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.config.is_pc"><code class="docutils literal notranslate"><span class="pre">is_pc()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.config.issm_gsl_solver"><code class="docutils literal notranslate"><span class="pre">issm_gsl_solver()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.config.issm_mumps_solver"><code class="docutils literal notranslate"><span class="pre">issm_mumps_solver()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.config.mumps_options"><code class="docutils literal notranslate"><span class="pre">mumps_options()</span></code></a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">pyissm</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="pyissm.html">pyissm package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="pyissm.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pyissm.analysis.html">pyissm.analysis package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.data.html">pyissm.data package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.learn.html">pyissm.learn package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html">pyissm.model package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">pyissm.tools package</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-pyissm.tools.exp">pyissm.tools.exp module</a><ul>
-<li><a class="reference internal" href="#pyissm.tools.exp.exp_read"><code class="docutils literal notranslate"><span class="pre">exp_read()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.exp.exp_write"><code class="docutils literal notranslate"><span class="pre">exp_write()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-pyissm.tools.general">pyissm.tools.general module</a><ul>
-<li><a class="reference internal" href="#pyissm.tools.general.convert_units"><code class="docutils literal notranslate"><span class="pre">convert_units()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.general.extract_field_layer"><code class="docutils literal notranslate"><span class="pre">extract_field_layer()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.general.has_nested_attr"><code class="docutils literal notranslate"><span class="pre">has_nested_attr()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.general.ll_to_xy"><code class="docutils literal notranslate"><span class="pre">ll_to_xy()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.general.planetradius"><code class="docutils literal notranslate"><span class="pre">planetradius()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.general.xy_to_ll"><code class="docutils literal notranslate"><span class="pre">xy_to_ll()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-pyissm.tools.geometry">pyissm.tools.geometry module</a><ul>
-<li><a class="reference internal" href="#pyissm.tools.geometry.slope"><code class="docutils literal notranslate"><span class="pre">slope()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-pyissm.tools.interp">pyissm.tools.interp module</a><ul>
-<li><a class="reference internal" href="#pyissm.tools.interp.averaging"><code class="docutils literal notranslate"><span class="pre">averaging()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-pyissm.tools.materials">pyissm.tools.materials module</a><ul>
-<li><a class="reference internal" href="#pyissm.tools.materials.cuffey"><code class="docutils literal notranslate"><span class="pre">cuffey()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.materials.paterson"><code class="docutils literal notranslate"><span class="pre">paterson()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-pyissm.tools.wrappers">pyissm.tools.wrappers module</a><ul>
-<li><a class="reference internal" href="#pyissm.tools.wrappers.BamgConvertMesh"><code class="docutils literal notranslate"><span class="pre">BamgConvertMesh()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.wrappers.BamgMesher"><code class="docutils literal notranslate"><span class="pre">BamgMesher()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.wrappers.BamgTriangulate"><code class="docutils literal notranslate"><span class="pre">BamgTriangulate()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.wrappers.ContourToMesh"><code class="docutils literal notranslate"><span class="pre">ContourToMesh()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.wrappers.ContourToNodes"><code class="docutils literal notranslate"><span class="pre">ContourToNodes()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.wrappers.ElementConnectivity"><code class="docutils literal notranslate"><span class="pre">ElementConnectivity()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.wrappers.ExpToLevelSet"><code class="docutils literal notranslate"><span class="pre">ExpToLevelSet()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.wrappers.InterpFromGridToMesh"><code class="docutils literal notranslate"><span class="pre">InterpFromGridToMesh()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.wrappers.InterpFromMesh2d"><code class="docutils literal notranslate"><span class="pre">InterpFromMesh2d()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.wrappers.InterpFromMeshToGrid"><code class="docutils literal notranslate"><span class="pre">InterpFromMeshToGrid()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.wrappers.InterpFromMeshToMesh2d"><code class="docutils literal notranslate"><span class="pre">InterpFromMeshToMesh2d()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.wrappers.InterpFromMeshToMesh3d"><code class="docutils literal notranslate"><span class="pre">InterpFromMeshToMesh3d()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.wrappers.IssmConfig"><code class="docutils literal notranslate"><span class="pre">IssmConfig()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.wrappers.MeshPartition"><code class="docutils literal notranslate"><span class="pre">MeshPartition()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.wrappers.MeshProfileIntersection"><code class="docutils literal notranslate"><span class="pre">MeshProfileIntersection()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.wrappers.NodeConnectivity"><code class="docutils literal notranslate"><span class="pre">NodeConnectivity()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.wrappers.ProcessRifts"><code class="docutils literal notranslate"><span class="pre">ProcessRifts()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.wrappers.Triangle"><code class="docutils literal notranslate"><span class="pre">Triangle()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.wrappers.check_wrappers_installed"><code class="docutils literal notranslate"><span class="pre">check_wrappers_installed()</span></code></a></li>
-<li><a class="reference internal" href="#pyissm.tools.wrappers.load_issm_wrapper"><code class="docutils literal notranslate"><span class="pre">load_issm_wrapper()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-pyissm.tools">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.html#module-pyissm.plot">pyissm.plot module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.html#module-pyissm">Module contents</a></li>
 </ul>
 </li>
 </ul>
-</div>
+</li>
+</ul>
+
         </div>
       </div>
     </nav>
@@ -124,6 +76,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">pyissm</a></li>
+          <li class="breadcrumb-item"><a href="pyissm.html">pyissm package</a></li>
       <li class="breadcrumb-item active">pyissm.tools package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/pyissm.tools.rst.txt" rel="nofollow"> View page source</a>
@@ -1479,7 +1433,9 @@ that handles lazy loading of the <cite>_python</cite> function.</p>
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyissm.model.classes.html" class="btn btn-neutral float-left" title="pyissm.model.classes package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
 
   <hr/>
 
