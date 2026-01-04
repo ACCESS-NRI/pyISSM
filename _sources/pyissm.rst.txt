@@ -1,0 +1,33 @@
+pyissm package
+==============
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   pyissm.analysis
+   pyissm.data
+   pyissm.learn
+   pyissm.model
+   pyissm.tools
+
+Submodules
+----------
+
+pyissm.plot module
+------------------
+
+.. automodule:: pyissm.plot
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: pyissm
+   :members:
+   :show-inheritance:
+   :undoc-members:

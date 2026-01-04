@@ -1,0 +1,69 @@
+pyissm.model package
+====================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   pyissm.model.classes
+
+Submodules
+----------
+
+pyissm.model.Model module
+-------------------------
+
+.. automodule:: pyissm.model.Model
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+pyissm.model.bc module
+----------------------
+
+.. automodule:: pyissm.model.bc
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+pyissm.model.execute module
+---------------------------
+
+.. automodule:: pyissm.model.execute
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+pyissm.model.io module
+----------------------
+
+.. automodule:: pyissm.model.io
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+pyissm.model.mesh module
+------------------------
+
+.. automodule:: pyissm.model.mesh
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+pyissm.model.param module
+-------------------------
+
+.. automodule:: pyissm.model.param
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: pyissm.model
+   :members:
+   :show-inheritance:
+   :undoc-members:

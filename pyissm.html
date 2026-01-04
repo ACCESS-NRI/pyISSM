@@ -1,0 +1,682 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyissm package &mdash; pyissm v0.0.1dev1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=37c38653"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pyissm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">pyissm package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-pyissm.plot">pyissm.plot module</a><ul>
+<li><a class="reference internal" href="#pyissm.plot.plot_mesh2d"><code class="docutils literal notranslate"><span class="pre">plot_mesh2d()</span></code></a></li>
+<li><a class="reference internal" href="#pyissm.plot.plot_model_bc"><code class="docutils literal notranslate"><span class="pre">plot_model_bc()</span></code></a></li>
+<li><a class="reference internal" href="#pyissm.plot.plot_model_elements"><code class="docutils literal notranslate"><span class="pre">plot_model_elements()</span></code></a></li>
+<li><a class="reference internal" href="#pyissm.plot.plot_model_field"><code class="docutils literal notranslate"><span class="pre">plot_model_field()</span></code></a></li>
+<li><a class="reference internal" href="#pyissm.plot.plot_model_nodes"><code class="docutils literal notranslate"><span class="pre">plot_model_nodes()</span></code></a></li>
+<li><a class="reference internal" href="#pyissm.plot.plot_model_ts"><code class="docutils literal notranslate"><span class="pre">plot_model_ts()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pyissm">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyissm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">pyissm package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pyissm.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pyissm-package">
+<h1>pyissm package<a class="headerlink" href="#pyissm-package" title="Link to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pyissm.analysis.html">pyissm.analysis package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.analysis.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.analysis.html#module-pyissm.analysis.ismip">pyissm.analysis.ismip module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.analysis.html#pyissm.analysis.ismip.calc_perc_ice_cover"><code class="docutils literal notranslate"><span class="pre">calc_perc_ice_cover()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.analysis.html#pyissm.analysis.ismip.get_ismip_variable"><code class="docutils literal notranslate"><span class="pre">get_ismip_variable()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.analysis.html#module-pyissm.analysis">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pyissm.data.html">pyissm.data package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.data.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.data.html#module-pyissm.data.interp">pyissm.data.interp module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.data.html#pyissm.data.interp.points_to_mesh"><code class="docutils literal notranslate"><span class="pre">points_to_mesh()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.data.html#pyissm.data.interp.xr_to_mesh"><code class="docutils literal notranslate"><span class="pre">xr_to_mesh()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.data.html#module-pyissm.data">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pyissm.learn.html">pyissm.learn package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.learn.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.learn.html#module-pyissm.learn.tutorials">pyissm.learn.tutorials module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.learn.html#module-pyissm.learn">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pyissm.model.html">pyissm.model package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.model.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.classes.html">pyissm.model.classes package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.amr">pyissm.model.classes.amr module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.autodiff">pyissm.model.classes.autodiff module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.balancethickness">pyissm.model.classes.balancethickness module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.basalforcings">pyissm.model.classes.basalforcings module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.calving">pyissm.model.classes.calving module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.class_registry">pyissm.model.classes.class_registry module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.class_utils">pyissm.model.classes.class_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.cluster">pyissm.model.classes.cluster module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.constants">pyissm.model.classes.constants module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.damage">pyissm.model.classes.damage module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.debris">pyissm.model.classes.debris module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.debug">pyissm.model.classes.debug module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.dependent">pyissm.model.classes.dependent module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.dsl">pyissm.model.classes.dsl module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.esa">pyissm.model.classes.esa module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.flowequation">pyissm.model.classes.flowequation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.friction">pyissm.model.classes.friction module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.frontalforcings">pyissm.model.classes.frontalforcings module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.geometry">pyissm.model.classes.geometry module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.groundingline">pyissm.model.classes.groundingline module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.hydrology">pyissm.model.classes.hydrology module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.independent">pyissm.model.classes.independent module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.initialization">pyissm.model.classes.initialization module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.inversion">pyissm.model.classes.inversion module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.issmsettings">pyissm.model.classes.issmsettings module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.levelset">pyissm.model.classes.levelset module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.love">pyissm.model.classes.love module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.lovenumbers">pyissm.model.classes.lovenumbers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.mask">pyissm.model.classes.mask module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.massfluxatgate">pyissm.model.classes.massfluxatgate module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.masstransport">pyissm.model.classes.masstransport module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.materials">pyissm.model.classes.materials module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.mesh">pyissm.model.classes.mesh module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.miscellaneous">pyissm.model.classes.miscellaneous module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.misfit">pyissm.model.classes.misfit module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.nodalvalue">pyissm.model.classes.nodalvalue module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.offlinesolidearthsolution">pyissm.model.classes.offlinesolidearthsolution module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.organizer">pyissm.model.classes.organizer module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.outputdefinition">pyissm.model.classes.outputdefinition module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.private">pyissm.model.classes.private module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.qmu">pyissm.model.classes.qmu module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.radaroverlay">pyissm.model.classes.radaroverlay module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.regionaloutput">pyissm.model.classes.regionaloutput module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.results">pyissm.model.classes.results module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.rifts">pyissm.model.classes.rifts module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.rotational">pyissm.model.classes.rotational module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.sampling">pyissm.model.classes.sampling module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.smb">pyissm.model.classes.smb module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.solidearth">pyissm.model.classes.solidearth module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.steadystate">pyissm.model.classes.steadystate module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.stochasticforcing">pyissm.model.classes.stochasticforcing module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.stressbalance">pyissm.model.classes.stressbalance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.surfaceload">pyissm.model.classes.surfaceload module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.thermal">pyissm.model.classes.thermal module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.timestepping">pyissm.model.classes.timestepping module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.toolkits">pyissm.model.classes.toolkits module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.transient">pyissm.model.classes.transient module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes.verbose">pyissm.model.classes.verbose module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html#module-pyissm.model.classes">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.model.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.model.html#module-pyissm.model.Model">pyissm.model.Model module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.mesh"><code class="docutils literal notranslate"><span class="pre">Model.mesh</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.mask"><code class="docutils literal notranslate"><span class="pre">Model.mask</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.geometry"><code class="docutils literal notranslate"><span class="pre">Model.geometry</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.constants"><code class="docutils literal notranslate"><span class="pre">Model.constants</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.smb"><code class="docutils literal notranslate"><span class="pre">Model.smb</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.basalforcings"><code class="docutils literal notranslate"><span class="pre">Model.basalforcings</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.materials"><code class="docutils literal notranslate"><span class="pre">Model.materials</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.damage"><code class="docutils literal notranslate"><span class="pre">Model.damage</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.friction"><code class="docutils literal notranslate"><span class="pre">Model.friction</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.flowequation"><code class="docutils literal notranslate"><span class="pre">Model.flowequation</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.timestepping"><code class="docutils literal notranslate"><span class="pre">Model.timestepping</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.initialization"><code class="docutils literal notranslate"><span class="pre">Model.initialization</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.rifts"><code class="docutils literal notranslate"><span class="pre">Model.rifts</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.solidearth"><code class="docutils literal notranslate"><span class="pre">Model.solidearth</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.dsl"><code class="docutils literal notranslate"><span class="pre">Model.dsl</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.debug"><code class="docutils literal notranslate"><span class="pre">Model.debug</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.verbose"><code class="docutils literal notranslate"><span class="pre">Model.verbose</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.settings"><code class="docutils literal notranslate"><span class="pre">Model.settings</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.toolkits"><code class="docutils literal notranslate"><span class="pre">Model.toolkits</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.cluster"><code class="docutils literal notranslate"><span class="pre">Model.cluster</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.balancethickness"><code class="docutils literal notranslate"><span class="pre">Model.balancethickness</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.stressbalance"><code class="docutils literal notranslate"><span class="pre">Model.stressbalance</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.groundingline"><code class="docutils literal notranslate"><span class="pre">Model.groundingline</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.hydrology"><code class="docutils literal notranslate"><span class="pre">Model.hydrology</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.masstransport"><code class="docutils literal notranslate"><span class="pre">Model.masstransport</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.thermal"><code class="docutils literal notranslate"><span class="pre">Model.thermal</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.steadystate"><code class="docutils literal notranslate"><span class="pre">Model.steadystate</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.transient"><code class="docutils literal notranslate"><span class="pre">Model.transient</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.levelset"><code class="docutils literal notranslate"><span class="pre">Model.levelset</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.calving"><code class="docutils literal notranslate"><span class="pre">Model.calving</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.frontalforcings"><code class="docutils literal notranslate"><span class="pre">Model.frontalforcings</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.love"><code class="docutils literal notranslate"><span class="pre">Model.love</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.esa"><code class="docutils literal notranslate"><span class="pre">Model.esa</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.sampling"><code class="docutils literal notranslate"><span class="pre">Model.sampling</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.autodiff"><code class="docutils literal notranslate"><span class="pre">Model.autodiff</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.inversion"><code class="docutils literal notranslate"><span class="pre">Model.inversion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.qmu"><code class="docutils literal notranslate"><span class="pre">Model.qmu</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.amr"><code class="docutils literal notranslate"><span class="pre">Model.amr</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.results"><code class="docutils literal notranslate"><span class="pre">Model.results</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.outputdefinition"><code class="docutils literal notranslate"><span class="pre">Model.outputdefinition</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.radaroverlay"><code class="docutils literal notranslate"><span class="pre">Model.radaroverlay</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.miscellaneous"><code class="docutils literal notranslate"><span class="pre">Model.miscellaneous</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.stochasticforcing"><code class="docutils literal notranslate"><span class="pre">Model.stochasticforcing</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.check_message"><code class="docutils literal notranslate"><span class="pre">Model.check_message()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.extract"><code class="docutils literal notranslate"><span class="pre">Model.extract()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model.Model.model_class_names"><code class="docutils literal notranslate"><span class="pre">Model.model_class_names()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.model.html#module-pyissm.model.bc">pyissm.model.bc module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.bc.get_ice_front_nodes"><code class="docutils literal notranslate"><span class="pre">get_ice_front_nodes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.bc.set_ice_shelf_bc"><code class="docutils literal notranslate"><span class="pre">set_ice_shelf_bc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.bc.set_neumann_bc"><code class="docutils literal notranslate"><span class="pre">set_neumann_bc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.bc.set_sb_dirichlet_bc"><code class="docutils literal notranslate"><span class="pre">set_sb_dirichlet_bc()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.model.html#module-pyissm.model.execute">pyissm.model.execute module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.execute.WriteData"><code class="docutils literal notranslate"><span class="pre">WriteData()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.execute.format_to_code"><code class="docutils literal notranslate"><span class="pre">format_to_code()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.execute.is_model_self_consistent"><code class="docutils literal notranslate"><span class="pre">is_model_self_consistent()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.execute.load_results_from_cluster"><code class="docutils literal notranslate"><span class="pre">load_results_from_cluster()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.execute.load_results_from_disk"><code class="docutils literal notranslate"><span class="pre">load_results_from_disk()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.execute.marshall"><code class="docutils literal notranslate"><span class="pre">marshall()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.execute.parse_results_from_disk"><code class="docutils literal notranslate"><span class="pre">parse_results_from_disk()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.execute.postprocess_qmu"><code class="docutils literal notranslate"><span class="pre">postprocess_qmu()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.execute.preprocess_qmu"><code class="docutils literal notranslate"><span class="pre">preprocess_qmu()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.execute.solve"><code class="docutils literal notranslate"><span class="pre">solve()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.execute.wait_on_lock"><code class="docutils literal notranslate"><span class="pre">wait_on_lock()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.model.html#module-pyissm.model.io">pyissm.model.io module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.io.export_gridded_model"><code class="docutils literal notranslate"><span class="pre">export_gridded_model()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.io.issm_scp_in"><code class="docutils literal notranslate"><span class="pre">issm_scp_in()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.io.issm_scp_out"><code class="docutils literal notranslate"><span class="pre">issm_scp_out()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.io.issm_ssh"><code class="docutils literal notranslate"><span class="pre">issm_ssh()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.io.load_model"><code class="docutils literal notranslate"><span class="pre">load_model()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.io.save_model"><code class="docutils literal notranslate"><span class="pre">save_model()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.model.html#module-pyissm.model.mesh">pyissm.model.mesh module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.mesh.bamg"><code class="docutils literal notranslate"><span class="pre">bamg()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.mesh.bamg_flowband"><code class="docutils literal notranslate"><span class="pre">bamg_flowband()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.mesh.compute_hessian"><code class="docutils literal notranslate"><span class="pre">compute_hessian()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.mesh.compute_metric"><code class="docutils literal notranslate"><span class="pre">compute_metric()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.mesh.elements_from_edge"><code class="docutils literal notranslate"><span class="pre">elements_from_edge()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.mesh.export_gmsh"><code class="docutils literal notranslate"><span class="pre">export_gmsh()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.mesh.find_element_types"><code class="docutils literal notranslate"><span class="pre">find_element_types()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.mesh.find_node_types"><code class="docutils literal notranslate"><span class="pre">find_node_types()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.mesh.find_segments"><code class="docutils literal notranslate"><span class="pre">find_segments()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.mesh.flag_elements"><code class="docutils literal notranslate"><span class="pre">flag_elements()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.mesh.get_element_areas_volumes"><code class="docutils literal notranslate"><span class="pre">get_element_areas_volumes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.mesh.get_mesh"><code class="docutils literal notranslate"><span class="pre">get_mesh()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.mesh.get_nodal_functions_coeff"><code class="docutils literal notranslate"><span class="pre">get_nodal_functions_coeff()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.mesh.grid_model_field"><code class="docutils literal notranslate"><span class="pre">grid_model_field()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.mesh.make_gridded_domain_mask"><code class="docutils literal notranslate"><span class="pre">make_gridded_domain_mask()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.mesh.mesh_convert"><code class="docutils literal notranslate"><span class="pre">mesh_convert()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.mesh.model_intersect_3d"><code class="docutils literal notranslate"><span class="pre">model_intersect_3d()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.mesh.model_merge_3d"><code class="docutils literal notranslate"><span class="pre">model_merge_3d()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.mesh.process_mesh"><code class="docutils literal notranslate"><span class="pre">process_mesh()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.mesh.round_mesh"><code class="docutils literal notranslate"><span class="pre">round_mesh()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.mesh.square_mesh"><code class="docutils literal notranslate"><span class="pre">square_mesh()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.mesh.triangle"><code class="docutils literal notranslate"><span class="pre">triangle()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.mesh.twod_to_3d"><code class="docutils literal notranslate"><span class="pre">twod_to_3d()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.model.html#module-pyissm.model.param">pyissm.model.param module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.param.contour_envelope"><code class="docutils literal notranslate"><span class="pre">contour_envelope()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.param.kill_icebergs"><code class="docutils literal notranslate"><span class="pre">kill_icebergs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.param.parameterize"><code class="docutils literal notranslate"><span class="pre">parameterize()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.param.set_flow_equation"><code class="docutils literal notranslate"><span class="pre">set_flow_equation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.html#pyissm.model.param.set_mask"><code class="docutils literal notranslate"><span class="pre">set_mask()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.model.html#module-pyissm.model">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pyissm.tools.html">pyissm.tools package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.tools.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.tools.html#module-pyissm.tools.config">pyissm.tools.config module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.config.get_hostname"><code class="docutils literal notranslate"><span class="pre">get_hostname()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.config.get_issm_dir"><code class="docutils literal notranslate"><span class="pre">get_issm_dir()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.config.get_username"><code class="docutils literal notranslate"><span class="pre">get_username()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.config.iluasm_options"><code class="docutils literal notranslate"><span class="pre">iluasm_options()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.config.is_pc"><code class="docutils literal notranslate"><span class="pre">is_pc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.config.issm_gsl_solver"><code class="docutils literal notranslate"><span class="pre">issm_gsl_solver()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.config.issm_mumps_solver"><code class="docutils literal notranslate"><span class="pre">issm_mumps_solver()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.config.mumps_options"><code class="docutils literal notranslate"><span class="pre">mumps_options()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.tools.html#module-pyissm.tools.exp">pyissm.tools.exp module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.exp.exp_read"><code class="docutils literal notranslate"><span class="pre">exp_read()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.exp.exp_write"><code class="docutils literal notranslate"><span class="pre">exp_write()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.tools.html#module-pyissm.tools.general">pyissm.tools.general module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.general.convert_units"><code class="docutils literal notranslate"><span class="pre">convert_units()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.general.extract_field_layer"><code class="docutils literal notranslate"><span class="pre">extract_field_layer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.general.has_nested_attr"><code class="docutils literal notranslate"><span class="pre">has_nested_attr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.general.ll_to_xy"><code class="docutils literal notranslate"><span class="pre">ll_to_xy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.general.planetradius"><code class="docutils literal notranslate"><span class="pre">planetradius()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.general.xy_to_ll"><code class="docutils literal notranslate"><span class="pre">xy_to_ll()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.tools.html#module-pyissm.tools.geometry">pyissm.tools.geometry module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.geometry.slope"><code class="docutils literal notranslate"><span class="pre">slope()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.tools.html#module-pyissm.tools.interp">pyissm.tools.interp module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.interp.averaging"><code class="docutils literal notranslate"><span class="pre">averaging()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.tools.html#module-pyissm.tools.materials">pyissm.tools.materials module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.materials.cuffey"><code class="docutils literal notranslate"><span class="pre">cuffey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.materials.paterson"><code class="docutils literal notranslate"><span class="pre">paterson()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.tools.html#module-pyissm.tools.wrappers">pyissm.tools.wrappers module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.wrappers.BamgConvertMesh"><code class="docutils literal notranslate"><span class="pre">BamgConvertMesh()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.wrappers.BamgMesher"><code class="docutils literal notranslate"><span class="pre">BamgMesher()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.wrappers.BamgTriangulate"><code class="docutils literal notranslate"><span class="pre">BamgTriangulate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.wrappers.ContourToMesh"><code class="docutils literal notranslate"><span class="pre">ContourToMesh()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.wrappers.ContourToNodes"><code class="docutils literal notranslate"><span class="pre">ContourToNodes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.wrappers.ElementConnectivity"><code class="docutils literal notranslate"><span class="pre">ElementConnectivity()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.wrappers.ExpToLevelSet"><code class="docutils literal notranslate"><span class="pre">ExpToLevelSet()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.wrappers.InterpFromGridToMesh"><code class="docutils literal notranslate"><span class="pre">InterpFromGridToMesh()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.wrappers.InterpFromMesh2d"><code class="docutils literal notranslate"><span class="pre">InterpFromMesh2d()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.wrappers.InterpFromMeshToGrid"><code class="docutils literal notranslate"><span class="pre">InterpFromMeshToGrid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.wrappers.InterpFromMeshToMesh2d"><code class="docutils literal notranslate"><span class="pre">InterpFromMeshToMesh2d()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.wrappers.InterpFromMeshToMesh3d"><code class="docutils literal notranslate"><span class="pre">InterpFromMeshToMesh3d()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.wrappers.IssmConfig"><code class="docutils literal notranslate"><span class="pre">IssmConfig()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.wrappers.MeshPartition"><code class="docutils literal notranslate"><span class="pre">MeshPartition()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.wrappers.MeshProfileIntersection"><code class="docutils literal notranslate"><span class="pre">MeshProfileIntersection()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.wrappers.NodeConnectivity"><code class="docutils literal notranslate"><span class="pre">NodeConnectivity()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.wrappers.ProcessRifts"><code class="docutils literal notranslate"><span class="pre">ProcessRifts()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.wrappers.Triangle"><code class="docutils literal notranslate"><span class="pre">Triangle()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.wrappers.check_wrappers_installed"><code class="docutils literal notranslate"><span class="pre">check_wrappers_installed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html#pyissm.tools.wrappers.load_issm_wrapper"><code class="docutils literal notranslate"><span class="pre">load_issm_wrapper()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyissm.tools.html#module-pyissm.tools">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-pyissm.plot">
+<span id="pyissm-plot-module"></span><h2>pyissm.plot module<a class="headerlink" href="#module-pyissm.plot" title="Link to this heading"></a></h2>
+<p>Functions to visualize ISSM Models</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.plot.plot_mesh2d">
+<span class="sig-prename descclassname"><span class="pre">pyissm.plot.</span></span><span class="sig-name descname"><span class="pre">plot_mesh2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'X</span> <span class="pre">(m)'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Y</span> <span class="pre">(m)'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(6.4,</span> <span class="pre">4.8)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constrained_layout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_nodes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.plot.plot_mesh2d" title="Link to this definition"></a></dt>
+<dd><p>Plot a 2D triangular mesh using matplotlib.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mesh</strong> (<em>matplotlib.tri.Triangulation</em><em> or </em><em>similar</em>) – A 2D mesh object containing ‘x’, ‘y’, and triangle connectivity information.
+Can be created for ISSM models with get_mesh() or process_mesh().</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em><em>, </em><em>optional</em>) – An existing matplotlib axes object to plot on. If None, a new figure and axes are created.</p></li>
+<li><p><strong>color</strong> (<em>str</em><em>, </em><em>optional</em>) – Color of the triangle edges. Default is ‘k’ (black).</p></li>
+<li><p><strong>linewidth</strong> (<em>float</em><em>, </em><em>optional</em>) – Width of the triangle edges. Default is 0.1.</p></li>
+<li><p><strong>xlabel</strong> (<em>str</em><em>, </em><em>optional</em>) – Label for the x-axis. Default is ‘X (m)’.</p></li>
+<li><p><strong>ylabel</strong> (<em>str</em><em>, </em><em>optional</em>) – Label for the y-axis. Default is ‘Y (m)’.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em><em> of </em><em>float</em><em>, </em><em>optional</em>) – Figure size in inches if a new figure is created. Default is (6.4, 4.8).</p></li>
+<li><p><strong>constrained_layout</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use constrained layout when creating a new figure. Default is ‘True’.</p></li>
+<li><p><strong>show_nodes</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, overlay nodes on the mesh using ax.scatter(). Default is ‘False’.</p></li>
+<li><p><strong>node_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Keyword arguments passed to ax.scatter() for node display. Defaults to
+{‘marker’: ‘.’, ‘color’: ‘k’, ‘s’: 5}.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments passed to ax.triplot().</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>If ‘ax’ is None, returns ‘(fig, ax)’ of the created figure and axes.
+If ‘ax’ is provided, returns the modified ‘ax’.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matplotlib.figure.Figure or matplotlib.axes.Axes</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>fig, ax = plot_mesh2d(mesh)
+fig, ax = plot_mesh2d(mesh, color = ‘blue’, linewidth = 0.5)
+fig, (ax1, ax2) = plt.subplots(1, 2)
+ax1 = plot_mesh2d(mesh, ax = ax1)
+ax2 = plot_mesh2d(mesh, ax = ax2, show_nodes = True, node_kwargs = {‘color’: ‘red’})</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.plot.plot_model_bc">
+<span class="sig-prename descclassname"><span class="pre">pyissm.plot.</span></span><span class="sig-name descname"><span class="pre">plot_model_bc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'stressbalance'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'X</span> <span class="pre">(m)'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Y</span> <span class="pre">(m)'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(6.4,</span> <span class="pre">4.8)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constrained_layout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_mesh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_legend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.plot.plot_model_bc" title="Link to this definition"></a></dt>
+<dd><p>Plot Dirichlet and Neumann boundary conditions from an ISSM model.</p>
+<p>This function visualizes boundary conditions for a specified model
+component (e.g., <cite>stressbalance</cite>, <cite>masstransport</cite>, <cite>thermal</cite>, etc.) on
+a 2D or 3D mesh. Dirichlet conditions are plotted as colored markers,
+and Neumann boundaries (e.g. ice-front) plotted as coloured elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>md</strong> (<em>ISSM Model object</em>) – ISSM Model object containing mesh. Must be compatible with process_mesh()</p></li>
+<li><p><strong>type</strong> (<em>str</em><em>, </em><em>optional</em>) – The boundary condition type to plot. Must be one of:
+‘stressbalance’, ‘masstransport’, ‘thermal’,
+‘balancethickness’, ‘hydrology’, ‘debris’, or ‘levelset’.
+Default is ‘stressbalance’.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em><em>, </em><em>optional</em>) – Existing matplotlib Axes object. If not provided, a new figure and
+axes are created.</p></li>
+<li><p><strong>scale</strong> (<em>float</em><em>, </em><em>optional</em>) – Scaling factor for Dirichlet marker sizes. Default is 10.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em><em> of </em><em>float</em><em>, </em><em>optional</em>) – Size of the figure in inches (width, height). Default is (6.4, 4.8).</p></li>
+<li><p><strong>constrained_layout</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use constrained layout for figure spacing. Default is True.</p></li>
+<li><p><strong>show_mesh</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to display the model mesh beneath boundary markers. Default is True.</p></li>
+<li><p><strong>mesh_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional keyword arguments passed to the mesh plotting function.
+Overrides default {‘alpha’: 0.5}.</p></li>
+<li><p><strong>show_legend</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to display a legend showing boundary condition types. Default is True.</p></li>
+<li><p><strong>legend_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional keyword arguments passed to <cite>ax.legend()</cite>. Overrides default
+{‘title’: ‘Boundary condition’, ‘fontsize’: 10, ‘loc’: ‘upper right’}.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>fig</strong> (<em>matplotlib.figure.Figure</em>) – The matplotlib Figure object (only returned if <cite>ax</cite> is not provided).</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em>) – The matplotlib Axes object containing the plot.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>For 3D models, only surface boundary conditions are plotted.</p></li>
+<li><p>Neumann (ice-front) elements are included by default as blue elements.</p></li>
+<li><p>If no constraints are found for a given boundary condition, a message
+is printed and nothing is plotted for that type.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<p>fig, ax = plot_model_bc(md)
+fig, ax = plot_model_bc(md, scale = 1)
+fig, ax = plot_model_bc(md, type=’thermal’, mesh_kwargs = {‘color’: ‘grey’}, legend_kwargs = {‘title’: ‘Model BCs’})</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#pyissm.plot.plot_model_elements" title="pyissm.plot.plot_model_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_model_elements</span></code></a></dt><dd><p>Used internally to visualize Neumann conditions and mesh.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.plot.plot_model_elements">
+<span class="sig-prename descclassname"><span class="pre">pyissm.plot.</span></span><span class="sig-name descname"><span class="pre">plot_model_elements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ice_levelset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ocean_levelset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ice_elements'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'blue'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'X</span> <span class="pre">(m)'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Y</span> <span class="pre">(m)'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(6.4,</span> <span class="pre">4.8)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constrained_layout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_mesh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_legend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.plot.plot_model_elements" title="Link to this definition"></a></dt>
+<dd><p>Plot model elements by type (ice, ice-front, ocean, floating, grounded, grounding line) on a 2D mesh.</p>
+<p>This function uses level set fields to classify mesh elements and visualize them
+in a triplot visualisation. Optionally overlays the finite element mesh and includes
+a custom legend. Supports plotting in existing Matplotlib axes or creating
+a new figure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>md</strong> (<em>ISSM Model object</em>) – ISSM Model object containing mesh. Must be compatible with process_mesh().</p></li>
+<li><p><strong>ice_levelset</strong> (<em>ndarray</em>) – Array of ice level set values. Negative values indicate ice-covered nodes; zero indicates the ice front.</p></li>
+<li><p><strong>ocean_levelset</strong> (<em>ndarray</em>) – Array of ocean level set values. Negative values indicate ocean-covered nodes.</p></li>
+<li><p><strong>type</strong> (<em>{'ice_elements'</em><em>, </em><em>'ice_front_elements'</em><em>, </em><em>'ocean_elements'</em><em>, </em><em>'floating_ice_elements'</em><em>,</em>) – ‘grounded_ice_elements’, ‘grounding_line_elements’}, optional
+The element type to visualize. Default is ‘ice_elements’.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em><em>, </em><em>optional</em>) – Axes object to draw on. If None, a new figure and axes are created.</p></li>
+<li><p><strong>color</strong> (<em>str</em><em>, </em><em>optional</em>) – Color used for elements. Default is “blue”.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em><em> of </em><em>float</em><em>, </em><em>optional</em>) – Size of the figure in inches (width, height). Default is (6.4, 4.8).</p></li>
+<li><p><strong>constrained_layout</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use constrained layout in figure. Default is True.</p></li>
+<li><p><strong>show_mesh</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to overlay the triangular mesh. Default is True.</p></li>
+<li><p><strong>mesh_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional keyword arguments passed to plot_mesh2d() for customizing mesh appearance.</p></li>
+<li><p><strong>show_legend</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to display a legend identifying node types. Default is True.</p></li>
+<li><p><strong>legend_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional keyword arguments passed to ax.legend().</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>If ‘ax’ is None, returns a tuple (fig, ax) with the created figure and axes.
+If ‘ax’ is provided, returns the updated axes.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matplotlib.figure.Figure or matplotlib.axes.Axes</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>fig, ax = plot_model_elements(md, md.mask.ice_levelset, md.mask.ocean_levelset)
+fig, ax = plot_model_elements(md, md.mask.ice_levelset, md.mask.ocean_levelset, show_mesh = False)
+fig, ax = plot_model_elements(md, md.mask.ice_levelset, md.mask.ocean_levelset, type = ‘ice_front_elements’, mesh_kwargs = {‘linewidth’: 0.5, ‘color’: ‘cyan’})
+fig, ax = plot_model_elements(md, md.mask.ice_levelset, md.mask.ocean_levelset, type = ‘floating_ice_elements’, color = ‘red’)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.plot.plot_model_field">
+<span class="sig-prename descclassname"><span class="pre">pyissm.plot.</span></span><span class="sig-name descname"><span class="pre">plot_model_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_data_on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'points'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'X</span> <span class="pre">(m)'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Y</span> <span class="pre">(m)'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edgecolors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'face'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(6.4,</span> <span class="pre">4.8)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constrained_layout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_mesh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_cbar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cbar_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.plot.plot_model_field" title="Link to this definition"></a></dt>
+<dd><p>Plot a 2D scalar field defined on a 2D or 3D model mesh.</p>
+<p>This function visualizes a field defined on the mesh of an ISSM model.
+It works both 2D and 3D meshes by extracting a layer from 3D models. If no layer is specified for a 3D model,
+the surface values are plotted by default.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>md</strong> (<em>ISSM Model object</em>) – ISSM Model object containing mesh. Must be compatible with process_mesh()</p></li>
+<li><p><strong>field</strong> (<em>np.ndarray</em>) – A 1D array representing the scalar field to plot. Must be defined on vertices or elements. For 3D models, may be defined across all layers.</p></li>
+<li><p><strong>layer</strong> (<em>int</em><em>, </em><em>optional</em>) – Index of the horizontal layer to extract for 3D models (1-based indexing). Ignored for 2D models.
+If not provided, the surface layer is used by default for vertex- and element-based 3D fields.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em><em>, </em><em>optional</em>) – An existing matplotlib Axes object to plot on. If <cite>None</cite>, a new figure and axes are created.</p></li>
+<li><p><strong>plot_data_on</strong> (<em>str</em><em>, </em><em>optional</em>) – Should data be plotted on points or elements? Default is ‘points’. These options are converted to ‘shading’ used by plt.tripcolor(), as follows:
+plot_data_on = ‘points’: shading = ‘gouraud’ / plot_data_on = ‘elements’: shading = ‘flat’. When data are defined on elements, plot_data_on = ‘elements’
+is selected automatically internally.</p></li>
+<li><p><strong>xlabel</strong> (<em>str</em><em>, </em><em>optional</em>) – Label for the x-axis. Default is ‘X (m)’.</p></li>
+<li><p><strong>ylabel</strong> (<em>str</em><em>, </em><em>optional</em>) – Label for the y-axis. Default is ‘Y (m)’.</p></li>
+<li><p><strong>edgecolors</strong> (<em>str</em><em>, </em><em>optional</em>) – Color of triangle edges in the plot. Passed to ‘tripcolor’. Default is ‘face’.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Figure size in inches when creating a new figure. Default is (6.4, 4.8).</p></li>
+<li><p><strong>log</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, applies a logarithmic color normalization. Default is ‘False’.</p></li>
+<li><p><strong>constrained_layout</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use constrained layout for the figure. Default is ‘True’.</p></li>
+<li><p><strong>show_mesh</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, overlays the 2D mesh lines on the plot. Default is ‘False’.</p></li>
+<li><p><strong>show_cbar</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, adds a colorbar to the plot. Default is ‘False’.</p></li>
+<li><p><strong>mesh_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Keyword arguments passed to the mesh plotting function ‘plot_mesh2d()’.</p></li>
+<li><p><strong>cbar_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Keyword arguments passed to ‘fig.colorbar’.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional keyword arguments passed to ‘ax.tripcolor’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>If ‘ax’ is not provided, returns a tuple ‘(fig, ax)’. If ‘ax’ is provided, returns only ‘ax’.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matplotlib.figure.Figure or matplotlib.axes.Axes</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>fig, ax = plot_model_field(md, md.inversion.vel_obs)
+fig, ax = plot_model_field(md, md.results.TransientSolution.Vel[0], log = True)
+fig, ax = plot_model_field(md, md.results.TransientSolution.Temperature[-1], layer = 3)
+fig, ax = plot_model_field(md, md.results.TransientSolution.Temperature[-1], layer = 3, show_cbar = True, show_mesh = True)</p>
+<p>fig, (ax1, ax2, ax3) = plt.subplots(1, 3, constrained_layout = True)
+ax1 = plot_model_field(md, md.inversion.vel_obs, ax = ax1, log = True, cmap = ‘viridis’)
+ax2 = plot_model_field(md, md.results.StressbalanceSolution.Vel, ax = ax2, log = True, cmap = ‘viridis’)
+ax3 = issm.plot.plot_model_field(md, md.inversion.vel_obs - md.results.StressbalanceSolution.Vel, ax=ax3, cmap=’RdBu’, show_cbar = True)
+ax1.set_title(‘Observed Velocities’); ax2.set_title(‘Modelled Velocities’); ax3.set_title(‘Velocity Error’)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.plot.plot_model_nodes">
+<span class="sig-prename descclassname"><span class="pre">pyissm.plot.</span></span><span class="sig-name descname"><span class="pre">plot_model_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ice_levelset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ocean_levelset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ice_nodes'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['r',</span> <span class="pre">'k']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'o'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'X</span> <span class="pre">(m)'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Y</span> <span class="pre">(m)'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(6.4,</span> <span class="pre">4.8)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constrained_layout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_mesh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_legend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.plot.plot_model_nodes" title="Link to this definition"></a></dt>
+<dd><p>Plot model nodes by type (ice, ice-front, ocean, floating, grounded) on a 2D mesh.</p>
+<p>This function uses level set fields to classify mesh nodes and visualize them
+in a scatter plot. Optionally overlays the finite element mesh and includes
+a custom legend. Supports plotting in existing Matplotlib axes or creating
+a new figure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>md</strong> (<em>ISSM Model object</em>) – ISSM Model object containing mesh. Must be compatible with process_mesh().</p></li>
+<li><p><strong>ice_levelset</strong> (<em>ndarray</em>) – Array of ice level set values. Negative values indicate ice-covered nodes; zero indicates the ice front.</p></li>
+<li><p><strong>ocean_levelset</strong> (<em>ndarray</em>) – Array of ocean level set values. Negative values indicate ocean-covered nodes.</p></li>
+<li><p><strong>type</strong> (<em>{'ice_nodes'</em><em>, </em><em>'ice_front_nodes'</em><em>, </em><em>'ocean_nodes'</em><em>, </em><em>'floating_ice_nodes'</em><em>, </em><em>'grounded_ice_nodes'}</em><em>, </em><em>optional</em>) – The node type to visualize. Default is ‘ice_nodes’.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em><em>, </em><em>optional</em>) – Axes object to draw on. If None, a new figure and axes are created.</p></li>
+<li><p><strong>s</strong> (<em>float</em><em>, </em><em>optional</em>) – Marker size for scatter plot. Default is 5.</p></li>
+<li><p><strong>colors</strong> (<em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – Colors used for binary classification. First color is for “False”, second for “True”. Default is [‘r’, ‘k’].</p></li>
+<li><p><strong>marker</strong> (<em>str</em><em>, </em><em>optional</em>) – Marker style for nodes. Default is ‘o’.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em><em> of </em><em>float</em><em>, </em><em>optional</em>) – Size of the figure in inches (width, height). Default is (6.4, 4.8).</p></li>
+<li><p><strong>constrained_layout</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use constrained layout in figure. Default is True.</p></li>
+<li><p><strong>show_mesh</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to overlay the triangular mesh. Default is True.</p></li>
+<li><p><strong>mesh_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional keyword arguments passed to plot_mesh2d() for customizing mesh appearance.</p></li>
+<li><p><strong>show_legend</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to display a legend identifying node types. Default is True.</p></li>
+<li><p><strong>legend_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional keyword arguments passed to ax.legend().</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>If ‘ax’ is None, returns a tuple (fig, ax) with the created figure and axes.
+If ‘ax’ is provided, returns the updated axes.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matplotlib.figure.Figure or matplotlib.axes.Axes</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>fig, ax = plot_model_nodes(md, md.mask.ice_levelset, md.mask.ocean_levelset)
+fig, ax = plot_model_nodes(md, md.mask.ice_levelset, md.mask.ocean_levelset, show_mesh = False)
+fig, ax = plot_model_nodes(md, md.mask.ice_levelset, md.mask.ocean_levelset, type = ‘ice_front_nodes’, mesh_kwargs = {‘linewidth’: 0.5, ‘color’: ‘cyan’})
+fig, ax = plot_model_nodes(md, md.mask.ice_levelset, md.mask.ocean_levelset, type = ‘floating_ice_nodes’, colors = [‘blue’, ‘magenta’])</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.plot.plot_model_ts">
+<span class="sig-prename descclassname"><span class="pre">pyissm.plot.</span></span><span class="sig-name descname"><span class="pre">plot_model_ts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">inf)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Time</span> <span class="pre">(years)'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(6.4,</span> <span class="pre">4.8)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'black'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constrained_layout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sharex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.plot.plot_model_ts" title="Link to this definition"></a></dt>
+<dd><p>Plot time series data from an ISSM model’s TransientSolution.</p>
+<p>Automatically extracts 1D time series arrays from <cite>md.results.TransientSolution</cite> if <cite>data_list</cite> is not provided.
+Plots each variable as a separate subplot, sharing the x-axis (time).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>md</strong> (<em>object</em>) – ISSM model object containing results with a <cite>TransientSolution</cite> attribute.</p></li>
+<li><p><strong>data_list</strong> (<em>list</em><em> of </em><em>np.ndarray</em><em>, </em><em>optional</em>) – List of 1D numpy arrays to plot. If None, all 1D arrays in <cite>md.results.TransientSolution</cite> (except ‘time’ and ‘step’) are used.</p></li>
+<li><p><strong>variable_list</strong> (<em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – List of variable names corresponding to <cite>data_list</cite>. If None, names are auto-generated or extracted from <cite>TransientSolution</cite>.</p></li>
+<li><p><strong>unit_list</strong> (<em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – List of units for each variable. If None, defaults to ‘Units unspecified’ or ‘ISSM Units’.</p></li>
+<li><p><strong>time</strong> (<em>tuple</em><em> of </em><em>float</em><em>, </em><em>optional</em>) – Time range (start, end) to plot. Defaults to (0, np.inf).</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em><em> of </em><em>int</em><em>, </em><em>optional</em>) – Figure size in inches. Defaults to (6.4, 4.8).</p></li>
+<li><p><strong>fontsize</strong> (<em>int</em><em>, </em><em>optional</em>) – Font size for labels and titles. Defaults to 8.</p></li>
+<li><p><strong>color</strong> (<em>str</em><em>, </em><em>optional</em>) – Line color for plots. Defaults to ‘black’.</p></li>
+<li><p><strong>show_grid</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to show grid lines on plots. Defaults to True.</p></li>
+<li><p><strong>constrained_layout</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use matplotlib’s constrained layout. Defaults to True.</p></li>
+<li><p><strong>sharex</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether subplots share the x-axis. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>fig</strong> (<em>matplotlib.figure.Figure</em>) – The matplotlib figure object containing the plots.</p></li>
+<li><p><strong>axs</strong> (<em>np.ndarray of matplotlib.axes.Axes</em>) – Array of axes objects for each subplot.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If no time array is found, no 1D time series are available, input lists are mismatched, or data arrays are not 1D.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plot_model_ts</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plot_model_ts</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="n">data_list</span><span class="o">=</span><span class="p">[</span><span class="n">arr1</span><span class="p">,</span> <span class="n">arr2</span><span class="p">],</span> <span class="n">variable_list</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Var1&#39;</span><span class="p">,</span> <span class="s1">&#39;Var2&#39;</span><span class="p">],</span> <span class="n">unit_list</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;kg&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="module-pyissm">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pyissm" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, ACCESS-NRI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

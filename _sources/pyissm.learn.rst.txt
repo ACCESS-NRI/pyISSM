@@ -1,0 +1,21 @@
+pyissm.learn package
+====================
+
+Submodules
+----------
+
+pyissm.learn.tutorials module
+-----------------------------
+
+.. automodule:: pyissm.learn.tutorials
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: pyissm.learn
+   :members:
+   :show-inheritance:
+   :undoc-members:
