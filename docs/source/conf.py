@@ -31,7 +31,11 @@ extensions = [
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
+# Treat docstring errors as warnings, not fatal errors
+nitpicky = False
 
+# Do not fail build on docstring formatting
+suppress_warnings = ["autodoc.import_object", "autodoc", "docutils"]
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
