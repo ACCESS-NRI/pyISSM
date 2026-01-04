@@ -3771,7 +3771,7 @@ and properly deserializes the complete model state.</p>
 from the NetCDF file.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>model.Model</p>
+<dd class="field-odd"><p><a class="reference internal" href="#pyissm.model.Model" title="pyissm.model.Model">model.Model</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -3813,7 +3813,7 @@ reconstruction.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>md</strong> (<em>model.Model</em>) – The ISSM model object to be saved, containing all model components
+<li><p><strong>md</strong> (<a class="reference internal" href="#pyissm.model.Model" title="pyissm.model.Model"><em>model.Model</em></a>) – The ISSM model object to be saved, containing all model components
 such as mesh, geometry, materials, boundary conditions, and results.</p></li>
 <li><p><strong>path</strong> (<em>str</em>) – Path to the output NetCDF file where the model will be saved.</p></li>
 </ul>
@@ -5000,6 +5000,600 @@ the ice levelset field. Default is None.</p></li>
 </section>
 <section id="module-pyissm.model">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pyissm.model" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.Model">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyissm.model.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><a class="headerlink" href="#pyissm.model.Model" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>ISSM Model Class.</p>
+<p>This class defines a high-level container for all components of an ISSM (Ice Sheet System Model) model.
+It initializes a collection of model components, each of which may store inputs, settings, and results related
+to various aspects of the ice sheet simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>None.</strong></p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.mesh">
+<span class="sig-name descname"><span class="pre">mesh</span></span><a class="headerlink" href="#pyissm.model.Model.mesh" title="Link to this definition"></a></dt>
+<dd><p>Mesh properties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.mesh.mesh2d" title="pyissm.model.classes.mesh.mesh2d">classes.mesh.mesh2d</a>()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.mask">
+<span class="sig-name descname"><span class="pre">mask</span></span><a class="headerlink" href="#pyissm.model.Model.mask" title="Link to this definition"></a></dt>
+<dd><p>Defines grounded and floating elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.mask.mask2d()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.geometry">
+<span class="sig-name descname"><span class="pre">geometry</span></span><a class="headerlink" href="#pyissm.model.Model.geometry" title="Link to this definition"></a></dt>
+<dd><p>Surface elevation, bedrock topography, ice thickness, etc.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.geometry.geometry2d()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.constants">
+<span class="sig-name descname"><span class="pre">constants</span></span><a class="headerlink" href="#pyissm.model.Model.constants" title="Link to this definition"></a></dt>
+<dd><p>Physical constants.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.constants()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.smb">
+<span class="sig-name descname"><span class="pre">smb</span></span><a class="headerlink" href="#pyissm.model.Model.smb" title="Link to this definition"></a></dt>
+<dd><p>Surface mass balance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.smb.default" title="pyissm.model.classes.smb.default">classes.smb.default</a>()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.basalforcings">
+<span class="sig-name descname"><span class="pre">basalforcings</span></span><a class="headerlink" href="#pyissm.model.Model.basalforcings" title="Link to this definition"></a></dt>
+<dd><p>Bed forcings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.basalforcings.default" title="pyissm.model.classes.basalforcings.default">classes.basalforcings.default</a>()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.materials">
+<span class="sig-name descname"><span class="pre">materials</span></span><a class="headerlink" href="#pyissm.model.Model.materials" title="Link to this definition"></a></dt>
+<dd><p>Material properties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.materials.ice" title="pyissm.model.classes.materials.ice">classes.materials.ice</a>()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.damage">
+<span class="sig-name descname"><span class="pre">damage</span></span><a class="headerlink" href="#pyissm.model.Model.damage" title="Link to this definition"></a></dt>
+<dd><p>Damage propagation laws.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.damage()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.friction">
+<span class="sig-name descname"><span class="pre">friction</span></span><a class="headerlink" href="#pyissm.model.Model.friction" title="Link to this definition"></a></dt>
+<dd><p>Basal friction / drag properties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.friction.default" title="pyissm.model.classes.friction.default">classes.friction.default</a>()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.flowequation">
+<span class="sig-name descname"><span class="pre">flowequation</span></span><a class="headerlink" href="#pyissm.model.Model.flowequation" title="Link to this definition"></a></dt>
+<dd><p>Flow equations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.flowequation()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.timestepping">
+<span class="sig-name descname"><span class="pre">timestepping</span></span><a class="headerlink" href="#pyissm.model.Model.timestepping" title="Link to this definition"></a></dt>
+<dd><p>Timestepping for transient models.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.timestepping.default" title="pyissm.model.classes.timestepping.default">classes.timestepping.default</a>()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.initialization">
+<span class="sig-name descname"><span class="pre">initialization</span></span><a class="headerlink" href="#pyissm.model.Model.initialization" title="Link to this definition"></a></dt>
+<dd><p>Initial guess / state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.initialization()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.rifts">
+<span class="sig-name descname"><span class="pre">rifts</span></span><a class="headerlink" href="#pyissm.model.Model.rifts" title="Link to this definition"></a></dt>
+<dd><p>Rifts properties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.rifts()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.solidearth">
+<span class="sig-name descname"><span class="pre">solidearth</span></span><a class="headerlink" href="#pyissm.model.Model.solidearth" title="Link to this definition"></a></dt>
+<dd><p>Solidearth inputs and settings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.solidearth.earth" title="pyissm.model.classes.solidearth.earth">classes.solidearth.earth</a>()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.dsl">
+<span class="sig-name descname"><span class="pre">dsl</span></span><a class="headerlink" href="#pyissm.model.Model.dsl" title="Link to this definition"></a></dt>
+<dd><p>Dynamic sea level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.dsl.default" title="pyissm.model.classes.dsl.default">classes.dsl.default</a>()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.debug">
+<span class="sig-name descname"><span class="pre">debug</span></span><a class="headerlink" href="#pyissm.model.Model.debug" title="Link to this definition"></a></dt>
+<dd><p>Debugging tools (valgrind, gprof).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.debug()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.verbose">
+<span class="sig-name descname"><span class="pre">verbose</span></span><a class="headerlink" href="#pyissm.model.Model.verbose" title="Link to this definition"></a></dt>
+<dd><p>Verbosity level in solve.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.verbose()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.settings">
+<span class="sig-name descname"><span class="pre">settings</span></span><a class="headerlink" href="#pyissm.model.Model.settings" title="Link to this definition"></a></dt>
+<dd><p>Settings properties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.issmsettings()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.toolkits">
+<span class="sig-name descname"><span class="pre">toolkits</span></span><a class="headerlink" href="#pyissm.model.Model.toolkits" title="Link to this definition"></a></dt>
+<dd><p>PETSc options for each solution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.cluster">
+<span class="sig-name descname"><span class="pre">cluster</span></span><a class="headerlink" href="#pyissm.model.Model.cluster" title="Link to this definition"></a></dt>
+<dd><p>Cluster parameters (number of CPUs, etc.).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.balancethickness">
+<span class="sig-name descname"><span class="pre">balancethickness</span></span><a class="headerlink" href="#pyissm.model.Model.balancethickness" title="Link to this definition"></a></dt>
+<dd><p>Parameters for balancethickness solution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.balancethickness()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.stressbalance">
+<span class="sig-name descname"><span class="pre">stressbalance</span></span><a class="headerlink" href="#pyissm.model.Model.stressbalance" title="Link to this definition"></a></dt>
+<dd><p>Parameters for stressbalance solution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.stressbalance()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.groundingline">
+<span class="sig-name descname"><span class="pre">groundingline</span></span><a class="headerlink" href="#pyissm.model.Model.groundingline" title="Link to this definition"></a></dt>
+<dd><p>Parameters for groundingline solution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.groundingline()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.hydrology">
+<span class="sig-name descname"><span class="pre">hydrology</span></span><a class="headerlink" href="#pyissm.model.Model.hydrology" title="Link to this definition"></a></dt>
+<dd><p>Parameters for hydrology solution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.hydrology.shreve" title="pyissm.model.classes.hydrology.shreve">classes.hydrology.shreve</a>()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.masstransport">
+<span class="sig-name descname"><span class="pre">masstransport</span></span><a class="headerlink" href="#pyissm.model.Model.masstransport" title="Link to this definition"></a></dt>
+<dd><p>Parameters for masstransport solution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.masstransport()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.thermal">
+<span class="sig-name descname"><span class="pre">thermal</span></span><a class="headerlink" href="#pyissm.model.Model.thermal" title="Link to this definition"></a></dt>
+<dd><p>Parameters for thermal solution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.thermal()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.steadystate">
+<span class="sig-name descname"><span class="pre">steadystate</span></span><a class="headerlink" href="#pyissm.model.Model.steadystate" title="Link to this definition"></a></dt>
+<dd><p>Parameters for steadystate solution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.steadystate()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.transient">
+<span class="sig-name descname"><span class="pre">transient</span></span><a class="headerlink" href="#pyissm.model.Model.transient" title="Link to this definition"></a></dt>
+<dd><p>Parameters for transient solution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.transient()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.levelset">
+<span class="sig-name descname"><span class="pre">levelset</span></span><a class="headerlink" href="#pyissm.model.Model.levelset" title="Link to this definition"></a></dt>
+<dd><p>Parameters for moving boundaries (level-set method).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.levelset()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.calving">
+<span class="sig-name descname"><span class="pre">calving</span></span><a class="headerlink" href="#pyissm.model.Model.calving" title="Link to this definition"></a></dt>
+<dd><p>Parameters for calving.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.calving.default" title="pyissm.model.classes.calving.default">classes.calving.default</a>()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.frontalforcings">
+<span class="sig-name descname"><span class="pre">frontalforcings</span></span><a class="headerlink" href="#pyissm.model.Model.frontalforcings" title="Link to this definition"></a></dt>
+<dd><p>Parameters for frontalforcings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.frontalforcings.default" title="pyissm.model.classes.frontalforcings.default">classes.frontalforcings.default</a>()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.love">
+<span class="sig-name descname"><span class="pre">love</span></span><a class="headerlink" href="#pyissm.model.Model.love" title="Link to this definition"></a></dt>
+<dd><p>Parameters for love solution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.love.default" title="pyissm.model.classes.love.default">classes.love.default</a>()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.esa">
+<span class="sig-name descname"><span class="pre">esa</span></span><a class="headerlink" href="#pyissm.model.Model.esa" title="Link to this definition"></a></dt>
+<dd><p>Parameters for elastic adjustment solution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.esa()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.sampling">
+<span class="sig-name descname"><span class="pre">sampling</span></span><a class="headerlink" href="#pyissm.model.Model.sampling" title="Link to this definition"></a></dt>
+<dd><p>Parameters for stochastic sampler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.sampling()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.autodiff">
+<span class="sig-name descname"><span class="pre">autodiff</span></span><a class="headerlink" href="#pyissm.model.Model.autodiff" title="Link to this definition"></a></dt>
+<dd><p>Automatic differentiation parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.autodiff()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.inversion">
+<span class="sig-name descname"><span class="pre">inversion</span></span><a class="headerlink" href="#pyissm.model.Model.inversion" title="Link to this definition"></a></dt>
+<dd><p>Parameters for inverse methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.inversion.default" title="pyissm.model.classes.inversion.default">classes.inversion.default</a>()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.qmu">
+<span class="sig-name descname"><span class="pre">qmu</span></span><a class="headerlink" href="#pyissm.model.Model.qmu" title="Link to this definition"></a></dt>
+<dd><p>Dakota properties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.qmu.default" title="pyissm.model.classes.qmu.default">classes.qmu.default</a>()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.amr">
+<span class="sig-name descname"><span class="pre">amr</span></span><a class="headerlink" href="#pyissm.model.Model.amr" title="Link to this definition"></a></dt>
+<dd><p>Adaptive mesh refinement properties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.amr()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.results">
+<span class="sig-name descname"><span class="pre">results</span></span><a class="headerlink" href="#pyissm.model.Model.results" title="Link to this definition"></a></dt>
+<dd><p>Model results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.results.default" title="pyissm.model.classes.results.default">classes.results.default</a>()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.outputdefinition">
+<span class="sig-name descname"><span class="pre">outputdefinition</span></span><a class="headerlink" href="#pyissm.model.Model.outputdefinition" title="Link to this definition"></a></dt>
+<dd><p>Output definition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.outputdefinition()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.radaroverlay">
+<span class="sig-name descname"><span class="pre">radaroverlay</span></span><a class="headerlink" href="#pyissm.model.Model.radaroverlay" title="Link to this definition"></a></dt>
+<dd><p>Radar image for plot overlay.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.radaroverlay()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.miscellaneous">
+<span class="sig-name descname"><span class="pre">miscellaneous</span></span><a class="headerlink" href="#pyissm.model.Model.miscellaneous" title="Link to this definition"></a></dt>
+<dd><p>Miscellaneous fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.miscellaneous()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.Model.stochasticforcing">
+<span class="sig-name descname"><span class="pre">stochasticforcing</span></span><a class="headerlink" href="#pyissm.model.Model.stochasticforcing" title="Link to this definition"></a></dt>
+<dd><p>Stochasticity applied to model forcings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>classes.stochasticforcing()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.Model.check_message">
+<span class="sig-name descname"><span class="pre">check_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.Model.check_message" title="Link to this definition"></a></dt>
+<dd><p>Notify about a model consistency error, update internal state, and return the instance.</p>
+<p>This method prints a formatted consistency error message to standard output,
+marks the instance as inconsistent by setting <code class="docutils literal notranslate"><span class="pre">self.private.isconsistent</span></code>
+to <code class="docutils literal notranslate"><span class="pre">False</span></code>, and returns the instance to allow for method chaining.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>string</strong> (<em>str</em>) – Human-readable description of the consistency error. This will be inserted
+into the printed message: <code class="docutils literal notranslate"><span class="pre">Model</span> <span class="pre">consistency</span> <span class="pre">error:</span> <span class="pre">{string}</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The same instance on which the method was called, enabling fluent/chained
+calls.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>self</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method has the side effect of mutating the instance state (<code class="docutils literal notranslate"><span class="pre">self.private.isconsistent</span></code>),
+and it performs output via <code class="docutils literal notranslate"><span class="pre">print</span></code>. It does not raise exceptions.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">check_message</span><span class="p">(</span><span class="s2">&quot;missing parameter&quot;</span><span class="p">)</span>
+<span class="go">Model consistency error: missing parameter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">private</span><span class="o">.</span><span class="n">isconsistent</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.Model.extract">
+<span class="sig-name descname"><span class="pre">extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">area</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.Model.extract" title="Link to this definition"></a></dt>
+<dd><p>Extract a submodel from a larger model based on a domain or flag list.</p>
+<p>This routine extracts a submodel from a bigger model with respect to a given
+contour. The contour must be followed by the corresponding .exp file or a
+flags list. It can either be a domain file (argus type, .exp extension), or
+an array of element flags. If the user wants every element outside the domain
+to be extracted, add ‘~’ to the name of the domain file (e.g., ‘~HO.exp’).
+An empty string ‘’ will be considered as an empty domain. A string ‘all’ will
+be considered as the entire domain.</p>
+<p>The function performs the following operations:
+- Flags elements inside the specified area
+- Removes elements with all three nodes in excluded regions
+- Renumbers elements and nodes to maintain consistency
+- Updates mesh connectivity and vertex information
+- Adjusts boundary conditions at extraction boundaries
+- Handles 2D/3D mesh types and their specific properties
+- Processes results and output definitions if present</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>area</strong> (<em>str</em><em> or </em><em>array_like</em>) – Domain specification. Can be:
+- A domain file path (argus type, .exp extension)
+- A domain file path prefixed with ‘~’ to invert the domain
+- An array of element flags (boolean or integer)
+- An empty string ‘’ for empty domain
+- The string ‘all’ for entire domain</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>md2</strong> – Extracted submodel containing only the elements and nodes within the
+specified area. The model includes updated mesh properties, renumbered
+elements and nodes, adjusted boundary conditions, and extracted results
+and output definitions if present.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyissm.model.Model.Model" title="pyissm.model.Model.Model">Model</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – If the extracted model is empty (no elements found in the specified area).</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">extrude</span></code></dt><dd><p>Extrude model in vertical direction</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">collapse</span></code></dt><dd><p>Collapse model layers</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">md2</span> <span class="o">=</span> <span class="n">extract</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="s1">&#39;Domain.exp&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">md3</span> <span class="o">=</span> <span class="n">extract</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="s1">&#39;~Domain.exp&#39;</span><span class="p">)</span>  <span class="c1"># Extract outside domain</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">md4</span> <span class="o">=</span> <span class="n">extract</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="n">flag_array</span><span class="p">)</span>     <span class="c1"># Extract based on flag array</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.Model.model_class_names">
+<span class="sig-name descname"><span class="pre">model_class_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.Model.model_class_names" title="Link to this definition"></a></dt>
+<dd><p>Return a sorted list of registered model class attribute names.</p>
+<p>The method inspects the instance attributes and returns those whose
+classes are registered in <code class="docutils literal notranslate"><span class="pre">classes.class_registry.CLASS_REGISTRY</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Sorted list of attribute names corresponding to registered model classes.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 
