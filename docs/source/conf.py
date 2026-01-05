@@ -31,10 +31,9 @@ extensions = [
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
-# Treat docstring errors as warnings, not fatal errors
+## TEMPORARY FIX FOR ILL-FORMATTED DOCSTRINGS
+# Treat docstring errors as warnings, not fatal errors and do not fail build on docstring formatting
 nitpicky = False
-
-# Do not fail build on docstring formatting
 suppress_warnings = ["autodoc.import_object", "autodoc", "docutils"]
 
 # -- Options for HTML output -------------------------------------------------
