@@ -45,7 +45,13 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installing-via-pip">Installing via pip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installing-via-conda">Installing via conda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installing-from-github-development-version">Installing from GitHub (Development Version)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#verifying-the-installation">Verifying the Installation</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">pyissm</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 </ul>
@@ -81,40 +87,56 @@
 <p>This is an experimental release. Documentation remains a work in progress. Some sections may be incomplete or under development.</p>
 </div>
 <p>pyISSM can be installed using <cite>pip</cite> or <cite>conda</cite>, or by cloning the repository from GitHub. Below are instructions for each method.</p>
-<p>## Installing via pip
-To install pyISSM using pip, run the following command in your terminal:</p>
-<blockquote>
-<div></div></blockquote>
-<p>## Installing via conda
-If you prefer using conda, you can install pyISSM from the accessnri channel:</p>
-<blockquote>
-<div></div></blockquote>
-<p>## Installing from GitHub
-The latest development version of pyISSM can be installed by cloning the GitHub repository.</p>
+<section id="installing-via-pip">
+<h2>Installing via pip<a class="headerlink" href="#installing-via-pip" title="Link to this heading"></a></h2>
+<p>You can install pyISSM using <cite>pip</cite>, the Python package manager.
+See the official release on PyPI: <a class="reference external" href="https://pypi.org/project/pyissm/">https://pypi.org/project/pyissm/</a></p>
+<p>Run the following command in your terminal:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pyissm
+</pre></div>
+</div>
+</section>
+<section id="installing-via-conda">
+<h2>Installing via conda<a class="headerlink" href="#installing-via-conda" title="Link to this heading"></a></h2>
+<p>If you prefer using <cite>conda</cite>, you can install pyISSM from the <cite>accessnri</cite> channel.
+<a class="reference external" href="https://anaconda.org/channels/accessnri/packages/pyissm/overview">https://anaconda.org/channels/accessnri/packages/pyissm/overview</a></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>accessnri::pyissm
+</pre></div>
+</div>
+</section>
+<section id="installing-from-github-development-version">
+<h2>Installing from GitHub (Development Version)<a class="headerlink" href="#installing-from-github-development-version" title="Link to this heading"></a></h2>
+<p>You can also install the latest development version directly from the GitHub repository:</p>
 <ol class="arabic">
-<li><p>Clone the repository:
-.. code-block:: bash</p>
-<blockquote>
-<div><p>git clone <a class="reference external" href="https://github.com/ACCESS-NRI/pyISSM.git">https://github.com/ACCESS-NRI/pyISSM.git</a></p>
-</div></blockquote>
+<li><p>Clone the repository:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ACCESS-NRI/pyISSM.git
+</pre></div>
+</div>
 </li>
-<li><p>Navigate to the cloned directory:
-.. code-block:: bash</p>
-<blockquote>
-<div><p>cd pyissm</p>
-</div></blockquote>
+<li><p>Navigate to the cloned directory:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>pyissm
+</pre></div>
+</div>
 </li>
-<li><p>Install pyISSM using pip:
-.. code-block:: bash</p>
-<blockquote>
-<div><p>pip install .</p>
-</div></blockquote>
+<li><p>Install pyISSM using pip:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>.
+</pre></div>
+</div>
 </li>
 </ol>
-<p>## Verifying the Installation
-After installation, you can verify that pyISSM is installed correctly by running the following command in a Python shell:</p>
-<blockquote>
-<div></div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Installing from GitHub is recommended only if you want the latest features or are contributing to pyISSM development.</p>
+</div>
+</section>
+<section id="verifying-the-installation">
+<h2>Verifying the Installation<a class="headerlink" href="#verifying-the-installation" title="Link to this heading"></a></h2>
+<p>After installation, you can verify that pyISSM is installed correctly by running the following commands in a Python shell:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pyissm</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pyissm</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 </section>
 
 
