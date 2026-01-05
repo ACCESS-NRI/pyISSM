@@ -1,0 +1,99 @@
+name: Build ISSM (Python)
+
+# Trigger tests on push to main, pull requests (any branch), and manual dispatch
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+env:
+  ISSM_DIR: ${{ github.workspace }}/issm
+
+jobs:
+  build:
+    name: Build ISSM
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # python-version: [3.8, 3.9, 3.10, 3.11]
+        python-version: [3.10]
+
+    steps:
+      - name: Checkout pyISSM
+        uses: actions/checkout@v3
+
+      - name: Checkout ISSM fork
+        uses: actions/checkout@v3
+        with:
+          repository: access-nri/issm
+          ref: access-release # Build from release branch so that we have the latest stable version
+          path: issm
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy scipy netcdf4 matplotlib
+
+      - name: Install external packages
+        run: |
+          source $ISSM_DIR/etc/environment.sh
+          cd $ISSM_DIR/externalpackages/triangle && ./install-linux.sh
+          cd $ISSM_DIR/externalpackages/m1qn3    && ./install-linux.sh
+          cd $ISSM_DIR/externalpackages/petsc    && ./install-3.22-linux.sh
+          cd $ISSM_DIR/externalpackages/semic    && ./install.sh
+
+      - name: Build ISSM
+        working-directory: issm
+        run: |
+          export CC=$ISSM_DIR/externalpackages/petsc/install/bin/mpicc
+          export CXX=$ISSM_DIR/externalpackages/petsc/install/bin/mpicxx
+          export FC=$ISSM_DIR/externalpackages/petsc/install/bin/mpifort
+          export F77=$FC
+          export F90=$FC
+          export PYTHON_ROOT=${{ env.pythonLocation }}
+
+          source $ISSM_DIR/etc/environment.sh
+          autoreconf -ivf
+
+          ./configure \
+          --prefix=${ISSM_DIR} \
+          --disable-static \
+          --enable-development \
+          --enable-debugging \
+          --with-numthreads=4 \
+          --with-python=${PYTHON_ROOT}/bin/python3 \
+          --with-fortran-lib="-L/usr/lib/x86_64-linux-gnu -lgfortran" \
+          --with-mpi-include="${ISSM_DIR}/externalpackages/petsc/install/include" \
+          --with-mpi-libflags="-L${ISSM_DIR}/externalpackages/petsc/install/lib -lmpi -lmpicxx -lmpifort" \
+          --with-petsc-dir="${ISSM_DIR}/externalpackages/petsc/install" \
+          --with-blas-lapack-dir="${ISSM_DIR}/externalpackages/petsc/install" \
+          --with-metis-dir="${ISSM_DIR}/externalpackages/petsc/install" \
+          --with-parmetis-dir="${ISSM_DIR}/externalpackages/petsc/install" \
+          --with-scalapack-dir="${ISSM_DIR}/externalpackages/petsc/install" \
+          --with-mumps-dir="${ISSM_DIR}/externalpackages/petsc/install" \
+          --with-triangle-dir="${ISSM_DIR}/externalpackages/triangle/install" \
+          --with-semic-dir="${ISSM_DIR}/externalpackages/semic/install" \
+          --with-m1qn3-dir="${ISSM_DIR}/externalpackages/m1qn3/install"
+
+      - name: Compile ISSM
+        working-directory: issm
+        run: make -j4 install
+
+      - name: Package ISSM
+        run: |
+          rm -rf issm/.git
+          tar -cvf issm-python.tar -C issm .
+
+      - name: Upload ISSM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issm-python-${{ matrix.python-version }}
+          path: issm-python.tar
+          compression-level: 1
