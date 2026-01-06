@@ -38,7 +38,7 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          python -m pip install --upgrade pip
+          python -m pip install --upgrade pip setuptools wheel
           python -m pip install numpy scipy netcdf4 matplotlib
 
       - name: Install pyISSM
