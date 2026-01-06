@@ -43,7 +43,7 @@ jobs:
 
       - name: Install pyISSM
         run: |
-          pip install --upgrade --force-reinstall .
+          pip install --upgrade --force-reinstall --editable .
 
       - name: Install external packages
         run: |
