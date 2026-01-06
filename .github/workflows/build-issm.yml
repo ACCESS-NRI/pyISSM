@@ -43,7 +43,7 @@ jobs:
 
       - name: Install pyISSM
         run: |
-          pip install .   
+          pip install --upgrade --force-reinstall --no-index .
 
       - name: Install external packages
         run: |
@@ -105,3 +105,7 @@ jobs:
       - name: Check wrappers
         run: |
           python3 -c "import pyissm; print('Wrappers installed:', pyissm.tools.wrappers.check_wrappers_installed())"
+      
+      - name: Run tests
+        run: |
+          python3 ./test/run-tests.py
