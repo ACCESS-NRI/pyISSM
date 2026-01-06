@@ -30,6 +30,11 @@ jobs:
           repository: access-nri/issm
           ref: access-release # Build from release branch so that we have the latest stable version
           path: issm
+      
+      - name: Get ISSM fork commit hash
+        id: issm_commit
+        working-directory: issm
+        run: echo "ISSM_COMMIT=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -45,7 +50,15 @@ jobs:
         run: |
           pip install --upgrade --force-reinstall --editable .
 
+      - name: Cache ISSM Build
+        uses: actions/cache@v3
+        id: cache-issm-build
+        with:
+          path: ${{ env.ISSM_DIR}}
+          key: issm-build-${{ matrix.python-version }}-${{ runner.os }}-${{ env.ISSM_COMMIT }}
+        
       - name: Install external packages
+        if: ${{ steps.cache-issm-build.outputs.cache-hit != 'true' }}
         run: |
           source $ISSM_DIR/etc/environment.sh
           cd $ISSM_DIR/externalpackages/triangle && ./install-linux.sh
@@ -54,6 +67,7 @@ jobs:
           cd $ISSM_DIR/externalpackages/semic    && ./install.sh
 
       - name: Build ISSM
+        if: ${{ steps.cache-issm-build.outputs.cache-hit != 'true' }}
         working-directory: issm
         run: |
           export CC=$ISSM_DIR/externalpackages/petsc/install/bin/mpicc
@@ -87,15 +101,18 @@ jobs:
           --with-m1qn3-dir="${ISSM_DIR}/externalpackages/m1qn3/install"
 
       - name: Compile ISSM
+        if: ${{ steps.cache-issm-build.outputs.cache-hit != 'true' }}
         working-directory: issm
         run: make -j4 install
 
       - name: Package ISSM
+        if: ${{ steps.cache-issm-build.outputs.cache-hit != 'true' }}
         run: |
           rm -rf issm/.git
           tar -cvf issm-python.tar -C issm .
 
       - name: Upload ISSM artifact
+        if: ${{ steps.cache-issm-build.outputs.cache-hit != 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: issm-python-${{ matrix.python-version }}
@@ -108,4 +125,5 @@ jobs:
       
       - name: Run tests
         run: |
+          source $ISSM_DIR/etc/environment.sh
           python3 ./test/run-tests.py
