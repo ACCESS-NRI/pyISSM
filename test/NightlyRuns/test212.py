@@ -1,0 +1,42 @@
+#Test Name: SquareShelfCMBSSA2d
+import sys
+sys.path.append('/Users/lawrence.bird/pyISSM/src/')
+import pyissm
+import numpy as np
+
+md = pyissm.model.mesh.triangle(pyissm.model.Model(), './test/assets/Exp/Square.exp', 200000)
+md = pyissm.model.param.set_mask(md, 'all', None)
+md = pyissm.model.param.parameterize(md, './test/assets/Par/SquareShelf.py')
+md = pyissm.model.param.set_flow_equation(md, SSA = 'all')
+
+# control parameters
+
+md.inversion.iscontrol = 1
+md.inversion.control_parameters = ['MaterialsRheologyBbar']
+md.inversion.min_parameters = 1.0e6 * np.ones((md.mesh.numberofvertices, len(md.inversion.control_parameters)))
+md.inversion.max_parameters = 2.0e9 * np.ones((md.mesh.numberofvertices, len(md.inversion.control_parameters)))
+md.inversion.nsteps = 2
+md.inversion.cost_functions = [101]
+md.inversion.cost_functions_coefficients = np.ones((md.mesh.numberofvertices, len(md.inversion.cost_functions)))
+md.inversion.gradient_scaling = 1.0e7 * np.ones((md.inversion.nsteps, len(md.inversion.control_parameters)))
+md.inversion.maxiter_per_step = 2. * np.ones((md.inversion.nsteps))
+md.inversion.step_threshold = 0.3 * np.ones((md.inversion.nsteps))
+md.inversion.vx_obs = md.initialization.vx
+md.inversion.vy_obs = md.initialization.vy
+
+
+md.cluster.np = 3
+md = pyissm.model.execute.solve(md, 'Stressbalance')
+
+
+# Fields and tolerances to track changes
+
+field_names = ['Gradient', 'Misfits', 'MaterialsRheologyBbar', 'Pressure', 'Vel', 'Vx', 'Vy']
+field_tolerances = [1e-13, 1e-13, 1e-13, 1e-13, 1e-13, 1e-13, 1e-13, 1e-13, 1e-13, 1e-13]
+field_values = [md.results.StressbalanceSolution.Gradient1,
+                md.results.StressbalanceSolution.J,
+                md.results.StressbalanceSolution.MaterialsRheologyBbar,
+                md.results.StressbalanceSolution.Pressure,
+                md.results.StressbalanceSolution.Vel,
+                md.results.StressbalanceSolution.Vx,
+                md.results.StressbalanceSolution.Vy]
