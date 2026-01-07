@@ -24,6 +24,8 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Get latest ISSM release tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           LATEST=$(gh release view access-nri/issm --repo access-nri/issm --json tagName -q .tagName)
           echo "ISSM_RELEASE=$LATEST" >> $GITHUB_ENV
