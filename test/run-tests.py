@@ -16,7 +16,7 @@ def IdToName(test_id):
     Usage:
         name = IdToName(test_id)
     """
-    infile = open('./test/NightlyRuns/test' + str(test_id) + '.py', 'r')
+    infile = open('./test' + str(test_id) + '.py', 'r')
     file_text = infile.readline()
 
     string = '#Test Name:'
@@ -35,7 +35,7 @@ def run_tests(id = None,
     id_string = IdToName(id)
     
     # Execute test to generate results
-    exec(compile(open('./test/NightlyRuns/test{}.py'.format(id), "rb").read(), './test/NightlyRuns/test{}.py'.format(id), 'exec'), globals())
+    exec(compile(open('./test{}.py'.format(id), "rb").read(), './test{}.py'.format(id), 'exec'), globals())
 
     # Load archive file
     archive_file = archive_path + 'Archive{}.arch'.format(id)
