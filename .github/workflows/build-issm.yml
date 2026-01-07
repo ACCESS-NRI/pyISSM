@@ -111,15 +111,14 @@ jobs:
         if: ${{ steps.cache-issm-build.outputs.cache-hit != 'true' }}
         run: |
           rm -rf issm/.git
-          tar -cvf issm-python.tar -C issm .
+          tar -czvf issm-${{ env.ISSM_RELEASE }}-python${{ matrix.python-version }}-${{ runner.os }}.tar.gz -C issm .
 
       - name: Upload ISSM artifact
         if: ${{ steps.cache-issm-build.outputs.cache-hit != 'true' }}
         uses: actions/upload-artifact@v4
         with:
-          name: issm-python-${{ matrix.python-version }}
-          path: issm-python.tar
-          compression-level: 1
+          name: issm-${{ env.ISSM_RELEASE }}-python${{ matrix.python-version }}-${{ runner.os }}
+          path: issm-${{ env.ISSM_RELEASE }}-python${{ matrix.python-version }}-${{ runner.os }}.tar.gz
       
       - name: Check wrappers
         run: |
