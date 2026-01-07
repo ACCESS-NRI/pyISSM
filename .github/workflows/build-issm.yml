@@ -18,17 +18,21 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12"]
-        # python-version: ["3.10"]
 
     steps:
       - name: Checkout pyISSM
         uses: actions/checkout@v3
 
-      - name: Checkout ISSM fork
+      - name: Get latest ISSM release tag
+        run: |
+          LATEST=$(gh release view access-nri/issm --repo access-nri/issm --json tagName -q .tagName)
+          echo "ISSM_RELEASE=$LATEST" >> $GITHUB_ENV
+
+      - name: Checkout ISSM latest release
         uses: actions/checkout@v3
         with:
           repository: access-nri/issm
-          ref: access-release # Build from release branch so that we have the latest stable version
+          ref: ${{ env.ISSM_RELEASE }} # Build from latest release
           path: issm
       
       - name: Get ISSM fork commit hash
@@ -54,8 +58,8 @@ jobs:
         uses: actions/cache@v3
         id: cache-issm-build
         with:
-          path: ${{ env.ISSM_DIR}}
-          key: issm-build-${{ matrix.python-version }}-${{ runner.os }}-${{ env.ISSM_COMMIT }}
+          path: ${{ env.ISSM_DIR }}
+          key: issm-build-${{ matrix.python-version }}-${{ runner.os }}-${{ env.ISSM_RELEASE }}
         
       - name: Install external packages
         if: ${{ steps.cache-issm-build.outputs.cache-hit != 'true' }}
