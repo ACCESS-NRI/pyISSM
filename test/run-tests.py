@@ -76,7 +76,7 @@ def run_tests(id = None,
             continue
 
 run_tests(id = 201)
-# run_tests(id = 208)
-# run_tests(id = 212)
-# run_tests(id = 222)
-# run_tests(id = 223)
+run_tests(id = 208)
+run_tests(id = 212)
+run_tests(id = 222)
+run_tests(id = 223)
