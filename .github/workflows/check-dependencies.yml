@@ -31,7 +31,7 @@ jobs:
       # Step 4: Install package (from branch) into a clean environment
       - name: Install package
         run: |
-          pip install .
+          pip install --upgrade --force-reinstall --editable .
 
       # Step 5: Smoke test - import core modules
       - name: Smoke test
