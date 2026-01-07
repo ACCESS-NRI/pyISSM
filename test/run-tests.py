@@ -30,6 +30,8 @@ def run_tests(id = None,
               procedure = 'check',
               output = None):
     
+    print(f'-- RUNNING TEST {id} --')
+    
     archive_name = 'Archive' + str(id)
     id_string = IdToName(id)
     
@@ -75,3 +77,7 @@ def run_tests(id = None,
             continue
 
 run_tests(id = 201)
+run_tests(id = 208)
+run_tests(id = 212)
+run_tests(id = 222)
+run_tests(id = 223)
