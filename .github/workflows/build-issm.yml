@@ -29,7 +29,7 @@ jobs:
         run: |
           LATEST=$(gh release view --repo access-nri/issm --json tagName -q .tagName)
           echo "ISSM_RELEASE=$LATEST" >> $GITHUB_ENV
-          echo "Using release: ISSM_RELEASE"
+          echo "Using release: $ISSM_RELEASE"
 
       - name: Checkout ISSM latest release
         uses: actions/checkout@v3
