@@ -25,11 +25,11 @@ md.geometry.surface = md.geometry.base + md.geometry.thickness
 md.geometry.bed = md.geometry.base - 500.
 
 #Initial velocity and pressure
-x = np.array(pyissm.tools.archive.arch_read('./test/assets/Data/SquareShelf.arch', 'x'))
-y = np.array(pyissm.tools.archive.arch_read('./test/assets/Data/SquareShelf.arch', 'y'))
-vx = np.array(pyissm.tools.archive.arch_read('./test/assets/Data/SquareShelf.arch', 'vx'))
-vy = np.array(pyissm.tools.archive.arch_read('./test/assets/Data/SquareShelf.arch', 'vy'))
-index = pyissm.tools.archive.arch_read('./test/assets/Data/SquareShelf.arch', 'index').astype(int)
+x = np.array(pyissm.tools.archive.arch_read('../assets/Data/SquareShelf.arch', 'x'))
+y = np.array(pyissm.tools.archive.arch_read('../assets/Data/SquareShelf.arch', 'y'))
+vx = np.array(pyissm.tools.archive.arch_read('../assets/Data/SquareShelf.arch', 'vx'))
+vy = np.array(pyissm.tools.archive.arch_read('../assets/Data/SquareShelf.arch', 'vy'))
+index = pyissm.tools.archive.arch_read('../assets/Data/SquareShelf.arch', 'index').astype(int)
 #dbg - begin
 #  #print 'vars in SquareShelf.nc:'
 #  #for v in iVelF.variables:
@@ -84,7 +84,7 @@ md.timestepping.final_time = 3
 md.groundingline.migration = 'None'
 
 # Boundary conditions:
-md = pyissm.model.bc.set_ice_shelf_bc(md, './test/assets/Exp/SquareFront.exp')
+md = pyissm.model.bc.set_ice_shelf_bc(md, '../assets/Exp/SquareFront.exp')
 
 #Change name so that no test have the same name
 if len(inspect.stack()) > 2:

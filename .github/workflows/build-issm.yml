@@ -127,4 +127,5 @@ jobs:
       - name: Run tests
         run: |
           source $ISSM_DIR/etc/environment.sh
-          python3 ./test/run-tests.py
+          cd ./test/NightlyRuns/
+          python3 ../run-tests.py

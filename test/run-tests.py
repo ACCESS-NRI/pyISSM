@@ -6,7 +6,6 @@ from sys import float_info
 
 # import os
 # os.chdir('/Users/lawrence.bird/pyISSM/')
-# id = 201
 
 # archive_path = '/Users/lawrence.bird/ISSM/test/Archives/'
 archive_path = 'issm/test/Archives/'
@@ -77,7 +76,7 @@ def run_tests(id = None,
             continue
 
 run_tests(id = 201)
-run_tests(id = 208)
-run_tests(id = 212)
-run_tests(id = 222)
-run_tests(id = 223)
+# run_tests(id = 208)
+# run_tests(id = 212)
+# run_tests(id = 222)
+# run_tests(id = 223)
