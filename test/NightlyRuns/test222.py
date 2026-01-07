@@ -1,13 +1,9 @@
 #Test Name: SquareShelfStressSSA2dTransientIncrHydro
-# import pyissm
-import sys
-sys.path.append('/Users/lawrence.bird/pyISSM/src/')
 import pyissm
 
-
-md = pyissm.model.mesh.triangle(pyissm.model.Model(), './test/assets/Exp/Square.exp', 150000.)
+md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 150000.)
 md = pyissm.model.param.set_mask(md, 'all', None)
-md = pyissm.model.param.parameterize(md, './test/assets/Par/SquareShelf.py')
+md = pyissm.model.param.parameterize(md, '../assets/Par/SquareShelf.py')
 md = pyissm.model.param.set_flow_equation(md, SSA = 'all')
 md.cluster.np = 3
 md.masstransport.hydrostatic_adjustment = 'Incremental'

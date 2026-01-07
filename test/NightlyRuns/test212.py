@@ -1,12 +1,10 @@
 #Test Name: SquareShelfCMBSSA2d
-import sys
-sys.path.append('/Users/lawrence.bird/pyISSM/src/')
 import pyissm
 import numpy as np
 
-md = pyissm.model.mesh.triangle(pyissm.model.Model(), './test/assets/Exp/Square.exp', 200000)
+md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 200000)
 md = pyissm.model.param.set_mask(md, 'all', None)
-md = pyissm.model.param.parameterize(md, './test/assets/Par/SquareShelf.py')
+md = pyissm.model.param.parameterize(md, '../assets/Par/SquareShelf.py')
 md = pyissm.model.param.set_flow_equation(md, SSA = 'all')
 
 # control parameters

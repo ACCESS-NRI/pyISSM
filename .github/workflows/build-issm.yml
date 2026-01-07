@@ -128,4 +128,4 @@ jobs:
         run: |
           source $ISSM_DIR/etc/environment.sh
           cd ./test/NightlyRuns/
-          python3 ../run-tests.py
+          python3 -u ../run-tests.py
