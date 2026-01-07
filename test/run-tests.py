@@ -7,8 +7,8 @@ from sys import float_info
 # import os
 # os.chdir('/Users/lawrence.bird/pyISSM/')
 
-# archive_path = '/Users/lawrence.bird/ISSM/test/Archives/'
-archive_path = '../../../issm/test/Archives/'
+issm_dir = pyissm.tools.config.get_issm_dir()
+archive_path = issm_dir + '/test/Archives/'
 
 def IdToName(test_id):
     """IdToName - return name of test
