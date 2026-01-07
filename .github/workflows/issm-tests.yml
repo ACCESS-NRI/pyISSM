@@ -1,4 +1,4 @@
-name: Run ISSM / pyISSM Tests
+name: Run ISSM-pyISSM Tests
 
 # Trigger tests on push to main, pull requests (any branch), and manual dispatch
 on:
@@ -14,7 +14,7 @@ env:
 
 jobs:
   build:
-    name: Run ISSM / pyISSM Tests
+    name: Run ISSM-pyISSM Tests
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
