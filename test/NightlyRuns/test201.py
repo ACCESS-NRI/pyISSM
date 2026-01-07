@@ -8,8 +8,7 @@ md = pyissm.model.param.set_flow_equation(md, SSA = 'all')
 md.cluster.np = 3
 
 # TEMPORARY FIX UNTIL WAITONLOCK IS FIXED
-md.settings.waitonlock = 0
-md.miscellaneous.name = 'SquareShelfStressSSA2d'
+# md.miscellaneous.name = 'SquareShelfStressSSA2d'
 md = pyissm.model.execute.solve(md, 'Stressbalance')
 
 # ## TEMPORARY FIX UNTIL WAITONLOCK IS FIXED
