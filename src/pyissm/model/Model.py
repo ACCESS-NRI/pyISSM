@@ -727,8 +727,8 @@ class Model():
 
         # Ok, now deal with the other fields from the 2d mesh
         # Bed info and surface info
-        md.mesh.vertexonbase = mesh.project_3d(md, vector = np.ones(md.mesh.numberofvertices2d, bool), type = 'node', layer = 1)
-        md.mesh.vertexonsurface = mesh.project_3d(md, vector = np.ones(md.mesh.numberofvertices2d, bool), type = 'node', layer = md.mesh.numberoflayers)
+        md.mesh.vertexonbase = mesh.project_3d(md, vector = np.ones(md.mesh.numberofvertices2d, int), type = 'node', layer = 1)
+        md.mesh.vertexonsurface = mesh.project_3d(md, vector = np.ones(md.mesh.numberofvertices2d, int), type = 'node', layer = md.mesh.numberoflayers)
         md.mesh.vertexonboundary = mesh.project_3d(md, vector = md.mesh.vertexonboundary, type = 'node')
 
         # lat/long
