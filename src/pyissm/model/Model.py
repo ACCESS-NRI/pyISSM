@@ -593,35 +593,85 @@ class Model():
                 lower_exponent = None,
                 upper_exponent = None,
                 coefficients = None):
-        """extrude - vertically extrude a 2d mesh
+        """
+        Vertically extrude a 2D mesh to create a 3D mesh.
 
-        vertically extrude a 2d mesh and create corresponding 3d mesh.
-        The vertical distribution can:
-        - follow a polynomial law
-        - follow two polynomial laws, one for the lower part and one for the upper part of the mesh
-        - be discribed by a list of coefficients (between 0 and 1)
+        Vertically extrude a 2D mesh and create corresponding 3D prism mesh.
+        The vertical distribution can follow a polynomial law, two polynomial laws 
+        (one for lower part and one for upper part), or be described by a list of 
+        coefficients between 0 and 1.
 
+        Parameters
+        ----------
+        md : Model
+            The model instance containing a 2D mesh to be extruded.
+        num_layers : int, optional
+            Number of vertical layers to create. Required when using polynomial 
+            extrusion (single or dual exponent). Must be at least 2.
+        extrusion_exponent : float, optional
+            Single polynomial exponent for uniform vertical distribution. Must be >= 0.
+            When specified, creates extrusion list using this exponent.
+        lower_exponent : float, optional
+            Polynomial exponent for the lower part of the mesh. Must be >= 0.
+            Used in conjunction with `upper_exponent` for non-uniform vertical distribution.
+        upper_exponent : float, optional
+            Polynomial exponent for the upper part of the mesh. Must be >= 0.
+            Used in conjunction with `lower_exponent` for non-uniform vertical distribution.
+        coefficients : array_like, optional
+            List of coefficients between 0 and 1 defining custom vertical distribution.
+            Automatically includes 0 and 1 if not present. Alternative to polynomial extrusion.
 
-        Usage:
-            md = extrude(md, numlayers, extrusionexponent)
-            md = extrude(md, numlayers, lowerexponent, upperexponent)
-            md = extrude(md, listofcoefficients)
+        Returns
+        -------
+        md : Model
+            The same model instance with updated 3D mesh and extruded model fields.
+            Original 2D mesh is preserved in ``mesh.x2d``, ``mesh.y2d``, 
+            ``mesh.elements2d``, etc.
 
-        Example:
-            md = extrude(md, 15, 1.3)
-            md = extrude(md, 15, 1.3, 1.2)
-            md = extrude(md, [0 0.2 0.5 0.7 0.9 0.95 1])
+        Raises
+        ------
+        TypeError
+            If extrusion_exponent or lower_exponent/upper_exponent <= 0.
+        TypeError
+            If coefficients contain values outside [0, 1] range.
+        TypeError
+            If num_layers < 2.
+        TypeError
+            If mesh is already 3D (extrude called more than once).
 
-        See also: modelextract, collapse
+        Notes
+        -----
+        The function performs the following operations:
+        - Creates 3D prism elements from 2D elements
+        - Distributes nodes vertically between bed and surface according to extrusion parameters
+        - Maintains vertex and element numbering relationships via ``lowervertex``, 
+          ``uppervertex``, ``lowerelements``, and ``upperelements``
+        - Projects all 2D model fields to 3D using ``extrude`` methods
+        - Updates mesh connectivity and boundary information
+        - Preserves the original 2D mesh information for reference
+
+        Examples
+        --------
+        Single exponent (uniform-like distribution):
+
+        >>> md = extrude(md, num_layers=15, extrusion_exponent=1.3)
+
+        Dual exponents (non-uniform distribution):
+
+        >>> md = extrude(md, num_layers=15, lower_exponent=1.3, upper_exponent=1.2)
+
+        Custom coefficients (specific layer distribution):
+
+        >>> md = extrude(md, coefficients=[0, 0.2, 0.5, 0.7, 0.9, 0.95, 1])
         """
 
         ## NOTE: This function is taken directly from $ISSM_DIR/src/m/classes/model.py with only minor modifications for pyISSM integration.
 
-        # Extrude the mesh
+        # Error checks and Parse inputs
         if coefficients is not None: # list of coefficients
             clist = coefficients
             if any(clist < 0) or any(clist > 1):
-                raise TypeError('extrusioncoefficients must be between 0 and 1')
+                raise TypeError('pyissm.model.Model.extrude: All coefficients must be between 0 and 1')
             clist.extend([0., 1.])
             clist.sort()
             extrusionlist = list(set(clist))
@@ -629,7 +679,7 @@ class Model():
 
         elif extrusion_exponent is not None: # one polynomial law
             if extrusion_exponent <= 0:
-                raise TypeError('extrusionexponent must be >= 0')
+                raise TypeError('pyissm.model.Model.extrude: extrusion_exponent must be >= 0')
             numlayers = num_layers
             extrusionlist = (np.arange(0., float(numlayers - 1) + 1., 1.) / float(numlayers - 1))**extrusion_exponent
 
@@ -639,20 +689,22 @@ class Model():
             upperexp = upper_exponent
 
             if lower_exponent <= 0 or upper_exponent <= 0:
-                raise TypeError('lower and upper extrusionexponents must be >= 0')
+                raise TypeError('pyissm.model.Model.extrude:: lower_exponent and upper_exponent must be >= 0')
 
             lowerextrusionlist = (np.arange(0., 1. + 2. / float(numlayers - 1), 2. / float(numlayers - 1)))**lowerexp / 2.
             upperextrusionlist = (np.arange(0., 1. + 2. / float(numlayers - 1), 2. / float(numlayers - 1)))**upperexp / 2.
             extrusionlist = np.unique(np.concatenate((lowerextrusionlist, 1. - upperextrusionlist)))
 
         if numlayers < 2:
-            raise TypeError('number of layers should be at least 2')
-        if md.mesh.__class__.__name__ == 'mesh3dprisms':
-            raise TypeError('Cannot extrude a 3d mesh (extrude cannot be called more than once)')
+            raise TypeError('pyissm.model.Model.extrude: num_layers should be at least 2')
+        
+        if isinstance(md.mesh, classes.mesh3dprisms):
+            raise TypeError('pyissm.model.Model.extrude: Model mesh is already 3D. Cannot extrude a 3D mesh (extrude cannot be called more than once)')
 
         # Initialize with 2d mesh
         mesh2d = md.mesh
         md.mesh = classes.mesh3dprisms()
+
         md.mesh.x = mesh2d.x
         md.mesh.y = mesh2d.y
         md.mesh.elements = mesh2d.elements
@@ -671,6 +723,8 @@ class Model():
 
         md.mesh.extractedvertices = mesh2d.extractedvertices
         md.mesh.extractedelements = mesh2d.extractedelements
+
+        md.mesh.segments2d = mesh2d.segments
 
         x3d = np.empty((0))
         y3d = np.empty((0))
@@ -736,12 +790,12 @@ class Model():
         md.mesh.long = mesh.project_3d(md, vector = md.mesh.long, type = 'node')
         md.mesh.scale_factor = mesh.project_3d(md, vector = md.mesh.scale_factor, type = 'node')
 
+        # Project model fields
         md.geometry.extrude(md)
         md.friction.extrude(md)
         md.inversion.extrude(md)
         md.smb.extrude(md)
         md.initialization.extrude(md)
-
         md.flowequation.extrude(md)
         md.stressbalance.extrude(md)
         md.thermal.extrude(md)
