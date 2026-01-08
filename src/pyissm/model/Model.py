@@ -6,6 +6,8 @@ import copy
 from pyissm.model import classes, mesh, param
 from pyissm.tools import wrappers
 
+import sys
+
 class Model():
     """
     ISSM Model Class.
@@ -584,3 +586,194 @@ class Model():
         md2.mesh.extractedelements = pos_elem + 1
 
         return md2
+    
+    def extrude(md,
+                num_layers = None,
+                extrusion_exponent = None,
+                lower_exponent = None,
+                upper_exponent = None,
+                coefficients = None):
+        """extrude - vertically extrude a 2d mesh
+
+        vertically extrude a 2d mesh and create corresponding 3d mesh.
+        The vertical distribution can:
+        - follow a polynomial law
+        - follow two polynomial laws, one for the lower part and one for the upper part of the mesh
+        - be discribed by a list of coefficients (between 0 and 1)
+
+
+        Usage:
+            md = extrude(md, numlayers, extrusionexponent)
+            md = extrude(md, numlayers, lowerexponent, upperexponent)
+            md = extrude(md, listofcoefficients)
+
+        Example:
+            md = extrude(md, 15, 1.3)
+            md = extrude(md, 15, 1.3, 1.2)
+            md = extrude(md, [0 0.2 0.5 0.7 0.9 0.95 1])
+
+        See also: modelextract, collapse
+        """
+
+        ## NOTE: This function is taken directly from $ISSM_DIR/src/m/classes/model.py with only minor modifications for pyISSM integration.
+
+        # Extrude the mesh
+        if coefficients is not None: # list of coefficients
+            clist = coefficients
+            if any(clist < 0) or any(clist > 1):
+                raise TypeError('extrusioncoefficients must be between 0 and 1')
+            clist.extend([0., 1.])
+            clist.sort()
+            extrusionlist = list(set(clist))
+            numlayers = len(extrusionlist)
+
+        elif extrusion_exponent is not None: # one polynomial law
+            if extrusion_exponent <= 0:
+                raise TypeError('extrusionexponent must be >= 0')
+            numlayers = num_layers
+            extrusionlist = (np.arange(0., float(numlayers - 1) + 1., 1.) / float(numlayers - 1))**extrusion_exponent
+
+        elif lower_exponent is not None or upper_exponent is not None: # two polynomial laws
+            numlayers = num_layers
+            lowerexp = lower_exponent
+            upperexp = upper_exponent
+
+            if lower_exponent <= 0 or upper_exponent <= 0:
+                raise TypeError('lower and upper extrusionexponents must be >= 0')
+
+            lowerextrusionlist = (np.arange(0., 1. + 2. / float(numlayers - 1), 2. / float(numlayers - 1)))**lowerexp / 2.
+            upperextrusionlist = (np.arange(0., 1. + 2. / float(numlayers - 1), 2. / float(numlayers - 1)))**upperexp / 2.
+            extrusionlist = np.unique(np.concatenate((lowerextrusionlist, 1. - upperextrusionlist)))
+
+        if numlayers < 2:
+            raise TypeError('number of layers should be at least 2')
+        if md.mesh.__class__.__name__ == 'mesh3dprisms':
+            raise TypeError('Cannot extrude a 3d mesh (extrude cannot be called more than once)')
+
+        # Initialize with 2d mesh
+        mesh2d = md.mesh
+        md.mesh = classes.mesh3dprisms()
+        md.mesh.x = mesh2d.x
+        md.mesh.y = mesh2d.y
+        md.mesh.elements = mesh2d.elements
+        md.mesh.numberofelements = mesh2d.numberofelements
+        md.mesh.numberofvertices = mesh2d.numberofvertices
+
+        md.mesh.lat = mesh2d.lat
+        md.mesh.long = mesh2d.long
+        md.mesh.epsg = mesh2d.epsg
+        md.mesh.scale_factor = mesh2d.scale_factor
+
+        md.mesh.vertexonboundary = mesh2d.vertexonboundary
+        md.mesh.vertexconnectivity = mesh2d.vertexconnectivity
+        md.mesh.elementconnectivity = mesh2d.elementconnectivity
+        md.mesh.average_vertex_connectivity = mesh2d.average_vertex_connectivity
+
+        md.mesh.extractedvertices = mesh2d.extractedvertices
+        md.mesh.extractedelements = mesh2d.extractedelements
+
+        x3d = np.empty((0))
+        y3d = np.empty((0))
+        z3d = np.empty((0)) # the lower node is on the bed
+        thickness3d = md.geometry.thickness # thickness and bed for these nodes
+        bed3d = md.geometry.base
+
+        # Create the new layers
+        for i in range(numlayers):
+            x3d = np.concatenate((x3d, md.mesh.x))
+            y3d = np.concatenate((y3d, md.mesh.y))
+            # Nodes are distributed between bed and surface accordingly to the given exponent
+            z3d = np.concatenate((z3d, (bed3d + thickness3d * extrusionlist[i]).reshape(-1)))
+        number_nodes3d = np.size(x3d) # Number of 3d nodes for the non-extruded part of the mesh
+
+        # Extrude elements
+        elements3d = np.empty((0, 6), int)
+        for i in range(numlayers - 1):
+            elements3d = np.vstack((elements3d, np.hstack((md.mesh.elements + i * md.mesh.numberofvertices,
+                                                           md.mesh.elements + (i + 1) * md.mesh.numberofvertices)))) # create the elements of the 3d mesh for the non-extruded part
+        number_el3d = np.size(elements3d, axis=0) # number of 3d nodes for the non-extruded part of the mesh
+
+        # Keep a trace of lower and upper nodes
+        lowervertex = np.nan * np.ones(number_nodes3d, int)
+        uppervertex = np.nan * np.ones(number_nodes3d, int)
+        lowervertex[md.mesh.numberofvertices:] = np.arange(1, (numlayers - 1) * md.mesh.numberofvertices + 1)
+        uppervertex[:(numlayers - 1) * md.mesh.numberofvertices] = np.arange(md.mesh.numberofvertices + 1, number_nodes3d + 1)
+        md.mesh.lowervertex = lowervertex
+        md.mesh.uppervertex = uppervertex
+
+        # Same for lower and upper elements
+        lowerelements = np.nan * np.ones(number_el3d, int)
+        upperelements = np.nan * np.ones(number_el3d, int)
+        lowerelements[md.mesh.numberofelements:] = np.arange(1, (numlayers - 2) * md.mesh.numberofelements + 1)
+        upperelements[:(numlayers - 2) * md.mesh.numberofelements] = np.arange(md.mesh.numberofelements + 1, (numlayers - 1) * md.mesh.numberofelements + 1)
+        md.mesh.lowerelements = lowerelements
+        md.mesh.upperelements = upperelements
+
+        # Save old mesh
+        md.mesh.x2d = md.mesh.x
+        md.mesh.y2d = md.mesh.y
+        md.mesh.elements2d = md.mesh.elements
+        md.mesh.numberofelements2d = md.mesh.numberofelements
+        md.mesh.numberofvertices2d = md.mesh.numberofvertices
+
+        # Build global 3d mesh
+        md.mesh.elements = elements3d
+        md.mesh.x = x3d
+        md.mesh.y = y3d
+        md.mesh.z = z3d
+        md.mesh.numberofelements = number_el3d
+        md.mesh.numberofvertices = number_nodes3d
+        md.mesh.numberoflayers = numlayers
+
+        # Ok, now deal with the other fields from the 2d mesh
+        # Bed info and surface info
+        md.mesh.vertexonbase = mesh.project_3d(md, vector = np.ones(md.mesh.numberofvertices2d, bool), type = 'node', layer = 1)
+        md.mesh.vertexonsurface = mesh.project_3d(md, vector = np.ones(md.mesh.numberofvertices2d, bool), type = 'node', layer = md.mesh.numberoflayers)
+        md.mesh.vertexonboundary = mesh.project_3d(md, vector = md.mesh.vertexonboundary, type = 'node')
+
+        # lat/long
+        md.mesh.lat = mesh.project_3d(md, vector = md.mesh.lat, type = 'node')
+        md.mesh.long = mesh.project_3d(md, vector = md.mesh.long, type = 'node')
+        md.mesh.scale_factor = mesh.project_3d(md, vector = md.mesh.scale_factor, type = 'node')
+
+        md.geometry.extrude(md)
+        md.friction.extrude(md)
+        md.inversion.extrude(md)
+        md.smb.extrude(md)
+        md.initialization.extrude(md)
+
+        md.flowequation.extrude(md)
+        md.stressbalance.extrude(md)
+        md.thermal.extrude(md)
+        md.masstransport.extrude(md)
+        md.levelset.extrude(md)
+        md.calving.extrude(md)
+        md.frontalforcings.extrude(md)
+        md.hydrology.extrude(md)
+        md.debris.extrude(md)
+        md.solidearth.extrude(md)
+        md.dsl.extrude(md)
+        md.stochasticforcing.extrude(md)
+
+        # connectivity
+        md.mesh.elementconnectivity = np.tile(md.mesh.elementconnectivity, (numlayers - 1, 1))
+        md.mesh.elementconnectivity[np.nonzero(md.mesh.elementconnectivity == 0)] = -sys.maxsize - 1
+        if not np.isnan(md.mesh.elementconnectivity).all():
+            for i in range(1, numlayers - 1):
+                connect1 = i * md.mesh.numberofelements2d
+                connect2 = (i + 1) * md.mesh.numberofelements2d
+                md.mesh.elementconnectivity[connect1:connect2, :] = md.mesh.elementconnectivity[connect1:connect2, :] + md.mesh.numberofelements2d
+                md.mesh.elementconnectivity[np.nonzero(md.mesh.elementconnectivity < 0)] = 0
+
+        md.materials.extrude(md)
+        md.damage.extrude(md)
+        md.mask.extrude(md)
+        md.qmu.extrude(md)
+        md.basalforcings.extrude(md)
+        md.outputdefinition.extrude(md)
+
+        # increase connectivity if less than 25
+        if md.mesh.average_vertex_connectivity <= 25:
+            md.mesh.average_vertex_connectivity = 100
+
+        return md

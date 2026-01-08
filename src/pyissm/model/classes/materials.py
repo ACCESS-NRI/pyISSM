@@ -1,7 +1,8 @@
 import numpy as np
+import warnings
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 ## ------------------------------------------------------
 ## materials.ice
@@ -119,6 +120,16 @@ class ice(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - materials.ice Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude materials.ice fields to 3D
+        """
+        self.rheology_B = mesh.project_3d(md, vector = self.rheology_B, type = 'node')
+        self.rheology_n = mesh.project_3d(md, vector = self.rheology_n, type = 'element')
+
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -239,6 +250,15 @@ class hydro(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - materials.hydro Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude materials.hydro fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.materials.hydro.extrude: 3D extrusion not implemented for materials.hydro. Returning unchanged (2D) materials fields.')
+
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -388,6 +408,15 @@ class litho(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - materials.litho Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude materials.litho fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.materials.litho.extrude: 3D extrusion not implemented for materials.litho. Returning unchanged (2D) materials fields.')
+
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -586,6 +615,16 @@ class damageice(class_registry.manage_state):
         s = 'ISSM - materials.damageice Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude materials.damageice fields to 3D
+        """
+        self.rheology_B = mesh.project_3d(md, vector = self.rheology_B, type = 'node')
+        self.rheology_n = mesh.project_3d(md, vector = self.rheology_n, type = 'element')
+
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         class_utils.check_field(md, fieldname = 'materials.rho_ice', gt = 0)
@@ -761,6 +800,17 @@ class enhancedice(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - materials.enhancedice Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude materials.enhancedice fields to 3D
+        """
+        self.rheology_E = mesh.project_3d(md, vector = self.rheology_E, type = 'node')
+        self.rheology_B = mesh.project_3d(md, vector = self.rheology_B, type = 'node')
+        self.rheology_n = mesh.project_3d(md, vector = self.rheology_n, type = 'element')
+
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -939,6 +989,17 @@ class estar(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - materials.estar Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude materials.estar fields to 3D
+        """
+        self.rheology_B = mesh.project_3d(md, vector = self.rheology_B, type = 'node')
+        self.rheology_Ec = mesh.project_3d(md, vector = self.rheology_Ec, type = 'node')
+        self.rheology_Es = mesh.project_3d(md, vector = self.rheology_Es, type = 'node')
+
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):

@@ -2501,3 +2501,150 @@ def twod_to_3d():
     """
 
     raise NotImplementedError('pyissm.model.mesh.twod_to_3d:  This functionality is not yet implemented. Please contact ACCESS-NRI for support.')
+
+def project_3d(md,
+               vector,
+               type = 'node',
+               layer = 0,
+               padding = 0,
+               degree = 0.0):
+    """
+    PROJECT3D - vertically project a vector from 2d mesh
+
+    vertically project a vector from 2d mesh (split in noncoll and coll
+    areas) into a 3d mesh.
+    This vector can be a node vector of size (md.mesh.numberofvertices2d,
+    N/A) or an element vector of size (md.mesh.numberofelements2d, N/A).
+
+    arguments:
+        'vector': 2d vector
+        'type': 'element' or 'node' or 'poly'
+
+    options:
+        'layer'     a layer number where vector should keep its values. If
+                    not specified, all layers adopt the value of the 2d
+                    vector.
+        'padding':  default to 0 (value adopted by other 3d layers not
+                    being projected.
+        'degree':   degree of polynomials when extrude from bottom to the top
+
+    Examples:
+        extruded_vector = project3d(md, vector = vector2d, type = 'node', layer = 1)
+    """
+
+    ## NOTE: This function is taken directly from $ISSM_DIR/src/m/extrusion/project3d.py with only minor modifications for pyISSM integration.
+
+    # Error checks
+    if not md:
+        raise TypeError("pyissm.model.mesh.project_3d: md must be provided")
+    if md.mesh.domain_type().lower() != '3d':
+        raise TypeError("pyissm.model.mesh.project_3d: md must contain a 3D mesh")
+
+    #Handle special case where vector2d is single element (differs from representation in MATLAB)
+    if isinstance(vector, (bool, int, float)):
+        projected_vector = vector
+
+    if np.size(vector) == 1:
+        projected_vector = vector
+
+    elif type.lower() == 'node':
+        #Initialize 3d vector
+        if np.ndim(vector) == 1:
+            if vector.shape[0] == md.mesh.numberofvertices2d:
+                projected_vector = (padding * np.ones((md.mesh.numberofvertices))).astype(vector.dtype)
+            elif vector.shape[0] == md.mesh.numberofvertices2d + 1:
+                projected_vector = (padding * np.ones((md.mesh.numberofvertices + 1))).astype(vector.dtype)
+                projected_vector[-1] = vector[-1]
+                vector = vector[:-1]
+            else:
+                raise TypeError("pyissm.model.mesh.project_3d: Vector must be the length of md.mesh.numberofvertices2d or md.mesh.numberofvertices2d + 1")
+            #Fill in
+            if layer == 0:
+                for i in range(md.mesh.numberoflayers):
+                    projected_vector[(i * md.mesh.numberofvertices2d):((i + 1) * md.mesh.numberofvertices2d)] = vector
+            else:
+                projected_vector[((layer - 1) * md.mesh.numberofvertices2d):(layer * md.mesh.numberofvertices2d)] = vector
+        else:
+            if vector.shape[0] == md.mesh.numberofvertices2d:
+                projected_vector = (padding * np.ones((md.mesh.numberofvertices, np.size(vector, axis=1)))).astype(vector.dtype)
+            elif vector.shape[0] == md.mesh.numberofvertices2d + 1:
+                projected_vector = (padding * np.ones((md.mesh.numberofvertices + 1, np.size(vector, axis=1)))).astype(vector.dtype)
+                projected_vector[-1, :] = vector[-1, :]
+                vector = vector[:-1, :]
+            else:
+                raise TypeError("pyissm.model.mesh.project_3d: Vector must be the length of md.mesh.numberofvertices2d or md.mesh.numberofvertices2d + 1")
+            #Fill in
+            if layer == 0:
+                for i in range(md.mesh.numberoflayers):
+                    projected_vector[(i * md.mesh.numberofvertices2d):((i + 1) * md.mesh.numberofvertices2d), :] = vector
+            else:
+                projected_vector[((layer - 1) * md.mesh.numberofvertices2d):(layer * md.mesh.numberofvertices2d), :] = vector
+
+    elif type.lower() == 'element':
+        #Initialize 3d vector
+        if np.ndim(vector) == 1:
+            if vector.shape[0] == md.mesh.numberofelements2d:
+                projected_vector = (padding * np.ones((md.mesh.numberofelements))).astype(vector.dtype)
+            elif vector.shape[0] == md.mesh.numberofelements2d + 1:
+                projected_vector = (padding * np.ones((md.mesh.numberofelements + 1))).astype(vector.dtype)
+                projected_vector[-1] = vector[-1]
+                vector = vector[:-1]
+            else:
+                raise TypeError("pyissm.model.mesh.project_3d: Vector must be the length of md.mesh.numberofelements2d or md.mesh.numberofelements2d + 1")
+            #Fill in
+            if layer == 0:
+                for i in range(md.mesh.numberoflayers - 1):
+                    projected_vector[(i * md.mesh.numberofelements2d):((i + 1) * md.mesh.numberofelements2d)] = vector
+            else:
+                projected_vector[((layer - 1) * md.mesh.numberofelements2d):(layer * md.mesh.numberofelements2d)] = vector
+        else:
+            if vector.shape[0] == md.mesh.numberofelements2d:
+                projected_vector = (padding * np.ones((md.mesh.numberofelements, np.size(vector, axis=1)))).astype(vector.dtype)
+            elif vector.shape[0] == md.mesh.numberofelements2d + 1:
+                projected_vector = (padding * np.ones((md.mesh.numberofelements + 1, np.size(vector, axis=1)))).astype(vector.dtype)
+                projected_vector[-1, :] = vector[-1, :]
+                vector = vector[:-1, :]
+            else:
+                raise TypeError("pyissm.model.mesh.project_3d: Vector must be the length of md.mesh.numberofelements2d or md.mesh.numberofelements2d + 1")
+            #Fill in
+            if layer == 0:
+                for i in range(md.mesh.numberoflayers - 1):
+                    projected_vector[(i * md.mesh.numberofelements2d):((i + 1) * md.mesh.numberofelements2d), :] = vector
+            else:
+                projected_vector[((layer - 1) * md.mesh.numberofelements2d):(layer * md.mesh.numberofelements2d), :] = vector
+    elif type.lower() == 'poly':
+        #Initialize 3d vector
+        if np.ndim(vector) == 1:
+            if vector.shape[0] == md.mesh.numberofvertices2d:
+                projected_vector = (padding * np.ones((md.mesh.numberofvertices))).astype(vector.dtype)
+            elif vector.shape[0] == md.mesh.numberofvertices2d + 1:
+                projected_vector = (padding * np.ones((md.mesh.numberofvertices + 1))).astype(vector.dtype)
+                projected_vector[-1] = vector[-1]
+                vector = vector[:-1]
+            else:
+                raise TypeError("pyissm.model.mesh.project_3d: Vector must be the length of md.mesh.numberofvertices2d or md.mesh.numberofvertices2d + 1")
+            #Fill in
+            if layer == 0:
+                for i in range(md.mesh.numberoflayers - 1):
+                    projected_vector[(i * md.mesh.numberofvertices2d):((i + 1) * md.mesh.numberofvertices2d)] = vector * (1.0 - (1.0 - i / (md.mesh.numberoflayers - 1.0))**degree)
+            else:
+                projected_vector[((layer - 1) * md.mesh.numberofvertices2d):(layer * md.mesh.numberofvertices2d)] = vector * (1.0 - (1.0 - layer / (md.mesh.numberoflayers - 1.0))**degree)
+        else:
+            if vector.shape[0] == md.mesh.numberofvertices2d:
+                projected_vector = (padding * np.ones((md.mesh.numberofvertices, np.size(vector, axis=1)))).astype(vector.dtype)
+            elif vector.shape[0] == md.mesh.numberofvertices2d + 1:
+                projected_vector = (padding * np.ones((md.mesh.numberofvertices + 1, np.size(vector, axis=1)))).astype(vector.dtype)
+                projected_vector[-1, :] = vector[-1, :]
+                vector = vector[:-1, :]
+            else:
+                raise TypeError("pyissm.model.mesh.project_3d: Vector must be the length of md.mesh.numberofvertices2d or md.mesh.numberofvertices2d + 1")
+            #Fill in
+            if layer == 0:
+                for i in range(md.mesh.numberoflayers - 1):
+                    projected_vector[(i * md.mesh.numberofvertices2d):((i + 1) * md.mesh.numberofvertices2d), :] = vector * (1.0 - (1.0 - i / (md.mesh.numberoflayers - 1.0))**degree)
+            else:
+                projected_vector[((layer - 1) * md.mesh.numberofvertices2d):(layer * md.mesh.numberofvertices2d), :] = vector * (1.0 - (1.0 - layer / (md.mesh.numberoflayers - 1.0))**degree)
+    else:
+        raise TypeError("pyissm.model.mesh.project_3d: Unknown projection type")
+
+    return projected_vector

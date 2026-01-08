@@ -2,7 +2,7 @@ import numpy as np
 import warnings
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 from pyissm import tools
 
 ## ------------------------------------------------------
@@ -136,6 +136,24 @@ class default(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - inversion.default Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude inversion.default fields to 3D
+        """
+        self.vx_obs = mesh.project_3d(md, vector = self.vx_obs, type = 'node')
+        self.vy_obs = mesh.project_3d(md, vector = self.vy_obs, type = 'node')
+        self.vel_obs = mesh.project_3d(md, vector = self.vel_obs, type = 'node')
+        self.thickness_obs = mesh.project_3d(md, vector = self.thickness_obs, type = 'node')
+        if not np.any(np.isnan(self.cost_functions_coefficients)):
+            self.cost_functions_coefficients = mesh.project_3d(md, vector = self.cost_functions_coefficients, type = 'node')
+        if not np.any(np.isnan(self.min_parameters)):
+            self.min_parameters = mesh.project_3d(md, vector = self.min_parameters, type = 'node')
+        if not np.any(np.isnan(self.max_parameters)):
+            self.max_parameters = mesh.project_3d(md, vector = self.max_parameters, type = 'node')
+            
+        return self
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -372,6 +390,24 @@ class m1qn3(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - inversion.m1qn3 Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude inversion.m1qn3 fields to 3D
+        """
+        self.vx_obs = mesh.project_3d(md, vector = self.vx_obs, type = 'node')
+        self.vy_obs = mesh.project_3d(md, vector = self.vy_obs, type = 'node')
+        self.vel_obs = mesh.project_3d(md, vector = self.vel_obs, type = 'node')
+        self.thickness_obs = mesh.project_3d(md, vector = self.thickness_obs, type = 'node')
+        if not np.any(np.isnan(self.cost_functions_coefficients)):
+            self.cost_functions_coefficients = mesh.project_3d(md, vector = self.cost_functions_coefficients, type = 'node')
+        if not np.any(np.isnan(self.min_parameters)):
+            self.min_parameters = mesh.project_3d(md, vector = self.min_parameters, type = 'node')
+        if not np.any(np.isnan(self.max_parameters)):
+            self.max_parameters = mesh.project_3d(md, vector = self.max_parameters, type = 'node')
+            
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -612,6 +648,27 @@ class tao(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - inversion.tao Class'
         return s
+
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude inversion.tao fields to 3D
+        """
+        self.vx_obs = mesh.project_3d(md, vector = self.vx_obs, type = 'node')
+        self.vy_obs = mesh.project_3d(md, vector = self.vy_obs, type = 'node')
+        self.vel_obs = mesh.project_3d(md, vector = self.vel_obs, type = 'node')
+        self.thickness_obs = mesh.project_3d(md, vector = self.thickness_obs, type = 'node')
+        
+        if np.size(self.cost_functions_coefficients) > 1:
+            self.cost_functions_coefficients = mesh.project_3d(md, vector = self.cost_functions_coefficients, type = 'node')
+
+        if np.size(self.min_parameters) > 1:
+            self.min_parameters = mesh.project_3d(md, vector = self.min_parameters, type = 'node')
+
+        if np.size(self.max_parameters) > 1:
+            self.max_parameters = mesh.project_3d(md, vector = self.max_parameters, type = 'node')
+            
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):

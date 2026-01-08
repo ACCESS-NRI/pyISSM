@@ -1,7 +1,8 @@
 import numpy as np
+import warnings
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 ## ------------------------------------------------------
 ## hydrology.armapw
@@ -110,6 +111,15 @@ class armapw(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - hydrology.armapw Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude hydrology.armapw fields to 3D
+        """
+        self.basin_id = mesh.project_3d(md, vector = self.basin_id, type = 'element')
+            
+        return self
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -473,6 +483,21 @@ class dc(class_registry.manage_state):
         s = 'ISSM - hydrology.dc Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude hydrology.dc fields to 3D
+        """
+        self.spcsediment_head = mesh.project_3d(md, vector = self.spcsediment_head, type = 'node', layer = 1)
+        self.sediment_transmitivity = mesh.project_3d(md, vector = self.sediment_transmitivity, type = 'node', layer = 1)
+        self.basal_moulin_input = mesh.project_3d(md, vector = self.basal_moulin_input, type = 'node', layer = 1)
+        self.mask_thawed_node = mesh.project_3d(md, vector = self.mask_thawed_node, type = 'node', layer = 1)
+        if self.isefficientlayer == 1:
+            self.spcepl_head = mesh.project_3d(md, vector = self.spcepl_head, type = 'node', layer = 1)
+            self.mask_eplactive_node = mesh.project_3d(md, vector = self.mask_eplactive_node, type = 'node', layer = 1)
+
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         #Early return if required analysis not present
@@ -787,6 +812,20 @@ class glads(class_registry.manage_state):
         s = 'ISSM - hydrology.glads Class'
         return s
 
+    # Extrude to 3D mesh
+    # TODO: Confirm that extrude() is necessary for hydrology.glads. No extrude() exists for MATLAB.
+    def extrude(self, md):
+        """
+        Extrude hydrology.glads fields to 3D
+        """
+        self.sheet_conductivity = mesh.project_3d(md, vector = self.sheet_conductivity, type = 'node', layer = 1)
+        self.bump_height = mesh.project_3d(md, vector = self.bump_height, type = 'node', layer = 1)
+        self.spcphi = mesh.project_3d(md, vector = self.spcphi, type = 'node', layer = 1)
+        self.moulin_input = mesh.project_3d(md, vector = self.moulin_input, type = 'node', layer = 1)
+        self.neumannflux = mesh.project_3d(md, vector = self.neumannflux, type = 'node', layer = 1)
+
+        return self
+
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         # Early return if required analysis not present
@@ -977,6 +1016,15 @@ class pism(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - hydrology.pism Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude hydrology.pism fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.hydrology.pism.extrude: 3D extrusion not implemented for hydrology.pism. Returning unchanged (2D) hydrology fields.')
+
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -1171,6 +1219,15 @@ class shakti(class_registry.manage_state):
         s = 'ISSM - hydrology.shakti Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude hydrology.shakti fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.hydrology.shakti.extrude: 3D extrusion not implemented for hydrology.shakti. Returning unchanged (2D) hydrology fields.')
+
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         # Early return if required analysis not present
@@ -1353,6 +1410,15 @@ class shreve(class_registry.manage_state):
         s = 'ISSM - hydrology.shreve Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude hydrology.shreve fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.hydrology.shreve.extrude: 3D extrusion not implemented for hydrology.shreve. Returning unchanged (2D) hydrology fields.')
+
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
             
@@ -1495,6 +1561,15 @@ class tws(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - hydrology.tws Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude hydrology.tws fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.hydrology.tws.extrude: 3D extrusion not implemented for hydrology.tws. Returning unchanged (2D) hydrology fields.')
+
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):

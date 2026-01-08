@@ -1,7 +1,7 @@
 import numpy as np
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 @class_registry.register_class
 class debris(class_registry.manage_state):
@@ -104,6 +104,15 @@ class debris(class_registry.manage_state):
         s = 'ISSM - debris Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude debris fields to 3D
+        """
+        self.spcthickness = mesh.project_3d(md, vector = self.spcthickness, type = 'node')
+            
+        return self
+
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
 

@@ -1,7 +1,7 @@
 import numpy as np
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 @class_registry.register_class
 class damage(class_registry.manage_state):
@@ -127,6 +127,17 @@ class damage(class_registry.manage_state):
         s = 'ISSM - damage Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude damage fields to 3D
+        """
+        if self.isdamage:
+            self.D = mesh.project_3d(md, vector = self.D, type = 'node')
+            self.spcdamage = mesh.project_3d(md, vector = self.spcdamage, type = 'node')
+            
+            return self
+
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         class_utils.check_field(md, fieldname = "damage.isdamage", scalar = True, values = [0, 1])
