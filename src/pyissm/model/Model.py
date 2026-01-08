@@ -754,17 +754,6 @@ class Model():
         md.solidearth.extrude(md)
         md.dsl.extrude(md)
         md.stochasticforcing.extrude(md)
-
-        # connectivity
-        md.mesh.elementconnectivity = np.tile(md.mesh.elementconnectivity, (numlayers - 1, 1))
-        md.mesh.elementconnectivity[np.nonzero(md.mesh.elementconnectivity == 0)] = -sys.maxsize - 1
-        if not np.isnan(md.mesh.elementconnectivity).all():
-            for i in range(1, numlayers - 1):
-                connect1 = i * md.mesh.numberofelements2d
-                connect2 = (i + 1) * md.mesh.numberofelements2d
-                md.mesh.elementconnectivity[connect1:connect2, :] = md.mesh.elementconnectivity[connect1:connect2, :] + md.mesh.numberofelements2d
-                md.mesh.elementconnectivity[np.nonzero(md.mesh.elementconnectivity < 0)] = 0
-
         md.materials.extrude(md)
         md.damage.extrude(md)
         md.mask.extrude(md)
@@ -772,7 +761,31 @@ class Model():
         md.basalforcings.extrude(md)
         md.outputdefinition.extrude(md)
 
-        # increase connectivity if less than 25
+        # Update connectivity
+        if not np.isnan(md.mesh.elementconnectivity).all():
+            ne2d = md.mesh.numberofelements2d
+
+            ## Use floats to allow NaNs
+            elemconn = md.mesh.elementconnectivity.astype(float)
+
+            ## Replicate
+            elemconn = np.tile(elemconn, (num_layers -1, 1))
+
+            ## Repalce 0 with nan
+            elemconn[elemconn == 0] = np.nan
+
+            ## Shift layer numbers:
+            for i in range(2, num_layers):
+                start = (i - 1) * ne2d
+                end = i * ne2d
+                elemconn[start:end, :] += ne2d
+
+            ## Replace nan with 0
+            elemconn [np.isnan(elemconn)] = 0
+
+            ## Convert back to int
+            md.mesh.elementconnectivity = elemconn.astype(md.mesh.elementconnectivity.dtype)
+
         if md.mesh.average_vertex_connectivity <= 25:
             md.mesh.average_vertex_connectivity = 100
 
