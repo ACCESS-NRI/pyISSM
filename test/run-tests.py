@@ -48,7 +48,7 @@ def run_test(test_id,
         raise NotImplementedError(f"'{output}' output is not implementd yet.")
     
     # Initialise fields
-    print(f'--- RUNNING TEST {test_id} ---\n')
+    print(f"\n{'-'*100}\n{'RUNNING TEST ' + str(test_id):^{100}}\n{'-'*100}\n", flush=True)
     errors = []
     archive_name = f'Archive{test_id}'
     test_name = id_to_name(test_id)
@@ -59,7 +59,7 @@ def run_test(test_id,
 
     # Check if test file exists
     if not os.path.isfile(test_file):
-        print(f"ERROR: Test file does not exist: {test_file}", flush=True)
+        print(f"ERROR: Test file does not exist: {test_file}", flush = True)
         errors.append({
             'field': 'TEST_FILE_MISSING',
             'error_diff': None,
@@ -71,7 +71,7 @@ def run_test(test_id,
 
     # Check if archive file exists
     if not os.path.isfile(archive_file):
-        print(f"ERROR: Archive file does not exist: {archive_file}", flush=True)
+        print(f"ERROR: Archive file does not exist: {archive_file}", flush = True)
         errors.append({
             'field': 'ARCHIVE_FILE_MISSING',
             'error_diff': None,

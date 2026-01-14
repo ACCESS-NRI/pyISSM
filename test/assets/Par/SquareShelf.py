@@ -1,15 +1,7 @@
-# from arch import *
 import inspect
-import os.path
-
+import os
 import numpy as np
-
 import pyissm
-
-# from InterpFromMeshToMesh2d import InterpFromMeshToMesh2d
-# from paterson import paterson
-# from SetIceShelfBC import SetIceShelfBC
-# from verbose import verbose
 
 #Start defining model parameters here
 #Geometry
@@ -30,34 +22,13 @@ y = np.array(pyissm.tools.archive.arch_read('../assets/Data/SquareShelf.arch', '
 vx = np.array(pyissm.tools.archive.arch_read('../assets/Data/SquareShelf.arch', 'vx'))
 vy = np.array(pyissm.tools.archive.arch_read('../assets/Data/SquareShelf.arch', 'vy'))
 index = pyissm.tools.archive.arch_read('../assets/Data/SquareShelf.arch', 'index').astype(int)
-#dbg - begin
-#  #print 'vars in SquareShelf.nc:'
-#  #for v in iVelF.variables:
-#  #    print v
-#dbg - end
 
-# x = x[0][:]
-# y = y[0][:]
-# vx = vx[0][:]
-# vy = vy[0][:]
-# index = index[0][:]
-
+# Initialization
 md.initialization.vx = pyissm.tools.wrappers.InterpFromMeshToMesh2d(index, x, y, vx, md.mesh.x, md.mesh.y)
 md.initialization.vy = pyissm.tools.wrappers.InterpFromMeshToMesh2d(index, x, y, vy, md.mesh.x, md.mesh.y)
 x = y = vx = vy = index = None
 md.initialization.vz = np.zeros((md.mesh.numberofvertices))
 md.initialization.pressure = np.zeros((md.mesh.numberofvertices))
-
-#dbg - begin
-#print '...vx:'
-#print md.initialization.vx
-#print '...vy:'
-#print md.initialization.vy
-#  #print '...vz:'
-#  #print md.initialization.vz
-#  #print '...pressure:'
-#  #print md.initialization.pressure
-#dbg - end
 
 # Materials
 md.initialization.temperature = (273 - 20) * np.ones((md.mesh.numberofvertices))
@@ -74,7 +45,6 @@ md.friction.q = np.ones((md.mesh.numberofelements))
 md.masstransport.stabilization = 1
 md.thermal.stabilization = 1
 md.settings.waitonlock = 30
-# md.verbose = verbose(0)
 md.stressbalance.restol = 0.10
 md.steadystate.reltol = 0.02
 md.stressbalance.reltol = 0.02
