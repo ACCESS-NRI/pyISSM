@@ -100,7 +100,8 @@ def _read_field(fid):
             rows = _read_int(fid)
             cols = _read_int(fid)
             
-            values = struct.unpack('f>{rows * cols}d', fid.read(rows * cols * 8))
+            # Read matrix and reshape as float array
+            values = np.frombuffer(fid.read(rows * cols * 8), dtype = '>f8')
             data = np.array(values, dtype = float).reshape((cols, rows)).T
 
             size = 'f{rows}x{cols}'
