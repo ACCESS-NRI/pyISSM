@@ -7,8 +7,7 @@ import pyissm
 
 issm_dir = pyissm.tools.config.get_issm_dir()
 archive_path = issm_dir + '/test/Archives/'
-test_path = issm_dir + '/test/'
-
+test_path = './'
 
 def id_to_name(test_id):
     """
