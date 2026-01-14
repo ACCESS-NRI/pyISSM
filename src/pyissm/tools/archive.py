@@ -11,95 +11,112 @@ def arch_read(filename, fieldname):
     """
     Read data from an ISSM archive file.
 
-    Parameters:
-        filename (str): Path to the ISSM archive file.
-        fieldname (str): Name of the field to read from the archive.
-    Returns:
-        data (np.ndarray): Data read from the specified field in the archive.
+    Parameters
+    ----------
+    filename : str
+        Path to the ISSM archive file.
+    fieldname : str
+        Name of the field to read from the archive.
 
-    Usage:
-        data = arch_read(filename, fieldname)
+    Returns
+    -------
+    np.ndarray
+        Data read from the specified field in the archive.
+
+    Raises
+    ------
+    FileNotFoundError
+        If the archive file does not exist.
+    KeyError
+        If the specified field is not found in the archive.
+
+    Examples
+    --------
+    >>> data = arch_read('test101.arch', 'fieldname')
     """
 
     if not os.path.isfile(filename):
         raise FileNotFoundError(f"Archive file '{filename}' not found.")
-    else:
-        fid = open(filename, 'rb')
     
-    # Initialize output
-    archive_results = []
+    with open(filename, 'rb') as fid:
+        while True:
+            result = _read_field(fid)
+            if result is None:
+                break
 
-    # Read first results from file
-    result = _read_field(fid)
-
-    while result:
-        if fieldname == result['field_name']:
-            # Found the data we wanted
-            archive_results = result['data']
-            break
-        # Read next results from file
-        result = _read_field(fid)
-
-    # Close file
-    fid.close()
-    return archive_results
+            if result['field_name'] == fieldname:
+                return result['data']
+    
+    raise KeyError(f'Field {fieldname} not found in archive')
 
 def _read_field(fid):
     """
-    Procedure to read a field and return a results list with the following 
-    attributes:
+    Read a single field from an ISSM archive file.
 
-        result['field_name']    -> the name of the variable that was just read
-        result['size']          -> size (dimensions) of the variable just read
-        result['data_type']     -> the type of data that was just read
-        result['data']          -> the actual data
+    Parameters
+    ----------
+    fid : file object
+        Binary file object opened in read mode.
+
+    Returns
+    -------
+    dict or None
+        Dictionary with keys: field_name, size, data_type, data.
+        Returns None on EOF.
     """
 
+    def _read_int(fid):
+        """
+        Read big-endian 32-bit integer from a binary file.
+        """
+        return struct.unpack('>i', fid.read(4))[0]
+    
+    def _read_double(fid):
+        """
+        Read big-endian 64-bit floating-point value from a binary file.
+        """
+        return struct.unpack('>d', fid.read(8))[0]
+
     try:
-        # first, read the string
-        # first read the size and continue reading
-        struct.unpack('>i', fid.read(struct.calcsize('>i')))[0]  # name length
-        check_name = struct.unpack('>i', fid.read(struct.calcsize('>i')))[0]
+        # Read the name length & check name
+        _read_int(fid)
+        check_name = _read_int(fid)
         if check_name != 1:
-            raise ValueError('archread error : a string was not present at the start of the arch file')
-        namelen = struct.unpack('>i', fid.read(struct.calcsize('>i')))[0]
-        fieldname = struct.unpack('>{}s'.format(namelen), fid.read(namelen))[0]
-        # then, read the data
-        # first read the size and continue reading
-        struct.unpack('>i', fid.read(struct.calcsize('>i')))[0]  # data length
-        data_type = struct.unpack('>i', fid.read(struct.calcsize('>i')))[0]
+            raise ValueError('pyissm.tools.archive.arch_read: A string was not present at the start of the archive file')
+        
+        name_len = _read_int(fid)
+        field_name = fid.read(name_len).decode('utf-8')
+        
+        # Read the data
+        _read_int(fid)
+        data_type = _read_int(fid)
 
         if data_type == 2:
-            # struct.upack scalar
-            data = struct.unpack('>d', fid.read(struct.calcsize('>d')))[0]
+            data = _read_double(fid)
+            size = '1x1'
+            dtype = 'double'
+            
         elif data_type == 3:
-            rows = struct.unpack('>i', fid.read(struct.calcsize('>i')))[0]
-            cols = struct.unpack('>i', fid.read(struct.calcsize('>i')))[0]
-            raw_data = np.zeros(shape=(rows, cols), dtype=float)
-            for i in range(rows):
-                raw_data[i, :] = struct.unpack('>{}d'.format(cols), fid.read(cols * struct.calcsize('>d')))
-                # The matrix will be struct.upacked in order and will be filled left -> right by column
-                # We need to reshape and transpose the matrix so it can be read correctly
-            data = raw_data.reshape(raw_data.shape[::-1]).T
+            rows = _read_int(fid)
+            cols = _read_int(fid)
+            
+            data = np.frombuffer(
+                fid.read(rows * cols * 8),
+                dtype = '>f8'
+            ).reshape((cols, rows)).T
+
+            size = 'f{rows}x{cols}'
+            dtype = 'vector/matrix'
+            
         else:
-            raise TypeError("Cannot read data type {}".format(data_type))
+            raise TypeError(f'Unsupported data type: {data_type}')
 
-        # give additional data to user
-        if data_type == 2:
-            data_size = '1x1'
-            data_type_str = 'double'
-        elif data_type == 3:
-            data_size = '{0}x{1}'.format(rows, cols)
-            data_type_str = 'vector/matrix'
-
-        result = collections.OrderedDict()
-        result['field_name'] = fieldname.decode('utf8')
-        result['size'] = data_size
-        result['data_type'] = data_type_str
-        result['data'] = data
-
-    except struct.error as e:
-        result = None
-        print("result is empty due to", e)
-
-    return result
+        return {
+            'field_name': field_name,
+            'size': size,
+            'data_type': dtype,
+            'data': data
+        }
+    
+    except struct.error:
+        return None
