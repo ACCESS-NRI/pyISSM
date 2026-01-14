@@ -7,7 +7,7 @@ import pyissm
 
 issm_dir = pyissm.tools.config.get_issm_dir()
 archive_path = issm_dir + '/test/Archives/'
-test_path = issm_dir + './test/'
+test_path = issm_dir + '/test/'
 
 
 def id_to_name(test_id):
@@ -16,7 +16,8 @@ def id_to_name(test_id):
     """
 
     # Open file and read first line
-    test_file = os.path.join(test_path, f'{test_id}.py')
+    test_file = os.path.join(test_path, f'test{test_id}.py')
+
     with open(test_file, 'r') as f:
         first_line = f.readline().strip()
     
@@ -53,8 +54,35 @@ def run_test(test_id,
     archive_name = f'Archive{test_id}'
     test_name = id_to_name(test_id)
 
-    # Execute test
+    # Build file paths
     test_file = os.path.join(test_path, f'test{test_id}.py')
+    archive_file = os.path.join(archive_path, f'{archive_name}.arch')
+
+    # Check if test file exists
+    if not os.path.isfile(test_file):
+        print(f"ERROR: Test file does not exist: {test_file}", flush=True)
+        errors.append({
+            'field': 'TEST_FILE_MISSING',
+            'error_diff': None,
+            'tolerance': None,
+            'test_name': test_name,
+            'test_id': test_id
+        })
+        return errors
+
+    # Check if archive file exists
+    if not os.path.isfile(archive_file):
+        print(f"ERROR: Archive file does not exist: {archive_file}", flush=True)
+        errors.append({
+            'field': 'ARCHIVE_FILE_MISSING',
+            'error_diff': None,
+            'tolerance': None,
+            'test_name': test_name,
+            'test_id': test_id
+        })
+        return errors
+
+    # Execute test
     try:
         local_globals = {}
         exec(compile(open(test_file, 'rb').read(), test_file, 'exec'), globals(), local_globals)
@@ -66,9 +94,6 @@ def run_test(test_id,
         print(f'ERROR executing test {test_id}: {e}', flush = True)
         errors.append({'field': 'EXECUTION_FAILED', 'error_diff': None, 'tolerance': None, 'test_name': test_name})
         return errors
-    
-    ## Define archive file
-    archive_file = os.path.join(archive_path, f'{archive_name}.arch')
 
     ## Loop over all fields and compute error
     for k, fieldname in enumerate(field_names):
@@ -139,6 +164,9 @@ def run_tests(test_range: str = None, exclude: str = None):
     # Parse exclusions
     exclude_list = [int(x) for x in exclude.split(',')] if exclude else []
     tests_to_run = [t for t in tests if t not in exclude_list]
+
+    # Run tests in order
+    tests_to_run.sort()
 
     # Run all tests and compile list of all errors
     all_errors = []
