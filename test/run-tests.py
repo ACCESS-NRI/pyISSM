@@ -56,7 +56,12 @@ def run_test(test_id,
     # Execute test
     test_file = os.path.join(test_path, f'test{test_id}.py')
     try:
-        exec(compile(open(test_file, 'rb').read(), test_file, 'exec'), globals())
+        local_globals = {}
+        exec(compile(open(test_file, 'rb').read(), test_file, 'exec'), globals(), local_globals)
+
+        field_names = local_globals.get('field_names', [])
+        field_values = local_globals.get('field_values', [])
+        field_tolerances = local_globals.get('field_tolerances', [])
     except Exception as e:
         print(f'ERROR executing test {test_id}: {e}', flush = True)
         errors.append({'field': 'EXECUTION_FAILED', 'error_diff': None, 'tolerance': None, 'test_name': test_name})
