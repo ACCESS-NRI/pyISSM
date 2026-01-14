@@ -1,7 +1,7 @@
 import argparse
 import glob
 import numpy as np
-import sys
+from sys import float_info
 import os
 import pyissm
 
