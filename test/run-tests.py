@@ -58,7 +58,7 @@ def run_test(test_id,
     try:
         exec(compile(open(test_file, 'rb').read(), test_file, 'exec'), globals())
     except Exception as e:
-        print(f'ERROR executing test {test_id}: {e}')
+        print(f'ERROR executing test {test_id}: {e}', flush = True)
         errors.append({'field': 'EXECUTION_FAILED', 'error_diff': None, 'tolerance': None, 'test_name': test_name})
         return errors
     
@@ -94,7 +94,7 @@ def run_test(test_id,
             ### If error, append to errors list
             if np.any(error_diff > tolerance) or np.isnan(error_diff):
                 print(f"ERROR   difference: {error_diff:7.2g} > {tolerance:7.2g} "
-                      f"test id: {test_id} test name: {test_name} field: {fieldname}")
+                      f"test id: {test_id} test name: {test_name} field: {fieldname}", flush = True)
                 errors.append({
                     'field': fieldname,
                     'error_diff': error_diff,
@@ -105,11 +105,11 @@ def run_test(test_id,
             ### If no error, print success message
             else:
                 print(f"SUCCESS difference: {error_diff:7.2g} < {tolerance:7.2g} "
-                      f"test id: {test_id} test name: {test_name} field: {fieldname}")
+                      f"test id: {test_id} test name: {test_name} field: {fieldname}", flush = True)
         
         ### If error, append to errors list
         except Exception as e:
-            print(f"Error while checking field '{fieldname}' from test {archive_name[7:]}: {e}")
+            print(f"Error while checking field '{fieldname}' from test {archive_name[7:]}: {e}", flush = True)
             errors.append({
                 'field': fieldname,
                 'error_diff': None,
@@ -146,7 +146,7 @@ def run_tests(test_range: str = None, exclude: str = None):
         for e in all_errors:
             print(f"Test ID: {e.get('test_id', '?')}, Test Name: {e.get('test_name')}, "
                   f"Field: {e.get('field')}, "
-                  f"Error Diff: {e.get('error_diff')}, Tolerance: {e.get('tolerance')}")
+                  f"Error Diff: {e.get('error_diff')}, Tolerance: {e.get('tolerance')}", flush = True)
         print(f"\nTOTAL FAILED FIELDS: {len(all_errors)}")
     else:
         print("\nALL TESTS PASSED!")
