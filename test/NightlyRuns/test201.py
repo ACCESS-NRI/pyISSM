@@ -10,6 +10,7 @@ md.cluster.np = 3
 
 # Execute model
 md = pyissm.model.execute.solve(md, 'Stressbalance')
+md.results.StressbalanceSolution.Pressure *= 2 # Test introducing an error
 
 # Fields and tolerances to track changes
 field_names = ['Vx', 'Vy', 'Vel', 'Pressure']
