@@ -3,8 +3,7 @@ import os
 import numpy as np
 import pyissm
 
-#Start defining model parameters here
-#Geometry
+# Geometry
 hmin = 300.
 hmax = 1000.
 ymin = min(md.mesh.y)
@@ -16,7 +15,7 @@ md.geometry.base = -md.materials.rho_ice / md.materials.rho_water * md.geometry.
 md.geometry.surface = md.geometry.base + md.geometry.thickness
 md.geometry.bed = md.geometry.base - 500.
 
-#Initial velocity and pressure
+# Initial velocity and pressure
 x = np.array(pyissm.tools.archive.arch_read('../assets/Data/SquareShelf.arch', 'x'))
 y = np.array(pyissm.tools.archive.arch_read('../assets/Data/SquareShelf.arch', 'y'))
 vx = np.array(pyissm.tools.archive.arch_read('../assets/Data/SquareShelf.arch', 'vx'))
@@ -56,6 +55,6 @@ md.groundingline.migration = 'None'
 # Boundary conditions:
 md = pyissm.model.bc.set_ice_shelf_bc(md, '../assets/Exp/SquareFront.exp')
 
-#Change name so that no test have the same name
+# Change name so that no test have the same name
 if len(inspect.stack()) > 2:
     md.miscellaneous.name = os.path.basename(inspect.stack()[2][1]).split('.')[0]

@@ -1,6 +1,7 @@
 #Test Name: SquareShelfTranSSA2d
 import pyissm
 
+# Parameterise model
 md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 150000)
 md = pyissm.model.param.set_mask(md, 'all', None)
 md = pyissm.model.param.parameterize(md, '../assets/Par/SquareShelf.py')
@@ -8,8 +9,9 @@ md.basalforcings.floatingice_melting_rate[:] = 1.
 md = pyissm.model.param.set_flow_equation(md, SSA = 'all')
 md.cluster.np = 3
 md.transient.requested_outputs = ['default', 'FloatingArea', 'GroundedArea', 'TotalFloatingBmb', 'TotalGroundedBmb']
-md = pyissm.model.execute.solve(md, 'Transient')
 
+# Execute model
+md = pyissm.model.execute.solve(md, 'Transient')
 
 # Fields and tolerances to track changes
 field_names = ['Vx1', 'Vy1', 'Vel1', 'Pressure1',

@@ -5,10 +5,12 @@ from sys import float_info
 import os
 import pyissm
 
+# Define ISSM archive directory & local test directory
 issm_dir = pyissm.tools.config.get_issm_dir()
 archive_path = issm_dir + '/test/Archives/'
 test_path = './'
 
+# Define functions
 def id_to_name(test_id):
     """
     Return the name of the test by reading the first line of the test file.
@@ -27,7 +29,6 @@ def id_to_name(test_id):
     # Otherwise, just return test number
     else:
         return f'Test_{test_id}'
-
 
 def run_test(test_id,
              benchmark = 'nightly',
@@ -186,10 +187,13 @@ def run_tests(test_range: str = None, exclude: str = None):
     return len(all_errors) # If any errors occurred, return non-zero exit
 
 if __name__ == "__main__":
+    # Parse arguments
+    ## NOTE: If no arguments are passed, all test*.py files in test_path are executed.
     parser = argparse.ArgumentParser(description="Run ISSM tests.")
     parser.add_argument("--range", type=str, help="Range of tests to run, e.g., 100:201")
     parser.add_argument("--exclude", type=str, help="Comma-separated list of tests to exclude, e.g., 107,201")
     args = parser.parse_args()
 
+    # Execute tests
     num_errors = run_tests(test_range=args.range, exclude=args.exclude)
     exit(num_errors)  # non-zero exit code if any errors for CI

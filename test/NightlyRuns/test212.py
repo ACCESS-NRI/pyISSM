@@ -2,13 +2,14 @@
 import pyissm
 import numpy as np
 
+# Parameterise model
 md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 200000)
 md = pyissm.model.param.set_mask(md, 'all', None)
 md = pyissm.model.param.parameterize(md, '../assets/Par/SquareShelf.py')
 md = pyissm.model.param.set_flow_equation(md, SSA = 'all')
+md.cluster.np = 3
 
-# control parameters
-
+# Define control parameters
 md.inversion.iscontrol = 1
 md.inversion.control_parameters = ['MaterialsRheologyBbar']
 md.inversion.min_parameters = 1.0e6 * np.ones((md.mesh.numberofvertices, len(md.inversion.control_parameters)))
@@ -22,13 +23,10 @@ md.inversion.step_threshold = 0.3 * np.ones((md.inversion.nsteps))
 md.inversion.vx_obs = md.initialization.vx
 md.inversion.vy_obs = md.initialization.vy
 
-
-md.cluster.np = 3
+# Execute model
 md = pyissm.model.execute.solve(md, 'Stressbalance')
 
-
 # Fields and tolerances to track changes
-
 field_names = ['Gradient', 'Misfits', 'MaterialsRheologyBbar', 'Pressure', 'Vel', 'Vx', 'Vy']
 field_tolerances = [1e-13, 1e-13, 1e-13, 1e-13, 1e-13, 1e-13, 1e-13, 1e-13, 1e-13, 1e-13]
 field_values = [md.results.StressbalanceSolution.Gradient1,
