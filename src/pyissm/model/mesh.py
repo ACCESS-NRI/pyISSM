@@ -1017,7 +1017,7 @@ def flag_elements(md, region = 'all', inside = True):
         ## If a file path, load polygon and flag elements inside or outside
         elif region.endswith('.exp'):
             if tools.wrappers.check_wrappers_installed():
-                flag = tools.wrappers.ContourToMesh(md.mesh.elements, md.mesh.x, md.mesh.y, region, 'element', 1).astype(bool)
+                flag = tools.wrappers.ContourToMesh(md.mesh.elements[:, 0:3], md.mesh.x, md.mesh.y, region, 'element', 1).astype(bool)
             else:
                 raise RuntimeError('pyissm.model.mesh.flag_elements: Python wrappers not installed. Cannot flag elements from *.exp file.')
 
