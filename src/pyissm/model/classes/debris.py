@@ -203,7 +203,7 @@ class debris(class_registry.manage_state):
             execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
         
         ## Write Double fields
-        fieldnames = ['max_displacementvelocity', 'removal_slope_threshold', 'removal_stress_threshold', 'packingfraction']
+        fieldnames = ['max_displacementvelocity', 'removal_slope_threshold', 'removal_stress_threshold', 'packingfraction', 'min_thickness']
         for field in fieldnames:
             execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
     

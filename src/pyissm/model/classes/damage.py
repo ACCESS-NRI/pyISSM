@@ -132,11 +132,10 @@ class damage(class_registry.manage_state):
         """
         Extrude damage fields to 3D
         """
-        if self.isdamage:
-            self.D = mesh.project_3d(md, vector = self.D, type = 'node')
-            self.spcdamage = mesh.project_3d(md, vector = self.spcdamage, type = 'node')
+        self.D = mesh.project_3d(md, vector = self.D, type = 'node')
+        self.spcdamage = mesh.project_3d(md, vector = self.spcdamage, type = 'node')
             
-            return self
+        return self
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):

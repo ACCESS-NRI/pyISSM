@@ -435,6 +435,7 @@ class mesh2dvertical(class_registry.manage_state):
         execute.WriteData(fid, prefix, obj = self, fieldname = 'elements', format = 'DoubleMat', mattype = 2)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'vertexonbase', format = 'BooleanMat', mattype = 1)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'vertexonsurface', format = 'BooleanMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'vertexonboundary', format = 'BooleanMat', mattype = 1)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'scale_factor', format = 'DoubleMat', mattype = 1)
 
 ## --------------------------------------------------------
@@ -686,9 +687,11 @@ class mesh3dprisms(class_registry.manage_state):
         execute.WriteData(fid, prefix, obj = self, fieldname = 'elements', format = 'DoubleMat', mattype = 2)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'vertexonbase', format = 'BooleanMat', mattype = 1)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'vertexonsurface', format = 'BooleanMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'vertexonboundary', format = 'BooleanMat', mattype = 1)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'lowerelements', format = 'DoubleMat', mattype = 2)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'upperelements', format = 'DoubleMat', mattype = 2)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'elements2d', format = 'DoubleMat', mattype = 3)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'segments2d', format = 'DoubleMat', mattype = 3)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'scale_factor', format = 'DoubleMat', mattype = 1)
 
         ## Write conditional fields
