@@ -1,11 +1,12 @@
 import numpy as np
+import warnings
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
 from pyissm.model.classes import rotational
 from pyissm.model.classes import lovenumbers
 from pyissm.model.classes import mesh
 from pyissm import tools
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 ## ------------------------------------------------------
 ## solidearth.earth
@@ -118,6 +119,15 @@ class earth(class_registry.manage_state):
         s = 'ISSM - solidearth.earth Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude solidearth.earth fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.solidearth.earth.extrude: 3D extrusion not implemented for solidearth.earth. Returning unchanged (2D) solidearth fields.')
+
+        return self
+
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         # Early return if required analyses/solution not present
@@ -349,6 +359,15 @@ class europa(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - solidearth.europa Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude solidearth.europa fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.solidearth.europa.extrude: 3D extrusion not implemented for solidearth.europa. Returning unchanged (2D) solidearth fields.')
+
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -611,6 +630,15 @@ class settings(class_registry.manage_state):
         s = 'ISSM - solidearth.settings Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude solidearth.settings fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.solidearth.settings.extrude: 3D extrusion not implemented for solidearth.settings. Returning unchanged (2D) solidearth fields.')
+
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         # Early return if required analyses/solution not present
@@ -770,6 +798,15 @@ class solution(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - solidearth.solution Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude solidearth.solution fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.solidearth.solution.extrude: 3D extrusion not implemented for solidearth.solution. Returning unchanged (2D) solidearth fields.')
+
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):

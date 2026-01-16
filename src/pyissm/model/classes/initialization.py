@@ -1,8 +1,9 @@
 import numpy as np
+import warnings
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
 from pyissm.model.classes import hydrology
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 @class_registry.register_class
 class initialization(class_registry.manage_state):
@@ -136,6 +137,38 @@ class initialization(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - initialization Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude initialization fields to 3D
+        """
+        self.vx = mesh.project_3d(md, vector = self.vx, type = 'node')
+        self.vy = mesh.project_3d(md, vector = self.vy, type = 'node')
+        self.vz = mesh.project_3d(md, vector = self.vz, type = 'node')
+        self.vel = mesh.project_3d(md, vector = self.vel, type = 'node')
+        self.temperature = mesh.project_3d(md, vector = self.temperature, type = 'node')
+        self.enthalpy = mesh.project_3d(md, vector = self.enthalpy, type = 'node')
+        self.waterfraction = mesh.project_3d(md, vector = self.waterfraction, type = 'node')
+        self.watercolumn = mesh.project_3d(md, vector = self.watercolumn, type = 'node')
+        self.sediment_head = mesh.project_3d(md, vector = self.sediment_head, type = 'node', layer = 1)
+        self.epl_head = mesh.project_3d(md, vector = self.epl_head, type = 'node', layer = 1)
+        self.epl_thickness = mesh.project_3d(md, vector = self.epl_thickness, type = 'node', layer = 1)
+        self.sealevel = mesh.project_3d(md, vector = self.sealevel, type = 'node', layer = 1)
+        self.bottompressure = mesh.project_3d(md, vector = self.bottompressure, type = 'node', layer = 1)
+        self.dsl = mesh.project_3d(md, vector = self.dsl, type = 'node', layer = 1)
+        self.str = mesh.project_3d(md, vector = self.str, type = 'node', layer = 1)
+        self.debris = mesh.project_3d(md, vector = self.debris, type = 'node', layer = 1)
+        self.age = mesh.project_3d(md, vector = self.age, type = 'node', layer = 1)
+
+        # Lithostatic pressure by default
+        if np.ndim(md.geometry.surface) == 2:
+            warnings.warn('pyissm.model.classes.initialization.extrude: Reshaping md.geometry.surface for your convenience but you should fix it in your model set up')
+            self.pressure = md.constants.g * md.materials.rho_ice * (md.geometry.surface.reshape(-1, 1) - md.mesh.z)
+        else:
+            self.pressure = md.constants.g * md.materials.rho_ice * (md.geometry.surface - md.mesh.z)
+            
+        return self
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):

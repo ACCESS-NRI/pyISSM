@@ -1,7 +1,7 @@
 import numpy as np
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 ## ------------------------------------------------------
 ## friction.default
@@ -83,6 +83,19 @@ class default(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - friction.default Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude friction.default fields to 3D
+        """
+        self.coefficient = mesh.project_3d(md, vector = self.coefficient, type = 'node', layer = 1)
+        self.p = mesh.project_3d(md, vector = self.p, type = 'element')
+        self.q = mesh.project_3d(md, vector = self.q, type = 'element')
+        if self.coupling in[3, 4]:
+            self.effective_pressure = mesh.project3d(md, vector = self.effective_pressure, type = 'node', layer = 1)
+
+        return self
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -231,6 +244,22 @@ class coulomb(class_registry.manage_state):
         s = 'ISSM - friction.coulomb Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude friction.coulomb fields to 3D
+        """
+        self.coefficient = mesh.project_3d(md, vector = self.coefficient, type = 'node',  layer = 1)
+        self.coefficientcoulomb = mesh.project_3d(md, vector = self.coefficientcoulomb, type = 'node', layer = 1)
+        self.p = mesh.project_3d(md, vector = self.p, type = 'element')
+        self.q = mesh.project_3d(md, vector = self.q, type = 'element')
+        if self.coupling == 1:
+            self.effective_pressure = mesh.project_3d(md, vector = self.effective_pressure, type = 'node', layer = 1)
+        elif self.coupling >= 2:
+            raise ValueError('pyissm.model.classes.friction.coulomb.extrude: md.friction.coupling >= 2 not implemented yet.')
+            
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
 
@@ -371,6 +400,22 @@ class coulomb2(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - friction.coulomb2 Class'
         return s
+
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude friction.coulomb2 fields to 3D
+        """
+        self.coefficient = mesh.project_3d(md, vector = self.coefficient, type = 'node',  layer = 1)
+        self.coefficientcoulomb = mesh.project_3d(md, vector = self.coefficientcoulomb, type = 'node', layer = 1)
+        self.p = mesh.project_3d(md, vector = self.p, type = 'element')
+        self.q = mesh.project_3d(md, vector = self.q, type = 'element')
+        if self.coupling == 1:
+            self.effective_pressure = mesh.project_3d(md, vector = self.effective_pressure, type = 'node', layer = 1)
+        elif self.coupling >= 2:
+            raise ValueError('pyissm.model.classes.friction.coulomb2.extrude: md.friction.coupling >= 2 not implemented yet.')
+            
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -508,6 +553,22 @@ class hydro(class_registry.manage_state):
         s = 'ISSM - friction.hydro Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude friction.hydro fields to 3D
+        """
+        self.q = mesh.project_3d(md, vector = self.q, type = 'element')
+        self.C = mesh.project_3d(md, vector = self.C, type = 'element')
+        self.As = mesh.project_3d(md, vector = self.As, type = 'element')
+        self.q = mesh.project_3d(md, vector = self.q, type = 'element')
+        if self.coupling in [3, 4]:
+            self.effective_pressure = mesh.project_3d(md, vector = self.effective_pressure, type = 'node', layer = 1)
+        elif self.coupling > 2:
+            raise ValueError('pyissm.model.classes.friction.hydro.extrude: md.friction.coupling > 4 not implemented yet.')
+            
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
 
@@ -633,6 +694,16 @@ class josh(class_registry.manage_state):
         s = 'ISSM - friction.josh Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude friction.josh fields to 3D
+        """
+        self.coefficient = mesh.project_3d(md, vector = self.q, type = 'node', layer = 1)
+        self.pressure_adjusted_temperature = mesh.project_3d(md, vector = self.pressure_adjusted_temperature, type = 'node', layer = 1)
+            
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
 
@@ -755,6 +826,16 @@ class pism(class_registry.manage_state):
         s = 'ISSM - friction.pism Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude friction.pism fields to 3D
+        """
+        self.till_friction_angle = mesh.project_3d(md, vector = self.till_friction_angle, type = 'node', layer = 1)
+        self.sediment_compressibility_coefficient = mesh.project_3d(md, vector = self.sediment_compressibility_coefficient, type = 'node', layer = 1)
+            
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
 
@@ -874,6 +955,16 @@ class regcoulomb(class_registry.manage_state):
         s = 'ISSM - friction.regcoulomb Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude friction.regcoloumb fields to 3D
+        """
+        self.C = mesh.project_3d(md, vector = self.C, type = 'node')
+        self.m = mesh.project_3d(md, vector = self.m, type = 'element')
+            
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
 
@@ -988,6 +1079,17 @@ class regcoulomb2(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - friction.regcoulomb2 Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude friction.regcoloumb2 fields to 3D
+        """
+        self.C = mesh.project_3d(md, vector = self.C, type = 'node')
+        self.m = mesh.project_3d(md, vector = self.m, type = 'element')
+        self.K = mesh.project_3d(md, vector = self.K, type = 'node')
+            
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -1113,6 +1215,19 @@ class schoof(class_registry.manage_state):
         s = 'ISSM - friction.schoof Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude friction.schoof fields to 3D
+        """
+        self.C = mesh.project_3d(md, vector = self.C, type = 'node')
+        self.Cmax = mesh.project_3d(md, vector = self.Cmax, type = 'node')
+        self.m = mesh.project_3d(md, vector = self.m, type = 'element')
+        if self.coupling in [3, 4]:
+            self.effective_pressure = mesh.project_3d(md, vector = self.effective_pressure, type = 'node', layer = 1)
+            
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
 
@@ -1224,6 +1339,15 @@ class shakti(class_registry.manage_state):
         s = 'ISSM - friction.shakti Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude friction.shakti fields to 3D
+        """
+        self.coefficient = mesh.project_3d(md, vector = self.coefficient, type = 'node', layer = 1)
+            
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
 
@@ -1332,6 +1456,18 @@ class waterlayer(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - friction.waterlayer Class'
         return s
+
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude friction.schoof fields to 3D
+        """
+        self.coefficient = mesh.project_3d(md, vector = self.coefficient, type = 'node', layer = '1')
+        self.p = mesh.project_3d(md, vector = self.p, type = 'element')
+        self.p = mesh.project_3d(md, vector = self.q, type = 'element')
+        self.water_layer = mesh.project_3d(md, vector = self.water_layer, type = 'node', layer = 1)
+            
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):

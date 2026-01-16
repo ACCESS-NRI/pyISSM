@@ -1017,7 +1017,7 @@ def flag_elements(md, region = 'all', inside = True):
         ## If a file path, load polygon and flag elements inside or outside
         elif region.endswith('.exp'):
             if tools.wrappers.check_wrappers_installed():
-                flag = tools.wrappers.ContourToMesh(md.mesh.elements, md.mesh.x, md.mesh.y, region, 'element', 1).astype(bool)
+                flag = tools.wrappers.ContourToMesh(md.mesh.elements[:, 0:3], md.mesh.x, md.mesh.y, region, 'element', 1).astype(bool)
             else:
                 raise RuntimeError('pyissm.model.mesh.flag_elements: Python wrappers not installed. Cannot flag elements from *.exp file.')
 
@@ -2501,3 +2501,400 @@ def twod_to_3d():
     """
 
     raise NotImplementedError('pyissm.model.mesh.twod_to_3d:  This functionality is not yet implemented. Please contact ACCESS-NRI for support.')
+
+def project_3d(md,
+               vector,
+               type = 'node',
+               layer = 0,
+               padding = 0,
+               degree = 0.0):
+    """
+    Vertically project a vector from 2D mesh into a 3D mesh.
+
+    This function extrudes a 2D vector (defined on nodes or elements) into
+    a 3D mesh by replicating it across layers. The vector can be extruded
+    uniformly across all layers or applied to a specific layer with optional
+    polynomial interpolation from bottom to top.
+
+    Parameters
+    ----------
+    md : ISSM Model object
+        ISSM Model object containing a 3D mesh. Must have valid 3D mesh
+        attributes (e.g., md.mesh.numberofvertices, md.mesh.numberoflayers).
+    vector : ndarray
+        2D vector to be projected into 3D. Can be:
+        - (md.mesh.numberofvertices2d,) for node-based vector
+        - (md.mesh.numberofvertices2d + 1,) for node vector with extra element
+        - (md.mesh.numberofelements2d,) for element-based vector
+        - (md.mesh.numberofelements2d + 1,) for element vector with extra element
+        - 2D array with shape (n, m) for multiple fields
+    type : str, optional
+        Type of vector projection. Options are:
+        - 'node': Project node-based vector (default)
+        - 'element': Project element-based vector
+        - 'poly': Project with polynomial interpolation from bottom to top
+    layer : int, optional
+        Layer number (1-indexed) where vector should keep its values. If 0 (default),
+        all layers adopt the value of the 2D vector. If specified, only the
+        designated layer is populated; other layers are set to padding value.
+    padding : float, optional
+        Value used to fill 3D layers not being directly projected.
+        Default is 0.
+    degree : float, optional
+        Degree of polynomial used for extrusion when type='poly'.
+        Controls the vertical variation of the vector from bottom to top.
+        Default is 0.0 (uniform extrusion).
+
+    Returns
+    -------
+    projected_vector : ndarray
+        3D vector with shape:
+        - (md.mesh.numberofvertices,) or (md.mesh.numberofvertices + 1,) for node type
+        - (md.mesh.numberofelements,) or (md.mesh.numberofelements + 1,) for element type
+        - (n, m) preserved for input with multiple fields
+        Data type is preserved from input vector.
+
+    Raises
+    ------
+    TypeError
+        If md is not provided or does not contain a 3D mesh.
+    TypeError
+        If vector size does not match expected dimensions for the specified type.
+    TypeError
+        If type is not one of 'node', 'element', or 'poly'.
+
+    Examples
+    --------
+    Project a 2D node vector uniformly across all layers:
+
+    >>> extruded_vector = project_3d(md, vector=vector2d, type='node')
+
+    Project a 2D vector to a specific layer:
+
+    >>> extruded_vector = project_3d(md, vector=vector2d, type='node', layer=1)
+
+    Project with polynomial interpolation:
+
+    >>> extruded_vector = project_3d(md, vector=vector2d, type='poly', degree=2.0)
+
+    Notes
+    -----
+    The extra element in vector arrays (e.g., md.mesh.numberofvertices2d + 1)
+    is preserved in the output as the last element.
+    """
+
+    ## NOTE: This function is taken directly from $ISSM_DIR/src/m/extrusion/project3d.py with only minor modifications for pyISSM integration.
+
+    # Error checks
+    if not md:
+        raise TypeError("pyissm.model.mesh.project_3d: md must be provided")
+    if md.mesh.domain_type().lower() != '3d':
+        raise TypeError("pyissm.model.mesh.project_3d: md must contain a 3D mesh")
+
+    #Handle special case where vector2d is single element (differs from representation in MATLAB)
+    if isinstance(vector, (bool, int, float)):
+        projected_vector = vector
+
+    if np.size(vector) == 1:
+        projected_vector = vector
+
+    elif type.lower() == 'node':
+        #Initialize 3d vector
+        if np.ndim(vector) == 1:
+            if vector.shape[0] == md.mesh.numberofvertices2d:
+                projected_vector = (padding * np.ones((md.mesh.numberofvertices))).astype(vector.dtype)
+            elif vector.shape[0] == md.mesh.numberofvertices2d + 1:
+                projected_vector = (padding * np.ones((md.mesh.numberofvertices + 1))).astype(vector.dtype)
+                projected_vector[-1] = vector[-1]
+                vector = vector[:-1]
+            else:
+                raise TypeError("pyissm.model.mesh.project_3d: Vector must be the length of md.mesh.numberofvertices2d or md.mesh.numberofvertices2d + 1")
+            #Fill in
+            if layer == 0:
+                for i in range(md.mesh.numberoflayers):
+                    projected_vector[(i * md.mesh.numberofvertices2d):((i + 1) * md.mesh.numberofvertices2d)] = vector
+            else:
+                projected_vector[((layer - 1) * md.mesh.numberofvertices2d):(layer * md.mesh.numberofvertices2d)] = vector
+        else:
+            if vector.shape[0] == md.mesh.numberofvertices2d:
+                projected_vector = (padding * np.ones((md.mesh.numberofvertices, np.size(vector, axis=1)))).astype(vector.dtype)
+            elif vector.shape[0] == md.mesh.numberofvertices2d + 1:
+                projected_vector = (padding * np.ones((md.mesh.numberofvertices + 1, np.size(vector, axis=1)))).astype(vector.dtype)
+                projected_vector[-1, :] = vector[-1, :]
+                vector = vector[:-1, :]
+            else:
+                raise TypeError("pyissm.model.mesh.project_3d: Vector must be the length of md.mesh.numberofvertices2d or md.mesh.numberofvertices2d + 1")
+            #Fill in
+            if layer == 0:
+                for i in range(md.mesh.numberoflayers):
+                    projected_vector[(i * md.mesh.numberofvertices2d):((i + 1) * md.mesh.numberofvertices2d), :] = vector
+            else:
+                projected_vector[((layer - 1) * md.mesh.numberofvertices2d):(layer * md.mesh.numberofvertices2d), :] = vector
+
+    elif type.lower() == 'element':
+        #Initialize 3d vector
+        if np.ndim(vector) == 1:
+            if vector.shape[0] == md.mesh.numberofelements2d:
+                projected_vector = (padding * np.ones((md.mesh.numberofelements))).astype(vector.dtype)
+            elif vector.shape[0] == md.mesh.numberofelements2d + 1:
+                projected_vector = (padding * np.ones((md.mesh.numberofelements + 1))).astype(vector.dtype)
+                projected_vector[-1] = vector[-1]
+                vector = vector[:-1]
+            else:
+                raise TypeError("pyissm.model.mesh.project_3d: Vector must be the length of md.mesh.numberofelements2d or md.mesh.numberofelements2d + 1")
+            #Fill in
+            if layer == 0:
+                for i in range(md.mesh.numberoflayers - 1):
+                    projected_vector[(i * md.mesh.numberofelements2d):((i + 1) * md.mesh.numberofelements2d)] = vector
+            else:
+                projected_vector[((layer - 1) * md.mesh.numberofelements2d):(layer * md.mesh.numberofelements2d)] = vector
+        else:
+            if vector.shape[0] == md.mesh.numberofelements2d:
+                projected_vector = (padding * np.ones((md.mesh.numberofelements, np.size(vector, axis=1)))).astype(vector.dtype)
+            elif vector.shape[0] == md.mesh.numberofelements2d + 1:
+                projected_vector = (padding * np.ones((md.mesh.numberofelements + 1, np.size(vector, axis=1)))).astype(vector.dtype)
+                projected_vector[-1, :] = vector[-1, :]
+                vector = vector[:-1, :]
+            else:
+                raise TypeError("pyissm.model.mesh.project_3d: Vector must be the length of md.mesh.numberofelements2d or md.mesh.numberofelements2d + 1")
+            #Fill in
+            if layer == 0:
+                for i in range(md.mesh.numberoflayers - 1):
+                    projected_vector[(i * md.mesh.numberofelements2d):((i + 1) * md.mesh.numberofelements2d), :] = vector
+            else:
+                projected_vector[((layer - 1) * md.mesh.numberofelements2d):(layer * md.mesh.numberofelements2d), :] = vector
+    elif type.lower() == 'poly':
+        #Initialize 3d vector
+        if np.ndim(vector) == 1:
+            if vector.shape[0] == md.mesh.numberofvertices2d:
+                projected_vector = (padding * np.ones((md.mesh.numberofvertices))).astype(vector.dtype)
+            elif vector.shape[0] == md.mesh.numberofvertices2d + 1:
+                projected_vector = (padding * np.ones((md.mesh.numberofvertices + 1))).astype(vector.dtype)
+                projected_vector[-1] = vector[-1]
+                vector = vector[:-1]
+            else:
+                raise TypeError("pyissm.model.mesh.project_3d: Vector must be the length of md.mesh.numberofvertices2d or md.mesh.numberofvertices2d + 1")
+            #Fill in
+            if layer == 0:
+                for i in range(md.mesh.numberoflayers - 1):
+                    projected_vector[(i * md.mesh.numberofvertices2d):((i + 1) * md.mesh.numberofvertices2d)] = vector * (1.0 - (1.0 - i / (md.mesh.numberoflayers - 1.0))**degree)
+            else:
+                projected_vector[((layer - 1) * md.mesh.numberofvertices2d):(layer * md.mesh.numberofvertices2d)] = vector * (1.0 - (1.0 - layer / (md.mesh.numberoflayers - 1.0))**degree)
+        else:
+            if vector.shape[0] == md.mesh.numberofvertices2d:
+                projected_vector = (padding * np.ones((md.mesh.numberofvertices, np.size(vector, axis=1)))).astype(vector.dtype)
+            elif vector.shape[0] == md.mesh.numberofvertices2d + 1:
+                projected_vector = (padding * np.ones((md.mesh.numberofvertices + 1, np.size(vector, axis=1)))).astype(vector.dtype)
+                projected_vector[-1, :] = vector[-1, :]
+                vector = vector[:-1, :]
+            else:
+                raise TypeError("pyissm.model.mesh.project_3d: Vector must be the length of md.mesh.numberofvertices2d or md.mesh.numberofvertices2d + 1")
+            #Fill in
+            if layer == 0:
+                for i in range(md.mesh.numberoflayers - 1):
+                    projected_vector[(i * md.mesh.numberofvertices2d):((i + 1) * md.mesh.numberofvertices2d), :] = vector * (1.0 - (1.0 - i / (md.mesh.numberoflayers - 1.0))**degree)
+            else:
+                projected_vector[((layer - 1) * md.mesh.numberofvertices2d):(layer * md.mesh.numberofvertices2d), :] = vector * (1.0 - (1.0 - layer / (md.mesh.numberoflayers - 1.0))**degree)
+    else:
+        raise TypeError("pyissm.model.mesh.project_3d: Unknown projection type")
+
+    return projected_vector
+
+
+def project_2d(md, value, layer):
+    """
+    Extract a 3D field value from a specified layer onto the 2D mesh.
+
+    This function projects a field value from a given layer of an extruded 3D mesh
+    back onto the original 2D mesh. It is commonly used to compare values across
+    different layers or to analyze vertical variations in a 3D model.
+
+    Parameters
+    ----------
+    md : ISSM Model object
+        ISSM Model object containing a 3D mesh. Must have valid 3D mesh
+        attributes (e.g., md.mesh.numberofvertices, md.mesh.numberoflayers).
+    value : ndarray or array_like
+        3D field values to be projected onto 2D. Can be:
+        - (md.mesh.numberofvertices,) for node-based data
+        - (md.mesh.numberofvertices + 1,) for node data with extra element
+        - (md.mesh.numberofelements,) for element-based data
+        - (md.mesh.numberofelements + 1,) for element data with extra element
+        - 2D array with shape (n, 1) which will be reshaped to 1D
+    layer : int
+        Layer number (1-indexed) from which to extract data. Must be between
+        1 and md.mesh.numberoflayers (where 1 is the base layer).
+
+    Returns
+    -------
+    projection_value : ndarray
+        2D field values extracted from the specified layer. Shape depends on input:
+        - (md.mesh.numberofvertices2d,) for node-based input
+        - (md.mesh.numberofvertices2d + 1,) for node input with extra element
+        - (md.mesh.numberofelements2d,) for element-based input
+        - (md.mesh.numberofelements2d + 1,) for element input with extra element
+
+    Raises
+    ------
+    TypeError
+        If md is not provided or does not contain a 3D mesh.
+    ValueError
+        If layer is not between 1 and md.mesh.numberoflayers.
+
+    Examples
+    --------
+    Extract velocity from the second layer (1 = base):
+
+    >>> vel_layer2 = project_2d(md3d, md3d.initialization.vel, 2)
+
+    Extract temperature from the surface layer:
+
+    >>> temp_surface = project_2d(md3d, md3d.thermal.temperature, md3d.mesh.numberoflayers)
+
+    Notes
+    -----
+    Layer numbering is 1-indexed, where layer 1 corresponds to the base of the mesh
+    and layer md.mesh.numberoflayers corresponds to the surface.
+
+    This function is useful for:
+    - Comparing field values across different vertical layers
+    - Extracting surface or basal values from 3D simulations
+    - Analyzing vertical variations in model results
+    """
+    
+    ## NOTE: This function is taken directly from $ISSM_DIR/src/m/extrusion/project3d.py with only minor modifications for pyISSM integration.
+
+    # Error checks
+    if not md:
+        raise TypeError("pyissm.model.mesh.project_2d: md must be provided")
+    if md.mesh.domain_type().lower() != '3d':
+        raise TypeError("pyissm.model.mesh.project_2d: md must contain a 3D mesh")
+
+    if layer < 1 or layer > md.mesh.numberoflayers:
+        raise ValueError(f"pyissm.model.mesh.project_2d: Layer must be between 0 and {md.mesh.numberoflayers}")
+
+    # coerce to array in case float is passed
+    if type(value) not in [np.ndarray, np.ma.core.MaskedArray]:
+        value = np.array(value)
+
+    # Check if 2D array
+    vec2d = False
+    if value.ndim == 2 and value.shape[1] == 1:
+        value = value.reshape(-1, )
+        vec2d = True
+
+    # Project
+    if value.size == 1:
+        projection_value = value[(layer - 1) * md.mesh.numberofelements2d:layer * md.mesh.numberofelements2d]
+    elif value.shape[0] == md.mesh.numberofvertices:
+        projection_value = value[(layer - 1) * md.mesh.numberofvertices2d:layer * md.mesh.numberofvertices2d]
+    elif value.shape[0] == md.mesh.numberofvertices + 1:
+        if np.ndim(value) == 1:
+            projection_value = np.hstack((value[(layer - 1) * md.mesh.numberofvertices2d:layer * md.mesh.numberofvertices2d], value[-1]))
+        else:
+            projection_value = np.vstack((value[(layer - 1) * md.mesh.numberofvertices2d:layer * md.mesh.numberofvertices2d], value[-1]))
+    else:
+        projection_value = value[(layer - 1) * md.mesh.numberofelements2d:layer * md.mesh.numberofelements2d]
+
+    if vec2d:
+        projection_value = projection_value.reshape(-1, )
+
+    return projection_value
+
+def depth_average(md, vector):
+    """
+    Compute depth average of a 3D vector using the trapezoidal rule.
+
+    This function computes the depth-averaged value of a 3D field defined on an
+    extruded mesh and returns the result projected onto the corresponding 2D mesh.
+    The depth averaging is performed using the trapezoidal integration rule.
+
+    Parameters
+    ----------
+    md : ISSM Model object
+        ISSM Model object containing a 3D mesh. Must have valid 3D mesh
+        attributes (e.g., md.mesh.numberofvertices, md.mesh.numberoflayers,
+        md.mesh.z) and geometry information (md.geometry.thickness).
+    vector : ndarray or array_like
+        3D field values to be depth-averaged. Can be:
+        - (md.mesh.numberofvertices,) for node-based data
+        - (md.mesh.numberofelements,) for element-based data
+
+    Returns
+    -------
+    vector_average : ndarray
+        Depth-averaged field values projected onto the 2D mesh. Shape depends on input:
+        - (md.mesh.numberofvertices2d,) for node-based input
+        - (md.mesh.numberofelements2d,) for element-based input
+
+    Raises
+    ------
+    TypeError
+        If md is not provided or does not contain a 3D mesh.
+    ValueError
+        If vector size does not match expected dimensions.
+
+    Notes
+    -----
+    The function uses the trapezoidal rule for integration:
+    
+    .. math::
+        \\bar{v} = \\frac{1}{H} \\int_0^H v(z) dz
+    
+    where H is the total thickness and the integral is approximated using
+    layer-by-layer trapezoidal integration.
+
+    Examples
+    --------
+    Compute depth-averaged velocity:
+
+    >>> vel_bar = depth_average(md, md.initialization.vel)
+
+    Compute depth-averaged temperature:
+
+    >>> temp_bar = depth_average(md, md.thermal.temperature)
+    """
+
+    # Error checks 
+    if not md:
+        raise TypeError("pyissm.model.mesh.depth_average: md must be provided")
+    if md.mesh.domain_type().lower() != '3d':
+        raise TypeError("pyissm.model.mesh.depth_average: md must contain a 3D mesh")
+
+    # coerce to array in case float is passed
+    if type(vector) not in [np.ndarray, np.ma.core.MaskedArray]:
+        vector = np.array(vector)
+
+    # Check if 2D array
+    vec2d = False
+    if vector.ndim == 2:
+        vec2d = True
+        vector = vector.reshape(-1, )
+
+    # Handle node data
+    if vector.shape[0] == md.mesh.numberofvertices:
+        vector_average = np.zeros(md.mesh.numberofvertices2d)
+        for i in range(1, md.mesh.numberoflayers):
+            vector_average = vector_average + (project_2d(md, vector, i) + project_2d(md, vector, i + 1)) / 2. * (project_2d(md, md.mesh.z, i + 1) - project_2d(md, md.mesh.z, i))
+        vector_average = vector_average / project_2d(md, md.geometry.thickness, 1)
+
+    # Handle element data
+    elif vector.shape[0] == md.mesh.numberofelements:
+        vector_average = np.zeros(md.mesh.numberofelements2d)
+        for i in range(1, md.mesh.numberoflayers):
+            vertices_dz = (project_2d(md, md.mesh.z, i + 1) - project_2d(md, md.mesh.z, i))
+            elements_dz = vertices_dz.mean(1)
+            vector_average = vector_average + project_2d(md, vector, i) * elements_dz
+    #vector_average = vector_average + project2d(md, vector, i) * (project2d(md, md.mesh.z, i + 1) - project2d(md, md.mesh.z, i))
+        vertices_thickness = project_2d(md, md.geometry.thickness, 1)
+        elements_thickness = vertices_thickness.mean(1)
+        vector_average = vector_average / elements_thickness
+    #vector_average = vector_average / project2d(md, md.geometry.thickness, 1)
+
+    else:
+        raise ValueError('pyissm.model.mesh.depth_average: vector size not supported')
+
+    if vec2d:
+        vector_average = vector_average.reshape(-1, )
+
+    return vector_average

@@ -1,7 +1,7 @@
 import numpy as np
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 @class_registry.register_class
 class geometry(class_registry.manage_state):
@@ -72,6 +72,18 @@ class geometry(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - geometry Class'
         return s
+
+    def extrude(self, md):
+        """
+        Extrude geometry fields to 3D mesh
+        """
+        self.surface = mesh.project_3d(md, vector = self.surface, type = 'node')
+        self.thickness = mesh.project_3d(md, vector = self.thickness, type = 'node')
+        self.hydrostatic_ratio = mesh.project_3d(md, vector = self.hydrostatic_ratio, type = 'node')
+        self.base = mesh.project_3d(md, vector = self.base, type = 'node')
+        self.bed = mesh.project_3d(md, vector = self.bed, type = 'node')
+        
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):

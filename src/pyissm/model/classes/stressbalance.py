@@ -2,7 +2,7 @@ import numpy as np
 import sys
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 @class_registry.register_class
 class stressbalance(class_registry.manage_state):
@@ -160,6 +160,25 @@ class stressbalance(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - stressbalance Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude stressbalance fields to 3D
+        """
+        self.spcvx = mesh.project_3d(md, vector = self.spcvx, type = 'node')
+        self.spcvy = mesh.project_3d(md, vector = self.spcvy, type = 'node')
+        self.spcvz = mesh.project_3d(md, vector = self.spcvz, type = 'node')
+        self.referential = mesh.project_3d(md, vector = self.referential, type = 'node')
+        self.loadingforce = mesh.project_3d(md, vector = self.loadingforce, type = 'node')
+
+        if md.flowequation.isMOLHO:
+            self.spcvx_base = mesh.project_3d(md, vector = self.spcvx_base, type = 'node')
+            self.spcvy_base = mesh.project_3d(md, vector = self.spcvy_base, type = 'node')
+            self.spcvx_shear = mesh.project_3d(md, vector = self.spcvx_shear, type = 'poly', degree = 4)
+            self.spcvy_shear = mesh.project_3d(md, vector = self.spcvy_shear, type = 'poly', degree = 4)
+            
+        return self
     
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,

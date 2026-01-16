@@ -1,7 +1,7 @@
 import numpy as np
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 @class_registry.register_class
 class levelset(class_registry.manage_state):
@@ -84,6 +84,15 @@ class levelset(class_registry.manage_state):
         s = 'ISSM - levelset Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude levelset fields to 3D
+        """
+        self.spclevelset = mesh.project_3d(md, vector = self.spclevelset, type = 'node')
+            
+        return self
+
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         # Early return if not a transient moving front simulation

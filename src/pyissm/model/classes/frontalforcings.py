@@ -1,7 +1,8 @@
 import numpy as np
+import warnings
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 ## ------------------------------------------------------
 ## frontalforcings.default
@@ -63,6 +64,16 @@ class default(class_registry.manage_state):
         s = 'ISSM - frontalforcings.default Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude frontalforcings.default fields to 3D
+        """
+        self.meltingrate = mesh.project_3d(md, vector = self.meltingrate, type = 'node')
+        self.ablationrate = mesh.project_3d(md, vector = self.ablationrate, type = 'node')
+            
+        return self
+
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
 
@@ -173,6 +184,15 @@ class rignot(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - frontalforcings.rignot Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude frontalforcings.rignot fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.frontalforcings.rignot.extrude: 3D extrusion not implemented for frontalforcings.rignot. Returning unchanged (2D) frontalforcing fields.')
+            
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -371,6 +391,15 @@ class rignotarma(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - frontalforcings.rignotarma Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude frontalforcings.rignotarma fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.frontalforcings.rignotarma.extrude: 3D extrusion not implemented for frontalforcings.rignotarma. Returning unchanged (2D) frontalforcing fields.')
+            
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
