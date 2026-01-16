@@ -1,5 +1,6 @@
 import numpy as np
 import warnings
+from dataclasses import dataclass
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
 from pyissm.model import execute, mesh
@@ -148,7 +149,7 @@ class ice(class_registry.manage_state):
         return md
     
     # Marshall method for saving the materials.ice parameters
-    def marshall_class(self, fid, prefix, md = None):
+    def marshall_class(self, fid, prefix, md = None, write_type = True):
         """
         Marshall [materials.ice] parameters to a binary file.
 
@@ -167,9 +168,8 @@ class ice(class_registry.manage_state):
         """
 
         ## Write headers to file
-        # NOTE: data types must match the expected types in the ISSM code. These come from naturetointeger in $ISSM_DIR/src/m/materials.py
-        execute.WriteData(fid, prefix, data = 3, name = 'md.materials.nature', format = 'IntMat', mattype = 3)
-        execute.WriteData(fid, prefix, data = 5, name = 'md.materials.type', format = 'Integer')
+        if write_type:
+            execute.WriteData(fid, prefix, data = _material_registry['ice'].type, name = 'md.materials.type', format = 'Integer')
 
         ## Write Double fields
         fieldnames = ['rho_ice', 'rho_water', 'rho_freshwater', 'mu_water', 'heatcapacity',
@@ -178,9 +178,31 @@ class ice(class_registry.manage_state):
         for fieldname in fieldnames:
             execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'Double')
 
+        ## Write conditional fields
+        if (
+            np.size(self.rheology_B) == 1
+            or (
+                self.rheology_B.ndim == 1
+                and self.rheology_B.shape[0] in (
+                    md.mesh.numberofvertices,
+                    md.mesh.numberofvertices + 1
+                )
+            )
+            or (
+                self.rheology_B.ndim == 2
+                and self.rheology_B.shape[0] == md.mesh.numberofelements
+                and self.rheology_B.shape[1] > 1
+            )
+        ):
+            mattype = 1
+            tsl = md.mesh.numberofvertices
+        else:
+            mattype = 2
+            tsl = md.mesh.numberofelements
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_B', format = 'DoubleMat', mattype = mattype, timeserieslength = tsl + 1, yts = md.constants.yts)
+
         ## Write other fields
         execute.WriteData(fid, prefix, obj = self, fieldname = 'effectiveconductivity_averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_B', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_n', format = 'DoubleMat', mattype = 2)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_law', format = 'String')
 
@@ -270,7 +292,7 @@ class hydro(class_registry.manage_state):
         return md
     
     # Marshall method for saving the materials.hydro parameters
-    def marshall_class(self, fid, prefix, md = None):
+    def marshall_class(self, fid, prefix, md = None, write_type = True):
         """
         Marshall [materials.hydro] parameters to a binary file.
 
@@ -289,9 +311,8 @@ class hydro(class_registry.manage_state):
         """
 
         ## Write headers to file
-        # NOTE: data types must match the expected types in the ISSM code. These come from naturetointeger in $ISSM_DIR/src/m/materials.py
-        execute.WriteData(fid, prefix, data = 7, name = 'md.materials.nature', format = 'IntMat', mattype = 3)
-        execute.WriteData(fid, prefix, data = 5, name = 'md.materials.type', format = 'Integer')
+        if write_type:
+            execute.WriteData(fid, prefix, data = _material_registry['hydro'].type, name = 'md.materials.type', format = 'Integer')
 
         ## Write fields (all consistent format)
         fieldnames = ['rho_ice', 'rho_water', 'rho_freshwater', 'earth_density']
@@ -456,7 +477,7 @@ class litho(class_registry.manage_state):
         return md
     
     # Marshall method for saving the materials.litho parameters
-    def marshall_class(self, fid, prefix, md = None):
+    def marshall_class(self, fid, prefix, md = None, write_type = True):
         """
         Marshall [materials.litho] parameters to a binary file.
 
@@ -482,9 +503,8 @@ class litho(class_registry.manage_state):
         self.earth_density = earth_density
 
         ## Write headers to file
-        # NOTE: data types must match the expected types in the ISSM code. These come from naturetointeger in $ISSM_DIR/src/m/materials.py
-        execute.WriteData(fid, prefix, data = 6, name = 'md.materials.nature', format = 'IntMat', mattype = 3)
-        execute.WriteData(fid, prefix, data = 5, name = 'md.materials.type', format = 'Integer')
+        if write_type:
+            execute.WriteData(fid, prefix, data = _material_registry['litho'].type, name = 'md.materials.type', format = 'Integer')
 
         ## Write DoubleMat fields
         fieldnames = ['radius', 'lame_mu', 'lame_lambda', 'issolid', 'density', 'viscosity', 'rheologymodel',
@@ -642,7 +662,7 @@ class damageice(class_registry.manage_state):
         return md
     
     # Marshall method for saving the materials.damageice parameters
-    def marshall_class(self, fid, prefix, md = None):
+    def marshall_class(self, fid, prefix, md = None, write_type = True):
         """
         Marshall [materials.damageice] parameters to a binary file.
 
@@ -661,9 +681,8 @@ class damageice(class_registry.manage_state):
         """
 
         ## Write headers to file
-        # NOTE: data types must match the expected types in the ISSM code. These come from naturetointeger in $ISSM_DIR/src/m/materials.py
-        execute.WriteData(fid, prefix, data = 1, name = 'md.materials.nature', format = 'IntMat', mattype = 3)
-        execute.WriteData(fid, prefix, data = 1, name = 'md.materials.type', format = 'Integer')
+        if write_type:
+            execute.WriteData(fid, prefix, data = _material_registry['damageice'].type, name = 'md.materials.type', format = 'Integer')
 
         ## Write Double fields
         fieldnames = ['rho_ice', 'rho_water', 'rho_freshwater', 'mu_water', 'heatcapacity', 'thermalconductivity',
@@ -830,7 +849,7 @@ class enhancedice(class_registry.manage_state):
         return md
     
     # Marshall method for saving the materials.enhancedice parameters
-    def marshall_class(self, fid, prefix, md = None):
+    def marshall_class(self, fid, prefix, md = None, write_type = True):
         """
         Marshall [materials.enhancedice] parameters to a binary file.
 
@@ -849,9 +868,8 @@ class enhancedice(class_registry.manage_state):
         """
 
         ## Write headers to file
-        # NOTE: data types must match the expected types in the ISSM code. These come from naturetointeger in $ISSM_DIR/src/m/materials.py
-        execute.WriteData(fid, prefix, data = 4, name = 'md.materials.nature', format = 'IntMat', mattype = 3)
-        execute.WriteData(fid, prefix, data = 4, name = 'md.materials.type', format = 'Integer')
+        if write_type:
+            execute.WriteData(fid, prefix, data = _material_registry['enhancedice'].type, name = 'md.materials.type', format = 'Integer')
 
         ## Write Double fields
         fieldnames = ['rho_ice', 'rho_water', 'rho_freshwater', 'mu_water', 'heatcapacity', 'thermalconductivity',
@@ -1019,7 +1037,7 @@ class estar(class_registry.manage_state):
         return md
 
     # Marshall method for saving the materials.estar parameters
-    def marshall_class(self, fid, prefix, md = None):
+    def marshall_class(self, fid, prefix, md = None, write_type = True):
         """
         Marshall [materials.estar] parameters to a binary file.
 
@@ -1038,9 +1056,8 @@ class estar(class_registry.manage_state):
         """
 
         ## Write headers to file
-        # NOTE: data types must match the expected types in the ISSM code. These come from naturetointeger in $ISSM_DIR/src/m/materials.py
-        execute.WriteData(fid, prefix, data = 2, name = 'md.materials.nature', format = 'IntMat', mattype = 3)
-        execute.WriteData(fid, prefix, data = 2, name = 'md.materials.type', format = 'Integer')
+        if write_type:
+            execute.WriteData(fid, prefix, data = _material_registry['estar'].type, name = 'md.materials.type', format = 'Integer')
 
         ## Write Double fields
         fieldnames = ['rho_ice', 'rho_water', 'rho_freshwater', 'mu_water', 'heatcapacity', 'thermalconductivity',
@@ -1055,3 +1072,51 @@ class estar(class_registry.manage_state):
         execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_Ec', format = 'DoubleMat', mattype = 1)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_Es', format = 'DoubleMat', mattype = 1)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_law', format = 'String')
+
+## ------------------------------------------------------
+## materials.composite
+## ------------------------------------------------------
+@class_registry.register_class
+class composite(class_registry.manage_state):
+
+    def __init__(self, *args, **kwargs):
+        raise NotImplementedError('pyissm.model.classes.materials.composite(): Not yet implemented.')
+
+## ------------------------------------------------------
+## materials._material_specs (internal class only)
+## ------------------------------------------------------
+@dataclass(frozen = True)
+class _material_specs:
+    cls: type
+    type: int
+    nature: int
+
+## ------------------------------------------------------
+## materials._material_registry (internal dict only)
+## ------------------------------------------------------
+## Define registry of all material classes.
+## NOTE: data types must match the expected types in the ISSM code. See $ISS_DIR/src/c/shared/io/Marshalling/IoCodeConversions.cpp 
+## composite() replaces materials() and uses np.nan for the nature as it's comprised of various other nature values.
+_material_registry = {
+    'damageice': _material_specs(cls = damageice,
+                                type = 1,
+                                nature = 1),
+    'estar': _material_specs(cls = estar,
+                            type = 2,
+                            nature = 2),
+    'ice': _material_specs(cls = ice,
+                          type = 3,
+                          nature = 3),
+    'enhancedice': _material_specs(cls = enhancedice,
+                                  type = 4,
+                                  nature = 4),
+    'composite': _material_specs(cls = composite,
+                               type = 5,
+                               nature = np.nan),
+    'litho': _material_specs(cls = litho,
+                            type = 6,
+                            nature = 6),
+    'hydro': _material_specs(cls = hydro,
+                            type = 7,
+                            nature = 7)
+}
