@@ -244,32 +244,16 @@ def set_flow_equation(md,
             common_elements[ho_flag] = False
             ssa_flag[common_elements] = False
             ssaho_flag[common_elements] = True
+
+            ### Recompute nodes
             ssa_node[:] = False
             ssa_node[md.mesh.elements[ssa_flag].ravel() - 1] = True
-            
-            ### Rule out elements that don't touch the 2 boundaries
-            pos = hofs_flag.nonzero()[0]
-            elist = (
-                np.sum(fs_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
-                - np.sum(ho_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
-            )
 
-            ### Update flags based on elist values
-            pos1 = pos[elist == 1]
-            fs_flag[pos1] = True
-            hofs_flag[pos1] = False
-
-            pos2 = pos[elist == -1]
-            ho_flag[pos2] = True
-            hofs_flag[pos2] = False
-
-            ### Recompute nodes associated to these elements
-            fs_node[:] = False
-            fs_node[md.mesh.elements[fs_flag, :] - 1] = True
             ho_node[:] = False
-            ho_node[md.mesh.elements[ho_flag, :] - 1] = True
-            hofs_node[:] = False
-            hofs_node[md.mesh.elements[hofs_flag, :] - 1] = True
+            ho_node[md.mesh.elements[ho_flag].ravel() - 1] = True
+
+            ssaho_node[:] = False
+            ssaho_node[md.mesh.elements[ssaho_flag].ravel() - 1] = True
 
         ## Couple FS and SSA
         elif any(fs_flag) and any(ssa_flag):
