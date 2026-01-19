@@ -12,10 +12,15 @@ jobs:
   # Job 1: Check dependencies and installation
   check_dependencies:
     uses: access-nri/pyISSM/.github/workflows/check-dependencies.yml@main
-    
-  # Job 2: Publish Python package to PyPI and Conda
-  publish_python_package:
+
+  # Job 2: Run ISSM-pyISSM tests
+  issm_pyissm_tests:
     needs: check_dependencies
+    uses: access-nri/pyISSM/.github/workflows/issm-tests.yml@main
+    
+  # Job 3: Publish Python package to PyPI and Conda
+  publish_python_package:
+    needs: issm_pyissm_tests
     uses: access-nri/actions/.github/workflows/publish-python-package.yml@main
     with:
       pypi-package: true
@@ -24,7 +29,7 @@ jobs:
     permissions:
       actions: write
 
-  # Job 3: Create GitHub Release
+  # Job 4: Create GitHub Release
   create-github-release:
     name: Create GitHub Release
     runs-on: ubuntu-latest
