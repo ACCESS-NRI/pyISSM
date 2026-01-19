@@ -5,7 +5,7 @@ from pyissm.model.classes import friction
 from pyissm.model.classes import hydrology
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 @class_registry.register_class
 class stochasticforcing(class_registry.manage_state):
@@ -101,6 +101,15 @@ class stochasticforcing(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - stochasticforcing Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude stochasticforcing fields to 3D
+        """
+        self.default_id = mesh.project_3d(md, vector = self.default_id, type = 'element')
+
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):

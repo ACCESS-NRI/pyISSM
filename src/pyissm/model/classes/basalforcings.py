@@ -2,7 +2,7 @@ import numpy as np
 import warnings
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 ## ------------------------------------------------------
 ## basalforcings.default
@@ -73,6 +73,18 @@ class default(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - basalforcings.default Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude basalforcings.default fields to 3D
+        """
+        self.groundedice_melting_rate = mesh.project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
+        self.perturbation_melting_rate = mesh.project_3d(md, vector = self.perturbation_melting_rate, type = 'node', layer = 1)
+        self.floatingice_melting_rate = mesh.project_3d(md, vector = self.floatingice_melting_rate, type = 'node', layer = 1)
+        self.geothermalflux = mesh.project_3d(md, vector = self.geothermalflux, type = 'node', layer = 1) # Bedrock only gets geothermal flux        
+
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -235,6 +247,17 @@ class pico(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - basalforcings.pico Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude basalforcings.pico fields to 3D
+        """
+        self.basin_id = mesh.project_3d(md, vector = self.basin_id, type = 'element', layer = 1)
+        self.geothermalflux = mesh.project_3d(md, vector = self.geothermalflux, type = 'element', layer = 1) # Bedrock only gets geothermal flux        
+        self.groundedice_melting_rate = mesh.project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
+
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -407,6 +430,17 @@ class linear(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - basalforcings.linear Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude basalforcings.linear fields to 3D
+        """
+        self.perturbation_melting_rate = mesh.project_3d(md, vector = self.perturbation_melting_rate, type = 'node', layer = 1)
+        self.groundedice_melting_rate = mesh.project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
+        self.geothermalflux = mesh.project_3d(md, vector = self.geothermalflux, type = 'node', layer = 1) # Bedrock only gets geothermal flux        
+
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -593,6 +627,15 @@ class lineararma(class_registry.manage_state):
     # Define class string
     def __str__(self):
         s = 'ISSM - basalforcings.lineararma Class'
+
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude basalforcings.lineararma fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.basalforcings.lineararma.extrude: 3D extrusion not implemented for basalforcings.lineararma. Returning unchanged (2D) basalforcing fields.')        
+
+        return self
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -839,6 +882,16 @@ class mismip(class_registry.manage_state):
         s = 'ISSM - basalforcings.mismip Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude basalforcings.mismip fields to 3D
+        """
+        self.groundedice_melting_rate = mesh.project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
+        self.geothermalflux = mesh.project_3d(md, vector = self.geothermalflux, type = 'node', layer = 1)  #bedrock only gets geothermal flux
+
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         if 'MasstransportAnalysis' in analyses and solution != 'TransientSolution' and not md.transient.ismasstransport:
@@ -1024,6 +1077,16 @@ class plume(class_registry.manage_state):
         s = 'ISSM - basalforcings.plume Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude basalforcings.plume fields to 3D
+        """
+        self.groundedice_melting_rate = mesh.project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
+        self.floatingice_melting_rate = mesh.project_3d(md, vector = self.floatingice_melting_rate, type = 'node', layer = 1)
+
+        return self
+    
     # Check model consistency
     def checkconsistency(self, md, solution, analyses):
         if 'MasstransportAnalysis' in analyses and not (solution == 'TransientSolution' and md.transient.ismasstransport == 0):
@@ -1180,6 +1243,21 @@ class spatiallinear(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - basalforcings.spatiallinear Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude basalforcings.spatiallinear fields to 3D
+        """
+        self.groundedice_melting_rate = mesh.project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1) 
+        self.deepwater_melting_rate = mesh.project_3d(md, vector = self.deepwater_melting_rate, type = 'node', layer = 1) 
+        self.deepwater_elevation = mesh.project_3d(md, vector = self.deepwater_elevation, type = 'node', layer = 1)
+        self.upperwater_melting_rate = mesh.project_3d(md, vector = self.upperwater_melting_rate, type = 'node', layer = 1) 
+        self.upperwater_elevation = mesh.project_3d(md, vector = self.upperwater_elevation, type = 'node', layer = 1) 
+        self.geothermalflux = mesh.project_3d(md, vector = self.geothermalflux, type = 'node', layer = 1) # Bedrock only gets geothermal flux
+        self.perturbation_melting_rate = mesh.project_3d(md, vector = self.upperwater_melting_rate, type = 'node', layer = 1) 
+
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):

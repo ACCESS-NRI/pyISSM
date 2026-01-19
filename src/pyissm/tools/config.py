@@ -68,7 +68,7 @@ def mumps_options(**kwargs):
         else:
             defaults['pc_factor_mat_solver_package'] = 'mumps'
         
-        defaults['mat_mumps_icntl_28'] = 1 # 1 = serial; 2 = parralel
+        defaults['mat_mumps_icntl_28'] = 2 # 1 = serial; 2 = parralel
         defaults['mat_mumps_icntl_29'] = 2 # parallel ordering: 1 = ptscotch, 2 = parmetis
 
     ## Update with user options

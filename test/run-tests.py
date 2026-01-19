@@ -92,7 +92,7 @@ def run_test(test_id,
         field_tolerances = local_globals.get('field_tolerances', [])
     except Exception as e:
         print(f'ERROR executing test {test_id}: {e}', flush = True)
-        errors.append({'field': 'EXECUTION_FAILED', 'error_diff': None, 'tolerance': None, 'test_name': test_name})
+        errors.append({'field': 'EXECUTION_FAILED', 'error_diff': None, 'tolerance': None, 'test_name': test_name, 'test_id': test_id})
         return errors
 
     ## Loop over all fields and compute error

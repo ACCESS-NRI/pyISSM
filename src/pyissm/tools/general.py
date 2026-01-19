@@ -5,6 +5,8 @@ This module contains various utility functions that are used throughout the ISSM
 """
 
 import numpy as np
+import struct
+import math
 from pyissm import model
 
 ## ------------------------------------------------------------------------------------
@@ -539,3 +541,192 @@ def ll_to_xy(lat,
         y[near_pole] = 0.0
 
     return x, y
+
+def compare_binfiles(file1, file2, verbose=0, outfile=None):
+    """
+    Compare two ISSM-style binary files field by field.
+
+    Parameters
+    ----------
+    file1 : str
+        Path to the first binary file.
+    file2 : str
+        Path to the second binary file.
+    verbose : int, optional
+        Verbosity level (2 = show differing array indices).
+    outfile : str or None, optional
+        Path to write the output table. If None, prints to terminal.
+
+    Returns
+    -------
+    rows : list of tuples
+        List of (field, status, file1_summary, file2_summary)
+    """
+
+    # ------------------------------
+    # Internal helpers
+    # ------------------------------
+    def _code_to_format(code):
+        mapping = {
+            1:'Boolean', 2:'Integer', 3:'Double', 4:'String', 5:'BooleanMat',
+            6:'IntMat', 7:'DoubleMat', 8:'MatArray', 9:'StringArray'
+        }
+        return mapping.get(code, None)
+
+    def _read_bin_to_dict(infile):
+        data_dict = {}
+        with open(infile, 'rb') as f:
+            while True:
+                try:
+                    recordnamesize = struct.unpack('i', f.read(4))[0]
+                except struct.error:
+                    break  # EOF
+
+                recordname = struct.unpack(f'{recordnamesize}s', f.read(recordnamesize))[0].decode('ASCII')
+                reclen = struct.unpack('q', f.read(8))[0]
+                code = struct.unpack('i', f.read(4))[0]
+                fmt = _code_to_format(code)
+
+                if fmt in ['Boolean', 'Integer']:
+                    val = struct.unpack('i', f.read(reclen - 4))[0]
+                elif fmt == 'Double':
+                    val = struct.unpack('d', f.read(reclen - 4))[0]
+                elif fmt == 'String':
+                    strlen = struct.unpack('i', f.read(4))[0]
+                    val = struct.unpack(f'{strlen}s', f.read(strlen))[0].decode('ASCII')
+                elif fmt in ['BooleanMat', 'IntMat', 'DoubleMat']:
+                    _ = struct.unpack('i', f.read(4))[0]  # mattype
+                    s0 = struct.unpack('i', f.read(4))[0]
+                    s1 = struct.unpack('i', f.read(4))[0]
+                    mat = np.zeros((s0, s1))
+                    for i in range(s0):
+                        for j in range(s1):
+                            mat[i, j] = struct.unpack('d', f.read(8))[0]
+                    val = mat
+                elif fmt in ['MatArray', 'StringArray']:
+                    f.seek(reclen - 4, 1)
+                    val = None
+                else:
+                    raise TypeError(f'Unsupported type code {code} ({recordname})')
+
+                data_dict[recordname] = val
+
+        return data_dict
+
+    def _summarize_value(val):
+        if val is None:
+            return "N/A"
+
+        if isinstance(val, np.ndarray):
+            if val.size == 0:
+                return f'empty array shape={val.shape}, dtype={val.dtype}'
+            if np.issubdtype(val.dtype, np.floating):
+                n_nan = np.isnan(val).sum()
+                if n_nan == val.size:
+                    return f'all-NaN array shape={val.shape}, dtype={val.dtype}, NaNs={n_nan}'
+                return (f'array shape={val.shape}, dtype={val.dtype}, '
+                        f'min={np.nanmin(val):.3g}, max={np.nanmax(val):.3g}, NaNs={n_nan}')
+            else:
+                n_nan = 0
+                return f'array shape={val.shape}, dtype={val.dtype}, NaNs={n_nan}'
+
+        if isinstance(val, float):
+            if math.isnan(val):
+                return "NaN"
+            return f'{val}'
+
+        return str(val)
+
+    def _compare_values(val1, val2):
+        # Arrays
+        if isinstance(val1, np.ndarray) and isinstance(val2, np.ndarray):
+            if val1.shape != val2.shape:
+                return "DIFFERENT", f"shape {val1.shape} vs {val2.shape}"
+
+            both_nan = np.isnan(val1) & np.isnan(val2)
+            diff_mask = ~both_nan & (val1 != val2)
+            n_diff = np.count_nonzero(diff_mask)
+
+            if n_diff == 0:
+                return "SAME", ""
+            else:
+                detail = f"{n_diff} elements differ"
+                if verbose > 1:
+                    detail += f" at indices {np.argwhere(diff_mask).tolist()}"
+                return "DIFFERENT", detail
+
+        # Scalars
+        if isinstance(val1, float) and isinstance(val2, float):
+            if math.isnan(val1) and math.isnan(val2):
+                return "SAME", ""
+
+        if val1 == val2:
+            return "SAME", ""
+
+        return "DIFFERENT", f"{val1} != {val2}"
+
+    # ------------------------------
+    # Read files
+    # ------------------------------
+    dict1 = _read_bin_to_dict(file1)
+    dict2 = _read_bin_to_dict(file2)
+
+    all_keys = sorted(set(dict1) | set(dict2))
+
+    # ------------------------------
+    # Prepare rows
+    # ------------------------------
+    rows = []
+    for key in all_keys:
+        v1 = dict1.get(key, None)
+        v2 = dict2.get(key, None)
+
+        if key not in dict1:
+            status = "MISSING"
+            s1 = "<missing>"
+            s2 = _summarize_value(v2)
+        elif key not in dict2:
+            status = "MISSING"
+            s1 = _summarize_value(v1)
+            s2 = "<missing>"
+        else:
+            status, _ = _compare_values(v1, v2)
+            s1 = _summarize_value(v1)
+            s2 = _summarize_value(v2)
+
+        rows.append((key, status, s1, s2))
+
+    # ------------------------------
+    # Column widths for printing
+    # ------------------------------
+    col_widths = [int(max(len(str(r[i])) for r in rows + [("Field","Status","File1 summary","File2 summary")]))
+                  for i in range(4)]
+
+    # ------------------------------
+    # Prepare table lines
+    # ------------------------------
+    output_lines = []
+    output_lines.append(f'Comparing:\n  {file1}\n  {file2}\n')
+    header = "{:<{w0}}  {:<{w1}}  {:<{w2}}  {:<{w3}}".format(
+        "Field", "Status", "File1 summary", "File2 summary",
+        w0=col_widths[0], w1=col_widths[1], w2=col_widths[2], w3=col_widths[3]
+    )
+    output_lines.append(header)
+    output_lines.append('-' * (sum(col_widths) + 6))
+
+    for r in rows:
+        output_lines.append("{:<{w0}}  {:<{w1}}  {:<{w2}}  {:<{w3}}".format(
+            r[0], r[1], r[2], r[3],
+            w0=col_widths[0], w1=col_widths[1], w2=col_widths[2], w3=col_widths[3]
+        ))
+
+    # ------------------------------
+    # Output to terminal or file
+    # ------------------------------
+    if outfile:
+        with open(outfile, 'w') as f:
+            for line in output_lines:
+                f.write(line + '\n')
+    else:
+        for line in output_lines:
+            print(line)

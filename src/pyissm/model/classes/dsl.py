@@ -1,7 +1,7 @@
 import numpy as np
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 ## ------------------------------------------------------
 ## dsl.default
@@ -65,6 +65,16 @@ class default(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - dsl Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude dsl.default fields to 3D
+        """
+        self.sea_surface_height_above_geoid = mesh.project_3d(md, vector = self.sea_surface_height_above_geoid, type = 'node', layer = 1)
+        self.sea_water_pressure_at_sea_floor = mesh.project_3d(md, vector = self.sea_water_pressure_at_sea_floor, type = 'node', layer = 1)
+
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -176,6 +186,16 @@ class mme(class_registry.manage_state):
         s = 'ISSM - dsl mme Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude dsl.mme fields to 3D
+        """
+        for i in range(len(self.global_average_thermosteric_sea_level)):
+            self.sea_surface_height_above_geoid[i] = mesh.project_3d(md, vector = self.self.sea_surface_height_above_geoid[i], type = 'node', layer = 1)
+            self.sea_water_pressure_at_sea_floor[i] = mesh.project_3d(md, vector = self.sea_water_pressure_at_sea_floor[i], type = 'node', layer = 1)
+
+        return self    
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):

@@ -1,7 +1,7 @@
 import numpy as np
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 @class_registry.register_class
 class debris(class_registry.manage_state):
@@ -104,6 +104,15 @@ class debris(class_registry.manage_state):
         s = 'ISSM - debris Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude debris fields to 3D
+        """
+        self.spcthickness = mesh.project_3d(md, vector = self.spcthickness, type = 'node')
+            
+        return self
+
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
 
@@ -194,7 +203,7 @@ class debris(class_registry.manage_state):
             execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
         
         ## Write Double fields
-        fieldnames = ['max_displacementvelocity', 'removal_slope_threshold', 'removal_stress_threshold', 'packingfraction']
+        fieldnames = ['max_displacementvelocity', 'removal_slope_threshold', 'removal_stress_threshold', 'packingfraction', 'min_thickness']
         for field in fieldnames:
             execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
     

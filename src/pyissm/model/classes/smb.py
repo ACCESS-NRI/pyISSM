@@ -2,7 +2,7 @@ import numpy as np
 import warnings
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 from pyissm import model
 
 ## ------------------------------------------------------
@@ -77,6 +77,15 @@ class default(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - smb.default Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude smb.default fields to 3D
+        """
+        self.mass_balance = mesh.project_3d(md, vector = self.mass_balance, type = 'node')
+            
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -309,7 +318,16 @@ class arma(class_registry.manage_state):
         s = 'ISSM - smb.arma Class'
         return s
     
-# Check model consistency
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude smb.arma fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.smb.arma.extrude: 3D extrusion not implemented for smb.arma. Returning unchanged (2D) smb fields.')
+            
+        return self
+    
+    # Check model consistency
     def check_consistency(self, md, solution, analyses):
         if 'MasstransportAnalysis' in analyses:
             nbas = md.smb.num_basins
@@ -667,6 +685,17 @@ class components(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - smb.components Class'
         return s
+
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude smb.components fields to 3D
+        """
+        self.accumulation = mesh.project_3d(md, vector = self.accumulation, type = 'node')
+        self.runoff = mesh.project_3d(md, vector = self.runoff, type = 'node')
+        self.evaporation = mesh.project_3d(md, vector = self.evaporation, type = 'node')
+            
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -933,6 +962,24 @@ class d18opdd(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - smb.d18opdd Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude smb.d18opdd fields to 3D
+        """
+        if self.isd18opd:
+            self.temperatures_presentday = mesh.project_3d(md, vector = self.temperatures_presentday, type = 'node')
+        if self.isd18opd:
+            self.precipitations_presentday = mesh.project_3d(md, vector = self.precipitations_presentday, type = 'node')
+        if self.istemperaturescaled == 0:
+            self.temperatures_reconstructed = mesh.project_3d(md, vector = self.temperatures_reconstructed, type = 'node')
+        if self.isprecipscaled == 0:
+            self.precipitations_reconstructed = mesh.project_3d(md, vector = self.precipitations_reconstructed, type = 'node')
+        self.s0p = mesh.project_3d(md, vector = self.s0p, type = 'node')
+        self.s0t = mesh.project_3d(md, vector = self.s0t, type = 'node')            
+
+        return self
     
     def checkconsistency(self, md, solution, analyses):
         if 'MasstransportAnalysis' in analyses:
@@ -1437,6 +1484,61 @@ class gemb(class_registry.manage_state):
         s = 'ISSM - smb.gemb Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude smb.gemb fields to 3D
+        """
+        if np.shape(self.Ta)[0] == md.mesh.numberofelements or np.shape(self.Ta)[0] == md.mesh.numberofelements + 1 :
+            self.Ta = mesh.project_3d(md, vector = self.Ta, type = 'element')
+            self.V = mesh.project_3d(md, vector = self.V, type = 'element')
+            self.dswrf = mesh.project_3d(md, vector = self.dswrf, type = 'element')
+            self.dlwrf = mesh.project_3d(md, vector = self.dlwrf, type = 'element')
+            self.P = mesh.project_3d(md, vector = self.P, type = 'element')
+            self.eAir = mesh.project_3d(md, vector = self.eAir, type = 'element')
+            self.pAir = mesh.project_3d(md, vector = self.pAir, type = 'element')
+
+        if not np.isnan(self.Dzini):
+            self.self.Dzini=mesh.project_3d(md,vector =self.self.Dzini, type = 'element')
+        if not np.isnan(self.Dini):
+            self.self.Dini=mesh.project_3d(md,vector = self.Dini, type = 'element')
+        if not np.isnan(self.Reini):
+            self.self.Reini=mesh.project_3d(md, vector = self.Reini, type = 'element')
+        if not np.isnan(self.Gdnini):
+            self.Gdnini=mesh.project_3d(md, vector = self.Gdnini, type = 'element')
+        if not np.isnan(self.Gspini):
+            self.Gspini=mesh.project_3d(md, vector = self.Gspini, type = 'element')
+        if not np.isnan(self.ECini):
+            self.ECini=mesh.project_3d(md, vector = self.ECini, type = 'element')
+        if not np.isnan(self.Wini):
+            self.Wini=mesh.project_3d(md, vector = self.Wini, type = 'element')
+        if not np.isnan(self.Aini):
+            self.Aini=mesh.project_3d(md, vector = self.Aini, type = 'element')
+        if not np.isnan(self.Adiffini):
+            self.Adiffini=mesh.project_3d(md, vector = self.Adiffini, type = 'element')
+        if not np.isnan(self.Tini):
+            self.Tini=mesh.project_3d(md, vector = self.Tini, type = 'element')
+
+        if not np.isnan(self.dswdiffrf):
+            self.dswdiffrf=mesh.project_3d(md, vector = self.dswdiffrf, type = 'element')
+        if not np.isnan(self.szaValue):
+            self.szaValue=mesh.project_3d(md, vector = self.szaValue, type = 'element')
+        if not np.isnan(self.cotValue):
+            self.cotValue=mesh.project_3d(md, vector = self.cotValue, type = 'element')
+        if not np.isnan(self.ccsnowValue):
+            self.ccsnowValue=mesh.project_3d(md, vector = self.ccsnowValue, type = 'element')
+        if not np.isnan(self.cciceValue):
+            self.cciceValue=mesh.project_3d(md, vector = self.cciceValue, type = 'element')
+
+        if not np.isnan(self.aValue):
+            self.aValue = mesh.project_3d(md, vector = self.aValue, type = 'element')
+        if not np.isnan(self.teValue):
+            self.teValue = mesh.project_3d(md, vector = self.teValue, type = 'element')
+        if not np.isnan(self.mappedforcingpoint):
+            self.mappedforcingpoint = mesh.project_3d(md, vector = self.mappedforcingpoint, type = 'element')
+        
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
 
@@ -1784,6 +1886,15 @@ class gradients(class_registry.manage_state):
         s = 'ISSM - smb.gradients Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude smb.gradients fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.smb.gradients.extrude: 3D extrusion not implemented for smb.gradients. Returning unchanged (2D) smb fields.')
+            
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         if 'MasstransportAnalysis' in analyses:
@@ -1986,6 +2097,15 @@ class gradientscomponents(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - smb.gradientscomponents Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude smb.gradientscomponents fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.smb.gradientscomponents.extrude: 3D extrusion not implemented for smb.gradientscomponents. Returning unchanged (2D) smb fields.')
+            
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -2197,6 +2317,15 @@ class gradientsela(class_registry.manage_state):
         s = 'ISSM - smb.gradientsela Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude smb.gradientsela fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.smb.gradientsela.extrude: 3D extrusion not implemented for smb.gradientsela. Returning unchanged (2D) smb fields.')
+            
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         if 'MasstransportAnalysis' in analyses:
@@ -2372,6 +2501,15 @@ class henning(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - smb.henning Class'
         return s
+        
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude smb.henning fields to 3D
+        """
+        self.smbref = mesh.project_3d(md, vector = self.smbref, type = 'node')
+            
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -2567,6 +2705,18 @@ class meltcomponents(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - smb.meltcomponents Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude smb.meltcomponents fields to 3D
+        """
+        self.accumulation = mesh.project_3d(md, vector = self.accumulation, type = 'node')
+        self.evaporation = mesh.project_3d(md, vector = self.evaporation, type = 'node')
+        self.melt = mesh.project_3d(md, vector = self.melt, type = 'node')
+        self.refreeze = mesh.project_3d(md, vector = self.refreeze, type = 'node')
+            
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -2854,6 +3004,36 @@ class pdd(class_registry.manage_state):
         s = 'ISSM - smb.pdd Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude smb.pdd fields to 3D
+        """
+        if not (self.isdelta18o and self.ismungsm):
+            self.precipitation = mesh.project_3d(md, vector = self.precipitation, type = 'node')
+            self.monthlytemperatures = mesh.project_3d(md, vector = self.monthlytemperatures, type = 'node')
+
+        if self.isdelta18o:
+            self.temperatures_lgm = mesh.project_3d(md, vector = self.temperatures_lgm, type = 'node')
+            self.temperatures_presentday = mesh.project_3d(md, vector = self.temperatures_presentday, type = 'node')
+            self.precipitations_presentday = mesh.project_3d(md, vector = self.precipitations_presentday, type = 'node')
+            self.precipitations_lgm = mesh.project_3d(md, vector = self.precipitations_lgm, type = 'node')
+
+        if self.ismungsm:
+            self.temperatures_lgm = mesh.project_3d(md, vector = self.temperatures_lgm, type = 'node')
+            self.temperatures_presentday = mesh.project_3d(md, vector = self.temperatures_presentday, type = 'node')
+            self.precipitations_presentday = mesh.project_3d(md, vector = self.precipitations_presentday, type = 'node')
+            self.precipitations_lgm = mesh.project_3d(md, vector = self.precipitations_lgm, type = 'node')
+
+        if self.issetpddfac:
+            self.pddfac_snow = mesh.project_3d(md, vector = self.pddfac_snow, type = 'node')
+        if self.issetpddfac:
+            self.pddfac_ice = mesh.project_3d(md, vector = self.pddfac_ice, type = 'node')
+        self.s0p = mesh.project_3d(md, vector = self.s0p, type = 'node')
+        self.s0t = mesh.project_3d(md, vector = self.s0t, type = 'node')
+            
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
 
@@ -2896,7 +3076,7 @@ class pdd(class_registry.manage_state):
         return md
     
     # Initialise empty fields of correct dimensions
-    def initialize(self, md):
+    def initialise(self, md):
         """
         Initialise empty fields in smb.pdd.
         """
@@ -3012,8 +3192,8 @@ class pdd(class_registry.manage_state):
             execute.WriteData(fid, prefix, obj = self, fieldname = 'sealev', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
 
         if self.issetpddfac:
-            execute.WriteData(fid, prefix, ovj = self, fieldname = 'pddfac_snow', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, ovj = self, fieldname = 'pddfac_ice', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'pddfac_snow', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'pddfac_ice', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
 ## ------------------------------------------------------
 ## smb.pddSicopolis
@@ -3139,6 +3319,21 @@ class pddSicopolis(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - smb.pddSicopolis Class'
         return s
+
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude smb.pddSicopolis fields to 3D
+        """
+        self.precipitation = mesh.project_3d(md, vector = self.precipitation, type = 'node')
+        self.monthlytemperatures = mesh.project_3d(md, vector = self.monthlytemperatures, type = 'node')
+        self.temperature_anomaly = mesh.project_3d(md, vector = self.temperature_anomaly, type = 'node')
+        self.precipitation_anomaly = mesh.project_3d(md, vector = self.precipitation_anomaly, type = 'node')
+        self.smb_corr = mesh.project_3d(md, vector = self.smb_corr, type = 'node')
+        self.s0p = mesh.project_3d(md, vector = self.s0p, type = 'node')
+        self.s0t = mesh.project_3d(md, vector = self.s0t, type = 'node')
+            
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):

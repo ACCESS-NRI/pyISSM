@@ -1,7 +1,7 @@
 import numpy as np
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 @class_registry.register_class
 class masstransport(class_registry.manage_state):
@@ -87,6 +87,15 @@ class masstransport(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - masstransport Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude masstransport fields to 3D
+        """
+        self.spcthickness = mesh.project_3d(md, vector = self.spcthickness, type = 'node')
+            
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
