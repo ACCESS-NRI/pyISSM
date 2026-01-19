@@ -1,6 +1,7 @@
 #Test Name: SquareShelfTranCflHO
 import pyissm
 
+# Parameterise model
 md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 200000)
 md = pyissm.model.param.set_mask(md, 'all', None)
 md = pyissm.model.param.parameterize(md, '../assets/Par/SquareShelf.py')

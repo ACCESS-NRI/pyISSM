@@ -1,16 +1,18 @@
-#Test Name: SquareShelfStressHOTransientIncrNonHydro
+#Test Name: SquareShelfTranHOForcTemp
 import pyissm
+import numpy as np
 
 # Parameterise model
 md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 200000)
 md = pyissm.model.param.set_mask(md, 'all', None)
 md = pyissm.model.param.parameterize(md, '../assets/Par/SquareShelf.py')
-md.geometry.base = md.geometry.base + 50.
-md.geometry.surface = md.geometry.surface + 50.
 md = md.extrude(3, 1.)
 md = pyissm.model.param.set_flow_equation(md, HO = 'all')
 md.cluster.np = 3
-md.masstransport.hydrostatic_adjustment = 'Incremental'
+
+md.thermal.spctemperature = np.vstack((np.vstack((md.thermal.spctemperature, md.thermal.spctemperature + 5.)).T, [1., 2.]))
+md.timestepping.time_step = 0.5
+md.timestepping.final_time = 2.
 
 # Execute model
 md = pyissm.model.execute.solve(md, 'Transient')
@@ -18,10 +20,12 @@ md = pyissm.model.execute.solve(md, 'Transient')
 # Fields and tolerances to track changes
 field_names = ['Vx1', 'Vy1', 'Vz1', 'Vel1', 'Pressure1', 'Bed1', 'Surface1', 'Thickness1', 'Temperature1', 'BasalforcingsGroundediceMeltingRate1',
                'Vx2', 'Vy2', 'Vz2', 'Vel2', 'Pressure2', 'Bed2', 'Surface2', 'Thickness2', 'Temperature2', 'BasalforcingsGroundediceMeltingRate2',
-               'Vx3', 'Vy3', 'Vz3', 'Vel3', 'Pressure3', 'Bed3', 'Surface3', 'Thickness3', 'Temperature3', 'BasalforcingsGroundediceMeltingRate3']
-field_tolerances = [1e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-05,
-                    2e-09, 1e-09, 1e-08, 1e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-05,
-                    1e-08, 1e-08, 1e-08, 1e-08, 1e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-05]
+               'Vx3', 'Vy3', 'Vz3', 'Vel3', 'Pressure3', 'Bed3', 'Surface3', 'Thickness3', 'Temperature3', 'BasalforcingsGroundediceMeltingRate3',
+               'Vx4', 'Vy4', 'Vz4', 'Vel4', 'Pressure4', 'Bed4', 'Surface4', 'Thickness4', 'Temperature4', 'BasalforcingsGroundediceMeltingRate4']
+field_tolerances = [2e-09, 2e-09, 1e-09, 2e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-09,
+                    1e-09, 2e-09, 1e-08, 2e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-06,
+                    1e-08, 2e-09, 1e-08, 2e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-06,
+                    1e-08, 2e-09, 1e-08, 2e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-06]
 field_values = [md.results.TransientSolution[0].Vx,
                 md.results.TransientSolution[0].Vy,
                 md.results.TransientSolution[0].Vz,
@@ -51,4 +55,14 @@ field_values = [md.results.TransientSolution[0].Vx,
                 md.results.TransientSolution[2].Surface,
                 md.results.TransientSolution[2].Thickness,
                 md.results.TransientSolution[2].Temperature,
-                md.results.TransientSolution[2].BasalforcingsGroundediceMeltingRate]
+                md.results.TransientSolution[2].BasalforcingsGroundediceMeltingRate,
+                md.results.TransientSolution[3].Vx,
+                md.results.TransientSolution[3].Vy,
+                md.results.TransientSolution[3].Vz,
+                md.results.TransientSolution[3].Vel,
+                md.results.TransientSolution[3].Pressure,
+                md.results.TransientSolution[3].Base,
+                md.results.TransientSolution[3].Surface,
+                md.results.TransientSolution[3].Thickness,
+                md.results.TransientSolution[3].Temperature,
+                md.results.TransientSolution[3].BasalforcingsGroundediceMeltingRate]
