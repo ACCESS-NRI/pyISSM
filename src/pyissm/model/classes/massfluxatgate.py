@@ -81,12 +81,10 @@ class massfluxatgate(class_registry.manage_state):
         if not isinstance(self.profilename, str):
             raise RuntimeError("pyissm.model.classes.massfluxatgate.check_consistency: 'profilename' field should be a string.")
 
-        OutputdefinitionStringArray = []
-        for i in range(1, 100):
-            x = 'Outputdefinition' + str(i)
-            OutputdefinitionStringArray.append(x)
+        allowed = [f"Outputdefinition{i}" for i in range(1, 100)]
+        if self.definitionstring not in allowed:
+            raise RuntimeError(f"definitionstring must be one of {allowed[0]}..{allowed[-1]}")
 
-        class_utils.check_field(md, field = self.definitionstring, values = OutputdefinitionStringArray)
 
         # Check the profilename points to a file!:
         if not os.path.isfile(self.profilename):
