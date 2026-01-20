@@ -87,10 +87,12 @@ class massfluxatgate(class_registry.manage_state):
         if not isinstance(self.profilename, str):
             raise RuntimeError("pyissm.model.classes.massfluxatgate.check_consistency: 'profilename' field should be a string.")
 
-        allowed = [f"Outputdefinition{i}" for i in range(1, 100)]
-        if self.definitionstring not in allowed:
-            raise RuntimeError(f"definitionstring must be one of {allowed[0]}..{allowed[-1]}")
+        OutputdefinitionStringArray = []
+        for i in range(1, 100):
+            x = 'Outputdefinition' + str(i)
+            OutputdefinitionStringArray.append(x)
 
+        md = class_utils.check_field(md, 'field', self.definitionstring, 'values', OutputdefinitionStringArray)
 
         # Check the profilename points to a file!:
         if not os.path.isfile(self.profilename):
@@ -126,6 +128,9 @@ class massfluxatgate(class_registry.manage_state):
         else:
             ## If wrappers are not installed, raise error as segments are required to marshall class
             raise RuntimeError('massfluxatgate.marshall_class: Python wrappers not installed. Unable to compute segments for mass flux variable, required to marshall class.')
+        
+    def marshall(self, prefix, md, fid):
+        return self.marshall_class(fid=fid, prefix=prefix, md=md)
 
         ## Write fields
         execute.WriteData(fid, prefix, obj = self, fieldname = 'name', format = 'String')
