@@ -1,11 +1,9 @@
+
 import os.path
-from arch import archread
+import pyissm
 import numpy as np
 import inspect
-from verbose import verbose
-from InterpFromMeshToMesh2d import InterpFromMeshToMesh2d
-from paterson import paterson
-from SetIceShelfBC import SetIceShelfBC
+
 
 #Start defining model parameters here
 #Geometry
@@ -21,14 +19,13 @@ md.geometry.surface = md.geometry.base + md.geometry.thickness
 md.geometry.bed = md.geometry.base - 10
 
 #Initial velocity
-x = np.array(archread('../Data/SquareShelfConstrained.arch', 'x'))
-y = np.array(archread('../Data/SquareShelfConstrained.arch', 'y'))
-vx = np.array(archread('../Data/SquareShelfConstrained.arch', 'vx'))
-vy = np.array(archread('../Data/SquareShelfConstrained.arch', 'vy'))
-index = np.array(archread('../Data/SquareShelfConstrained.arch', 'index').astype(int))
-
-md.initialization.vx = InterpFromMeshToMesh2d(index, x, y, vx, md.mesh.x, md.mesh.y)
-md.initialization.vy = InterpFromMeshToMesh2d(index, x, y, vy, md.mesh.x, md.mesh.y)
+x = np.array(pyissm.tools.archive.arch_read('../assets/Data/SquareShelfConstrained.arch', 'x'))
+y = np.array(pyissm.tools.archive.arch_read('../assets/Data/SquareShelfConstrained.arch', 'y'))
+vx = np.array(pyissm.tools.archive.arch_read('../assets/Data/SquareShelfConstrained.arch', 'vx'))
+vy = np.array(pyissm.tools.archive.arch_read('../assets/Data/SquareShelfConstrained.arch', 'vy'))
+index = np.array(pyissm.tools.archive.arch_read('../assets/Data/SquareShelfConstrained.arch', 'index').astype(int))
+md.initialization.vx = pyissm.tools.wrappers.InterpFromMeshToMesh2d(index, x, y, vx, md.mesh.x, md.mesh.y)
+md.initialization.vy = pyissm.tools.wrappers.InterpFromMeshToMesh2d(index, x, y, vy, md.mesh.x, md.mesh.y)
 md.initialization.vz = np.zeros((md.mesh.numberofvertices))
 md.initialization.pressure = np.zeros((md.mesh.numberofvertices))
 
@@ -61,7 +58,7 @@ md.timestepping.time_step = 1.
 md.timestepping.final_time = 3.
 
 #Deal with boundary conditions:
-md = SetIceShelfBC(md)
+md = pyissm.tools.bc.SetIceShelfBC(md)
 
 #Change name so that no tests have the same name
 if len(inspect.stack()) > 2:
