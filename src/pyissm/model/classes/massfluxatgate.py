@@ -130,12 +130,11 @@ class massfluxatgate(class_registry.manage_state):
             raise RuntimeError('massfluxatgate.marshall_class: Python wrappers not installed. Unable to compute segments for mass flux variable, required to marshall class.')
         
     def marshall(self, prefix, md, fid):
+        self.marshall_class(fid=fid, prefix=prefix, md=md)
         
 
         ## Write fields
         execute.WriteData(fid, prefix, obj = self, fieldname = 'name', format = 'String')
         execute.WriteData(fid, prefix, obj = self, fieldname = 'definitionstring', format = 'String')
         execute.WriteData(fid, prefix, obj = self, fieldname = 'segments', format = 'DoubleMat', mattype = 1)
-
-        return self.marshall_class(fid=fid, prefix=prefix, md=md)
 
