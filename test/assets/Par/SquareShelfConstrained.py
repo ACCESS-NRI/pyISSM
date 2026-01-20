@@ -57,7 +57,7 @@ md.timestepping.time_step = 1.
 md.timestepping.final_time = 3.
 
 #Deal with boundary conditions:
-md = pyissm.tools.bc.SetIceShelfBC(md)
+md = pyissm.model.bc.set_ice_shelf_bc(md)
 
 #Change name so that no tests have the same name
 if len(inspect.stack()) > 2:
