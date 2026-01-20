@@ -15,7 +15,8 @@ md.outputdefinition.definitions = [pyissm.model.classes.massfluxatgate(name  = '
                                    pyissm.model.classes.massfluxatgate(name  = 'MassFlux5', profilename  = '../assets/Exp/MassFlux5.exp', definitionstring  ='Outputdefinition5'),
                                    pyissm.model.classes.massfluxatgate(name  = 'MassFlux6', profilename  = '../assets/Exp/MassFlux6.exp', definitionstring  ='Outputdefinition6')]
 md = pyissm.model.execute.solve(md, 'Stressbalance')
-
+sol = md.results.StressbalanceSolution
+print([a for a in dir(sol) if "Outputdefinition" in a or "MassFlux" in a])
 #Fields and tolerances to track changes
 field_names = ['Vx', 'Vy', 'Vel', 'Pressure',
                'DeviatoricStressxx', 'DeviatoricStressyy', 'DeviatoricStressxy',
