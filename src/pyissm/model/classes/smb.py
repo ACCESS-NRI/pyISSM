@@ -1152,8 +1152,8 @@ class gemb(class_registry.manage_state):
 
     Parameters
     ----------
-    md : ISSM model object
-        Model object containing mesh information. Required for initialization.
+    mesh : ISSM mesh object
+        Mesh object containing mesh information. Required for initialization.
     other : any, optional
         Any other class object that contains common fields to inherit from. If values 
         in `other` differ from default values, they will override the default values.
@@ -1276,16 +1276,16 @@ class gemb(class_registry.manage_state):
 
     Examples
     --------
-    md.smb = pyissm.model.classes.smb.gemb(md)
+    md.smb = pyissm.model.classes.smb.gemb(md.mesh)
     md.smb.Ta = temperature_forcing_data
     md.smb.P = precipitation_data
     md.smb.dswrf = shortwave_radiation_data
     """
 
     # Initialise with default parameters
-    ## NOTE: md must be specified for mesh parameters.
+    ## NOTE: md.mesh must be specified for mesh parameters.
     def __init__(self,
-                 md = None,
+                 mesh = None,
                  other = None):
         self.isgraingrowth = 1
         self.isalbedo = 1
@@ -1295,7 +1295,7 @@ class gemb(class_registry.manage_state):
         self.ismelt = 1
         self.isdensification = 1
         self.isturbulentflux = 1
-        self.isconstrainsurfaceT = 1
+        self.isconstrainsurfaceT = 0
         self.isdeltaLWup = 0
         self.ismappedforcing = 0
         self.iscompressedforcing = 0
@@ -1307,47 +1307,47 @@ class gemb(class_registry.manage_state):
         self.eAir = np.nan
         self.pAir = np.nan
         self.Tmean = np.nan
-        self.Vmean = 10 * np.ones((md.mesh.numberofelements,))
+        self.Vmean = 10 * np.ones((mesh.numberofelements,))
         self.C = np.nan
         self.Tz = np.nan
         self.Vz = np.nan
-        self.aValue = self.aSnow * np.ones(md.mesh.numberofelements,)
-        self.teValue =  np.ones((md.mesh.numberofelements,))
-        self.dulwrfValue = np.ones((md.mesh.numberofelements,))
+        self.aSnow = 0.85
+        self.aValue = self.aSnow * np.ones(mesh.numberofelements,)
+        self.teValue =  np.ones((mesh.numberofelements,))
+        self.dulwrfValue = np.zeros((mesh.numberofelements,))
         self.mappedforcingpoint = np.nan
         self.mappedforcingelevation = np.nan
         self.lapseTaValue = -0.006
         self.lapsedlwrfValue = -0.032
-        self.Dzini = 0.05 * np.ones((md.mesh.numberofelements, 2))
-        self.Dini = 910.0 * np.ones((md.mesh.numberofelements, 2))
-        self.Reini = 2.5 * np.ones((md.mesh.numberofelements, 2))
-        self.Gdnini = 0.0 * np.ones((md.mesh.numberofelements, 2))
-        self.Gspini = 0.0 * np.ones((md.mesh.numberofelements, 2))
-        self.ECini = 0.0 * np.ones((md.mesh.numberofelements, 2))
-        self.Wini = 0.0 * np.ones((md.mesh.numberofelements, 2))
-        self.Aini = 0.0 * np.ones((md.mesh.numberofelements, 2))
-        self.Adiffini = 0.0 * np.ones((md.mesh.numberofelements, 2))
-        self.Tini = 273.15 * np.ones((md.mesh.numberofelements, 2))
-        self.Sizeini = 2 * np.ones((md.mesh.numberofelements, ))
+        self.Dzini = 0.05 * np.ones((mesh.numberofelements, 2))
+        self.Dini = 910.0 * np.ones((mesh.numberofelements, 2))
+        self.Reini = 2.5 * np.ones((mesh.numberofelements, 2))
+        self.Gdnini = 0.0 * np.ones((mesh.numberofelements, 2))
+        self.Gspini = 0.0 * np.ones((mesh.numberofelements, 2))
+        self.ECini = 0.0 * np.ones((mesh.numberofelements, ))
+        self.Wini = 0.0 * np.ones((mesh.numberofelements, 2))
+        self.Aini = self.aSnow * np.ones((mesh.numberofelements, 2))
+        self.Adiffini = np.ones((mesh.numberofelements, 2))
+        self.Tini = 273.15 * np.ones((mesh.numberofelements, 2))
+        self.Sizeini = 2 * np.ones((mesh.numberofelements, ))
         self.aIdx = 1
         self.eIdx = 1
         self.tcIdx = 1
         self.swIdx = 0
         self.denIdx = 2
         self.dsnowIdx = 1
-        self.zTop = 10 * np.ones((md.mesh.numberofelements,))
-        self.dzTop = 0.05 * np.ones((md.mesh.numberofelements,))
+        self.zTop = 10 * np.ones((mesh.numberofelements,))
+        self.dzTop = 0.05 * np.ones((mesh.numberofelements,))
         self.dzMin = self.dzTop / 2
-        self.zY = 1.025 * np.ones((md.mesh.numberofelements,))
-        self.zMax = 250 * np.ones((md.mesh.numberofelements,))
-        self.zMin = 130  * np.ones((md.mesh.numberofelements,))
+        self.zY = 1.025 * np.ones((mesh.numberofelements,))
+        self.zMax = 250 * np.ones((mesh.numberofelements,))
+        self.zMin = 130  * np.ones((mesh.numberofelements,))
         self.outputFreq = 30
-        self.dswdiffrf = 0.0 * np.ones(md.mesh.numberofelements,)
-        self.szaValue = 0.0 * np.ones(md.mesh.numberofelements,)
-        self.cotValue = 0.0 * np.ones(md.mesh.numberofelements,)
-        self.ccsnowValue = 0.0 * np.ones(md.mesh.numberofelements,)
-        self.cciceValue = 0.0 * np.ones(md.mesh.numberofelements,)
-        self.aSnow = 0.85
+        self.dswdiffrf = 0.0 * np.ones(mesh.numberofelements,)
+        self.szaValue = 0.0 * np.ones(mesh.numberofelements,)
+        self.cotValue = 0.0 * np.ones(mesh.numberofelements,)
+        self.ccsnowValue = 0.0 * np.ones(mesh.numberofelements,)
+        self.cciceValue = 0.0 * np.ones(mesh.numberofelements,)
         self.aIce = 0.48
         self.cldFrac = 0.1
         self.t0wet = 15
@@ -1440,7 +1440,9 @@ class gemb(class_registry.manage_state):
 
         # Additional albedo parameters
         s += '{}\n'.format(class_utils.fielddisplay(self, 'aValue', 'Albedo forcing at every element'))
-        if isinstance(self.aIdx, (list, type(np.array([1, 2])))) and (self.aIdx == [1, 2] or (1 in self.aIdx and 2 in self.aIdx)):
+        if (self.aIdx in (1, 2) if isinstance(self.aIdx, int) 
+            else list(self.aIdx) == [1, 2] if isinstance(self.aIdx, (list, np.ndarray)) 
+            else False):
             s += '{}\n'.format(class_utils.fielddisplay(self, 'aSnow', 'new snow albedo (0.64 - 0.89)'))
             s += '{}\n'.format(class_utils.fielddisplay(self, 'aIce', 'albedo of ice (0.27-0.58)'))
             if self.aIdx == 1:
@@ -1499,11 +1501,11 @@ class gemb(class_registry.manage_state):
             self.pAir = mesh.project_3d(md, vector = self.pAir, type = 'element')
 
         if not np.isnan(self.Dzini):
-            self.self.Dzini=mesh.project_3d(md,vector =self.self.Dzini, type = 'element')
+            self.Dzini=mesh.project_3d(md,vector = self.Dzini, type = 'element')
         if not np.isnan(self.Dini):
-            self.self.Dini=mesh.project_3d(md,vector = self.Dini, type = 'element')
+            self.Dini=mesh.project_3d(md,vector = self.Dini, type = 'element')
         if not np.isnan(self.Reini):
-            self.self.Reini=mesh.project_3d(md, vector = self.Reini, type = 'element')
+            self.Reini=mesh.project_3d(md, vector = self.Reini, type = 'element')
         if not np.isnan(self.Gdnini):
             self.Gdnini=mesh.project_3d(md, vector = self.Gdnini, type = 'element')
         if not np.isnan(self.Gspini):
@@ -1597,7 +1599,9 @@ class gemb(class_registry.manage_state):
         class_utils.check_field(md, fieldname = 'smb.teThresh', ge = 0, allow_nan = False, allow_inf = False)
         
         class_utils.check_field(md, fieldname = 'smb.aValue', timeseries = True, ge = 0, le = 1, allow_nan = False, allow_inf = True)
-        if isinstance(self.aIdx, (list, type(np.array([1, 2])))) and (self.aIdx == [1, 2] or (1 in self.aIdx and 2 in self.aIdx)):
+        if (self.aIdx in (1, 2) if isinstance(self.aIdx, int) 
+            else list(self.aIdx) == [1, 2] if isinstance(self.aIdx, (list, np.ndarray)) 
+            else False):
             class_utils.check_field(md, fieldname = 'smb.aSnow', ge = 0.64, le = 0.89, allow_nan = False, allow_inf = False)
             class_utils.check_field(md, fieldname = 'smb.aIce', ge = 0.27, le = 0.58, allow_nan = False, allow_inf = False)
             if self.aIdx == 1:
@@ -1719,7 +1723,7 @@ class gemb(class_registry.manage_state):
             execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 2)
 
         ## Write Integer fields
-        fieldnames = ['aIDx', 'eIdx', 'tcIdx', 'swIdx', 'denIdx', 'dsnowIdx']
+        fieldnames = ['aIdx', 'eIdx', 'tcIdx', 'swIdx', 'denIdx', 'dsnowIdx']
         for field in fieldnames:
             execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
 
@@ -1736,12 +1740,13 @@ class gemb(class_registry.manage_state):
             execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 2, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
 
             ## mattype = 3
-        fieldnames = ['Dzini', 'Dini', 'Reini', 'Gdnini', 'Gspini', 'ECini', 'Wini', 'Aini', 'Adiffini', 'Tini']
+        fieldnames = ['Dzini', 'Dini', 'Reini', 'Gdnini', 'Gspini', 'Wini', 'Aini', 'Adiffini', 'Tini']
         for field in fieldnames:
             execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 3)
 
         ## Write other fields
         execute.WriteData(fid, prefix, obj = self, fieldname = 'Sizeini', format = 'IntMat', mattype = 2)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'ECini', format = 'DoubleMat', mattype = 2)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
         execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
 
