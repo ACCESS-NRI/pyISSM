@@ -1298,6 +1298,7 @@ class gemb(class_registry.manage_state):
         self.isconstrainsurfaceT = 0
         self.isdeltaLWup = 0
         self.ismappedforcing = 0
+        self.isprecipforcingremapped = 1
         self.iscompressedforcing = 0
         self.Ta = np.nan
         self.V = np.nan
@@ -1378,6 +1379,7 @@ class gemb(class_registry.manage_state):
         s += '{}\n'.format(class_utils.fielddisplay(self, 'isconstrainsurfaceT', 'constrain surface temperatures to air temperature, turn off EC and surface flux contribution to surface temperature change (default false)'))
         s += '{}\n'.format(class_utils.fielddisplay(self, 'isdeltaLWup', 'set to true to invoke a bias in the long wave upward spatially, specified by dulwrfValue (default false)'))
         s += '{}\n'.format(class_utils.fielddisplay(self,'ismappedforcing','set to true if forcing grid does not match model mesh, mapping specified by mappedforcingpoint (default false)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self,'isprecipforcingremapped','set to true if ismappedforcing is true and precip should be downscaled from native grid (Default value is true)'))
         s += '{}\n'.format(class_utils.fielddisplay(self,'iscompressedforcing','set to true to compress the input matrices when writing to binary (default false)'))
         s += '{}\n'.format(class_utils.fielddisplay(self, 'Ta', '2 m air temperature, in Kelvin'))
         s += '{}\n'.format(class_utils.fielddisplay(self, 'V', 'wind speed (m s-1)'))
@@ -1555,6 +1557,7 @@ class gemb(class_registry.manage_state):
         class_utils.check_field(md, fieldname = 'smb.isdeltaLWup', values = [0, 1])
         class_utils.check_field(md, fieldname = 'smb.isconstrainsurfaceT', values = [0, 1])
         class_utils.check_field(md, fieldname = 'smb.ismappedforcing', values = [0, 1])
+        class_utils.check_field(md, fieldname = 'smb.isprecipforcingremapped', values = [0, 1])
         class_utils.check_field(md, fieldname = 'smb.iscompressedforcing', values = [0, 1])
 
         sizeta=np.shape(self.Ta)
@@ -1703,7 +1706,7 @@ class gemb(class_registry.manage_state):
         ## Write Boolean fields
         fieldnames = ['isgraingrowth', 'isalbedo', 'isshortwave', 'isthermal', 'isaccumulation',
                       'ismelt', 'isdensification', 'isturbulentflux', 'isconstrainsurfaceT',
-                      'isdeltaLWup', 'ismappedforcing']
+                      'isdeltaLWup', 'ismappedforcing', 'isprecipforcingremapped']
         for field in fieldnames:
             execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Boolean')
 
