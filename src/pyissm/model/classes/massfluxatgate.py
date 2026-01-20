@@ -50,7 +50,7 @@ class massfluxatgate(class_registry.manage_state):
     """
 
     # Initialise with default parameters
-    def __init__(self, other = None):
+    def __init__(self, other = None, **kwargs):
         self.name = ''
         self.definitionstring = ''
         self.profilename = ''
