@@ -59,6 +59,12 @@ class massfluxatgate(class_registry.manage_state):
         # Inherit matching fields from provided class
         super().__init__(other)
 
+        # Apply kwargs (e.g. name=..., profilename=..., definitionstring=...)
+        for k, v in kwargs.items():
+            if not hasattr(self, k):
+                raise AttributeError(f"massfluxatgate: unknown field '{k}'")
+            setattr(self, k, v)
+
     # Define repr
     def __repr__(self):
         s = '   massfluxatgate parameters:\n'
