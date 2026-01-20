@@ -2,7 +2,7 @@
 import pyissm
 
 md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 50000)
-md = pyissm.model.param.setmask(md, 'all', None)
+md = pyissm.model.param.set_mask(md, 'all', None)
 md = pyissm.model.param.parameterize(md, '../assets/Par/SquareShelfConstrained.py')
 md = pyissm.model.param.setflowequation(md, SSA = 'all')
 md.cluster.np = 3
