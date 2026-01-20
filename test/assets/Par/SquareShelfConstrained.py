@@ -48,7 +48,6 @@ md.friction.q = np.ones((md.mesh.numberofelements))
 #Numerical parameters
 md.masstransport.stabilization = 1
 md.thermal.stabilization = 1
-md.verbose = verbose(0)
 md.settings.waitonlock = 30
 md.stressbalance.restol = 0.05
 md.stressbalance.reltol = 0.05
