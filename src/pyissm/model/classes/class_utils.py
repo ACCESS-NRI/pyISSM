@@ -578,6 +578,29 @@ def _check_bound(md, field, fieldname, op, bound, message=None):
     if not np.all(mask):
         md.check_message(message or f"{fieldname} fails condition {op} {bound}")
 
+def _split_timeseries_field(md, field, kind):
+    """Remove time row from timeseries field if present."""
+    if field.ndim <= 1:
+        return field, None
+
+    nrow = field.shape[0]
+    v, e = md.mesh.numberofvertices, md.mesh.numberofelements
+
+    if kind == "timeseries":
+        if nrow in (v + 1, e + 1):
+            return field[:-1], field[-1]
+        return field, None
+    
+    if kind == "singletimeseries":
+        if nrow == 2:
+            return field[0], field[1]
+        return field, None
+
+    if kind == "mappedtimeseries":
+            return field[:-1], field[-1]
+        
+    return field, None
+
 
 def _check_timeseries(md, field, fieldname, kind, message=None):
     """Check time series structure and sorting."""
@@ -709,6 +732,10 @@ def check_field(
     if isinstance(field, (bool, int, float)):
         field = np.array([field])
 
+    # Raw field checks
+    # --------------------------------------------------------------
+    # These checks are applied to the raw field as provided or resolved.
+
     # Empty
     if allow_empty and (field is None or len(np.atleast_1d(field)) == 0):
         md.check_message(message or f"{fieldname} is empty")
@@ -749,11 +776,6 @@ def check_field(
     if values is not None:
         _check_values(md, field, fieldname, values, message)
 
-    # Bounds
-    for op, bound in {">": gt, ">=": ge, "<": lt, "<=": le}.items():
-        if bound is not None:
-            _check_bound(md, field, fieldname, op, bound, message)
-
     # File check
     if file and not os.path.exists(field):
         md.check_message(f"File in {fieldname} not found: {field}")
@@ -765,6 +787,23 @@ def check_field(
         _check_timeseries(md, field, fieldname, "singletimeseries", message)
     if mappedtimeseries:
         _check_timeseries(md, field, fieldname, "mappedtimeseries", message)
+
+    # Data-only field checks
+    # --------------------------------------------------------------
+    # When fields contain timeseries rows, the final row (time) is removed
+    # before applying these checks.
+
+    data_field = field
+    kind = ("timeseries" if timeseries else
+            "singletimeseries" if singletimeseries else
+            "mappedtimeseries" if mappedtimeseries else None)
+    if kind:
+        data_field, _ = _split_timeseries_field(md, field, kind)
+    
+    # Bounds
+    for op, bound in {">": gt, ">=": ge, "<": lt, "<=": le}.items():
+        if bound is not None:
+            _check_bound(md, data_field, fieldname, op, bound, message)
 
     return md
 
