@@ -86,8 +86,7 @@ class massfluxatgate(class_registry.manage_state):
             x = 'Outputdefinition' + str(i)
             OutputdefinitionStringArray.append(x)
 
-        
-        class_utils.check_field(md, field=np.array([self.definitionstring], dtype=object), values=OutputdefinitionStringArray)
+        class_utils.check_field(md, field = self.definitionstring, values = OutputdefinitionStringArray)
 
         # Check the profilename points to a file!:
         if not os.path.isfile(self.profilename):
