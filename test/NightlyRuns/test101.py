@@ -8,12 +8,12 @@ md = pyissm.model.param.set_flow_equation(md, SSA = 'all')
 md.cluster.np = 3
 #outputs
 md.stressbalance.requested_outputs = ['default', 'DeviatoricStressxx', 'DeviatoricStressyy', 'DeviatoricStressxy', 'MassFlux1', 'MassFlux2', 'MassFlux3', 'MassFlux4', 'MassFlux5', 'MassFlux6']
-md.outputdefinition.definitions = [pyissm.model.classes.massfluxatgate(name  = 'MassFlux1', profilename  = '../assets/Exp/MassFlux1.exp', definitionstring  = 'Outputdefinition1'),
-                                   pyissm.model.classes.massfluxatgate(name  = 'MassFlux2', profilename  = '../assets/Exp/MassFlux2.exp', definitionstring  = 'Outputdefinition2'),
-                                   pyissm.model.classes.massfluxatgate(name  = 'MassFlux3', profilename  = '../assets/Exp/MassFlux3.exp', definitionstring  = 'Outputdefinition3'),
-                                   pyissm.model.classes.massfluxatgate(name  = 'MassFlux4', profilename  = '../assets/Exp/MassFlux4.exp', definitionstring  = 'Outputdefinition4'),
-                                   pyissm.model.classes.massfluxatgate(name  = 'MassFlux5', profilename  = '../assets/Exp/MassFlux5.exp', definitionstring  = 'Outputdefinition5'),
-                                   pyissm.model.classes.massfluxatgate(name  = 'MassFlux6', profilename  = '../assets/Exp/MassFlux6.exp', definitionstring  = 'Outputdefinition6')]
+md.outputdefinition.definitions = [pyissm.model.classes.massfluxatgate(name  = 'MassFlux1', profilename  = '../assets/Exp/MassFlux1.exp', definitionstring  ='Outputdefinition1'),
+                                   pyissm.model.classes.massfluxatgate(name  = 'MassFlux2', profilename  = '../assets/Exp/MassFlux2.exp', definitionstring  ='Outputdefinition2'),
+                                   pyissm.model.classes.massfluxatgate(name  = 'MassFlux3', profilename  = '../assets/Exp/MassFlux3.exp', definitionstring  ='Outputdefinition3'),
+                                   pyissm.model.classes.massfluxatgate(name  = 'MassFlux4', profilename  = '../assets/Exp/MassFlux4.exp', definitionstring  ='Outputdefinition4'),
+                                   pyissm.model.classes.massfluxatgate(name  = 'MassFlux5', profilename  = '../assets/Exp/MassFlux5.exp', definitionstring  ='Outputdefinition5'),
+                                   pyissm.model.classes.massfluxatgate(name  = 'MassFlux6', profilename  = '../assets/Exp/MassFlux6.exp', definitionstring  ='Outputdefinition6')]
 md = pyissm.model.execute.solve(md, 'Stressbalance')
 
 #Fields and tolerances to track changes
