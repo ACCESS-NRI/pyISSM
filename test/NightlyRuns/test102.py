@@ -3,7 +3,7 @@ import pyissm
 
 
 md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 180000)
-md = pyissm.model.param.set_mask(md, 'all', '')
+md = pyissm.model.param.set_mask(md, 'all', None)
 md = pyissm.model.param.parameterize(md, '../assets/ar/SquareShelfConstrained.py')
 md.extrude(3, 2.)
 md = pyissm.model.param.set_flow_equation(md, 'SSA', 'all')
