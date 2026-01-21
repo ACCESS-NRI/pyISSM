@@ -699,7 +699,7 @@ class josh(class_registry.manage_state):
         """
         Extrude friction.josh fields to 3D
         """
-        self.coefficient = mesh.project_3d(md, vector = self.q, type = 'node', layer = 1)
+        self.coefficient = mesh.project_3d(md, vector = self.coefficient, type = 'node', layer = 1)
         self.pressure_adjusted_temperature = mesh.project_3d(md, vector = self.pressure_adjusted_temperature, type = 'node', layer = 1)
             
         return self
@@ -712,9 +712,8 @@ class josh(class_registry.manage_state):
             return md
         
         class_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.C", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.As", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "friction.pressure_adjusted_temperature", allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = "friction.gamma", gt = 0, scalar = True, allow_nan = False, allow_inf = False)
         class_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)       
 
         class_utils.check_field(md, fieldname = "initialization.temperature", size = 'universal', allow_nan = False, allow_inf = False)
