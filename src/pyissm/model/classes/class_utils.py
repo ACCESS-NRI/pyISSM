@@ -559,15 +559,10 @@ def _check_size(md, field, fieldname, expected, message=None):
         ):
             md.check_message(message or f"{fieldname} has shape {shape}, expected {expected}")
 
+
 def _check_values(md, field, fieldname, allowed, message=None):
     """Check categorical values."""
-    # Treat strings as scalar categories, not iterables of chars
-    if isinstance(field, str):
-        field_arr = np.array([field], dtype=object)
-    else:
-        field_arr = np.atleast_1d(field)
-
-    if not np.all(np.isin(field_arr, allowed)):
+    if not np.all(np.isin(field, allowed)):
         md.check_message(message or f"{fieldname} values not in {allowed}")
 
 
