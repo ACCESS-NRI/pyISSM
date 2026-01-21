@@ -20,7 +20,9 @@ md.outputdefinition.definitions = [
 
 for d in md.outputdefinition.definitions:
     print(d.name, "segments is nan?", np.isnan(d.segments).all() if hasattr(d, "segments") else None)
-
+import os
+for d in md.outputdefinition.definitions:
+    print(d.name, d.profilename, os.path.isfile(d.profilename))
 md = pyissm.model.execute.solve(md, 'Stressbalance')
 sol = md.results.StressbalanceSolution
 print([a for a in dir(sol) if "Outputdefinition" in a or "MassFlux" in a])
