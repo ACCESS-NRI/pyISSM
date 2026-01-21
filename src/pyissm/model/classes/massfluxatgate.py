@@ -54,7 +54,6 @@ class massfluxatgate(class_registry.manage_state):
         self.name = ''
         self.definitionstring = ''
         self.profilename = ''
-        self.segments = np.nan
 
         # Inherit matching fields from provided class
         super().__init__(other)
