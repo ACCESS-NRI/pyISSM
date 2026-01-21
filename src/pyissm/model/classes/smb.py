@@ -3480,6 +3480,7 @@ class semic(class_registry.manage_state):
         self.dailyrainfall = np.nan
         self.dailydsradiation = np.nan
         self.dailydlradiation = np.nan
+        self.dailywindspeed = np.nan
         self.dailypressure = np.nan
         self.dailyairdensity = np.nan
         self.dailyairhumidity = np.nan
@@ -3548,6 +3549,7 @@ class semic(class_registry.manage_state):
             s += '{}\n'.format(class_utils.fielddisplay(self,'hice','initial thickness of ice [unit: m]'))
             s += '{}\n'.format(class_utils.fielddisplay(self,'hsnow','initial thickness of snow [unit: m]'))
             s += '{}\n'.format(class_utils.fielddisplay(self,'mask','masking for albedo. 0: ocean, 1: land, 2: ice (default: 2)'))
+            s += '{}\n'.format(class_utils.fielddisplay(self,'qmr','initial net energy difference between melt and refreeze in SEMIC [unit: W m^{-2}]. This variable can be set with zeros because net energy difference between melt and refreeze is dissipated fast.'))
             s += '{}\n'.format(class_utils.fielddisplay(self,'hcrit','critical snow height for albedo [unit: m]'))
             s += '{}\n'.format(class_utils.fielddisplay(self,'rcrit','critical refreezing height for albedo [no unit]'))
 
@@ -3626,7 +3628,7 @@ class semic(class_registry.manage_state):
     def check_consistency(self, md, solution, analyses):
         if 'MasstransportAnalysis' in analyses:
             md = class_utils.check_field(md, fieldname = 'smb.desfac', le = 1, scalar = True)
-            md = class_utils.check_field(md, fieldname = 'smb.s0gcm', ge = 0, size = (md.mesh.numberofvertices, 1), allow_nan = False, allow_inf = False)
+            md = class_utils.check_field(md, fieldname = 'smb.s0gcm', ge = 0, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
             md = class_utils.check_field(md, fieldname = 'smb.rlaps', ge = 0, scalar = True)
             md = class_utils.check_field(md, fieldname = 'smb.rdl', ge = 0, scalar = True)
             md = class_utils.check_field(md, fieldname = 'smb.dailysnowfall', timeseries = True, allow_nan = False, allow_inf = False, ge = 0)
@@ -3646,15 +3648,16 @@ class semic(class_registry.manage_state):
                 md = class_utils.check_field(md, fieldname = 'smb.desfacElevation', scalar = True, ge = 0)
                 md = class_utils.check_field(md, fieldname = 'smb.albedo_scheme', scalar = True, values = [0, 1, 2, 3, 4])
                 md = class_utils.check_field(md, fieldname = 'smb.alb_smax', scalar = True, ge = 0)
-                md = class_utils.check_field(md, fieldname = 'smb.mask', size = (md.mesh.numberofvertices, 1), values = [0, 1, 2])
-                md = class_utils.check_field(md, fieldname = 'smb.albedo', allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices, 1))
-                md = class_utils.check_field(md, fieldname = 'smb.albedo_snow', allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices, 1))
+                md = class_utils.check_field(md, fieldname = 'smb.mask', size = (md.mesh.numberofvertices, ), values = [0, 1, 2])
+                md = class_utils.check_field(md, fieldname = 'smb.albedo', allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices, ))
+                md = class_utils.check_field(md, fieldname = 'smb.albedo_snow', allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices, ))
                 md = class_utils.check_field(md, fieldname = 'smb.alb_smax', ge = 0, le = 1, allow_nan = False, allow_inf = False, scalar = True)
                 md = class_utils.check_field(md, fieldname = 'smb.alb_smin', ge = 0, le = 1, allow_nan = False, allow_inf = False, scalar = True)
                 md = class_utils.check_field(md, fieldname = 'smb.albi', ge = 0, le = 1, allow_nan = False, allow_inf = False, scalar = True)
                 md = class_utils.check_field(md, fieldname = 'smb.albl', ge = 0, le = 1, allow_nan = False, allow_inf = False, scalar = True)
-                md = class_utils.check_field(md, fieldname = 'smb.hice', allow_nan=False, allow_inf=False, size=(md.mesh.numberofvertices, 1))
-                md = class_utils.check_field(md, fieldname='smb.hsnow', allow_nan=False, allow_inf=False, size=(md.mesh.numberofvertices, 1))
+                md = class_utils.check_field(md, fieldname = 'smb.hice', allow_nan=False, allow_inf=False, size=(md.mesh.numberofvertices, ))
+                md = class_utils.check_field(md, fieldname='smb.hsnow', allow_nan=False, allow_inf=False, size=(md.mesh.numberofvertices, ))
+                md = class_utils.check_field(md, fieldname = 'smb.qmr', allow_nan=False, allow_inf=False, size=(md.mesh.numberofvertices, ))
         md = class_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
         md = class_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
         md = class_utils.check_field(md, fieldname = 'smb.requested_outputs', string_list = True)
@@ -3667,12 +3670,23 @@ class semic(class_registry.manage_state):
         Initialise empty fields in smb.semic.
         """
 
-        if np.all(np.isnan(self.s0gcm)):
-            self.s0gcm = np.zeros(md.mesh.numberofvertices)
-            warnings.warn('pyissm.model.classes.smb.semic: no SMBsemic.s0gcm specified: values set as zero')
-        self.Tamp = 3 * np.ones((md.mesh.numberofvertices,))
-        self.hice = np.zeros((md.mesh.numberofvertices,))
-        self.hsnow = 5 * np.ones((md.mesh.numberofvertices,))
+        if np.isnan(self.s0gcm):
+                if hasattr(md.geometry, 'surface') and md.geometry.surface.size == md.mesh.numberofvertices:
+                    self.s0gcm = md.geometry.surface
+                    print('      no SMBsemic.s0gcm specified: values from md.geometry.surface')
+                else:
+                    self.s0gcm = np.zeros((md.mesh.numberofvertices,))
+                    print('      no SMBsemic.s0gcm specified: values set as zero')
+
+        if np.isnan(self.mask):
+            self.mask = 2 * np.ones((md.mesh.numberofvertices, ))
+            print('      no SMBsemic.mask specified: values set as 2 for ice')
+
+        self.Tamp = 3 * np.ones((md.mesh.numberofvertices, ))
+        self.hice = 10 * np.ones((md.mesh.numberofvertices, ))
+        self.hsnow = 5 * np.ones((md.mesh.numberofvertices, ))
+        self.qmr = np.zeros((md.mesh.numberofvertices, ))
+        self.dailywindspeed = np.zeros((md.mesh.numberofvertices, ))
 
         return self
 
