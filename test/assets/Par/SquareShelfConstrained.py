@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-
-=======
->>>>>>> 184d2d6 (Add test101; Update massfluxatgate & outputdef...)
 import os.path
 import pyissm
 import numpy as np
 import inspect
 
-<<<<<<< HEAD
-
-#Start defining model parameters here
-#Geometry
-=======
 # Geometry
->>>>>>> 184d2d6 (Add test101; Update massfluxatgate & outputdef...)
 hmin = 300.
 hmax = 1000.
 ymin = np.min(md.mesh.y)
