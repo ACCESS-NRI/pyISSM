@@ -88,7 +88,7 @@ class massfluxatgate(class_registry.manage_state):
             raise RuntimeError("pyissm.model.classes.massfluxatgate.check_consistency: 'profilename' field should be a string.")
 
         OutputdefinitionStringArray = []
-        for i in range(1, 100):
+        for i in range(1, 101):
             x = 'Outputdefinition' + str(i)
             OutputdefinitionStringArray.append(x)
 
@@ -136,5 +136,6 @@ class massfluxatgate(class_registry.manage_state):
         ## Write fields
         execute.WriteData(fid, prefix, obj = self, fieldname = 'name', format = 'String')
         execute.WriteData(fid, prefix, obj = self, fieldname = 'definitionstring', format = 'String')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'segments', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj=self, fieldname='segments',         format='IntMat', mattype=1)
+        #execute.WriteData(fid, prefix, obj = self, fieldname = 'segments', format = 'DoubleMat', mattype = 1)
 
