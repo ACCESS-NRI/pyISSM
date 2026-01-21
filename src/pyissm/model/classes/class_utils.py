@@ -566,7 +566,7 @@ def _check_values(md, field, fieldname, allowed, message=None):
         md.check_message(message or f"{fieldname} values not in {allowed}")
 
 
-def _check_bound(md, field, fieldname, op, bound, message=None):
+def _check_bound(md, field, fieldname, op, bound, allow_nan, message=None):
     """Generic bound check: <, <=, >, >=."""
     fn = {
         ">": np.greater,
@@ -574,8 +574,19 @@ def _check_bound(md, field, fieldname, op, bound, message=None):
         "<": np.less,
         "<=": np.less_equal,
     }[op]
-    mask = fn(field, bound)
-    if not np.all(mask):
+
+    field = np.asarray(field)
+    
+    # If allow_nan = True, only apply check on non-NaN values
+    # (if all values are NaN, the check passes vacuously)
+    if allow_nan:
+        mask = ~np.isnan(field)
+        allowed = np.all(fn(field[mask], bound))
+    else:
+    # allow_nan = False, apply check on all values
+        allowed = np.all(fn(field, bound))
+    
+    if not allowed:
         md.check_message(message or f"{fieldname} fails condition {op} {bound}")
 
 def _split_timeseries_field(md, field, kind):
@@ -803,7 +814,7 @@ def check_field(
     # Bounds
     for op, bound in {">": gt, ">=": ge, "<": lt, "<=": le}.items():
         if bound is not None:
-            _check_bound(md, data_field, fieldname, op, bound, message)
+            _check_bound(md, data_field, fieldname, op, bound, allow_nan, message)
 
     return md
 
