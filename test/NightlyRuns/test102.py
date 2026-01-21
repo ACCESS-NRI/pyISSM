@@ -6,8 +6,8 @@ md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp'
 md = pyissm.model.param.set_mask(md, 'all', None)
 md = pyissm.model.param.parameterize(md, '../assets/Par/SquareShelfConstrained.py')
 md.extrude(3, 2.)
-md = pyissm.model.param.set_flow_equation(md, 'SSA', 'all')
-md.cluster.name = 3
+md = pyissm.model.param.set_flow_equation(md, SSA ='all')
+md.cluster.np = 3
 md = pyissm.model.execute.solve(md, 'Stressbalance')
 #Fields and tolerances to track changes
 field_names = ['Vx', 'Vy', 'Vz', 'Vel', 'Pressure']
