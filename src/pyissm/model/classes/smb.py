@@ -3348,7 +3348,7 @@ class pddSicopolis(class_registry.manage_state):
         if solution == 'TransientSolution' and not md.transient.issmb:
             return
         if 'MasstransportAnalysis' in analyses:
-            class_utils.check_field(md, fieldname = 'smb.desfac', ge = 1, scalar = True)
+            class_utils.check_field(md, fieldname = 'smb.desfac', le = 1, scalar = True)
             class_utils.check_field(md, fieldname = 'smb.s0p', ge = 0, size = (md.mesh.numberofvertices, 1), allow_nan = False, allow_inf = False)
             class_utils.check_field(md, fieldname = 'smb.s0t', ge = 0, size = (md.mesh.numberofvertices, 1), allow_nan = False, allow_inf = False)
             class_utils.check_field(md, fieldname = 'smb.rlaps', ge = 0, scalar = True)
@@ -3466,4 +3466,312 @@ class pddSicopolis(class_registry.manage_state):
         execute.WriteData(fid, prefix, obj = self, fieldname = 'smb_corr', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
         execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+
+## ------------------------------------------------------
+## smb.semic
+## ------------------------------------------------------
+@class_registry.register_class
+class semic(class_registry.manage_state):
+    
+    # Initialise with default parameters
+    def __init__(self, other = None):
+        self.dailysnowfall = np.nan
+        self.dailyrainfall = np.nan
+        self.dailydsradiation = np.nan
+        self.dailydlradiation = np.nan
+        self.dailypressure = np.nan
+        self.dailyairdensity = np.nan
+        self.dailyairhumidity = np.nan
+        self.dailytemperature = np.nan
+        self.Tamp = np.nan
+        self.mask = np.nan
+        self.hice = np.nan
+        self.hsnow = np.nan
+        self.desfac = -np.log(2.0) / 1000
+        self.desfacElevation = 2000
+        self.rlaps = 7.4
+        self.rdl = 29
+        self.s0gcm = np.nan
+        self.steps_per_step = 1
+        self.averaging = 0
+        self.hcrit = 0.028
+        self.rcrit = 0.85
+        self.albedo = 0
+        self.albedo_snow = 0
+        self.albedo_scheme = 0
+        self.alb_smax = 0.79
+        self.alb_smin = 0.6
+        self.albi = 0.41
+        self.albl = 0.07
+        self.tmin = 263.15
+        self.tmax = 273.15
+        self.mcrit = 6e-8
+        self.tau_a = 0.008
+        self.tau_f = 0.24
+        self.wcrit = 15.0
+        self.tmid = 273.35
+        self.afac = -0.18
+        self.ismethod = 0
+        self.isdesertification = 1
+        self.isLWDcorrect = 1
+        self.requested_outputs = ['default']
+
+        # Inherit matching fields from provided class
+        super().__init__(other)
+
+    # Define repr
+    def __repr__(self):
+        s = '   surface forcings parameters:\n'
+        s += '   Interface for coupling GCM data to the energy balance model SEMIC (Krapp et al (2017) https://doi.org/10.5194/tc-11-1519-2017).\n'
+        s += '   The implemented coupling uses daily mean GCM input to calculate yearly mean smb, accumulation, ablation, and surface temperature.\n'
+        s += '   smb and temperatures are updated every year\n'
+        s += '\n   SEMIC parameters:\n'
+        s += '{}\n'.format((self, 'dailysnowfall', 'daily surface dailysnowfall [m/s]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'dailyrainfall', 'daily surface dailyrainfall [m/s]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'dailydsradiation', 'daily downwelling shortwave radiation [W/m2]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'dailydlradiation', 'daily downwelling longwave radiation [W/m2]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'dailywindspeed', 'daily surface wind speed [m/s]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'dailypressure', 'daily surface pressure [Pa]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'dailyairdensity', 'daily air density [kg/m3]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'dailyairhumidity', 'daily air specific humidity [kg/kg]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rlaps', 'present day lapse rate (default is 7.4 [degree/km]; Erokhina et al. 2017)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'desfac', 'desertification elevation factor (default is -log(2.0)/1000 [1/m]; Vizcaino et al. 2010)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'rdl', 'longwave downward radiation decrease (default is 29 [W/m^2/km]; Marty et al. 2002)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 's0gcm', 'GCM reference elevation; (default is 0) [m]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'ismethod','method for calculating SMB with SEMIC. Default version of SEMIC is really slow. 0: steady, 1: transient (default: 0)'))
+        if self.ismethod: # transient mode
+            s += '{}\n'.format(class_utils.fielddisplay(self,'desfacElevation','desertification elevation (default is 2000 m; Vizcaino et al. 2010)'))
+            s += '{}\n'.format(class_utils.fielddisplay(self,'Tamp','amplitude of diurnal cycle [K]'))
+            s += '{}\n'.format(class_utils.fielddisplay(self,'albedo','initial albedo [no unit]'))
+            s += '{}\n'.format(class_utils.fielddisplay(self,'albedo_snow','initial albedo for snow [no unit]'))
+            s += '{}\n'.format(class_utils.fielddisplay(self,'hice','initial thickness of ice [unit: m]'))
+            s += '{}\n'.format(class_utils.fielddisplay(self,'hsnow','initial thickness of snow [unit: m]'))
+            s += '{}\n'.format(class_utils.fielddisplay(self,'mask','masking for albedo. 0: ocean, 1: land, 2: ice (default: 2)'))
+            s += '{}\n'.format(class_utils.fielddisplay(self,'hcrit','critical snow height for albedo [unit: m]'))
+            s += '{}\n'.format(class_utils.fielddisplay(self,'rcrit','critical refreezing height for albedo [no unit]'))
+
+            s += '\nSEMIC albedo parameters.\n'
+            s += '{}\n'.format(class_utils.fielddisplay(self,'albedo_scheme','albedo scheme for SEMIC. 0: none, 1: slater, 2: denby, 3: isba, 4: alex (default is 0)'))
+            s += '{}\n'.format(class_utils.fielddisplay(self,'alb_smax','maximum snow albedo (default: 0.79)'))
+            s += '{}\n'.format(class_utils.fielddisplay(self,'alb_smin','minimum snow albedo (default: 0.6)'))
+            s += '{}\n'.format(class_utils.fielddisplay(self,'albi','background albedo for bare ice (default: 0.41)'))
+            s += '{}\n'.format(class_utils.fielddisplay(self,'albl','background albedo for bare land (default: 0.07)'))
+            
+            s += '{}\n'.format(class_utils.fielddisplay(self,'isdesertification','enable or disable desertification of Vizcaino et al. (2010). 0: off, 1: on (default: 1)'))
+            s += '{}\n'.format(class_utils.fielddisplay(self,'isLWDcorrect','enable or disable downward longwave correction of Marty et al. (2002). 0: off, 1: on (default: 1)'))
+        # albedo_scheme - 0: none, 1: slater, 2: isba, 3: denby, 4: alex.
+        if self.albedo_scheme == 0:
+            s += '\n\tSEMIC snow albedo parameter of None.\n'
+            s += '\t   albedo of snow is updated from albedo snow max (alb_smax).\n'
+            s += '\t   alb_snow = abl_smax \n '
+        elif self.albedo_scheme == 1:
+            s += '\n\tSEMIC snow albedo parameters of Slater et al, (1998).\n'
+            s += '\t   alb = alb_smax - (alb_smax - alb_smin)*tm^(3.0)\n'
+            s += '\t   tm  = 1 (tsurf > 273.15 K)\n'
+            s += '\t         tm = f*(tsurf-tmin) (tmin <= tsurf < 273.15)\n'
+            s += '\t         0 (tsurf < tmin)\n'
+            s += '\t   f = 1/(273.15-tmin)\n'
+            s += '{}\n'.format(class_utils.fielddisplay(self, 'tmin', 'minimum temperature for which albedo decline become effective. (default: 263.15 K)[unit: K])'))
+            s += '{}\n'.format(class_utils.fielddisplay(self, 'tmax', 'maxmium temperature for which albedo decline become effective. This value should be fixed. (default: 273.15 K)[unit: K])'))
+        elif self.albedo_scheme == 2:
+            s += '\n\tSEMIC snow albedo parameters of Denby et al. (2002 Tellus)\n'
+            s += '{}\n'.format(class_utils.fielddisplay(self,'mcrit','critical melt rate (defaut: 6e-8) [unit: m/sec]'))
+        elif self.albedo_scheme == 3:
+            s += '\n\tSEMIC snow albedo parameters of ISB (Douville et al., 1995).\n'
+            s += '{}\n'.format(class_utils.fielddisplay(self, 'mcrit', 'critical melt rate (default: 6e-8) [unit: m/sec]'))
+            s += '{}\n'.format(class_utils.fielddisplay(self, 'wcrit', 'critical liquid water content (default: 15) [unit: kg/m2]'))
+            s += '{}\n'.format(class_utils.fielddisplay(self, 'tau_a', 'dry albedo decline [unit: 1/day]'))
+            s += '{}\n'.format(class_utils.fielddisplay(self, 'tau_f', 'wet albedo decline [unit: 1/day]'))
+            s += '\n\tReference'
+            s += '\tDouville, H., Royer, J.-F., and Mahfouf, J.-F.: A new snow parameterization for the Météo-France climate model. Part I: validation in stand-alone experiments, Climate Dynamics, 12, 21–35, https://doi.org/10.1007/s003820050092, 1995.'
+        elif self.albedo_scheme == 4:
+            s += '\n\tSEMIC snow albedo parameters of Alex.?\n'
+            s += '{}\n'.format(class_utils.fielddisplay(self,'afac','[unit: ?]'))
+            s += '{}\n'.format(class_utils.fielddisplay(self,'tmid','[unit: ?]'))
+        else:
+            raise Exception('ERROR: {} is not supported albedo scheme.'.format(self.albedo_scheme))
+
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'steps_per_step', 'number of smb steps per time step'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'averaging', 'averaging methods from short to long steps'))
+        s += '\t\t{}\n'.format('0: Arithmetic (default)')
+        s += '\t\t{}\n'.format('1: Geometric')
+        s += '\t\t{}\n'.format('2: Harmonic')
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        return s
+
+    # Define class string
+    def __str__(self):
+        s = 'ISSM - smb.semic Class'
+        return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude smb.semic fields to 3D
+        """
+        self.dailysnowfall = mesh.project3d(md, vector = self.dailysnowfall, type = 'node')
+        self.dailyrainfall = mesh.project3d(md, vector = self.dailyrainfall, type = 'node')
+        self.dailydsradiation = mesh.project3d(md, vector = self.dailydsradiation, type = 'node')
+        self.dailydlradiation = mesh.project3d(md, vector = self.dailydlradiation, type = 'node')
+        self.dailywindspeed = mesh.project3d(md, vector = self.dailywindspeed, type = 'node')
+        self.dailypressure = mesh.project3d(md, vector = self.dailypressure, type = 'node')
+        self.dailyairdensity = mesh.project3d(md, vector = self.dailyairdensity, type = 'node')
+        self.dailyairhumidity = mesh.project3d(md, vector = self.dailyairhumidity, type = 'node')
+        self.dailytemperature = mesh.project3d(md, vector = self.dailytemperature, type = 'node')
+        self.s0gcm = mesh.project3d(md, vector = self.s0gcm, type = 'node')
+            
+        return self
+    
+    def check_consistency(self, md, solution, analyses):
+        if 'MasstransportAnalysis' in analyses:
+            md = class_utils.check_field(md, fieldname = 'smb.desfac', le = 1, scalar = True)
+            md = class_utils.check_field(md, fieldname = 'smb.s0gcm', ge = 0, size = (md.mesh.numberofvertices, 1), allow_nan = False, allow_inf = False)
+            md = class_utils.check_field(md, fieldname = 'smb.rlaps', ge = 0, scalar = True)
+            md = class_utils.check_field(md, fieldname = 'smb.rdl', ge = 0, scalar = True)
+            md = class_utils.check_field(md, fieldname = 'smb.dailysnowfall', timeseries = True, allow_nan = False, allow_inf = False, ge = 0)
+            md = class_utils.check_field(md, fieldname = 'smb.dailyrainfall', timeseries = True, allow_nan = False, allow_inf = False, ge = 0)
+            md = class_utils.check_field(md, fieldname = 'smb.dailydsradiation', timeseries = True, allow_nan = False, allow_inf = False, ge = 0)
+            md = class_utils.check_field(md, fieldname = 'smb.dailydlradiation', timeseries = True, allow_nan = False, allow_inf = False, ge = 0)
+            md = class_utils.check_field(md, fieldname = 'smb.dailywindspeed', timeseries = True, allow_nan = False, allow_inf = False, ge = 0)
+            md = class_utils.check_field(md, fieldname = 'smb.dailypressure', timeseries = True, allow_nan = False, allow_inf = False, ge = 0)
+            md = class_utils.check_field(md, fieldname = 'smb.dailyairdensity', timeseries = True, allow_nan = False, allow_inf = False, ge = 0)
+            md = class_utils.check_field(md, fieldname='smb.dailyairhumidity', timeseries=True, allow_nan=False, allow_inf=False, ge=0)
+            md = class_utils.check_field(md, fieldname='smb.dailytemperature', timeseries=True, allow_nan=False, allow_inf=False, ge=0)
+            md = class_utils.check_field(md, fieldname = 'smb.ismethod', scalar = True, values = [0, 1])
+            md = class_utils.check_field(md, fieldname = 'smb.isdesertification', scalar = True, values = [0, 1])
+            md = class_utils.check_field(md, fieldname = 'smb.isLWDcorrect', scalar = True, values = [0, 1])
+
+            if self.ismethod: # transient mode
+                md = class_utils.check_field(md, fieldname = 'smb.desfacElevation', scalar = True, ge = 0)
+                md = class_utils.check_field(md, fieldname = 'smb.albedo_scheme', scalar = True, values = [0, 1, 2, 3, 4])
+                md = class_utils.check_field(md, fieldname = 'smb.alb_smax', scalar = True, ge = 0)
+                md = class_utils.check_field(md, fieldname = 'smb.mask', size = (md.mesh.numberofvertices, 1), values = [0, 1, 2])
+                md = class_utils.check_field(md, fieldname = 'smb.albedo', allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices, 1))
+                md = class_utils.check_field(md, fieldname = 'smb.albedo_snow', allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices, 1))
+                md = class_utils.check_field(md, fieldname = 'smb.alb_smax', ge = 0, le = 1, allow_nan = False, allow_inf = False, scalar = True)
+                md = class_utils.check_field(md, fieldname = 'smb.alb_smin', ge = 0, le = 1, allow_nan = False, allow_inf = False, scalar = True)
+                md = class_utils.check_field(md, fieldname = 'smb.albi', ge = 0, le = 1, allow_nan = False, allow_inf = False, scalar = True)
+                md = class_utils.check_field(md, fieldname = 'smb.albl', ge = 0, le = 1, allow_nan = False, allow_inf = False, scalar = True)
+                md = class_utils.check_field(md, fieldname = 'smb.hice', allow_nan=False, allow_inf=False, size=(md.mesh.numberofvertices, 1))
+                md = class_utils.check_field(md, fieldname='smb.hsnow', allow_nan=False, allow_inf=False, size=(md.mesh.numberofvertices, 1))
+        md = class_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+        md = class_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
+        md = class_utils.check_field(md, fieldname = 'smb.requested_outputs', string_list = True)
+
+        return md
+    
+    # Initialise empty fields of correct dimensions
+    def initialise(self, md):
+        """
+        Initialise empty fields in smb.semic.
+        """
+
+        if np.all(np.isnan(self.s0gcm)):
+            self.s0gcm = np.zeros(md.mesh.numberofvertices)
+            warnings.warn('pyissm.model.classes.smb.semic: no SMBsemic.s0gcm specified: values set as zero')
+        self.Tamp = 3 * np.ones((md.mesh.numberofvertices,))
+        self.hice = np.zeros((md.mesh.numberofvertices,))
+        self.hsnow = 5 * np.ones((md.mesh.numberofvertices,))
+
+        return self
+
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+            
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['SmbMassBalance']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+        
+        # Marshall method for saving the smb.semic parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [smb.semic] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : file object
+            The file object to write the binary data to.
+        prefix : str
+            Prefix string used for data identification in the binary file.
+        md : ISSM model object, optional.
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 12, format = 'Integer')
+
+        ## Write DoubleMat fields
+        fieldnames = ['dailysnowfall', 'dailyrainfall', 'dailydsradiation', 'dailydlradiation',
+                      'dailywindspeed', 'dailypressure', 'dailyairdensity', 'dailyairhumidity', 'dailytemperature']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+
+        ## Write Integer fields
+        fieldnames = ['isdesertification', 'isLWDcorrect', 'steps_per_step', 'averaging']
+        for field in fieldnames:
+            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+
+        ## Write conditional fields
+        if self.ismethod:
+            ### Write DoubleMat fields
+            fieldnames = ['Tamp', 'mask', 'hice', 'hsnow', 'qmr', 'albedo', 'albedo_snow']
+            for field in fieldnames:
+                execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
+
+            ### Write Double fields
+            fieldnames = ['hcrit', 'rcrit', 'alb_smax', 'alb_smin', 'albi', 'albl', 'tmin', 'tmax', 'mcrit', 'wcrit', 'tau_a', 'tau_f', 'tmid', 'afac']
+            for field in fieldnames:
+                execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+            
+            ### Write Integer fields
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'albedo_scheme', format = 'Integer')
+
+        ## Write other fields
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'ismethod', format = 'Integer')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'desfac', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'desfacElevation', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 's0gcm', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'rdl', format = 'Double')
         execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
