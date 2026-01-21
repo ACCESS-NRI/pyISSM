@@ -14,7 +14,7 @@ md.outputdefinition.definitions = [pyissm.model.classes.massfluxatgate('name', '
                                    pyissm.model.classes.massfluxatgate('name', 'MassFlux3', 'profilename', '../Exp/MassFlux3.exp', 'definitionstring', 'Outputdefinition3'),
                                    pyissm.model.classes.massfluxatgate('name', 'MassFlux4', 'profilename', '../Exp/MassFlux4.exp', 'definitionstring', 'Outputdefinition4'),
                                    pyissm.model.classes.massfluxatgate('name', 'MassFlux5', 'profilename', '../Exp/MassFlux5.exp', 'definitionstring', 'Outputdefinition5'),
-                                   pyissm.model.classes.massfluxatgate('name', 'MassFlux6', 'profilename', '../Exp/MassFlux6.exp', 'definitionstring', 'Outputdefinition6')]]
+                                   pyissm.model.classes.massfluxatgate('name', 'MassFlux6', 'profilename', '../Exp/MassFlux6.exp', 'definitionstring', 'Outputdefinition6')]
 for d in md.outputdefinition.definitions:
     print(d.name, "segments is nan?", np.isnan(d.segments).all() if hasattr(d, "segments") else None)
 
