@@ -6,7 +6,7 @@ md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp'
 md = pyissm.model.param.set_mask(md, 'all', None)
 md = pyissm.model.param.parameterize(md, '../assets/Par/SquareShelfConstrained.py')
 md = pyissm.model.param.set_flow_equation(md, SSA = 'all')
-md.cluster.np = 3
+md.cluster.np = 2
 #outputs
 md.stressbalance.requested_outputs = ['default', 'DeviatoricStressxx', 'DeviatoricStressyy', 'DeviatoricStressxy', 'MassFlux1', 'MassFlux2', 'MassFlux3', 'MassFlux4', 'MassFlux5', 'MassFlux6']
 md.outputdefinition.definitions = [
