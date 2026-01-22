@@ -85,7 +85,7 @@ def run_test(test_id,
     # Execute test
     try:
         local_globals = {}
-        exec(compile(open(test_file, 'rb').read(), test_file, 'exec'), globals(), local_globals)
+        exec(compile(open(test_file, 'rb').read(), test_file, 'exec'), local_globals, local_globals)
 
         field_names = local_globals.get('field_names', [])
         field_values = local_globals.get('field_values', [])
