@@ -1,19 +1,20 @@
 #Test Name: SquareBamgMesh
 import pyissm
+import time
 
 #Simple mesh
-md = bamg(model(), 'domain', '../Exp/Square.exp', 'hmax', 100000.)
+md = pyissm.model.mesh.bamg(pyissm.model.Model(), domain = '../assets/Exp/Square.exp', hmax = 100000.)
 x1 = md.mesh.x
 y1 = md.mesh.y
 
 #hVertices
-md = bamg(model(), 'domain', '../Exp/Square.exp', 'hmax', 300000., 'hVertices', np.array([10000., 100000., 400000., 100000.]).reshape(-1, 1))
+md = pyissm.model.mesh.bamg(pyissm.model.Model(), domain = '../assets/Exp/Square.exp', hmax = 300000., hVertices = np.array([10000., 100000., 400000., 100000.]).reshape(-1, 1))
 x2 = md.mesh.x
 y2 = md.mesh.y
 
 #big mesh
 t0 = time.time()
-md = bamg(model(), 'domain', '../Exp/Square.exp', 'hmax', 3000.)
+md = pyissm.model.mesh.bamg(pyissm.model.Model(), domain = '../assets/Exp/Square.exp', hmax = 3000.)
 nbelements = md.mesh.numberofelements
 elapsedtime = time.time() - t0
 if nbelements > 267895 - 50 and nbelements < 267895 + 50:
