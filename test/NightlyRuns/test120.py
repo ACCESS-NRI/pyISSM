@@ -13,7 +13,7 @@ md.thermal.isenthalpy = 1
 md.thermal.isdynamicbasalspc = 1
 
 md.cluster.np = 3
-md = pyissm.model.solve(md, 'Thermal')
+md = pyissm.model.execute.solve(md, 'Thermal')
 
 #Fields and tolerances to track changes
 field_names = ['Enthalpy', 'Waterfraction', 'Temperature']
