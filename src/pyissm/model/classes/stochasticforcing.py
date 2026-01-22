@@ -136,13 +136,18 @@ class stochasticforcing(class_registry.manage_state):
                except:
                    raise TypeError('pyissm.model.classes.stochasticforcing.check_consistency: an entry in md.stochasticforcing.covariance is not positive definite')
         elif(len(np.shape(self.covariance))==2):
+            self.covariance = self.covariance[:, :, np.newaxis]
             numtcovmat = 1
-            lsCovmats = [self.covariance]
+            lsCovmats = [self.covariance[:, :, 0]]
             # Check that covariance matrix is positive definite (this is done internally by linalg)
-            try:
-                np.linalg.cholesky(self.covariance)
-            except:
-                raise TypeError('pyissm.model.classes.stochasticforcing.check_consistency:md.stochasticforcing.covariance is not positive definite')
+            for k in range(self.covariance.shape[2]):
+                try:
+                    np.linalg.cholesky(self.covariance[:, :, k])
+                except np.linalg.LinAlgError:
+                    raise TypeError(
+                        'pyissm.model.classes.stochasticforcing.check_consistency: '
+                        'md.stochasticforcing.covariance is not positive definite'
+                    )
 
         # Check that all fields agree with the corresponding md class and if any field needs the default params
         checkdefaults = False  # Need to check defaults only if one of the fields does not have its own dimensionality
