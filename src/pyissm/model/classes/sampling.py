@@ -82,7 +82,7 @@ class sampling(class_registry.manage_state):
         s += '{}\n'.format(class_utils.fielddisplay(self, 'tau', 'scaling coefficient of the solution (default: 1.0)'))
         s += '{}\n'.format(class_utils.fielddisplay(self, 'alpha', 'exponent in PDE operator, (default: 2.0, BiLaplacian covariance operator)'))
         s += '\n'
-        s += '      Parameters of Robin boundary conditions nabla () \cdot normvec + beta ():\n'
+        s += '      Parameters of Robin boundary conditions nabla () \\cdot normvec + beta ():\n'
         s += '{}\n'.format(class_utils.fielddisplay(self, 'robin', 'Apply Robin boundary conditions (1 if applied and 0 for homogenous Neumann boundary conditions) (default: 0)'))
         s += '{}\n'.format(class_utils.fielddisplay(self, 'beta', 'Coefficient in Robin boundary conditions (to be defined for robin = 1)'))
         s += '\n'
