@@ -268,6 +268,7 @@ class arma(class_registry.manage_state):
         self.num_basins = 0
         self.num_params = 0
         self.num_breaks = 0
+        self.arma_timestep = 0
         self.polynomialparams = np.nan
         self.ar_order = 0.0
         self.ma_order = 0.0
@@ -518,24 +519,25 @@ class arma(class_registry.manage_state):
         
         # Scale the parameters
         polyParams_scaled   = np.copy(self.polynomialparams)
-        polyParams_scaled_2d = np.zeros((self.num_basins, self.num_breaks + 1 * self.num_params))
+        nper = self.num_breaks + 1
+        polyParams_scaled_2d = np.zeros((self.num_basins, nper * self.num_params))
         if self.num_params > 1:
             # Case 3D
-            if self.num_basins > 1 and self.num_breaks + 1 > 1:
+            if self.num_basins > 1 and nper > 1:
                 for ii in range(self.num_params):
                     polyParams_scaled[:, :, ii] = polyParams_scaled[:, :, ii] * (1 / md.constants.yts) ** (ii + 1)
                 # Fit in 2D array
                 for ii in range(self.num_params):
-                    polyParams_scaled_2d[:, ii * self.num_breaks + 1:(ii + 1) * self.num_breaks + 1] = 1 * polyParams_scaled[:, :, ii]
+                    polyParams_scaled_2d[:, ii * nper : (ii + 1) * nper] = 1 * polyParams_scaled[:, :, ii]
             # Case 2D and higher-order params at increasing row index
             elif self.num_basins == 1:
                 for ii in range(self.num_params):
                     polyParams_scaled[ii, :] = polyParams_scaled[ii, :] * (1 / md.constants.yts) ** (ii + 1)
                 # Fit in row array
                 for ii in range(self.num_params):
-                    polyParams_scaled_2d[0, ii * self.num_breaks + 1:(ii + 1) * self.num_breaks + 1] = 1 * polyParams_scaled[ii, :]
+                    polyParams_scaled_2d[0, ii * nper : (ii + 1) * nper] = 1 * polyParams_scaled[ii, :]
             # Case 2D and higher-order params at increasing column index
-            elif self.num_breaks + 1 == 1:
+            elif nper == 1:
                 for ii in range(self.num_params):
                     polyParams_scaled[:, ii] = polyParams_scaled[:, ii] * (1 / md.constants.yts) ** (ii + 1)
                 # 2D array is already in correct format
@@ -545,7 +547,7 @@ class arma(class_registry.manage_state):
             # 2D array is already in correct format
             polyParams_scaled_2d = np.copy(polyParams_scaled)
 
-        if self.num_breaks + 1 == 1:
+        if nper == 1:
             dbreaks = np.zeros((self.num_basins, 1))
         else:
             dbreaks = np.copy(self.datebreaks)
@@ -585,14 +587,14 @@ class arma(class_registry.manage_state):
         execute.WriteData(fid, prefix, name = 'md.smb.polynomialparams', data = polyParams_scaled_2d,  format = 'DoubleMat')
         execute.WriteData(fid, prefix, obj = self, fieldname = 'arlag_coefs', format = 'DoubleMat', yts = md.constants.yts)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'malag_coefs', format = 'DoubleMat', yts = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.smb.datebreaks', data = dbreaks, format = 'DoubleMat', yts = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'smb.smb.lapserates', data = temp_lapse_rates_2d, format = 'DoubleMat', scale = 1. / md.constants.yts, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, name = 'md.smb.datebreaks', data = dbreaks, format = 'DoubleMat', scale = md.constants.yts)
+        execute.WriteData(fid, prefix, name = 'md.smb.lapserates', data = temp_lapse_rates_2d, format = 'DoubleMat', scale = 1. / md.constants.yts, yts = md.constants.yts)
         execute.WriteData(fid, prefix, name = 'md.smb.elevationbins', data = temp_elevation_bins_2d, format = 'DoubleMat')
         execute.WriteData(fid, prefix, name = 'md.smb.refelevation', data = temp_ref_elevation, format = 'DoubleMat')
 
         ## Write other fields
         execute.WriteData(fid, prefix, obj = self, fieldname = 'arma_timestep', format = 'Double', scale = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, name = 'md.smb.basin_id', data = self.basin_id - 1, format = 'IntMat', mattype = 2)  # 0-indexed
+        execute.WriteData(fid, prefix, name = 'md.smb.basin_id', data = self.basin_id - 1, format = 'IntMat', mattype = 2)  # 0-indexed
         execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
