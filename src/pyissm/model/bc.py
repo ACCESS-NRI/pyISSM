@@ -185,3 +185,53 @@ def set_molho_bc(md):
     md.stressbalance.spcvy_shear = np.full(md.mesh.numberofvertices, np.nan)
 
     return md
+
+def set_ice_sheet_bc(md):
+    """
+    Set ice sheet boundary conditions for the ISSM model.
+
+    Parameters:
+    md : Model
+        The ISSM model object.
+
+    Returns:
+    md : Model
+        The ISSM model object with updated boundary conditions.
+    """
+
+    # Set dirichlet BC on boundary (excluding ice front)
+    set_sb_dirichlet_bc(md)
+
+    # Initialise surface and basal forcings
+    md.smb.initialise(md)
+    md.basalforcings.initialise(md)
+
+    # Initialise ocean forcings and sea level
+    md.dsl.initialise(md)
+
+    ## Define balancethickness BCs
+    if np.all(np.isnan(md.balancethickness.thickening_rate)):
+        md.balancethickness.thickening_rate = np.zeros((md.mesh.numberofvertices))
+        warnings.warn('pyissm.model.bc.set_ice_sheet_bc: no balancethickness.thickening_rate specified -- values set as 0.')
+    md.masstransport.spcthickness = np.nan * np.ones((md.mesh.numberofvertices))
+    md.balancethickness.spcthickness = np.nan * np.ones((md.mesh.numberofvertices))
+    md.damage.spcdamage = np.nan * np.ones((md.mesh.numberofvertices))
+
+    ## Define thermal BCs
+    if (isinstance(md.initialization.temperature, np.ndarray) and 
+        md.initialization.temperature.shape[0] == md.mesh.numberofvertices):
+        
+        md.thermal.spctemperature = np.nan * np.ones((md.mesh.numberofvertices))
+        
+        if hasattr(md.mesh, 'vertexonsurface'):
+            vertex_on_surface = np.nonzero(md.mesh.vertexonsurface)[0]
+            md.thermal.spctemperature[vertex_on_surface] = md.initialization.temperature[vertex_on_surface]  #impose observed temperature on surface
+        
+        if (not isinstance(md.basalforcings.geothermalflux, np.ndarray) or 
+            md.basalforcings.geothermalflux.shape[0] != md.mesh.numberofvertices):
+            md.basalforcings.geothermalflux = 50.0 * pow(10, -3) * np.ones((md.mesh.numberofvertices))  # 50 mW/m^2
+
+    else:
+        warnings.warn('pyissm.model.bc.set_ice_sheet_bc: no observed temperature found -- no thermal boundary conditions created.')
+
+    return md
