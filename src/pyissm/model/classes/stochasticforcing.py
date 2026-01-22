@@ -136,13 +136,18 @@ class stochasticforcing(class_registry.manage_state):
                except:
                    raise TypeError('pyissm.model.classes.stochasticforcing.check_consistency: an entry in md.stochasticforcing.covariance is not positive definite')
         elif(len(np.shape(self.covariance))==2):
+            self.covariance = self.covariance[:, :, np.newaxis]
             numtcovmat = 1
-            lsCovmats = [self.covariance]
+            lsCovmats = [self.covariance[:, :, 0]]
             # Check that covariance matrix is positive definite (this is done internally by linalg)
-            try:
-                np.linalg.cholesky(self.covariance)
-            except:
-                raise TypeError('pyissm.model.classes.stochasticforcing.check_consistency:md.stochasticforcing.covariance is not positive definite')
+            for k in range(self.covariance.shape[2]):
+                try:
+                    np.linalg.cholesky(self.covariance[:, :, k])
+                except np.linalg.LinAlgError:
+                    raise TypeError(
+                        'pyissm.model.classes.stochasticforcing.check_consistency: '
+                        'md.stochasticforcing.covariance is not positive definite'
+                    )
 
         # Check that all fields agree with the corresponding md class and if any field needs the default params
         checkdefaults = False  # Need to check defaults only if one of the fields does not have its own dimensionality
@@ -205,15 +210,14 @@ class stochasticforcing(class_registry.manage_state):
         # Mapping of supported ARMA fields to their md components
         # NOTE: Maintain legacy naming for compatibility with MATLAB version
         arma_fields = {
-            "SMBarma": ("smb", "arma_timestep", "num_basins", "indSMBarma"),
-            "FrontalForcingsRignotarma": ("frontalforcings", "arma_timestep", "num_basins", "indTFarma"),
-            "FrontalForcingsSubglacialDischargearma": ("frontalforcings", "sd_arma_timestep", "num_basins", "indSdarma"),
-            "BasalforcingsDeepwaterMeltingRatearma": ("basalforcings", "arma_timestep", "num_basins", "indBDWarma"),
-            "hydrologyarmapw": ("hydrology", "arma_timestep", "num_basins", "indPwarma"),
+            "SMBarma": ("smb", "arma_timestep", "num_basins"),
+            "FrontalForcingsRignotarma": ("frontalforcings", "arma_timestep", "num_basins"),
+            "FrontalForcingsSubglacialDischargearma": ("frontalforcings", "sd_arma_timestep", "num_basins"),
+            "BasalforcingsDeepwaterMeltingRatearma": ("basalforcings", "arma_timestep", "num_basins"),
+            "hydrologyarmapw": ("hydrology", "arma_timestep", "num_basins"),
         }
 
         # Initialise index variables for compatibility
-        indSMBarma = indTFarma = indSdarma = indBDWarma = indPwarma = -1
         indices = {}
         timesteps = {}
 

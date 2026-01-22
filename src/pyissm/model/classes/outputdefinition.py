@@ -101,8 +101,8 @@ class outputdefinition(class_registry.manage_state):
         data = []
         
         for definition in self.definitions:
-            ## Marshal each definition
-            definition.marshall(prefix, md, fid)
+            ## Marshall each definition
+            definition.marshall_class(fid, prefix, md)
 
             ## Extract the class name and capitalize the first letter
             class_name = definition.__class__.__name__

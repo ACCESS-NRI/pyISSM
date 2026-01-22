@@ -115,8 +115,8 @@ def set_ice_shelf_bc(md,
         Path to the ice front contour file. If None, no ice front is assumed.
 
     Returns:
-    node_on_ice_front : np.ndarray
-        Boolean array indicating nodes on the ice front.
+    md : Model
+        The ISSM model object with updated boundary conditions.
     """
 
     # Identify ice front 
@@ -164,4 +164,24 @@ def set_ice_shelf_bc(md,
     else:
         warnings.warn('pyissm.model.bc.set_ice_shelf_bc: No observed temperature found. No thermal boundary conditions created.')
     
+    return md
+
+def set_molho_bc(md):
+    """
+    Set MOLHO boundary conditions for ISSM model.
+
+    Parameters:
+    md : Model
+        The ISSM model object.
+    Returns:
+    md : Model
+        The ISSM model object with updated boundary conditions.
+    
+    """
+
+    md.stressbalance.spcvx_base = md.stressbalance.spcvx
+    md.stressbalance.spcvy_base = md.stressbalance.spcvy
+    md.stressbalance.spcvx_shear = np.full(md.mesh.numberofvertices, np.nan)
+    md.stressbalance.spcvy_shear = np.full(md.mesh.numberofvertices, np.nan)
+
     return md
