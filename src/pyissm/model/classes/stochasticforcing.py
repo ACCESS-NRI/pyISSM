@@ -210,15 +210,14 @@ class stochasticforcing(class_registry.manage_state):
         # Mapping of supported ARMA fields to their md components
         # NOTE: Maintain legacy naming for compatibility with MATLAB version
         arma_fields = {
-            "SMBarma": ("smb", "arma_timestep", "num_basins", "indSMBarma"),
-            "FrontalForcingsRignotarma": ("frontalforcings", "arma_timestep", "num_basins", "indTFarma"),
-            "FrontalForcingsSubglacialDischargearma": ("frontalforcings", "sd_arma_timestep", "num_basins", "indSdarma"),
-            "BasalforcingsDeepwaterMeltingRatearma": ("basalforcings", "arma_timestep", "num_basins", "indBDWarma"),
-            "hydrologyarmapw": ("hydrology", "arma_timestep", "num_basins", "indPwarma"),
+            "SMBarma": ("smb", "arma_timestep", "num_basins"),
+            "FrontalForcingsRignotarma": ("frontalforcings", "arma_timestep", "num_basins"),
+            "FrontalForcingsSubglacialDischargearma": ("frontalforcings", "sd_arma_timestep", "num_basins"),
+            "BasalforcingsDeepwaterMeltingRatearma": ("basalforcings", "arma_timestep", "num_basins"),
+            "hydrologyarmapw": ("hydrology", "arma_timestep", "num_basins"),
         }
 
         # Initialise index variables for compatibility
-        indSMBarma = indTFarma = indSdarma = indBDWarma = indPwarma = -1
         indices = {}
         timesteps = {}
 
