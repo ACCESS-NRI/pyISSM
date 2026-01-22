@@ -1581,7 +1581,7 @@ class gemb(class_registry.manage_state):
         class_utils.check_field(md, fieldname = 'smb.dulwrfValue', timeseries = True, allow_nan = False, allow_inf = False)
 
         if self.ismappedforcing:
-            class_utils.check_field(md, fieldname = 'smb.mappedforcingpoint', size = (md.mesh.numberofelements, 1), gt = 0, le = (sizeta[0]-1, ), allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'smb.mappedforcingpoint', size = (md.mesh.numberofelements, ), gt = 0, le = (sizeta[0]-1, ), allow_nan = False, allow_inf = False)
             class_utils.check_field(md, fieldname = 'smb.mappedforcingelevation', size = (sizeta[0]-1, ), allow_nan = False, allow_inf = False)
             class_utils.check_field(md, fieldname = 'smb.lapseTaValue', allow_nan = False, allow_inf = False)
             class_utils.check_field(md, fieldname = 'smb.lapsedlwrfValue', allow_nan = False, allow_inf = False)
