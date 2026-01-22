@@ -192,7 +192,7 @@ class default(class_registry.manage_state):
         # Only SSA, MMOLHO, L1L2, HO and FS are supported right now
         if solution == 'StressbalanceSolution':
             if not (md.flowequation.isSSA or md.flowequation.isMOLHO or md.flowequation.isHO or md.flowequation.isFS or md.flowequation.isL1L2):
-                md.checkmessage("'inversion can only be performed for SSA, MOLHO, HO or FS ice flow models")
+                md.check_message("inversion can only be performed for SSA, MOLHO, HO or FS ice flow models")
         
         # Balancethicknesssolution
         if solution == 'BalancethicknessSolution':
@@ -679,7 +679,7 @@ class tao(class_registry.manage_state):
         
         if tools.wrappers.check_wrappers_installed():                
             if not tools.wrappers.IssmConfig('_HAVE_TAO_')[0]:
-                md = md.checkmessage('TAO has not been installed, ISSM needs to be reconfigured and recompiled with TAO')
+                md = md.check_message('TAO has not been installed, ISSM needs to be reconfigured and recompiled with TAO')
         else:
             warnings.warn('pyissm.model.classes.inversion.tao.check_consistency: Python wrappers not installed. Unable to check for TAO installation.\n'
                           'Proceeding without TAO installation check.')
