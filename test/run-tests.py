@@ -3,6 +3,7 @@ import glob
 import numpy as np
 from sys import float_info
 import os
+import re
 import pyissm
 
 # Define ISSM archive directory & local test directory
@@ -29,6 +30,16 @@ def id_to_name(test_id):
     # Otherwise, just return test number
     else:
         return f'Test_{test_id}'
+
+def _extract_test_id_from_path(test_file: str) -> int:
+    """
+    Extract test ID from a filename like test123.py (any path).
+    """
+    base = os.path.basename(test_file)
+    m = re.fullmatch(r"test(\d+)\.py", base)
+    if not m:
+        raise ValueError(f"Expected filename like 'test123.py', got: {base}")
+    return int(m.group(1))
 
 def run_test(test_id,
              benchmark = 'nightly',
@@ -150,6 +161,19 @@ def run_test(test_id,
 
     return errors
 
+def run_test_file(test_file: str):
+    """
+    Run exactly one test file (path), expecting it to be named test<ID>.py.
+    """
+    test_id = _extract_test_id_from_path(test_file)
+
+    # Make test_path point to the directory that contains the file,
+    # so id_to_name() and run_test() find it correctly.
+    global test_path
+    test_path = os.path.dirname(os.path.abspath(test_file)) or "."
+
+    return run_test(test_id)
+
 def run_tests(test_range: str = None, exclude: str = None):
     """Run multiple tests and return a list of all errors."""
     
@@ -192,8 +216,23 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run ISSM tests.")
     parser.add_argument("--range", type=str, help="Range of tests to run, e.g., 100:201")
     parser.add_argument("--exclude", type=str, help="Comma-separated list of tests to exclude, e.g., 107,201")
+    parser.add_argument("--testfile", type=str,
+                        help="Run exactly one test file, e.g., ./test123.py or path/to/test123.py")
     args = parser.parse_args()
 
-    # Execute tests
-    num_errors = run_tests(test_range=args.range, exclude=args.exclude)
-    exit(num_errors)  # non-zero exit code if any errors for CI
+    if args.testfile:
+        errors = run_test_file(args.testfile)
+        num_errors = len(errors)
+        if num_errors:
+            print("\n=== SUMMARY OF FAILED TEST ===")
+            for e in errors:
+                print(f"Test ID: {e.get('test_id', '?')}, Test Name: {e.get('test_name')}, "
+                      f"Field: {e.get('field')}, "
+                      f"Error Diff: {e.get('error_diff')}, Tolerance: {e.get('tolerance')}", flush=True)
+            print(f"\nTOTAL FAILED FIELDS: {num_errors}")
+        else:
+            print("\nTEST PASSED!")
+    else:
+        num_errors = run_tests(test_range=args.range, exclude=args.exclude)  # non-zero exit code if any errors for CI
+
+    exit(num_errors)
