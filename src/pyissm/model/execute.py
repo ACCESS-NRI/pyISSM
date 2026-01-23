@@ -1898,7 +1898,8 @@ def _convert_units(field_name, field, md):
         "SmbMassBalance", "SmbPrecipitation", "SmbRain", "SmbRunoff", "SmbRunoffSubstep",
         "SmbEvaporation", "SmbRefreeze", "SmbEC", "SmbAccumulation", "SmbMelt",
         "SmbMAdd", "SmbWAdd", "CalvingCalvingrate", "Calvingratex", "Calvingratey",
-        "CalvingMeltingrate", "BasalforcingsGroundediceMeltingRate",
+        "CalvingMeltingrate", "BasalforcingsGroundediceMeltingRate", "BasalforcingsFloatingiceMeltingRate",
+        "BasalforcingsSpatialDeepwaterMeltingRate", "BasalforcingsSpatialUpperwaterMeltingRate"
     }
 
     # Cumulative / Total Fields (Gt yr^{-1})

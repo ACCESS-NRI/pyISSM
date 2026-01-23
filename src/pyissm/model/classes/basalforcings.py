@@ -402,10 +402,10 @@ class linear(class_registry.manage_state):
 
     # Initialise with default parameters
     def __init__(self, other=None):
-        self.deepwater_melting_rate = 0.
-        self.deepwater_elevation = 0.
+        self.deepwater_melting_rate = 50.
+        self.deepwater_elevation = -800.
         self.upperwater_melting_rate = 0.
-        self.upperwater_elevation = 0.
+        self.upperwater_elevation = -400.
         self.groundedice_melting_rate = np.nan
         self.perturbation_melting_rate = np.nan
         self.geothermalflux = np.nan
