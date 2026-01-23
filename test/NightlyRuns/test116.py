@@ -1,5 +1,6 @@
 #Test Name: SquareShelfConstrainedBalThic2d
 import pyissm
+import numpy as np
 
 md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 150000)
 md = pyissm.model.param.set_mask(md, 'all', None)
