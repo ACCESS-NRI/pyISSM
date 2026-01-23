@@ -1,6 +1,7 @@
 #Test Name: SquareShelfConstrainedEnthalpyStea
-import pyissm
 import numpy as np
+import pyissm
+
 
 md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 180000)
 md = pyissm.model.param.set_mask(md, 'all', None)

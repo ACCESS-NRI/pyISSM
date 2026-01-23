@@ -1,11 +1,13 @@
 #Test Name: SquareShelfConstrainedTransHOEnth
+import numpy as np
 import pyissm
+
 
 md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 200000)
 md = pyissm.model.param.set_mask(md, 'all', None)
 md = pyissm.model.param.parameterize(md, '../assets/Par/SquareShelfConstrained.py')
 md = md.extrude(3, 1.)
-md = pyissm.model.param.set_flow_equation(md, 'HO', 'all')
+md = pyissm.model.param.set_flow_equation(md, HO = 'all')
 md.initialization.waterfraction = np.zeros((md.mesh.numberofvertices))
 md.initialization.watercolumn = np.zeros((md.mesh.numberofvertices))
 md.thermal.isenthalpy = 1
