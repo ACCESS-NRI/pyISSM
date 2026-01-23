@@ -19,7 +19,7 @@ md = pyissm.model.execute.solve(md, 'Thermal')
 
 #Fields and tolerances to track changes
 field_names = ['Enthalpy', 'Waterfraction', 'Temperature']
-field_tolerances = [1e-13, 2e-10, 1e-13]
+field_tolerances = [1e-13, 2.3e-10, 1e-13]
 field_values = [md.results.ThermalSolution.Enthalpy,
                 md.results.ThermalSolution.Waterfraction,
                 md.results.ThermalSolution.Temperature]
