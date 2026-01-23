@@ -2,9 +2,9 @@
 import pyissm
 
 md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 50000)
-md = pyissm.model.param.set_mask(md, 'all', '')
+md = pyissm.model.param.set_mask(md, 'all', None)
 md = pyissm.model.param.parameterize(md, '../assets/Par/SquareShelfConstrained.py')
-md = pyissm.model.param.set_flowe_quation(md, MOLHO = 'all')
+md = pyissm.model.param.set_flowe_equation(md, MOLHO = 'all')
 md.cluster.np = 2
 #outputs
 #FIXME compute the stress components for MOLHO

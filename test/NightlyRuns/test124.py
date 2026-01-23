@@ -14,7 +14,7 @@ md.timestepping.final_time = 0.00005
 
 #Go solve
 md.cluster.np = 3
-md = pyissm.model.solve(md, 'Transient')
+md = pyissm.model.execute.solve(md, 'Transient')
 
 #Fields and tolerances to track changes
 field_names = ['Vx1', 'Vy1', 'Vel1', 'Pressure1', 'Bed1', 'Surface1', 'Thickness1',

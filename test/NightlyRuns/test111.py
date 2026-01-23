@@ -2,13 +2,13 @@
 import pyissm
 
 md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 200000)
-md = pyissm.model.param.set_mask(md, 'all', '')
-md = parameterize(md, '../Par/SquareShelfConstrained.py')
-md.extrude(3, 1.)
-md = setflowequation(md, 'HO', 'all')
-md.cluster = generic('name', gethostname(), 'np', 3)
+md = pyissm.model.param.set_mask(md, 'all', None)
+md = pyissm.model.param.parameterize(md, '../assets/Par/SquareShelfConstrained.py')
+md = md.extrude(3, 1.)
+md = pyissm.model.param.set_flow_equation(md, HO = 'all')
+md.cluster.np = 3
 md.transient.requested_outputs = ['IceVolume']
-md = solve(md, 'Transient')
+md = pyissm.model.execute.solve(md, 'Transient')
 
 #Fields and tolerances to track changes
 field_names = ['Vx1', 'Vy1', 'Vz1', 'Vel1', 'Pressure1', 'Bed1', 'Surface2', 'Thickness1', 'Temperature1', 'BasalforcingsGroundediceMeltingRate1', 'Volume1',
