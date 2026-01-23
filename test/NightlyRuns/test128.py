@@ -8,7 +8,7 @@ md = pyissm.model.param.set_flow_equation(md, MOLHO = 'all')
 md.cluster.np = 3
 md.transient.requested_outputs = ['IceVolume','VxSurface','VySurface','VxShear','VyShear','VxBase','VyBase']
 
-md = pyissm.model.param.set_MOLHO_BC(md)
+md = pyissm.model.bc.set_molho_bc(md)
 md = pyissm.model.execute.solve(md, 'Transient')
 
 #Fields and tolerances to track changes

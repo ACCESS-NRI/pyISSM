@@ -14,7 +14,7 @@ md.settings.checkpoint_frequency = 4
 # time steps and resolution
 md.timestepping.final_time = 19
 md.settings.output_frequency = 2
-md = pyissm.model.param.set_MOLHO_BC(md)
+md = pyissm.model.bc.set_molho_bc(md)
 
 md = pyissm.model.execute.solve(md, 'Transient')
 md2 = copy.deepcopy(md)
