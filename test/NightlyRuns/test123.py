@@ -12,15 +12,18 @@ fake_surface = np.vstack((np.append(np.array(md.geometry.surface) + 100, 1.1),
                           np.append(np.array(md.geometry.surface) + 200, 2.1),
                           np.append(np.array(md.geometry.surface) + 300, 2.5))).T
 
+md.misfit = pyissm.model.classes.misfit()
+md.misfit.name = 'SurfaceMisfit'
+md.misfit.definitionstring = 'Outputdefinition1'
+md.misfit.model_string = 'Surface'
+md.misfit.observation = fake_surface
+md.misfit.observation_string = 'SurfaceObservation'
+md.misfit.timeinterpolation = 'nearestneighbor'
+md.misfit.weights = np.ones((md.mesh.numberofvertices, 1))
+md.misfit.weights_string = 'WeightsSurfaceObservation'
+
 md.transient.requested_outputs = ['default', 'SurfaceMisfit']
-md.outputdefinition.definitions = [pyissm.model.classes.misfit(name='SurfaceMisfit',
-                                          definitionstring='Outputdefinition1',
-                                          model_string='Surface',
-                                          observation=fake_surface,
-                                          observation_string='SurfaceObservation',
-                                          timeinterpolation='nearestneighbor',
-                                          weights=np.ones((md.mesh.numberofvertices, 1)),
-                                          weights_string='WeightsSurfaceObservation')]
+md.outputdefinition.definitions = [md.misfit]
 
 md = pyissm.model.execute.solve(md, 'Transient')
 

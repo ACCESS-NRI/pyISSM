@@ -50,3 +50,4 @@ from pyissm.model.classes.timestepping import default, adaptive
 from pyissm.model.classes.toolkits import toolkits
 from pyissm.model.classes.transient import transient
 from pyissm.model.classes.verbose import verbose
+from pyissm.model.classes.misfit import misfit

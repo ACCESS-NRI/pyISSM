@@ -1,6 +1,8 @@
 #Test Name: SquareBamgMesh
+import numpy as np
 import pyissm
 import time
+
 
 #Simple mesh
 md = pyissm.model.mesh.bamg(pyissm.model.Model(), domain = '../assets/Exp/Square.exp', hmax = 100000.)
