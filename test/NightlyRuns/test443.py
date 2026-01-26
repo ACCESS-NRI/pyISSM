@@ -3,6 +3,7 @@ import pyissm
 import numpy as np
 import copy
 
+# Parameterise model
 md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 150000.)
 md = pyissm.model.param.set_mask(md, '../assets/Exp/SquareShelf.exp', None)
 md = pyissm.model.param.parameterize(md, '../assets/Par/SquareSheetShelf.py')
