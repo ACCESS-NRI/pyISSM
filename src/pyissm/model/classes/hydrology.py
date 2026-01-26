@@ -542,7 +542,7 @@ class dc(class_registry.manage_state):
             class_utils.check_field(md, fieldname = 'hydrology.epl_thick_comp', scalar = True, values = [0, 1])
             class_utils.check_field(md, fieldname = 'hydrology.eplflip_lock', scalar = True, ge = 0.)
             if self.epl_colapse_thickness > self.epl_initial_thickness:
-                md.checkmessage('Colapsing thickness for EPL larger than initial thickness')
+                md.check_message('Colapsing thickness for EPL larger than initial thickness')
             class_utils.check_field(md, fieldname = 'hydrology.epl_conductivity', scalar = True, gt = 0.)
 
         return md

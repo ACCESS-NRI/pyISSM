@@ -150,7 +150,7 @@ class thermal(class_registry.manage_state):
             class_utils.check_field(md, fieldname = 'thermal.isdynamicbasalspc', scalar = True, values = [0, 1])
             if(md.thermal.isenthalpy):
                 if np.isnan(md.stressbalance.reltol):
-                    md.checkmessage("for a steadystate computation, thermal.reltol (relative convergence criterion) must be defined!")
+                    md.check_message("for a steadystate computation, thermal.reltol (relative convergence criterion) must be defined!")
                 class_utils.check_field(md, fieldname = 'thermal.reltol', gt = 0. , message = "reltol must be larger than zero")
 
         return md

@@ -255,18 +255,18 @@ class stressbalance(class_registry.manage_state):
             print('\n !!! Warning: no spc applied, model might not be well posed if no basal friction is applied, check for solution crash\n')
         # CHECK THAT EACH LINES CONTAIN ONLY NAN VALUES OR NO NAN VALUES
         if np.any(np.logical_and(np.sum(np.isnan(md.stressbalance.referential), axis=1) != 0, np.sum(np.isnan(md.stressbalance.referential), axis=1) != 6)):
-            md.checkmessage('Each line of stressbalance.referential should contain either only NaN values or no NaN values')
+            md.check_message('Each line of stressbalance.referential should contain either only NaN values or no NaN values')
         # CHECK THAT THE TWO VECTORS PROVIDED ARE ORTHOGONAL
         if np.any(np.sum(np.isnan(md.stressbalance.referential), axis=1) == 0):
             pos = [i for i, item in enumerate(np.sum(np.isnan(md.stressbalance.referential), axis=1)) if item == 0]
             for item in md.stressbalance.referential[pos, :]:
                 if np.abs(np.inner(item[0:2], item[3:5])) > sys.float_info.epsilon:
-                    md.checkmessage('Vectors in stressbalance.referential (columns 1 to 3 and 4 to 6) must be orthogonal')
+                    md.check_message('Vectors in stressbalance.referential (columns 1 to 3 and 4 to 6) must be orthogonal')
         # CHECK THAT NO rotation specified for FS Grounded ice at base
         if (md.mesh.domain_type() == '3D') and md.flowequation.isFS:
             pos = np.nonzero(np.logical_and(md.mask.ocean_levelset, md.mesh.vertexonbase))
             if np.any(np.logical_not(np.isnan(md.stressbalance.referential[pos, :]))):
-                md.checkmessage('no referential should be specified for basal vertices of grounded ice')
+                md.check_message('no referential should be specified for basal vertices of grounded ice')
         if md.flowequation.isMOLHO:
             class_utils.check_field(md, fieldname = 'stressbalance.spcvx_base', timeseries = True, allow_inf = False)
             class_utils.check_field(md, fieldname = 'stressbalance.spcvy_base', timeseries = True, allow_inf = False)

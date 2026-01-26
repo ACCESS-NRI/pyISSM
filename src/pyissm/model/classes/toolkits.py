@@ -100,10 +100,10 @@ class toolkits(class_registry.manage_state):
         analyses = list(vars(self).keys())
         for analysis in analyses:
             if analysis not in supported_analyses:
-                md.checkmessage('md.toolkits.{} not supported yet'.format(analysis))
+                md.check_message('md.toolkits.{} not supported yet'.format(analysis))
 
             if not getattr(self, analysis):
-                md.checkmessage('md.toolkits.{} is empty'.format(analysis))
+                md.check_message('md.toolkits.{} is empty'.format(analysis))
 
         return md
     
