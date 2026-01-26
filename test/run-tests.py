@@ -152,14 +152,20 @@ def run_test(test_id,
 
 def run_tests(test_range: str = None, exclude: str = None):
     """Run multiple tests and return a list of all errors."""
+
+    # Get all available test files
+    available_tests = [int(f.split('test')[1].split('.py')[0]) for f in glob.glob(os.path.join(test_path, 'test*.py'))]
     
     # Parse range of tests
     if test_range:
         start, end = map(int, test_range.split(':'))
-        tests = list(range(start, end + 1))
+        requested_tests = list(range(start, end + 1))
+
+        # Only keep tests that are available
+        tests = [t for t in requested_tests if t in available_tests]
     else:
-        # If no range is specified, auto-detect all test files
-        tests = [int(f.split('test')[1].split('.py')[0]) for f in glob.glob(os.path.join(test_path, 'test*.py'))]
+        # If no range is specified, run all available tests
+        tests = available_tests
 
     # Parse exclusions
     exclude_list = [int(x) for x in exclude.split(',')] if exclude else []

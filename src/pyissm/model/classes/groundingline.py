@@ -88,12 +88,12 @@ class groundingline(class_registry.manage_state):
 
         if(not self.migration == 'None' and md.transient.isgroundingline and solution == 'TransientSolution'):
             if np.any(np.isnan(md.geometry.bed)):
-                md.checkmessage("requesting grounding line migration, but bathymetry is absent!")
+                md.check_message("requesting grounding line migration, but bathymetry is absent!")
             pos = np.nonzero(md.mask.ocean_levelset > 0.)[0]
             if any(np.abs(md.geometry.base[pos] - md.geometry.bed[pos]) > pow(10, -10)):
-                md.checkmessage("base not equal to bed on grounded ice!")
+                md.check_message("base not equal to bed on grounded ice!")
             if any(md.geometry.bed - md.geometry.base > pow(10, -9)):
-                md.checkmessage("bed superior to base on floating ice!")
+                md.check_message("bed superior to base on floating ice!")
                 
         return md
     

@@ -155,10 +155,10 @@ class transient(class_registry.manage_state):
         class_utils.check_field(md, fieldname = 'transient.amr_frequency', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
 
         if solution != 'TransientSolution' and md.transient.iscoupling:
-            md.checkmessage("Coupling with ocean can only be done in transient simulations!")
+            md.check_message("Coupling with ocean can only be done in transient simulations!")
         
         if md.transient.isdamageevolution and not isinstance(md.materials, materials.damageice):
-            md.checkmessage("requesting damage evolution but md.materials is not of class damageice")
+            md.check_message("requesting damage evolution but md.materials is not of class damageice")
         
         return md
 

@@ -73,18 +73,18 @@ class rifts(class_registry.manage_state):
 
         if numrifts:
             if not md.mesh.domain_type() == '2Dhorizontal':
-                md.checkmessage("models with rifts are only supported in 2d for now!")
+                md.check_message("models with rifts are only supported in 2d for now!")
             if not isinstance(self.riftstruct, list):
-                md.checkmessage("rifts.riftstruct should be a list!")
+                md.check_message("rifts.riftstruct should be a list!")
             if np.any(md.mesh.segmentmarkers >= 2):
                 #We have segments with rift markers, but no rift structure!
-                md.checkmessage("model should be processed for rifts (run meshprocessrifts)!")
+                md.check_message("model should be processed for rifts (run meshprocessrifts)!")
             for i, rift in enumerate(self.riftstruct):
                 class_utils.check_field(md, fieldname = "rifts.riftstruct[{}]['fill']".format(i), values = ['Water', 'Air', 'Ice', 'Melange', 0, 1, 2, 3])
         else:
             valid_structure = np.any(~np.isnan(self.riftstruct)) if isinstance(self.riftstruct, np.ndarray) else True
             if self.riftstruct and valid_structure:
-                md.checkmessage("riftstruct should be NaN since numrifts is 0!")
+                md.check_message("riftstruct should be NaN since numrifts is 0!")
 
         return md
 

@@ -191,7 +191,7 @@ class flowequation(class_registry.manage_state):
             raise RuntimeError(f'pyissm.model.classes.flowequation.check_consistency: unknown domain_type: {md.mesh.domain_type()}.')
     
         if not (self.isSIA or self.isSSA or self.isL1L2 or self.isMOLHO or self.isHO or self.isFS):
-            md.checkmessage("no element types set for this model")
+            md.check_message("no element types set for this model")
         if 'StressbalanceSIAAnalysis' in analyses:
             if any(self.element_equation == 1):
                 if np.any(np.logical_and(self.vertex_equation, md.mask.ocean_levelset)):

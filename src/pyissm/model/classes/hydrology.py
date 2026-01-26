@@ -542,7 +542,7 @@ class dc(class_registry.manage_state):
             class_utils.check_field(md, fieldname = 'hydrology.epl_thick_comp', scalar = True, values = [0, 1])
             class_utils.check_field(md, fieldname = 'hydrology.eplflip_lock', scalar = True, ge = 0.)
             if self.epl_colapse_thickness > self.epl_initial_thickness:
-                md.checkmessage('Colapsing thickness for EPL larger than initial thickness')
+                md.check_message('Colapsing thickness for EPL larger than initial thickness')
             class_utils.check_field(md, fieldname = 'hydrology.epl_conductivity', scalar = True, gt = 0.)
 
         return md
@@ -1188,7 +1188,7 @@ class shakti(class_registry.manage_state):
         self.spchead = np.nan
         self.neumannflux = np.nan
         self.relaxation = 1
-        self.storage = np.nan
+        self.storage = 0
         self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
@@ -1323,9 +1323,9 @@ class shakti(class_registry.manage_state):
         execute.WriteData(fid, prefix, obj = self, fieldname = 'bump_height', format = 'DoubleMat', mattype = 2)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'reynolds', format = 'DoubleMat', mattype = 2)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'englacial_input', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'moulin_input', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'spchead', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'neumannflux', format = 'DoubleMat', mattype = 2, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'moulin_input', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'spchead', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'neumannflux', format = 'DoubleMat', mattype = 2, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
         
         ## Write Double fields
         fieldnames = ['gap_height_min', 'gap_height_max', 'relaxation']
@@ -1333,13 +1333,15 @@ class shakti(class_registry.manage_state):
             execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
 
         ## Write conditional fields
-        # NOTE: We first have to check if we have a NumPy array here
-        if np.size(self.storage) == 1 or (((np.shape(self.storage)[0] == md.mesh.numberofvertices) or (np.shape(self.storage)[0] == md.mesh.numberofvertices + 1)) or ((len(np.shape(self.storage)) == 2) and (np.shape(self.storage)[0] == md.mesh.numberofelements) and (np.shape(self.storage)[1] > 1))):
-            mattype = 1
-            tsl = md.mesh.numberofvertices + 1
-        else:
-            mattype = 2
-            tsl = md.mesh.numberofelements + 1
+        mattype, tsl = (1, md.mesh.numberofvertices + 1) if (
+            (not np.isscalar(self.storage))
+            and (
+                np.shape(self.storage)[0] in (md.mesh.numberofvertices, md.mesh.numberofvertices + 1)
+                or (len(np.shape(self.storage)) == 2
+                    and np.shape(self.storage)[0] == md.mesh.numberofelements
+                    and np.shape(self.storage)[1] > 1)
+            )
+        ) else (2, md.mesh.numberofelements + 1)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'storage', format = 'DoubleMat', mattype = mattype, timeserieslength = tsl, yts = md.constants.yts)
 
         ## Write other fields

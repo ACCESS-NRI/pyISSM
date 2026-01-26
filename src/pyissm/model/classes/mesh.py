@@ -150,7 +150,7 @@ class mesh2d(class_registry.manage_state):
             return md
         
         if solution == 'ThermalSolution':
-            md.checkmessage('thermal not supported for 2d mesh')
+            md.check_message('thermal not supported for 2d mesh')
             
         class_utils.check_field(md, fieldname = 'mesh.x', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         class_utils.check_field(md, fieldname = 'mesh.y', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
@@ -158,7 +158,7 @@ class mesh2d(class_registry.manage_state):
         class_utils.check_field(md, fieldname = 'mesh.elements', size = (md.mesh.numberofelements, 3))
         nodes = np.arange(1, md.mesh.numberofvertices + 1)
         if np.any(~np.isin(nodes, md.mesh.elements)):
-            md.checkmessage('orphan nodes have been found. Check the mesh outline')
+            md.check_message('orphan nodes have been found. Check the mesh outline')
         class_utils.check_field(md, fieldname = 'mesh.numberofelements', gt = 0)
         class_utils.check_field(md, fieldname = 'mesh.numberofvertices', gt = 0)
         class_utils.check_field(md, fieldname = 'mesh.average_vertex_connectivity', ge = 9, message =  "'mesh.average_vertex_connectivity' should be at least 9 in 2d.")
@@ -368,7 +368,7 @@ class mesh2dvertical(class_registry.manage_state):
             return md
         
         if solution == 'ThermalSolution':
-            md.checkmessage('thermal not supported for 2d mesh')
+            md.check_message('thermal not supported for 2d mesh')
             
         class_utils.check_field(md, fieldname = 'mesh.x', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         class_utils.check_field(md, fieldname = 'mesh.y', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
@@ -376,7 +376,7 @@ class mesh2dvertical(class_registry.manage_state):
         class_utils.check_field(md, fieldname = 'mesh.elements', size = (md.mesh.numberofelements, 3))
         nodes = np.arange(1, md.mesh.numberofvertices + 1)
         if np.any(~np.isin(nodes, md.mesh.elements)):
-            md.checkmessage('orphan nodes have been found. Check the mesh outline')
+            md.check_message('orphan nodes have been found. Check the mesh outline')
         class_utils.check_field(md, fieldname = 'mesh.numberofelements', gt = 0)
         class_utils.check_field(md, fieldname = 'mesh.numberofvertices', gt = 0)
         class_utils.check_field(md, fieldname = 'mesh.vertexonbase', size = (md.mesh.numberofvertices, ), values = [0, 1])
@@ -627,7 +627,7 @@ class mesh3dprisms(class_registry.manage_state):
         class_utils.check_field(md, fieldname = 'mesh.elements', size = (md.mesh.numberofelements, 6))
         nodes = np.arange(1, md.mesh.numberofvertices + 1)
         if np.any(~np.isin(nodes, md.mesh.elements)):
-            md.checkmessage('orphan nodes have been found. Check the mesh outline')
+            md.check_message('orphan nodes have been found. Check the mesh outline')
         class_utils.check_field(md, fieldname = 'mesh.numberoflayers', ge = 0)
         class_utils.check_field(md, fieldname = 'mesh.numberofelements', gt = 0)
         class_utils.check_field(md, fieldname = 'mesh.numberofvertices', gt = 0)
@@ -841,7 +841,7 @@ class mesh3dsurface(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         if solution == 'ThermalSolution':
-            md.checkmessage('thermal not supported for 3d surface mesh')
+            md.check_message('thermal not supported for 3d surface mesh')
             
         class_utils.check_field(md, fieldname = 'mesh.x', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         class_utils.check_field(md, fieldname = 'mesh.y', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
@@ -853,7 +853,7 @@ class mesh3dsurface(class_registry.manage_state):
         class_utils.check_field(md, fieldname = 'mesh.elements', size = (md.mesh.numberofelements, 3))
         nodes = np.arange(1, md.mesh.numberofvertices + 1)
         if np.any(~np.isin(nodes, md.mesh.elements)):
-            md.checkmessage('orphan nodes have been found. Check the mesh outline')
+            md.check_message('orphan nodes have been found. Check the mesh outline')
         class_utils.check_field(md, fieldname = 'mesh.numberofelements', gt = 0)
         class_utils.check_field(md, fieldname = 'mesh.numberofvertices', gt = 0)
         class_utils.check_field(md, fieldname = 'mesh.average_vertex_connectivity', ge = 9, message =  "'mesh.average_vertex_connectivity' should be at least 9 in 2d.")

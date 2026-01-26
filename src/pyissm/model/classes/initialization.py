@@ -201,7 +201,7 @@ class initialization(class_registry.manage_state):
             vy_sum = np.sum(np.abs(md.initialization.vy[md.mesh.elements - 1]), axis=1)
             ice_mask = np.min(md.mask.ice_levelset[md.mesh.elements - 1], axis=1) < 0
             if np.any((vx_sum == 0) & (vy_sum == 0) & ice_mask):
-                md.checkmessage('at least one triangle has all its vertices with a zero velocity')
+                md.check_message('at least one triangle has all its vertices with a zero velocity')
         
         ## ThermalAnalysis
         if 'ThermalAnalysis' in analyses and not solution == 'TransientSolution' and not md.transient.isthermal:

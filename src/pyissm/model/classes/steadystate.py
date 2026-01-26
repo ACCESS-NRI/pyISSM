@@ -77,10 +77,10 @@ class steadystate(class_registry.manage_state):
             return md
 
         if not md.timestepping.time_step == 0:
-            md.checkmessage("for a steadystate computation, timestepping.time_step must be zero.")
+            md.check_message("for a steadystate computation, timestepping.time_step must be zero.")
 
         if np.isnan(md.stressbalance.reltol):
-            md.checkmessage("for a steadystate computation, stressbalance.reltol (relative convergence criterion) must be defined!")
+            md.check_message("for a steadystate computation, stressbalance.reltol (relative convergence criterion) must be defined!")
 
         class_utils.check_field(md, fieldname = 'steadystate.requested_outputs', string_list = True)
 
