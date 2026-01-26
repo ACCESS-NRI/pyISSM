@@ -235,3 +235,86 @@ def set_ice_sheet_bc(md):
         warnings.warn('pyissm.model.bc.set_ice_sheet_bc: no observed temperature found -- no thermal boundary conditions created.')
 
     return md
+
+def set_marine_ice_sheet_bc(md,
+                            ice_front_exp = None):
+    """
+    Set marine ice sheet boundary conditions for the ISSM model.
+
+    Parameters:
+    md : Model
+        The ISSM model object.
+    ice_front_exp : str, optional
+        Path to the ice front contour file. If None, the ice front is guessed from ocean levelset.
+
+    Returns:
+    md : Model
+        The ISSM model object with updated boundary conditions.
+    """
+
+    # Identify ice front 
+    if not ice_front_exp is None:
+        ## If an ice front file is provided, identify nodes on the ice front
+        node_on_ice_front = get_ice_front_nodes(md, ice_front_exp)
+        vertex_on_ice_front = md.mesh.vertexonboundary & np.asarray(node_on_ice_front, dtype=bool).ravel()
+    else: 
+        # Guess where the ice front is
+        vertex_on_floating_ice = np.zeros((md.mesh.numberofvertices))
+        pos = np.nonzero(np.sum(md.mask.ocean_levelset[md.mesh.elements - 1] < 0.0, axis=1) > 0.0)[0]
+        vertex_on_floating_ice[md.mesh.elements[pos].astype(int) - 1] = 1.
+        vertex_on_ice_front = np.logical_and(np.reshape(md.mesh.vertexonboundary, (-1, )), vertex_on_floating_ice > 0.0)
+
+    # Set neumann BC on ice front
+    pos = np.nonzero(np.logical_and(md.mesh.vertexonboundary, np.logical_not(vertex_on_ice_front)))[0]
+    if not np.size(pos):
+        warnings.warn('pyissm.model.bc.set_marine_ice_sheet_bc: Ice front all around the glacier, no dirichlet found. Dirichlet must be added manually.')
+
+    md.stressbalance.spcvx = np.nan * np.ones(md.mesh.numberofvertices)
+    md.stressbalance.spcvy = np.nan * np.ones(md.mesh.numberofvertices)
+    md.stressbalance.spcvz = np.nan * np.ones(md.mesh.numberofvertices)
+    md.stressbalance.referential = np.nan * np.ones((md.mesh.numberofvertices, 6))
+    md.stressbalance.loadingforce = 0 * np.ones((md.mesh.numberofvertices, 3))
+
+    # Position of ice front
+    pos = np.nonzero(vertex_on_ice_front)[0]
+    md.mask.ice_levelset[pos] = 0
+    
+    # Set Dirichlet BCs
+    set_sb_dirichlet_bc(md)
+
+    # Define other boundary conditions
+    ## Initialize smb and basalforcings
+    md.smb.initialise(md)
+    md.basalforcings.initialise(md)
+
+    ## Define hydrology BCs
+    md.hydrology.spcwatercolumn = np.zeros((md.mesh.numberofvertices, 2))
+    pos = np.nonzero(md.mesh.vertexonboundary)[0]
+    md.hydrology.spcwatercolumn[pos, 0] = 1
+
+    ## Define balancethickness BCs
+    if np.all(np.isnan(md.balancethickness.thickening_rate)):
+        md.balancethickness.thickening_rate = np.zeros((md.mesh.numberofvertices))
+        warnings.warn('pyissm.model.bc.set_ice_shelf_bc: no balancethickness.thickening_rate specified -- values set as 0.')
+    md.masstransport.spcthickness = np.nan * np.ones((md.mesh.numberofvertices))
+    md.balancethickness.spcthickness = np.nan * np.ones((md.mesh.numberofvertices))
+    md.damage.spcdamage = np.nan * np.ones((md.mesh.numberofvertices))
+
+    ## Define thermal BCs
+    if (isinstance(md.initialization.temperature, np.ndarray) and 
+        md.initialization.temperature.shape[0] == md.mesh.numberofvertices):
+        
+        md.thermal.spctemperature = np.nan * np.ones((md.mesh.numberofvertices))
+        
+        if hasattr(md.mesh, 'vertexonsurface'):
+            vertex_on_surface = np.nonzero(md.mesh.vertexonsurface)[0]
+            md.thermal.spctemperature[vertex_on_surface] = md.initialization.temperature[vertex_on_surface]  #impose observed temperature on surface
+        
+        if (not isinstance(md.basalforcings.geothermalflux, np.ndarray) or 
+            md.basalforcings.geothermalflux.shape[0] != md.mesh.numberofvertices):
+            md.basalforcings.geothermalflux = np.zeros((md.mesh.numberofvertices))
+
+    else:
+        warnings.warn('pyissm.model.bc.set_ice_shelf_bc: No observed temperature found. No thermal boundary conditions created.')
+    
+    return md
