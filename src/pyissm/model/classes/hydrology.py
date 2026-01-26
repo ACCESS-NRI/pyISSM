@@ -1333,7 +1333,7 @@ class shakti(class_registry.manage_state):
             execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
 
         ## Write conditional fields
-        mattype, tsl = (1, md.mesh.numberofvertices) if (
+        mattype, tsl = (1, md.mesh.numberofvertices + 1) if (
             (not np.isscalar(self.storage))
             and (
                 np.shape(self.storage)[0] in (md.mesh.numberofvertices, md.mesh.numberofvertices + 1)
@@ -1341,7 +1341,7 @@ class shakti(class_registry.manage_state):
                     and np.shape(self.storage)[0] == md.mesh.numberofelements
                     and np.shape(self.storage)[1] > 1)
             )
-        ) else (2, md.mesh.numberofelements)
+        ) else (2, md.mesh.numberofelements + 1)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'storage', format = 'DoubleMat', mattype = mattype, timeserieslength = tsl, yts = md.constants.yts)
 
         ## Write other fields
