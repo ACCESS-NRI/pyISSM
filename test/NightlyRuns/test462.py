@@ -2,7 +2,7 @@
 import pyissm
 
 # Parameterise model
-md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 180000.)
+md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 150000.)
 md = pyissm.model.param.set_mask(md, '../assets/Exp/SquareShelf.exp', None)
 md = pyissm.model.param.parameterize(md, '../assets/Par/SquareSheetShelf.py')
 md = pyissm.model.param.set_flow_equation(md, SSA = 'all')
