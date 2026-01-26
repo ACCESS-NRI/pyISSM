@@ -128,11 +128,11 @@ def set_flow_equation(md,
     # If fill is specified, fill unassigned elements with the specified flow equation
     if fill is not None:
         if fill.lower() == 'sia':
-            sia_flag |= ~(ssa_flag | ho_flag)
+            sia_flag[~(ssa_flag | ho_flag)] = True
         elif fill.lower() == 'ssa':
-            ssa_flag |= ~(sia_flag | ho_flag | fs_flag)
+            ssa_flag[~(sia_flag | ho_flag | fs_flag)] = True
         elif fill.lower() == 'ho':
-            ho_flag |= ~(sia_flag | ssa_flag | fs_flag)
+            ho_flag[~(sia_flag | ssa_flag | fs_flag)] = True
     
     # Check that all elements only have one (compatible) flow equation assigned
     flag = [sia_flag, ssa_flag, ho_flag, l1l2_flag, molho_flag, fs_flag]
