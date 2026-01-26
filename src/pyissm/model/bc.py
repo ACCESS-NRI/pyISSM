@@ -313,6 +313,7 @@ def set_marine_ice_sheet_bc(md,
         if (not isinstance(md.basalforcings.geothermalflux, np.ndarray) or 
             md.basalforcings.geothermalflux.shape[0] != md.mesh.numberofvertices):
             md.basalforcings.geothermalflux = np.zeros((md.mesh.numberofvertices))
+            md.basalforcings.geothermalflux[md.mask.ocean_levelset > 0.0] = 50e-3  # 50 mW/m²
 
     else:
         warnings.warn('pyissm.model.bc.set_ice_shelf_bc: No observed temperature found. No thermal boundary conditions created.')
