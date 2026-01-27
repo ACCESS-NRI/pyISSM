@@ -229,24 +229,25 @@ class armapw(class_registry.manage_state):
 
         # Scale the parameters #
         polyParams_Scaled   = np.copy(self.polynomialparams)
-        polyParams_Scaled_2d = np.zeros((self.num_basins, self.num_breaks + 1 * self.num_params))
+        nper = self.num_breaks + 1
+        polyParams_Scaled_2d = np.zeros((self.num_basins, nper * self.num_params))
         if(self.num_params>1):
             # Case 3D #
-            if(self.num_basins > 1 and self.num_breaks + 1 > 1):
+            if(self.num_basins > 1 and nper > 1):
                 for ii in range(self.num_params):
                     polyParams_Scaled[:, :, ii] = polyParams_Scaled[:, :, ii] * (1. / md.constants.yts) ** (ii)
                 # Fit in 2D array #
                 for ii in range(self.num_params):
-                    polyParams_Scaled_2d[:, ii * self.num_breaks + 1:(ii + 1) * self.num_breaks + 1] = 1 * polyParams_Scaled[:, :, ii]
+                    polyParams_Scaled_2d[:, ii * nper :(ii + 1) * nper] = 1 * polyParams_Scaled[:, :, ii]
             # Case 2D and higher-order params at increasing row index #
             elif(self.num_basins==1):
                 for ii in range(self.num_params):
                     polyParams_Scaled[ii, :] = polyParams_Scaled[ii, :] * (1. / md.constants.yts) ** (ii)
                 # Fit in row array #
                 for ii in range(self.num_params):
-                    polyParams_Scaled_2d[0, ii * self.num_breaks + 1 : (ii + 1) * self.num_breaks + 1] = 1 * polyParams_Scaled[ii, :]
+                    polyParams_Scaled_2d[0, ii * nper : (ii + 1) * nper] = 1 * polyParams_Scaled[ii, :]
             # Case 2D and higher-order params at incrasing column index #
-            elif(self.num_breaks + 1 == 1):
+            elif(nper == 1):
                 for ii in range(self.num_params):
                     polyParams_Scaled[:, ii] = polyParams_Scaled[:, ii] * (1. / md.constants.yts) ** (ii)
                 # 2D array is already in correct format #
@@ -255,7 +256,7 @@ class armapw(class_registry.manage_state):
             # 2D array is already in correct format and no need for scaling#
             polyParams_Scaled_2d = np.copy(polyParams_Scaled)
 
-        if(self.num_breaks + 1 == 1):
+        if(nper == 1):
             dbreaks = np.zeros((self.num_basins, 1))
         else:
             dbreaks = np.copy(self.datebreaks)

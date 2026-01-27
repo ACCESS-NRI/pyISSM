@@ -187,7 +187,7 @@ class stochasticforcing(class_registry.manage_state):
                         f"stochasticforcing field '{field}' only supported for md.friction.coupling in [0, 1, 2]"
                     )
 
-                if isinstance(md.friction, friction) and np.any(md.friction.q == 0):
+                if isinstance(md.friction, friction.default) and np.any(md.friction.q == 0):
                     raise TypeError(f"stochasticforcing field '{field}' requires non-zero q exponent")
 
                 continue
