@@ -30,6 +30,7 @@ from pyissm.model.classes.masstransport import masstransport
 from pyissm.model.classes.materials import ice, hydro, litho, damageice, enhancedice, estar
 from pyissm.model.classes.mesh import mesh2d, mesh2dvertical, mesh3dprisms, mesh3dsurface
 from pyissm.model.classes.miscellaneous import miscellaneous
+from pyissm.model.classes.misfit import misfit
 from pyissm.model.classes.offlinesolidearthsolution import offlinesolidearthsolution
 from pyissm.model.classes.outputdefinition import outputdefinition
 from pyissm.model.classes.private import private
@@ -50,4 +51,3 @@ from pyissm.model.classes.timestepping import default, adaptive
 from pyissm.model.classes.toolkits import toolkits
 from pyissm.model.classes.transient import transient
 from pyissm.model.classes.verbose import verbose
-from pyissm.model.classes.misfit import misfit
