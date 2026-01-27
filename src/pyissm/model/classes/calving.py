@@ -745,8 +745,8 @@ class vonmises(class_registry.manage_state):
 
     # Initialise with default parameters
     def __init__(self, other = None):
-        self.stress_threshold_groundedice = 0
-        self.stress_threshold_floatingice = 0
+        self.stress_threshold_groundedice = 1e6
+        self.stress_threshold_floatingice = 150e3
         self.min_thickness = 0.
 
         # Inherit matching fields from provided class

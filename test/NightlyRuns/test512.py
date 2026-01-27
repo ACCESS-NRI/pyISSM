@@ -1,0 +1,39 @@
+#Test Name: PigCMDragHO
+import numpy as np
+import pyissm
+
+
+md = pyissm.pyttriangle(pyissm.model.Model(), '../assets/Exp/Pig.exp', 20000.)
+md = pyissm.setmask(md, '../assets/Exp/PigShelves.exp', '../assets/Exp/PigIslands.exp')
+md = pyissm.parameterize(md, '../assets/Par/Pig.py')
+md = md.extrude(3, 1.)
+md = pyissm.setflowequation(md, HO = 'all')
+# control parameters
+
+md.inversion.iscontrol = 1
+md.inversion.control_parameters = ['FrictionCoefficient']
+md.inversion.min_parameters = 1. * np.ones((md.mesh.numberofvertices, len(md.inversion.control_parameters)))
+md.inversion.max_parameters = 200. * np.ones((md.mesh.numberofvertices, len(md.inversion.control_parameters)))
+md.inversion.nsteps = 2
+md.inversion.cost_functions = [103, 501]
+md.inversion.cost_functions_coefficients = np.ones((md.mesh.numberofvertices, 2))
+md.inversion.cost_functions_coefficients[:, 1] = 2. * 10**-7
+md.inversion.gradient_scaling = 3. * np.ones((md.inversion.nsteps, len(md.inversion.control_parameters)))
+md.inversion.maxiter_per_step = 2. * np.ones((md.inversion.nsteps))
+md.inversion.step_threshold = 2.99 * np.ones((md.inversion.nsteps))
+md.inversion.vx_obs = md.initialization.vx
+md.inversion.vy_obs = md.initialization.vy
+
+md.cluster.np = 3
+md = pyissm.model.execute.solve(md, 'Stressbalance')
+
+# Fields and tolerances to track changes
+field_names = ['Gradient', 'Misfits', 'FrictionCoefficient', 'Pressure', 'Vel', 'Vx', 'Vy']
+field_tolerances = [1e-11, 1e-11, 1e-11, 1e-11, 1e-11, 1e-11, 1e-11, 1e-11, 1e-11, 1e-11]
+field_values = [md.results.StressbalanceSolution.Gradient1,
+                md.results.StressbalanceSolution.J,
+                md.results.StressbalanceSolution.FrictionCoefficient,
+                md.results.StressbalanceSolution.Pressure,
+                md.results.StressbalanceSolution.Vel,
+                md.results.StressbalanceSolution.Vx,
+                md.results.StressbalanceSolution.Vy]
