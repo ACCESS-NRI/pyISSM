@@ -556,7 +556,7 @@ class dc(class_registry.manage_state):
         self.epl_colapse_thickness = self.sediment_transmitivity / self.epl_conductivity
         if np.all(np.isnan(self.basal_moulin_input)):
             self.basal_moulin_input = np.zeros((md.mesh.numberofvertices))
-            print("      no hydrology.basal_moulin_input specified: values set as zero")
+            warnings.warn("pyissm.model.classes.hydrology.dc: no hydrology.basal_moulin_input specified: values set as zero")
 
         return self
 
