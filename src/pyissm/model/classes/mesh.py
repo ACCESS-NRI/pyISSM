@@ -399,6 +399,14 @@ class mesh2dvertical(class_registry.manage_state):
     def element_type(self):
         return 'Tria'
     
+    # Return vertices of a given value
+    def vertex_flags(self, value):
+        flags = np.zeros((self.numberofvertices, ))
+        pos = self.segments[np.where(self.segmentmarkers == value), 0:2] - 1
+        flags[pos] = 1
+        
+        return flags
+    
     # Marshall method for saving the mesh.mesh2dvertical parameters
     def marshall_class(self, fid, prefix, md = None):
         """
