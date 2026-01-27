@@ -252,8 +252,8 @@ def set_flow_equation(md,
             ### Rule out elements that don't touch the 2 boundaries
             pos = np.where(ssaho_flag)[0]
             elist = (
-                np.any(ho_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
-                - np.any(ssa_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
+                np.any(ssa_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
+                - np.any(ho_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
             )
             
             pos1 = pos[elist == 1]
