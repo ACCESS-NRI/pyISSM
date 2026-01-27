@@ -844,10 +844,10 @@ class pism(class_registry.manage_state):
         if solution == 'TransientSolution' and not md.transient.isstressbalance and not md.transient.isthermal:
             return md
 
-        class_utils.check_field(md, fieldname = 'friction.pseudoplasticity_exponent', scalar = True, gt = 0, all_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.threshold_speed', scalar = True, gt = 0, all_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.delta', scalar = True, gt = 0, lt = 1, all_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.void_ratio', scalar = True, gt = 0, lt = 1, all_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.pseudoplasticity_exponent', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.threshold_speed', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.delta', scalar = True, gt = 0, lt = 1, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.void_ratio', scalar = True, gt = 0, lt = 1, allow_nan = False, allow_inf = False)
         class_utils.check_field(md, fieldname = 'friction.till_friction_angle', gt = 0, lt = 360., size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         class_utils.check_field(md, fieldname = 'friction.sediment_compressibility_coefficient', gt = 0., lt = 1., size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
 
@@ -972,7 +972,7 @@ class regcoulomb(class_registry.manage_state):
             return md
         
         class_utils.check_field(md, fieldname = 'friction.C', timeseries = True, ge = 0., allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.u0', scalar = True, gt = 0, all_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.u0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
         class_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, 1), gt = 0., allow_nan = False, allow_inf = False)
 
         return md
@@ -1098,7 +1098,7 @@ class regcoulomb2(class_registry.manage_state):
             return md
         
         class_utils.check_field(md, fieldname = 'friction.C', timeseries = True, ge = 0., allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.K', gt = 0, all_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.K', gt = 0, allow_nan = False, allow_inf = False)
         class_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, 1), gt = 0., allow_nan = False, allow_inf = False)
 
         return md
