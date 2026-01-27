@@ -128,11 +128,11 @@ def set_flow_equation(md,
     # If fill is specified, fill unassigned elements with the specified flow equation
     if fill is not None:
         if fill.lower() == 'sia':
-            sia_flag = ~ssa_flag & ~ho_flag
+            sia_flag[~(ssa_flag | ho_flag)] = True
         elif fill.lower() == 'ssa':
-            ssa_flag = ~sia_flag & ~ho_flag & ~fs_flag
+            ssa_flag[~(sia_flag | ho_flag | fs_flag)] = True
         elif fill.lower() == 'ho':
-            ho_flag = ~sia_flag & ~ssa_flag & ~fs_flag
+            ho_flag[~(sia_flag | ssa_flag | fs_flag)] = True
     
     # Check that all elements only have one (compatible) flow equation assigned
     flag = [sia_flag, ssa_flag, ho_flag, l1l2_flag, molho_flag, fs_flag]
@@ -252,8 +252,8 @@ def set_flow_equation(md,
             ### Rule out elements that don't touch the 2 boundaries
             pos = np.where(ssaho_flag)[0]
             elist = (
-                np.sum(ho_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
-                - np.sum(ssa_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
+                np.any(ssa_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
+                - np.any(ho_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
             )
             
             pos1 = pos[elist == 1]
@@ -291,8 +291,8 @@ def set_flow_equation(md,
             ### Rule out elements that don't touch the 2 boundaries
             pos = np.where(hofs_flag)[0]
             elist = (
-                np.sum(fs_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
-                - np.sum(ho_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
+                np.any(fs_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
+                - np.any(ho_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
             )
             
             pos1 = pos[elist == 1]
@@ -329,8 +329,8 @@ def set_flow_equation(md,
             ### Rule out elements that don't touch the 2 boundaries
             pos = ssafs_flag.nonzero()[0]
             elist = (
-                np.sum(ssa_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
-                - np.sum(fs_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
+                np.any(ssa_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
+                - np.any(fs_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
             )
 
             ### Update flags based on elist values

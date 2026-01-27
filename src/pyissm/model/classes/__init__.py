@@ -35,6 +35,7 @@ from pyissm.model.classes.outputdefinition import outputdefinition
 from pyissm.model.classes.private import private
 from pyissm.model.classes.qmu import default, statistics
 from pyissm.model.classes.radaroverlay import radaroverlay
+from pyissm.model.classes.regionaloutput import regionaloutput
 from pyissm.model.classes.results import default, resultsdakota, solutionstep, solution
 from pyissm.model.classes.rifts import rifts
 from pyissm.model.classes.rotational import rotational
