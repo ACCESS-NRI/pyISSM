@@ -74,3 +74,62 @@ def slope(md, field = None):
         raise NotImplementedError("pyissm.tools.geometry.slope: 3D meshes not supported yet.")
     
     return sx, sy, s
+
+def nowicki_profile(x):
+    """
+    Create a theoretical ice profile at the transition zone
+    based on Sophie Nowicki's thesis.
+
+    Parameters
+    ----------
+    x : array_like
+        Along-flow coordinate
+
+    Returns
+    -------
+    b : ndarray
+        Ice base
+    h : ndarray
+        Ice thickness
+    sea : float
+        Sea level
+    """
+    x = np.asarray(x)
+    n = len(x)
+    mid = n // 2
+
+    # Physical constants
+    delta = 0.1 # (rho_w / rho_i) - 1
+    hg = 1.0 # ice thickness at grounding line
+    lam = 0.1 # deviatoric stress / water pressure
+    beta = 5.0 # friction coefficient
+    ms = 0.005 # surface accumulation rate
+    q = 0.801 # ice mass flux
+
+    sea = hg / (1 + delta)
+
+    # Allocate arrays
+    b = np.zeros(n)
+    h = np.zeros(n)
+
+    # Upstream of grounding line
+    for i in range(mid):
+        coeffs = [1,
+                  4 * lam * beta,
+                  0,
+                  0,
+                  6 * lam * ms * x[i]**2 + 12 * lam * q * x[i] - hg**4 - 4 * lam * beta * hg**3]
+
+        roots = np.roots(coeffs)
+        s = roots[(roots.imag == 0) & (roots.real > 0)].real[0]
+
+        h[i] = s
+        b[i] = 0.0
+
+    # Downstream of grounding line
+    xd = x[mid:]
+    h[mid:] = (xd / (4 * (delta + 1) * q) + hg**-2) ** -0.5
+    b[mid:] = sea - h[mid:] / (1 + delta)
+
+    return b, h, sea
+

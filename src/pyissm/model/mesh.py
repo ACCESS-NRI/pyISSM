@@ -2359,15 +2359,10 @@ def bamg_flowband(md,
     md = bamg(md, domain = [domain], Markers = m, vertical = 1, **kwargs)
 
     # Deal with vertices on bed
-    ## NOTE: vertexonbase and vertexonsurface used to be set using vertexflags() defined in mesh2dvertical.py
-    ## Here, we just do this inline because it's only used here and it's simpler this way.
     md.mesh.vertexonbase = np.zeros((md.mesh.numberofvertices, ))
-    base_segments = md.mesh.segments[np.where(md.mesh.segmentmarkers == 1), 0:2] - 1
-    md.mesh.vertexonbase[base_segments] = 1
-
+    md.mesh.vertexonbase[np.where(md.mesh.vertex_flags(1))] = 1
     md.mesh.vertexonsurface = np.zeros((md.mesh.numberofvertices, ))
-    surface_segments = md.mesh.segments[np.where(md.mesh.segmentmarkers == 3), 0:2] - 1
-    md.mesh.vertexonsurface[surface_segments] = 1
+    md.mesh.vertexonsurface[np.where(md.mesh.vertex_flags(3))] = 1
 
     return md
 

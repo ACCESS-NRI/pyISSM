@@ -506,7 +506,7 @@ class dc(class_registry.manage_state):
             return md
 
         class_utils.check_field(md, fieldname = 'hydrology.water_compressibility', scalar = True, gt = 0.)
-        class_utils.check_field(md, fieldname = 'hydrology.isefficientlayer', scalar = True, value = [0, 1])
+        class_utils.check_field(md, fieldname = 'hydrology.isefficientlayer', scalar = True, values = [0, 1])
         class_utils.check_field(md, fieldname = 'hydrology.penalty_factor', scalar = True, gt = 0)
         class_utils.check_field(md, fieldname = 'hydrology.penalty_lock', scalar = True, ge = 0.)
         class_utils.check_field(md, fieldname = 'hydrology.rel_tol', scalar = True, gt = 0.)
@@ -547,6 +547,18 @@ class dc(class_registry.manage_state):
             class_utils.check_field(md, fieldname = 'hydrology.epl_conductivity', scalar = True, gt = 0.)
 
         return md
+    
+    # Initialise empty fields of correct dimensions
+    def initialise(self, md):
+        """
+        Initialise empty fields in hydrology.dc.
+        """
+        self.epl_colapse_thickness = self.sediment_transmitivity / self.epl_conductivity
+        if np.all(np.isnan(self.basal_moulin_input)):
+            self.basal_moulin_input = np.zeros((md.mesh.numberofvertices))
+            warnings.warn("pyissm.model.classes.hydrology.dc: no hydrology.basal_moulin_input specified: values set as zero")
+
+        return self
 
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,
