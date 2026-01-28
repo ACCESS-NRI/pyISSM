@@ -9,7 +9,7 @@ md = pyissm.model.param.set_flow_equation(md, SSA = 'all')
 md.mesh.scale_factor = 0.9 * np.ones((md.mesh.numberofvertices))
 md.transient.requested_outputs = ['default', 'IceVolume', 'IceVolumeScaled', 'GroundedArea', 'GroundedAreaScaled', 'FloatingArea', 'FloatingAreaScaled', 'TotalSmb', 'TotalSmbScaled', 'TotalFloatingBmb', 'TotalFloatingBmbScaled']
 md.cluster.np = 3
-md = pyissm.solve(md, 'Transient')
+md = pyissm.model.execute.solve(md, 'Transient')
 # Fields and tolerances to track changes
 field_names = ['Vx1', 'Vy1', 'Vel1', 'Pressure1',
                'Bed1', 'Surface1', 'Thickness1',
