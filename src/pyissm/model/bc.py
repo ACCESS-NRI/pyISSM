@@ -92,9 +92,10 @@ def set_sb_dirichlet_bc(md):
         if md.inversion.vy_obs.ndim == 1:
             md.inversion.vy_obs = md.inversion.vy_obs.reshape(-1, )
 
-        warnings.warn('pyissm.model.bc.set_sb_dirichlet_bc: Using observed velocities for stressbalance model boundary conditions.')
+        warnings.warn('pyissm.model.bc.set_sb_dirichlet_bc: Using observed velocities for vx and vy stressbalance model boundary conditions. vz boundary conditions are set to 0.')
         md.stressbalance.spcvx[boundary_node_indices] = md.inversion.vx_obs[boundary_node_indices]
         md.stressbalance.spcvy[boundary_node_indices] = md.inversion.vy_obs[boundary_node_indices]
+        md.stressbalance.spcvz[boundary_node_indices] = 0
     
     ## If observed velocities are not available, set Dirichlet values to zero
     else:

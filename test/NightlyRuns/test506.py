@@ -2,6 +2,7 @@
 import numpy as np
 import pyissm
 
+# Parameterise model
 md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Pig.exp', 30000.)
 md = pyissm.model.param.set_mask(md, '../assets/Exp/PigShelves.exp', '../assets/Exp/PigIslands.exp')
 md = pyissm.model.param.parameterize(md, '../assets/Par/Pig.py')
@@ -10,7 +11,9 @@ md = md.extrude(2, 1.)
 md = pyissm.model.param.set_flow_equation(md, HO = 'all')
 md.transient.requested_outputs = ['default', 'IceVolume', 'IceVolumeScaled', 'GroundedArea', 'GroundedAreaScaled', 'FloatingArea', 'FloatingAreaScaled', 'TotalSmb', 'TotalSmbScaled', 'TotalFloatingBmb', 'TotalFloatingBmbScaled']
 md.cluster.np = 3
-md = pyissm.solve(md, 'Transient')
+
+# Execute model
+md = pyissm.model.execute.solve(md, 'Transient')
 
 # Fields and tolerances to track changes
 field_names = [

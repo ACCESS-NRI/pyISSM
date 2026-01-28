@@ -2,18 +2,19 @@
 import numpy as np
 import pyissm
 
+# Parameterise model
 md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Pig.exp', 11000.)
-md = pyissm.model.param.setmask(md, '../assets/Exp/PigShelves.exp', '../assets/Exp/PigIslands.exp')
+md = pyissm.model.param.set_mask(md, '../assets/Exp/PigShelves.exp', '../assets/Exp/PigIslands.exp')
 md = pyissm.model.param.parameterize(md, '../assets/Par/Pig.py')
 
-#impose hydrostatic equilibrium (required by Stokes)
+# impose hydrostatic equilibrium (required by Stokes)
 md.geometry.base = -md.materials.rho_ice / md.materials.rho_water * md.geometry.thickness
 md.geometry.surface = md.geometry.base + md.geometry.thickness
 md = md.extrude(3, 1.)
 md = pyissm.model.param.set_flow_equation(md, FS = 'all')
 md = md.extract(md.mask.ocean_levelset < 0.)
 
-#control parameters
+#c ontrol parameters
 md.inversion.iscontrol = 1
 md.inversion.control_parameters = ['MaterialsRheologyBbar']
 md.inversion.min_parameters = 10.**6 * np.ones((md.mesh.numberofvertices, len(md.inversion.control_parameters)))
@@ -26,11 +27,12 @@ md.inversion.maxiter_per_step = 2. * np.ones((md.inversion.nsteps))
 md.inversion.step_threshold = 0.99 * np.ones((md.inversion.nsteps))
 md.inversion.vx_obs = md.initialization.vx
 md.inversion.vy_obs = md.initialization.vy
-
 md.cluster.np = 1
+
+# Execute model
 md = pyissm.model.execute.solve(md, 'Stressbalance')
 
-#Fields and tolerances to track changes
+# Fields and tolerances to track changes
 field_names = ['Gradient', 'Misfits', 'MaterialsRheologyB', 'Pressure', 'Vel', 'Vx', 'Vy']
 field_tolerances = [5e-11, 5e-11, 5e-11, 1e-09, 1e-11, 5e-11, 1e-11]
 field_values = [md.results.StressbalanceSolution.Gradient1,

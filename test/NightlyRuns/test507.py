@@ -1,7 +1,7 @@
 #Test Name: PigTranFS
 import pyissm
 
-
+# Parameterise model
 md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Pig.exp', 30000.)
 md = pyissm.model.param.set_mask(md, '../assets/Exp/PigShelves.exp', '../assets/Exp/PigIslands.exp')
 md = pyissm.model.param.parameterize(md, '../assets/Par/Pig.py')
@@ -9,6 +9,8 @@ md = md.extrude(2, 1.)
 md = pyissm.model.param.set_flow_equation(md, FS = 'all')
 md.groundingline.melt_interpolation = 'FullMeltOnPartiallyFloating'
 md.cluster.np = 3
+
+# Execute model
 md = pyissm.model.execute.solve(md, 'Transient')
 
 # Fields and tolerances to track changes

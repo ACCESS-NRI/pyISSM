@@ -2,14 +2,14 @@
 import numpy as np
 import pyissm
 
-
-md = pyissm.pyttriangle(pyissm.model.Model(), '../assets/Exp/Pig.exp', 20000.)
-md = pyissm.setmask(md, '../assets/Exp/PigShelves.exp', '../assets/Exp/PigIslands.exp')
-md = pyissm.parameterize(md, '../assets/Par/Pig.py')
+# Parameterise model
+md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Pig.exp', 20000.)
+md = pyissm.model.param.set_mask(md, '../assets/Exp/PigShelves.exp', '../assets/Exp/PigIslands.exp')
+md = pyissm.model.param.parameterize(md, '../assets/Par/Pig.py')
 md = md.extrude(3, 1.)
-md = pyissm.setflowequation(md, HO = 'all')
-# control parameters
+md = pyissm.model.param.set_flow_equation(md, HO = 'all')
 
+# control parameters
 md.inversion.iscontrol = 1
 md.inversion.control_parameters = ['FrictionCoefficient']
 md.inversion.min_parameters = 1. * np.ones((md.mesh.numberofvertices, len(md.inversion.control_parameters)))
@@ -23,8 +23,9 @@ md.inversion.maxiter_per_step = 2. * np.ones((md.inversion.nsteps))
 md.inversion.step_threshold = 2.99 * np.ones((md.inversion.nsteps))
 md.inversion.vx_obs = md.initialization.vx
 md.inversion.vy_obs = md.initialization.vy
-
 md.cluster.np = 3
+
+# EXecute model
 md = pyissm.model.execute.solve(md, 'Stressbalance')
 
 # Fields and tolerances to track changes
