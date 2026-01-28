@@ -1,4 +1,5 @@
 #Test Name: PigTranHO
+import numpy as np
 import pyissm
 
 md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Pig.exp', 30000.)
