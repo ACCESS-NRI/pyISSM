@@ -445,6 +445,7 @@ class m1qn3(class_registry.manage_state):
 
         if solution == 'BalancethicknessSolution':
             class_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'inversion.surface_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         elif solution == 'BalancethicknessSoftSolution':
             class_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         else:
@@ -489,8 +490,15 @@ class m1qn3(class_registry.manage_state):
             execute.WriteData(fid, prefix, obj = self, fieldname = 'vx_obs', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts)
             execute.WriteData(fid, prefix, obj = self, fieldname = 'vy_obs', format = 'DoubleMat', mattype = 1, scale =  1. / md.constants.yts)
             execute.WriteData(fid, prefix, obj = self, fieldname = 'vz_obs', format = 'DoubleMat', mattype = 1, scale =  1. / md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'thickness_obs', format = 'DoubleMat', mattype = 1)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'surface_obs', format = 'DoubleMat', mattype = 1)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'vel_obs', format = 'DoubleMat', mattype = 1, scale =  1. / md.constants.yts)
+
+            ## Write conditional mattype
+            if np.size(self.thickness_obs) == md.mesh.numberofelements:
+                mattype = 2
+            else:
+                mattype = 1
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'thickness_obs', format = 'DoubleMat', mattype = mattype)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'surface_obs', format = 'DoubleMat', mattype = mattype)
 
             ## Write other fields
             execute.WriteData(fid, prefix, obj = self, fieldname = 'incomplete_adjoint', format = 'Boolean')
