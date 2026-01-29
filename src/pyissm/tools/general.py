@@ -542,191 +542,271 @@ def ll_to_xy(lat,
 
     return x, y
 
-def compare_binfiles(file1, file2, verbose=0, outfile=None):
+def compare_bin_files(
+    file1,
+    file2,
+    out_file = None,
+    *,
+    compare_data = False,
+    compare_shape = False,
+    compare_format = False,
+    compare_mattype = False,
+):
     """
-    Compare two ISSM-style binary files field by field.
+    Compare two ISSM binary files.
+
+    This function compares two binary files in ISSM format and reports differences
+    based on the selected comparison mode. Exactly one of the comparison modes must
+    be enabled.
 
     Parameters
     ----------
     file1 : str
-        Path to the first binary file.
+        Path to the first binary file to compare.
     file2 : str
-        Path to the second binary file.
-    verbose : int, optional
-        Verbosity level (2 = show differing array indices).
-    outfile : str or None, optional
-        Path to write the output table. If None, prints to terminal.
+        Path to the second binary file to compare.
+    out_file : str, optional
+        Path to write the comparison report. If not provided, output is printed
+        to the console. Default is None.
+    compare_data : bool, optional
+        If True, compare the actual data values in the files. Default is False.
+    compare_shape : bool, optional
+        If True, compare the shape of array fields. Default is False.
+    compare_format : bool, optional
+        If True, compare the data type format of fields. Default is False.
+    compare_mattype : bool, optional
+        If True, compare the matrix type codes of fields. Default is False.
 
     Returns
     -------
-    rows : list of tuples
-        List of (field, status, file1_summary, file2_summary)
+    None
+        Output is either written to a file (if `out_file` is specified) or
+        printed to the console.
+
+    Raises
+    ------
+    ValueError
+        If exactly one of the compare_* options is not True.
+    TypeError
+        If an unsupported type code is encountered in the binary file.
+    struct.error
+        If there is an error reading the binary file format.
+
+    Notes
+    -----
+    Exactly ONE of the `compare_data`, `compare_shape`, `compare_format`, or
+    `compare_mattype` options must be True. An error will be raised if zero or
+    more than one option is enabled.
+
+    The comparison report displays fields that are missing in either file,
+    along with a status indicating whether values are the same or different
+    based on the selected comparison mode.
     """
 
-    # ------------------------------
-    # Internal helpers
-    # ------------------------------
-    def _code_to_format(code):
-        mapping = {
-            1:'Boolean', 2:'Integer', 3:'Double', 4:'String', 5:'BooleanMat',
-            6:'IntMat', 7:'DoubleMat', 8:'MatArray', 9:'StringArray'
-        }
-        return mapping.get(code, None)
+    # Parse arguments -- enforce one option
+    modes = {
+        "data": compare_data,
+        "shape": compare_shape,
+        "format": compare_format,
+        "mattype": compare_mattype,
+    }
+    active = [k for k, v in modes.items() if v]
 
+    if len(active) != 1:
+        raise ValueError(
+            "Exactly one comparison mode must be True: "
+            "compare_data, compare_shape, compare_format, compare_mattype"
+        )
+
+    mode = active[0]
+
+    # Define internal helper functions
+    ## Map binary file codes to formats
+    def _code_to_format(code):
+        return {
+            1: 'Boolean',
+            2: 'Integer',
+            3: 'Double',
+            4: 'String',
+            5: 'BooleanMat',
+            6: 'IntMat',
+            7: 'DoubleMat',
+            8: 'MatArray',
+            9: 'StringArray',
+        }.get(code)
+
+    ## Unpack binary file to a dictionary
     def _read_bin_to_dict(infile):
-        data_dict = {}
-        with open(infile, 'rb') as f:
+        data = {}
+
+        with open(infile, "rb") as f:
             while True:
                 try:
-                    recordnamesize = struct.unpack('i', f.read(4))[0]
+                    namesize = struct.unpack("i", f.read(4))[0]
                 except struct.error:
-                    break  # EOF
+                    break
 
-                recordname = struct.unpack(f'{recordnamesize}s', f.read(recordnamesize))[0].decode('ASCII')
-                reclen = struct.unpack('q', f.read(8))[0]
-                code = struct.unpack('i', f.read(4))[0]
+                name = struct.unpack(
+                    f"{namesize}s", f.read(namesize)
+                )[0].decode("ASCII")
+
+                reclen = struct.unpack("q", f.read(8))[0]
+                code = struct.unpack("i", f.read(4))[0]
                 fmt = _code_to_format(code)
 
-                if fmt in ['Boolean', 'Integer']:
-                    val = struct.unpack('i', f.read(reclen - 4))[0]
-                elif fmt == 'Double':
-                    val = struct.unpack('d', f.read(reclen - 4))[0]
-                elif fmt == 'String':
-                    strlen = struct.unpack('i', f.read(4))[0]
-                    val = struct.unpack(f'{strlen}s', f.read(strlen))[0].decode('ASCII')
-                elif fmt in ['BooleanMat', 'IntMat', 'DoubleMat']:
-                    _ = struct.unpack('i', f.read(4))[0]  # mattype
-                    s0 = struct.unpack('i', f.read(4))[0]
-                    s1 = struct.unpack('i', f.read(4))[0]
-                    mat = np.zeros((s0, s1))
-                    for i in range(s0):
-                        for j in range(s1):
-                            mat[i, j] = struct.unpack('d', f.read(8))[0]
+                mattype = None
+                shape = None
+
+                if fmt in ("Boolean", "Integer"):
+                    val = struct.unpack("i", f.read(reclen - 4))[0]
+
+                elif fmt == "Double":
+                    val = struct.unpack("d", f.read(reclen - 4))[0]
+
+                elif fmt == "String":
+                    strlen = struct.unpack("i", f.read(4))[0]
+                    val = struct.unpack(
+                        f"{strlen}s", f.read(strlen)
+                    )[0].decode("ASCII")
+
+                elif fmt in ("BooleanMat", "IntMat", "DoubleMat"):
+                    mattype = struct.unpack("i", f.read(4))[0]
+                    n0 = struct.unpack("i", f.read(4))[0]
+                    n1 = struct.unpack("i", f.read(4))[0]
+                    shape = (n0, n1)
+
+                    mat = np.zeros(shape)
+                    for i in range(n0):
+                        for j in range(n1):
+                            mat[i, j] = struct.unpack("d", f.read(8))[0]
                     val = mat
-                elif fmt in ['MatArray', 'StringArray']:
+
+                elif fmt in ("MatArray", "StringArray"):
                     f.seek(reclen - 4, 1)
                     val = None
+
                 else:
-                    raise TypeError(f'Unsupported type code {code} ({recordname})')
+                    raise TypeError(f"Unsupported type code {code} ({name})")
 
-                data_dict[recordname] = val
+                data[name] = dict(
+                    value=val,
+                    code=code,
+                    format=fmt,
+                    mattype=mattype,
+                    shape=shape,
+                )
 
-        return data_dict
+        return data
 
-    def _summarize_value(val):
+    ## Summarise a given field
+    def _summarize(record):
+        if record is None:
+            return "<missing>"
+
+        if mode == "format":
+            return f"{record['format']} (code {record['code']})"
+
+        if mode == "mattype":
+            return str(record["mattype"])
+
+        if mode == "shape":
+            return str(record["shape"])
+
+        # mode == "data"
+        val = record["value"]
         if val is None:
             return "N/A"
 
         if isinstance(val, np.ndarray):
             if val.size == 0:
-                return f'empty array shape={val.shape}, dtype={val.dtype}'
-            if np.issubdtype(val.dtype, np.floating):
-                n_nan = np.isnan(val).sum()
-                if n_nan == val.size:
-                    return f'all-NaN array shape={val.shape}, dtype={val.dtype}, NaNs={n_nan}'
-                return (f'array shape={val.shape}, dtype={val.dtype}, '
-                        f'min={np.nanmin(val):.3g}, max={np.nanmax(val):.3g}, NaNs={n_nan}')
-            else:
-                n_nan = 0
-                return f'array shape={val.shape}, dtype={val.dtype}, NaNs={n_nan}'
+                return f"empty {val.shape}"
+            elif np.all(np.isnan(val)):
+                return f"{val.shape}, all NaN"
+            return (
+                f"{val.shape}, "
+                f"min={np.nanmin(val):.3g}, "
+                f"max={np.nanmax(val):.3g}, "
+                f"NaNs={np.isnan(val).sum()}"
+            )
 
         if isinstance(val, float):
-            if math.isnan(val):
-                return "NaN"
-            return f'{val}'
+            return "NaN" if math.isnan(val) else str(val)
 
         return str(val)
 
-    def _compare_values(val1, val2):
-        # Arrays
-        if isinstance(val1, np.ndarray) and isinstance(val2, np.ndarray):
-            if val1.shape != val2.shape:
-                return "DIFFERENT", f"shape {val1.shape} vs {val2.shape}"
+    ## Compare two fields
+    def _compare(r1, r2):
+        if mode == "format":
+            return (
+                "SAME" if
+                (r1["code"], r1["format"]) == (r2["code"], r2["format"])
+                else "DIFFERENT"
+            )
 
-            both_nan = np.isnan(val1) & np.isnan(val2)
-            diff_mask = ~both_nan & (val1 != val2)
-            n_diff = np.count_nonzero(diff_mask)
+        if mode == "mattype":
+            return "SAME" if r1["mattype"] == r2["mattype"] else "DIFFERENT"
 
-            if n_diff == 0:
-                return "SAME", ""
-            else:
-                detail = f"{n_diff} elements differ"
-                if verbose > 1:
-                    detail += f" at indices {np.argwhere(diff_mask).tolist()}"
-                return "DIFFERENT", detail
+        if mode == "shape":
+            return "SAME" if r1["shape"] == r2["shape"] else "DIFFERENT"
 
-        # Scalars
-        if isinstance(val1, float) and isinstance(val2, float):
-            if math.isnan(val1) and math.isnan(val2):
-                return "SAME", ""
+        # mode == "data"
+        v1, v2 = r1["value"], r2["value"]
 
-        if val1 == val2:
-            return "SAME", ""
+        if isinstance(v1, np.ndarray) and isinstance(v2, np.ndarray):
+            both_nan = np.isnan(v1) & np.isnan(v2)
+            diff = ~both_nan & (v1 != v2)
+            return "SAME" if np.count_nonzero(diff) == 0 else "DIFFERENT"
 
-        return "DIFFERENT", f"{val1} != {val2}"
+        if isinstance(v1, float) and isinstance(v2, float):
+            if math.isnan(v1) and math.isnan(v2):
+                return "SAME"
 
-    # ------------------------------
+        return "SAME" if v1 == v2 else "DIFFERENT"
+
     # Read files
-    # ------------------------------
-    dict1 = _read_bin_to_dict(file1)
-    dict2 = _read_bin_to_dict(file2)
+    d1 = _read_bin_to_dict(file1)
+    d2 = _read_bin_to_dict(file2)
 
-    all_keys = sorted(set(dict1) | set(dict2))
-
-    # ------------------------------
-    # Prepare rows
-    # ------------------------------
+    # Order fields
+    keys = sorted(set(d1) | set(d2))
     rows = []
-    for key in all_keys:
-        v1 = dict1.get(key, None)
-        v2 = dict2.get(key, None)
 
-        if key not in dict1:
-            status = "MISSING"
-            s1 = "<missing>"
-            s2 = _summarize_value(v2)
-        elif key not in dict2:
-            status = "MISSING"
-            s1 = _summarize_value(v1)
-            s2 = "<missing>"
+    # Loop over fields [rows]
+    for k in keys:
+        r1 = d1.get(k)
+        r2 = d2.get(k)
+
+        if r1 is None or r2 is None:
+            rows.append((k, "MISSING", _summarize(r1), _summarize(r2)))
         else:
-            status, _ = _compare_values(v1, v2)
-            s1 = _summarize_value(v1)
-            s2 = _summarize_value(v2)
+            status = _compare(r1, r2)
+            rows.append((k, status, _summarize(r1), _summarize(r2)))
 
-        rows.append((key, status, s1, s2))
+    # Construct output
+    headers = ("Field", "Status", f"File 1 ({mode})", f"File 2 ({mode})")
+    colw = [
+        max(len(h), *(len(str(r[i])) for r in rows))
+        for i, h in enumerate(headers)
+    ]
 
-    # ------------------------------
-    # Column widths for printing
-    # ------------------------------
-    col_widths = [int(max(len(str(r[i])) for r in rows + [("Field","Status","File1 summary","File2 summary")]))
-                  for i in range(4)]
-
-    # ------------------------------
-    # Prepare table lines
-    # ------------------------------
-    output_lines = []
-    output_lines.append(f'Comparing:\n  {file1}\n  {file2}\n')
-    header = "{:<{w0}}  {:<{w1}}  {:<{w2}}  {:<{w3}}".format(
-        "Field", "Status", "File1 summary", "File2 summary",
-        w0=col_widths[0], w1=col_widths[1], w2=col_widths[2], w3=col_widths[3]
+    lines = []
+    lines.append(f"Comparing ({mode}):\n  File 1: {file1}\n  File 2: {file2}\n")
+    lines.append(
+        f"{headers[0]:<{colw[0]}}  {headers[1]:<{colw[1]}}  "
+        f"{headers[2]:<{colw[2]}}  {headers[3]:<{colw[3]}}"
     )
-    output_lines.append(header)
-    output_lines.append('-' * (sum(col_widths) + 6))
+    lines.append("-" * (sum(colw) + 6))
 
     for r in rows:
-        output_lines.append("{:<{w0}}  {:<{w1}}  {:<{w2}}  {:<{w3}}".format(
-            r[0], r[1], r[2], r[3],
-            w0=col_widths[0], w1=col_widths[1], w2=col_widths[2], w3=col_widths[3]
-        ))
+        lines.append(
+            f"{r[0]:<{colw[0]}}  {r[1]:<{colw[1]}}  "
+            f"{r[2]:<{colw[2]}}  {r[3]:<{colw[3]}}"
+        )
 
-    # ------------------------------
-    # Output to terminal or file
-    # ------------------------------
-    if outfile:
-        with open(outfile, 'w') as f:
-            for line in output_lines:
-                f.write(line + '\n')
+    # Print output (to file or terminal)
+    if out_file:
+        with open(out_file, "w") as f:
+            f.write("\n".join(lines))
+        print(f'Output written to file: {out_file}.')
     else:
-        for line in output_lines:
-            print(line)
+        print("\n".join(lines))
