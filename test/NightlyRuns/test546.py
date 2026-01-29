@@ -2,7 +2,7 @@
 import numpy as np
 import pyissm
 
-
+# Parameterise model
 md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Pig.exp', 8000)
 md = pyissm.model.param.set_mask(md, '../assets/Exp/PigShelves.exp', '../assets/Exp/PigIslands.exp')
 md = pyissm.model.param.parameterize(md, '../assets/Par/Pig.py')
@@ -10,6 +10,7 @@ md = pyissm.model.param.set_flow_equation(md, SSA = 'all')
 md.timestepping.start_time = 0
 md.timestepping.time_step = 1
 md.timestepping.final_time = 10
+md.cluster.np = 2
 
 # Basin separation
 idb = np.zeros((md.mesh.numberofelements,))
@@ -23,33 +24,33 @@ for ii in range(md.mesh.numberofelements):
             idb[ii] = 2
 nb_bas = 2
 
-#SMB
-numparams  = 1;
-numbreaks  = 0;
+# SMB
+numparams  = 1
+numbreaks  = 0
 intercept     = np.array([[0.5],[0.01]])
 polynomialparams = np.copy(intercept)
 datebreaks = np.nan
-md.smb = pyissm.model.smb.arma()
+md.smb = pyissm.model.classes.smb.arma()
 md.smb.num_basins = nb_bas  # number of basins
 md.smb.basin_id = idb  # prescribe basin ID number to elements;
-md.smb.num_params       = 1*numparams
-md.smb.num_breaks       = 1*numbreaks
-md.smb.polynomialparams = 1*polynomialparams
-md.smb.datebreaks       = 1*datebreaks
+md.smb.num_params = 1 * numparams
+md.smb.num_breaks = 1 * numbreaks
+md.smb.polynomialparams = 1 * polynomialparams
+md.smb.datebreaks = 1 * datebreaks
 md.smb.ar_order = 4
 md.smb.ma_order = 4
 md.smb.arma_timestep = 2.0  #timestep of the ARMA model [yr]
 md.smb.arlag_coefs = np.array([[0.2,0.1,0.05,0.01],[0.4,0.2,-0.2,0.1]])
 md.smb.malag_coefs = np.array([[0.1,0.1,0.2,0.3],[0.5,0.8,1.3,2.4]])
 
-#Calving
+# Calving
 md.mask.ice_levelset = 1e4*(md.mask.ice_levelset + 0.5)
-md.calving.calvingrate = 0.1*np.ones((md.mesh.numberofvertices,))
+md.calving.calvingrate = 0.1 * np.ones((md.mesh.numberofvertices,))
 md.levelset.spclevelset = np.full((md.mesh.numberofvertices,), np.nan)
 md.levelset.migration_max = 10.0
 md.frontalforcings.meltingrate = np.zeros((md.mesh.numberofvertices,))
 
-#Basal forcing implementation
+# Basal forcing implementation
 numparams = 2
 numbreaks = 1
 intercept = np.array([[3.0,4.0],[1.0,0.5]])
@@ -63,21 +64,21 @@ md.basalforcings.basin_id  = idb
 md.basalforcings.const = np.array([[1.0, 2.50]])  # intercept values of DeepwaterMelt in basins [m/yr]
 md.basalforcings.trend  = np.array([[0.2, 0.01]])  # trend values of DeepwaterMelt in basins [m/yr^2]
 md.basalforcings.arma_initialtime = md.timestepping.start_time  # initial time in the ARMA model parameterization [yr]
-md.basalforcings.ar_order  = 1
-md.basalforcings.ma_order  = 1
-md.basalforcings.polynomialparams = 1*polynomialparams;
-md.basalforcings.datebreaks       = 1*datebreaks;
-md.basalforcings.num_params       = 1*numparams
-md.basalforcings.num_breaks       = 1*numbreaks
-md.basalforcings.arma_timestep  = 1.0  # timestep of the ARMA model [yr]
-md.basalforcings.arlag_coefs  = np.array([[0.0], [0.1]])  # autoregressive parameters
-md.basalforcings.malag_coefs  = np.array([[0.55], [0.34]])  # moving-average parameters
+md.basalforcings.ar_order = 1
+md.basalforcings.ma_order = 1
+md.basalforcings.polynomialparams = 1 * polynomialparams
+md.basalforcings.datebreaks = 1 * datebreaks
+md.basalforcings.num_params = 1 * numparams
+md.basalforcings.num_breaks = 1 * numbreaks
+md.basalforcings.arma_timestep = 1.0  # timestep of the ARMA model [yr]
+md.basalforcings.arlag_coefs = np.array([[0.0], [0.1]])  # autoregressive parameters
+md.basalforcings.malag_coefs = np.array([[0.55], [0.34]])  # moving-average parameters
 md.basalforcings.deepwater_elevation = np.array([[-1000, -1520]])
 md.basalforcings.upperwater_elevation = np.array([[0, -50]])
 md.basalforcings.upperwater_melting_rate = np.array([[0,0]])
 md.basalforcings.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices,))
 
-#Covariance matrices
+# Covariance matrices
 sdvsmb  = np.array([1,1])
 sdvclv  = np.array([0.1,0.01])
 sdvdwm  = np.array([300,300])
@@ -93,7 +94,7 @@ covglob1 = 2*covglob0
 multcov  = np.stack((covglob0,covglob1),axis=2) 
 tmcov    = np.array([[0,5]])
 
-#Stochastic forcing
+# Stochastic forcing
 md.stochasticforcing.isstochasticforcing = 1
 md.stochasticforcing.fields = ['SMBarma', 'DefaultCalving', 'BasalforcingsDeepwaterMeltingRatearma']
 md.stochasticforcing.defaultdimension = 2
@@ -110,7 +111,7 @@ md.transient.issmb = 1
 md.transient.isthermal = 0
 md.transient.isgroundingline = 1
 
-md.cluster.np = 2
+# Execute model
 md = pyissm.model.execute.solve(md, 'Transient')
 
 # Fields and tolerances to track changes
