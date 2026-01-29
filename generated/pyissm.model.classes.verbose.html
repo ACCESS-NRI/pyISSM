@@ -52,6 +52,7 @@
 <li class="toctree-l3"><a class="reference internal" href="pyissm.data.html">pyissm.data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pyissm.learn.html">pyissm.learn</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="pyissm.model.html">pyissm.model</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyissm.model.Model.html">pyissm.model.Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyissm.model.bc.html">pyissm.model.bc</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="pyissm.model.classes.html">pyissm.model.classes</a></li>
@@ -103,7 +104,8 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="pyissm.model.classes.verbose">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.</span></span><span class="sig-name descname"><span class="pre">verbose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.verbose" title="Link to this definition"></a></dt>
-<dd><p>Verbose parameters class for ISSM.</p>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Verbose parameters class for ISSM.</p>
 <p>This class encapsulates verbose parameters that control the level of output and logging in the ISSM (Ice Sheet System Model) framework.
 It stores settings for logging frequency, output file paths, and other related options.</p>
 <dl class="field-list simple">
@@ -237,6 +239,61 @@ default values for unspecified fields.</p>
 </tr>
 </tbody>
 </table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.verbose.VerboseToBinary">
+<span class="sig-name descname"><span class="pre">VerboseToBinary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.verbose.VerboseToBinary" title="Link to this definition"></a></dt>
+<dd><p>Convert current verbosity settings to integer bitmask.</p>
+<p>This method converts the boolean verbosity flags into a single integer
+where each bit represents a different verbosity option according to
+the field mapping defined in the class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Integer bitmask representing the current verbosity settings.
+Each bit corresponds to a verbosity flag as defined in _fields.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">verbose_obj</span> <span class="o">=</span> <span class="n">verbose</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">verbose_obj</span><span class="o">.</span><span class="n">solution</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">verbose_obj</span><span class="o">.</span><span class="n">control</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_value</span> <span class="o">=</span> <span class="n">verbose_obj</span><span class="o">.</span><span class="n">VerboseToBinary</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">binary_value</span><span class="p">)</span>  <span class="c1"># Will print 36 (4 + 32)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.verbose.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.verbose.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.verbose.deactivate_all">
+<span class="sig-name descname"><span class="pre">deactivate_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.verbose.deactivate_all" title="Link to this definition"></a></dt>
+<dd><p>Deactivate all verbose model components.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd><p>Marshall [verbose] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>

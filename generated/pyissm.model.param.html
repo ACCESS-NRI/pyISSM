@@ -52,6 +52,7 @@
 <li class="toctree-l3"><a class="reference internal" href="pyissm.data.html">pyissm.data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pyissm.learn.html">pyissm.learn</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="pyissm.model.html">pyissm.model</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyissm.model.Model.html">pyissm.model.Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyissm.model.bc.html">pyissm.model.bc</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html">pyissm.model.classes</a></li>
@@ -103,23 +104,167 @@
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">contour_envelope</span></code>(mh[, flags])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.param.contour_envelope" title="pyissm.model.param.contour_envelope"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contour_envelope</span></code></a>(mh[, flags])</p></td>
 <td><p>Build a set of segments enveloping a contour. This function computes segments that form the boundary envelope of a contour within a given mesh. It identifies elements on the domain boundary and extracts the segments that define the contour envelope. :type mh: ISSM model mesh object containing vertex and element information. :param mh: :type mh: ISSM model mesh object containing vertex and element information. :type flags: {str, int, float, bool}, optional :param flags: Currently not supported. Reserved for future use. If provided, raises               NotImplementedError. Default is None. :type flags: {str, int, float, bool}, optional.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">kill_icebergs</span></code>(md)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.model.param.kill_icebergs" title="pyissm.model.param.kill_icebergs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">kill_icebergs</span></code></a>(md)</p></td>
 <td><p>Remove isolated floating ice patches (icebergs) by setting their ice_levelset values to +1.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">parameterize</span></code>(md, parameter_file)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.param.parameterize" title="pyissm.model.param.parameterize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parameterize</span></code></a>(md, parameter_file)</p></td>
 <td><p>Parameterize an ISSM model from a Python parameter file.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_flow_equation</span></code>(md[, SIA, SSA, HO, L1L2, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.model.param.set_flow_equation" title="pyissm.model.param.set_flow_equation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_flow_equation</span></code></a>(md[, SIA, SSA, HO, L1L2, ...])</p></td>
 <td><p>Set flow equation for model</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_mask</span></code>(md[, floating_ice_name, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.param.set_mask" title="pyissm.model.param.set_mask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_mask</span></code></a>(md[, floating_ice_name, ...])</p></td>
 <td><p>Set the mask of a model based on a floating ice region and a grounded ice region.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.model.param.contour_envelope">
+<span class="sig-prename descclassname"><span class="pre">pyissm.model.param.</span></span><span class="sig-name descname"><span class="pre">contour_envelope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.param.contour_envelope" title="Link to this definition"></a></dt>
+<dd><p>Build a set of segments enveloping a contour.
+This function computes segments that form the boundary envelope of a contour
+within a given mesh. It identifies elements on the domain boundary and extracts
+the segments that define the contour envelope.
+:type mh: ISSM model mesh object containing vertex and element information.
+:param mh:
+:type mh: ISSM model mesh object containing vertex and element information.
+:type flags: {str, int, float, bool}, optional
+:param flags: Currently not supported. Reserved for future use. If provided, raises</p>
+<blockquote>
+<div><p>NotImplementedError. Default is None.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>segments</strong> – Array of shape (n_segments, 3) containing segment information where:
+- Column 0: First node index of the segment
+- Column 1: Second node index of the segment
+- Column 2: Associated element index (1-indexed)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ndarray</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>NotImplementedError</strong> – If <cite>flags</cite> argument is provided (not yet supported).</p></li>
+<li><p><strong>ImportError</strong> – If ISSM wrappers are not installed.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function requires ISSM wrappers to be installed. It computes node and
+element connectivity tables and identifies boundary elements that separate
+interior from exterior regions.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">segments</span> <span class="o">=</span> <span class="n">contour_envelope</span><span class="p">(</span><span class="n">mh</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.model.param.kill_icebergs">
+<span class="sig-prename descclassname"><span class="pre">pyissm.model.param.</span></span><span class="sig-name descname"><span class="pre">kill_icebergs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.param.kill_icebergs" title="Link to this definition"></a></dt>
+<dd><p>Remove isolated floating ice patches (icebergs) by setting their ice_levelset values to +1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>md</strong> (<em>ISSM model object</em>) – The model containing the mesh and mask information.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Modified ice_levelset array with isolated icebergs set to +1.
+If no icebergs are found, returns a copy of the original ice_levelset.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The algorithm works in three main steps:</p>
+<ol class="arabic simple">
+<li><p>Mark elements without ice as done</p></li>
+<li><p>Initialize mask from grounded ice elements</p></li>
+<li><p>Use flood-fill algorithm to propagate connectivity from grounded ice through
+floating ice patches</p></li>
+<li><p>Set vertices that remain unconnected and have ice to +1 (removing icebergs)</p></li>
+</ol>
+<p>Isolated floating ice patches are identified as ice vertices that cannot be
+reached through the flood-fill algorithm starting from grounded ice regions.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.model.param.parameterize">
+<span class="sig-prename descclassname"><span class="pre">pyissm.model.param.</span></span><span class="sig-name descname"><span class="pre">parameterize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.param.parameterize" title="Link to this definition"></a></dt>
+<dd><p>Parameterize an ISSM model from a Python parameter file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>md</strong> (<em>object</em>) – ISSM model instance to populate. The parameter file is expected to
+mutate this object in-place and may refer to it as <code class="docutils literal notranslate"><span class="pre">md</span></code>.</p></li>
+<li><p><strong>parameter_file</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em> or </em><em>pathlib.Path</em>) – Path to a Python file containing parameter-setting code. This file is
+executed with an empty global namespace and a local namespace where
+<code class="docutils literal notranslate"><span class="pre">md</span></code> is pre-defined.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The modified model instance (same object passed in).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> – If the provided parameter_file does not exist.</p></li>
+<li><p><strong>Exception</strong> – Any exception raised while executing the parameter file is propagated.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The parameter file must be a valid Python script that assigns values or
+calls functions that modify the provided <code class="docutils literal notranslate"><span class="pre">md</span></code> object. For security,
+be cautious when executing untrusted parameter files since they are run
+with <code class="docutils literal notranslate"><span class="pre">exec()</span></code> and may perform arbitrary operations.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">parameterize</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="s2">&quot;parameters.py&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.model.param.set_flow_equation">
+<span class="sig-prename descclassname"><span class="pre">pyissm.model.param.</span></span><span class="sig-name descname"><span class="pre">set_flow_equation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SIA</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SSA</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">HO</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L1L2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MOLHO</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coupling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tiling'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.param.set_flow_equation" title="Link to this definition"></a></dt>
+<dd><p>Set flow equation for model</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.model.param.set_mask">
+<span class="sig-prename descclassname"><span class="pre">pyissm.model.param.</span></span><span class="sig-name descname"><span class="pre">set_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">floating_ice_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grounded_ice_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ice_domain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.param.set_mask" title="Link to this definition"></a></dt>
+<dd><p>Set the mask of a model based on a floating ice region and a grounded ice region.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>md</strong> (<em>ISSM model object</em>) – The model to set the mask on.</p></li>
+<li><p><strong>floating_ice_name</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – The name of the floating ice region. Default is ‘’, which means no
+floating ice region is set.</p></li>
+<li><p><strong>grounded_ice_name</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – The name of the grounded ice region. Default is ‘all’, which means all
+grounded ice is set.</p></li>
+<li><p><strong>ice_domain</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – Path to file defining the ice domain contour. If provided, used to define
+the ice levelset field. Default is None.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Additional keyword arguments to pass to the flag_elements function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The modified model with updated mask fields.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>model</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>FileNotFoundError</strong> – If ice_domain file path is provided but the file does not exist.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 

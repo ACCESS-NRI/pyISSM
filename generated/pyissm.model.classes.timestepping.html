@@ -52,6 +52,7 @@
 <li class="toctree-l3"><a class="reference internal" href="pyissm.data.html">pyissm.data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pyissm.learn.html">pyissm.learn</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="pyissm.model.html">pyissm.model</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyissm.model.Model.html">pyissm.model.Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyissm.model.bc.html">pyissm.model.bc</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="pyissm.model.classes.html">pyissm.model.classes</a></li>
@@ -103,14 +104,347 @@
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">adaptive</span></code>([other])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.classes.timestepping.adaptive" title="pyissm.model.classes.timestepping.adaptive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">adaptive</span></code></a>([other])</p></td>
 <td><p>Adaptive time stepping configuration for ISSM transient simulations.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">default</span></code>([other])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.model.classes.timestepping.default" title="pyissm.model.classes.timestepping.default"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default</span></code></a>([other])</p></td>
 <td><p>Default fixed time stepping configuration for ISSM transient simulations.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.adaptive">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.timestepping.</span></span><span class="sig-name descname"><span class="pre">adaptive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.timestepping.adaptive" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Adaptive time stepping configuration for ISSM transient simulations.</p>
+<p>This class configures adaptive time step parameters for transient ice sheet simulations.
+The time step size is automatically adjusted based on CFL (Courant-Friedrichs-Lewy)
+conditions to maintain numerical stability while optimizing computational efficiency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values
+in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.adaptive.start_time">
+<span class="sig-name descname"><span class="pre">start_time</span></span><a class="headerlink" href="#pyissm.model.classes.timestepping.adaptive.start_time" title="Link to this definition"></a></dt>
+<dd><p>Simulation starting time [yr].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=0.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.adaptive.final_time">
+<span class="sig-name descname"><span class="pre">final_time</span></span><a class="headerlink" href="#pyissm.model.classes.timestepping.adaptive.final_time" title="Link to this definition"></a></dt>
+<dd><p>Final time to stop the simulation [yr].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=100.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.adaptive.time_step_min">
+<span class="sig-name descname"><span class="pre">time_step_min</span></span><a class="headerlink" href="#pyissm.model.classes.timestepping.adaptive.time_step_min" title="Link to this definition"></a></dt>
+<dd><p>Minimum length of time steps [yr].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=0.01</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.adaptive.time_step_max">
+<span class="sig-name descname"><span class="pre">time_step_max</span></span><a class="headerlink" href="#pyissm.model.classes.timestepping.adaptive.time_step_max" title="Link to this definition"></a></dt>
+<dd><p>Maximum length of time steps [yr].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=10.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.adaptive.cfl_coefficient">
+<span class="sig-name descname"><span class="pre">cfl_coefficient</span></span><a class="headerlink" href="#pyissm.model.classes.timestepping.adaptive.cfl_coefficient" title="Link to this definition"></a></dt>
+<dd><p>Coefficient applied to CFL condition for time step calculation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=0.5</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.adaptive.interp_forcing">
+<span class="sig-name descname"><span class="pre">interp_forcing</span></span><a class="headerlink" href="#pyissm.model.classes.timestepping.adaptive.interp_forcing" title="Link to this definition"></a></dt>
+<dd><p>Interpolate in time between requested forcing values (0 or 1).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=1</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.adaptive.average_forcing">
+<span class="sig-name descname"><span class="pre">average_forcing</span></span><a class="headerlink" href="#pyissm.model.classes.timestepping.adaptive.average_forcing" title="Link to this definition"></a></dt>
+<dd><p>Average in time if there are several forcing values between steps (0 or 1).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.adaptive.cycle_forcing">
+<span class="sig-name descname"><span class="pre">cycle_forcing</span></span><a class="headerlink" href="#pyissm.model.classes.timestepping.adaptive.cycle_forcing" title="Link to this definition"></a></dt>
+<dd><p>Cycle through forcing data (0 or 1).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.adaptive.coupling_time">
+<span class="sig-name descname"><span class="pre">coupling_time</span></span><a class="headerlink" href="#pyissm.model.classes.timestepping.adaptive.coupling_time" title="Link to this definition"></a></dt>
+<dd><p>Coupling time steps with ocean model [yr].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=0.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.adaptive.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.timestepping.adaptive.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the adaptive timestepping parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.adaptive.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.timestepping.adaptive.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the adaptive timestepping parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.adaptive.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.timestepping.adaptive.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.adaptive.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.timestepping.adaptive.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file</p>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>Adaptive time stepping automatically adjusts time step size based on the CFL condition:
+Δt ≤ CFL_coefficient × (grid_spacing / max_velocity)</p>
+<p>This approach provides:
+- Numerical stability by respecting CFL limits
+- Computational efficiency by using larger steps when possible
+- Automatic handling of varying flow conditions</p>
+<p>The time step is constrained between time_step_min and time_step_max to prevent
+excessively small or large time steps that could cause numerical issues.</p>
+<p>CFL coefficient recommendations:
+- 0.5: Conservative, very stable (default)
+- 0.8-0.9: More aggressive, faster computation
+- &gt;1.0: May cause instability</p>
+<p class="rubric">Examples</p>
+<p>md.timestepping = pyissm.model.classes.timestepping.adaptive()
+md.timestepping.time_step_min = 0.001
+md.timestepping.time_step_max = 5.0
+md.timestepping.cfl_coefficient = 0.8</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.adaptive.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.timestepping.adaptive.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd><p>Marshall [timestepping.adaptive] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.default">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.timestepping.</span></span><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.timestepping.default" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Default fixed time stepping configuration for ISSM transient simulations.</p>
+<p>This class configures fixed time step parameters for transient ice sheet simulations.
+It provides control over simulation duration, time step size, and forcing interpolation
+methods for consistent temporal evolution of the ice sheet system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values
+in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.default.start_time">
+<span class="sig-name descname"><span class="pre">start_time</span></span><a class="headerlink" href="#pyissm.model.classes.timestepping.default.start_time" title="Link to this definition"></a></dt>
+<dd><p>Simulation starting time [yr].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.default.final_time">
+<span class="sig-name descname"><span class="pre">final_time</span></span><a class="headerlink" href="#pyissm.model.classes.timestepping.default.final_time" title="Link to this definition"></a></dt>
+<dd><p>Final time to stop the simulation [yr].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=5</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.default.time_step">
+<span class="sig-name descname"><span class="pre">time_step</span></span><a class="headerlink" href="#pyissm.model.classes.timestepping.default.time_step" title="Link to this definition"></a></dt>
+<dd><p>Length of time steps [yr].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=0.5</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.default.interp_forcing">
+<span class="sig-name descname"><span class="pre">interp_forcing</span></span><a class="headerlink" href="#pyissm.model.classes.timestepping.default.interp_forcing" title="Link to this definition"></a></dt>
+<dd><p>Interpolate in time between requested forcing values (0 or 1).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=1</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.default.average_forcing">
+<span class="sig-name descname"><span class="pre">average_forcing</span></span><a class="headerlink" href="#pyissm.model.classes.timestepping.default.average_forcing" title="Link to this definition"></a></dt>
+<dd><p>Average in time if there are several forcing values between steps (0 or 1).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.default.cycle_forcing">
+<span class="sig-name descname"><span class="pre">cycle_forcing</span></span><a class="headerlink" href="#pyissm.model.classes.timestepping.default.cycle_forcing" title="Link to this definition"></a></dt>
+<dd><p>Cycle through forcing data (0 or 1).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.default.coupling_time">
+<span class="sig-name descname"><span class="pre">coupling_time</span></span><a class="headerlink" href="#pyissm.model.classes.timestepping.default.coupling_time" title="Link to this definition"></a></dt>
+<dd><p>Length of coupling time steps with ocean model [yr].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.default.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.timestepping.default.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the fixed timestepping parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.default.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.timestepping.default.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the timestepping parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.default.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.timestepping.default.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.default.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.timestepping.default.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file</p>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>Fixed time stepping uses constant time step intervals throughout the simulation.
+This approach provides predictable temporal resolution but may not be optimal
+for all simulation conditions.</p>
+<p>Forcing interpolation options:
+- interp_forcing=1: Linear interpolation between forcing time points
+- average_forcing=1: Time averaging when multiple forcing values exist per step
+- cycle_forcing=1: Repeat forcing data cyclically</p>
+<p class="rubric">Examples</p>
+<p>md.timestepping = pyissm.model.classes.timestepping.default()
+md.timestepping.start_time = 0
+md.timestepping.final_time = 100
+md.timestepping.time_step = 1.0</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.timestepping.default.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.timestepping.default.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd><p>Marshall [timestepping.default()] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 

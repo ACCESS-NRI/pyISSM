@@ -52,6 +52,7 @@
 <li class="toctree-l3"><a class="reference internal" href="pyissm.data.html">pyissm.data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pyissm.learn.html">pyissm.learn</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="pyissm.model.html">pyissm.model</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyissm.model.Model.html">pyissm.model.Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyissm.model.bc.html">pyissm.model.bc</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="pyissm.model.classes.html">pyissm.model.classes</a></li>
@@ -103,44 +104,1472 @@
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">coulomb</span></code>([other])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.classes.friction.coulomb" title="pyissm.model.classes.friction.coulomb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">coulomb</span></code></a>([other])</p></td>
 <td><p>Coulomb friction parameters class for ISSM.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">coulomb2</span></code>([other])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.model.classes.friction.coulomb2" title="pyissm.model.classes.friction.coulomb2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">coulomb2</span></code></a>([other])</p></td>
 <td><p>Coulomb2 friction parameters class for ISSM.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">default</span></code>([other])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.classes.friction.default" title="pyissm.model.classes.friction.default"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default</span></code></a>([other])</p></td>
 <td><p>Default friction parameters class for ISSM.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">hydro</span></code>([other])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.model.classes.friction.hydro" title="pyissm.model.classes.friction.hydro"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hydro</span></code></a>([other])</p></td>
 <td><p>Hydro friction parameters class for ISSM.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">josh</span></code>([other])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.classes.friction.josh" title="pyissm.model.classes.friction.josh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">josh</span></code></a>([other])</p></td>
 <td><p>Josh friction parameters class for ISSM.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pism</span></code>([other])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.model.classes.friction.pism" title="pyissm.model.classes.friction.pism"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pism</span></code></a>([other])</p></td>
 <td><p>PISM friction parameters class for ISSM.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">regcoulomb</span></code>([other])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.classes.friction.regcoulomb" title="pyissm.model.classes.friction.regcoulomb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">regcoulomb</span></code></a>([other])</p></td>
 <td><p>Regularized Coulomb friction parameters class for ISSM.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">regcoulomb2</span></code>([other])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.model.classes.friction.regcoulomb2" title="pyissm.model.classes.friction.regcoulomb2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">regcoulomb2</span></code></a>([other])</p></td>
 <td><p>Regularized Coulomb 2 friction parameters class for ISSM.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">schoof</span></code>([other])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.classes.friction.schoof" title="pyissm.model.classes.friction.schoof"><code class="xref py py-obj docutils literal notranslate"><span class="pre">schoof</span></code></a>([other])</p></td>
 <td><p>Schoof friction parameters class for ISSM.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">shakti</span></code>([other])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.model.classes.friction.shakti" title="pyissm.model.classes.friction.shakti"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shakti</span></code></a>([other])</p></td>
 <td><p>Shakti friction parameters class for ISSM.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">waterlayer</span></code>([other])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.classes.friction.waterlayer" title="pyissm.model.classes.friction.waterlayer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">waterlayer</span></code></a>([other])</p></td>
 <td><p>Waterlayer friction parameters class for ISSM.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">weertman</span></code>([other])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.model.classes.friction.weertman" title="pyissm.model.classes.friction.weertman"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weertman</span></code></a>([other])</p></td>
 <td><p>Weertman friction parameters class for ISSM.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.friction.</span></span><span class="sig-name descname"><span class="pre">coulomb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Coulomb friction parameters class for ISSM.</p>
+<p>This class encapsulates the parameters for the Coulomb friction law in the ISSM (Ice Sheet System Model) framework.
+It defines the main friction-related parameters specific to the Coulomb law.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb.coefficient">
+<span class="sig-name descname"><span class="pre">coefficient</span></span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb.coefficient" title="Link to this definition"></a></dt>
+<dd><p>Power law (Weertman) friction coefficient [SI].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb.coefficientcoulomb">
+<span class="sig-name descname"><span class="pre">coefficientcoulomb</span></span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb.coefficientcoulomb" title="Link to this definition"></a></dt>
+<dd><p>Coulomb friction coefficient [SI].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb.p">
+<span class="sig-name descname"><span class="pre">p</span></span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb.p" title="Link to this definition"></a></dt>
+<dd><p>p exponent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb.q">
+<span class="sig-name descname"><span class="pre">q</span></span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb.q" title="Link to this definition"></a></dt>
+<dd><p>q exponent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb.coupling">
+<span class="sig-name descname"><span class="pre">coupling</span></span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb.coupling" title="Link to this definition"></a></dt>
+<dd><p>Coupling flag: 0 for default, 1 for forcing (provide md.friction.effective_pressure), 2 for coupled (not implemented yet).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb.effective_pressure">
+<span class="sig-name descname"><span class="pre">effective_pressure</span></span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb.effective_pressure" title="Link to this definition"></a></dt>
+<dd><p>Effective Pressure for the forcing if not coupled [Pa].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>=ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb.effective_pressure_limit">
+<span class="sig-name descname"><span class="pre">effective_pressure_limit</span></span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb.effective_pressure_limit" title="Link to this definition"></a></dt>
+<dd><p>Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>=ndarray, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the friction parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the friction parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file.</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.friction = pyissm.model.classes.friction.coulomb()</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb.extrude">
+<span class="sig-name descname"><span class="pre">extrude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb.extrude" title="Link to this definition"></a></dt>
+<dd><p>Extrude friction.coulomb fields to 3D</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd><p>Marshall [friction.coulomb] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb2">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.friction.</span></span><span class="sig-name descname"><span class="pre">coulomb2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb2" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Coulomb2 friction parameters class for ISSM.</p>
+<p>This class encapsulates the parameters for the Coulomb2 friction law in the ISSM (Ice Sheet System Model) framework.
+It defines the main friction-related parameters specific to the Coulomb2 law.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb2.coefficient">
+<span class="sig-name descname"><span class="pre">coefficient</span></span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb2.coefficient" title="Link to this definition"></a></dt>
+<dd><p>Power law (Weertman) friction coefficient [SI].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb2.coefficientcoulomb">
+<span class="sig-name descname"><span class="pre">coefficientcoulomb</span></span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb2.coefficientcoulomb" title="Link to this definition"></a></dt>
+<dd><p>Coulomb friction coefficient [SI].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb2.p">
+<span class="sig-name descname"><span class="pre">p</span></span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb2.p" title="Link to this definition"></a></dt>
+<dd><p>p exponent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb2.q">
+<span class="sig-name descname"><span class="pre">q</span></span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb2.q" title="Link to this definition"></a></dt>
+<dd><p>q exponent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb2.coupling">
+<span class="sig-name descname"><span class="pre">coupling</span></span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb2.coupling" title="Link to this definition"></a></dt>
+<dd><p>Coupling flag: 0 for default, 1 for forcing (provide md.friction.effective_pressure), 2 for coupled (not implemented yet).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb2.effective_pressure">
+<span class="sig-name descname"><span class="pre">effective_pressure</span></span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb2.effective_pressure" title="Link to this definition"></a></dt>
+<dd><p>Effective Pressure for the forcing if not coupled [Pa].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb2.effective_pressure_limit">
+<span class="sig-name descname"><span class="pre">effective_pressure_limit</span></span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb2.effective_pressure_limit" title="Link to this definition"></a></dt>
+<dd><p>Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb2.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb2.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the friction parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb2.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb2.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the friction parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb2.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb2.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb2.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb2.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file.</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.friction = pyissm.model.classes.friction.coulomb2()</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb2.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb2.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.coulomb2.extrude">
+<span class="sig-name descname"><span class="pre">extrude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.coulomb2.extrude" title="Link to this definition"></a></dt>
+<dd><p>Extrude friction.coulomb2 fields to 3D</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd><p>Marshall [friction.coulomb2] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.default">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.friction.</span></span><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.default" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Default friction parameters class for ISSM.</p>
+<p>This class encapsulates the default parameters for friction in the ISSM (Ice Sheet System Model) framework.
+It defines the main friction-related parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.default.coefficient">
+<span class="sig-name descname"><span class="pre">coefficient</span></span><a class="headerlink" href="#pyissm.model.classes.friction.default.coefficient" title="Link to this definition"></a></dt>
+<dd><p>Friction coefficient [SI].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.default.p">
+<span class="sig-name descname"><span class="pre">p</span></span><a class="headerlink" href="#pyissm.model.classes.friction.default.p" title="Link to this definition"></a></dt>
+<dd><p>p exponent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.default.q">
+<span class="sig-name descname"><span class="pre">q</span></span><a class="headerlink" href="#pyissm.model.classes.friction.default.q" title="Link to this definition"></a></dt>
+<dd><p>q exponent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.default.coupling">
+<span class="sig-name descname"><span class="pre">coupling</span></span><a class="headerlink" href="#pyissm.model.classes.friction.default.coupling" title="Link to this definition"></a></dt>
+<dd><p>Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.default.linearize">
+<span class="sig-name descname"><span class="pre">linearize</span></span><a class="headerlink" href="#pyissm.model.classes.friction.default.linearize" title="Link to this definition"></a></dt>
+<dd><p>0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.default.effective_pressure">
+<span class="sig-name descname"><span class="pre">effective_pressure</span></span><a class="headerlink" href="#pyissm.model.classes.friction.default.effective_pressure" title="Link to this definition"></a></dt>
+<dd><p>Effective Pressure for the forcing if not coupled [Pa].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.default.effective_pressure_limit">
+<span class="sig-name descname"><span class="pre">effective_pressure_limit</span></span><a class="headerlink" href="#pyissm.model.classes.friction.default.effective_pressure_limit" title="Link to this definition"></a></dt>
+<dd><p>Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.default.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.default.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the friction parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.default.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.default.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the friction parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.default.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.default.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.default.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.default.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file.</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.friction = pyissm.model.classes.friction.default()</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.default.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.default.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.default.extrude">
+<span class="sig-name descname"><span class="pre">extrude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.default.extrude" title="Link to this definition"></a></dt>
+<dd><p>Extrude friction.default fields to 3D</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd><p>Marshall [friction.default] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.hydro">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.friction.</span></span><span class="sig-name descname"><span class="pre">hydro</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.hydro" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Hydro friction parameters class for ISSM.</p>
+<p>This class encapsulates the parameters for the hydro (Gagliardini 2007) friction law in the ISSM (Ice Sheet System Model) framework.
+It defines the main friction-related parameters specific to the hydro law.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.hydro.coupling">
+<span class="sig-name descname"><span class="pre">coupling</span></span><a class="headerlink" href="#pyissm.model.classes.friction.hydro.coupling" title="Link to this definition"></a></dt>
+<dd><p>Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: use coupled model (not implemented yet).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.hydro.q">
+<span class="sig-name descname"><span class="pre">q</span></span><a class="headerlink" href="#pyissm.model.classes.friction.hydro.q" title="Link to this definition"></a></dt>
+<dd><p>Friction law exponent q &gt;= 1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.hydro.C">
+<span class="sig-name descname"><span class="pre">C</span></span><a class="headerlink" href="#pyissm.model.classes.friction.hydro.C" title="Link to this definition"></a></dt>
+<dd><p>Friction law max value (Iken bound).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.hydro.As">
+<span class="sig-name descname"><span class="pre">As</span></span><a class="headerlink" href="#pyissm.model.classes.friction.hydro.As" title="Link to this definition"></a></dt>
+<dd><p>Sliding parameter without cavitation [m Pa^-n s^-1].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.hydro.effective_pressure">
+<span class="sig-name descname"><span class="pre">effective_pressure</span></span><a class="headerlink" href="#pyissm.model.classes.friction.hydro.effective_pressure" title="Link to this definition"></a></dt>
+<dd><p>Effective Pressure for the forcing if not coupled [Pa].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.hydro.effective_pressure_limit">
+<span class="sig-name descname"><span class="pre">effective_pressure_limit</span></span><a class="headerlink" href="#pyissm.model.classes.friction.hydro.effective_pressure_limit" title="Link to this definition"></a></dt>
+<dd><p>Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.hydro.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.hydro.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the friction parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.hydro.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.hydro.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the friction parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.hydro.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.hydro.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.hydro.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.hydro.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file.</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.friction = pyissm.model.classes.friction.hydro()</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.hydro.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.hydro.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.hydro.extrude">
+<span class="sig-name descname"><span class="pre">extrude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.hydro.extrude" title="Link to this definition"></a></dt>
+<dd><p>Extrude friction.hydro fields to 3D</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd><p>Marshall [friction.hydro] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.josh">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.friction.</span></span><span class="sig-name descname"><span class="pre">josh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.josh" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Josh friction parameters class for ISSM.</p>
+<p>This class encapsulates the parameters for the Josh friction law in the ISSM (Ice Sheet System Model) framework.
+It defines the main friction-related parameters specific to the Josh law.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.josh.coefficient">
+<span class="sig-name descname"><span class="pre">coefficient</span></span><a class="headerlink" href="#pyissm.model.classes.friction.josh.coefficient" title="Link to this definition"></a></dt>
+<dd><p>Friction coefficient [SI].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.josh.pressure_adjusted_temperature">
+<span class="sig-name descname"><span class="pre">pressure_adjusted_temperature</span></span><a class="headerlink" href="#pyissm.model.classes.friction.josh.pressure_adjusted_temperature" title="Link to this definition"></a></dt>
+<dd><p>Friction pressure_adjusted_temperature (T - Tpmp) [K].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.josh.gamma">
+<span class="sig-name descname"><span class="pre">gamma</span></span><a class="headerlink" href="#pyissm.model.classes.friction.josh.gamma" title="Link to this definition"></a></dt>
+<dd><p>(T - Tpmp)/gamma [K].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=1.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.josh.effective_pressure_limit">
+<span class="sig-name descname"><span class="pre">effective_pressure_limit</span></span><a class="headerlink" href="#pyissm.model.classes.friction.josh.effective_pressure_limit" title="Link to this definition"></a></dt>
+<dd><p>Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.josh.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.josh.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the friction parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.josh.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.josh.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the friction parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.josh.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.josh.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.josh.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.josh.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file.</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.friction = pyissm.model.classes.friction.josh()</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.josh.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.josh.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.josh.extrude">
+<span class="sig-name descname"><span class="pre">extrude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.josh.extrude" title="Link to this definition"></a></dt>
+<dd><p>Extrude friction.josh fields to 3D</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dd><p>Marshall [friction.josh] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.pism">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.friction.</span></span><span class="sig-name descname"><span class="pre">pism</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.pism" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>PISM friction parameters class for ISSM.</p>
+<p>This class encapsulates the parameters for the PISM friction law in the ISSM (Ice Sheet System Model) framework.
+It defines the main friction-related parameters specific to the PISM law.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.pism.pseudoplasticity_exponent">
+<span class="sig-name descname"><span class="pre">pseudoplasticity_exponent</span></span><a class="headerlink" href="#pyissm.model.classes.friction.pism.pseudoplasticity_exponent" title="Link to this definition"></a></dt>
+<dd><p>Pseudoplasticity exponent [dimensionless].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=0.6</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.pism.threshold_speed">
+<span class="sig-name descname"><span class="pre">threshold_speed</span></span><a class="headerlink" href="#pyissm.model.classes.friction.pism.threshold_speed" title="Link to this definition"></a></dt>
+<dd><p>Threshold speed [m/yr].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=100.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.pism.delta">
+<span class="sig-name descname"><span class="pre">delta</span></span><a class="headerlink" href="#pyissm.model.classes.friction.pism.delta" title="Link to this definition"></a></dt>
+<dd><p>Lower limit of the effective pressure, expressed as a fraction of overburden pressure [dimensionless].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=0.02</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.pism.void_ratio">
+<span class="sig-name descname"><span class="pre">void_ratio</span></span><a class="headerlink" href="#pyissm.model.classes.friction.pism.void_ratio" title="Link to this definition"></a></dt>
+<dd><p>Void ratio at a reference effective pressure [dimensionless].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=0.69</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.pism.till_friction_angle">
+<span class="sig-name descname"><span class="pre">till_friction_angle</span></span><a class="headerlink" href="#pyissm.model.classes.friction.pism.till_friction_angle" title="Link to this definition"></a></dt>
+<dd><p>Till friction angle [deg], recommended default: 30 deg.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.pism.sediment_compressibility_coefficient">
+<span class="sig-name descname"><span class="pre">sediment_compressibility_coefficient</span></span><a class="headerlink" href="#pyissm.model.classes.friction.pism.sediment_compressibility_coefficient" title="Link to this definition"></a></dt>
+<dd><p>Coefficient of compressibility of the sediment [dimensionless], recommended default: 0.12.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.pism.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.pism.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the friction parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.pism.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.pism.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the friction parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.pism.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.pism.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.pism.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.pism.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file.</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.friction = pyissm.model.classes.friction.pism()</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.pism.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.pism.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.pism.extrude">
+<span class="sig-name descname"><span class="pre">extrude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.pism.extrude" title="Link to this definition"></a></dt>
+<dd><p>Extrude friction.pism fields to 3D</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd><p>Marshall [friction.pism] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.regcoulomb">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.friction.</span></span><span class="sig-name descname"><span class="pre">regcoulomb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.regcoulomb" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Regularized Coulomb friction parameters class for ISSM.</p>
+<p>This class encapsulates the parameters for the regularized Coulomb friction law (Joughin et al., 2019) in the ISSM (Ice Sheet System Model) framework.
+It defines the main friction-related parameters specific to the regularized Coulomb law.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.regcoulomb.C">
+<span class="sig-name descname"><span class="pre">C</span></span><a class="headerlink" href="#pyissm.model.classes.friction.regcoulomb.C" title="Link to this definition"></a></dt>
+<dd><p>Friction coefficient [SI].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float or ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.regcoulomb.u0">
+<span class="sig-name descname"><span class="pre">u0</span></span><a class="headerlink" href="#pyissm.model.classes.friction.regcoulomb.u0" title="Link to this definition"></a></dt>
+<dd><p>Velocity controlling plastic limit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float or ndarray, default=1000</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.regcoulomb.m">
+<span class="sig-name descname"><span class="pre">m</span></span><a class="headerlink" href="#pyissm.model.classes.friction.regcoulomb.m" title="Link to this definition"></a></dt>
+<dd><p>m exponent (set to m = 3 in original paper).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float or ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.regcoulomb.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.regcoulomb.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the friction parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.regcoulomb.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.regcoulomb.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the friction parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.regcoulomb.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.regcoulomb.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.regcoulomb.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.regcoulomb.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file.</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.friction = pyissm.model.classes.friction.regcoulomb()</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.regcoulomb.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.regcoulomb.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.regcoulomb.extrude">
+<span class="sig-name descname"><span class="pre">extrude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.regcoulomb.extrude" title="Link to this definition"></a></dt>
+<dd><p>Extrude friction.regcoloumb fields to 3D</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dd><p>Marshall [friction.regcoulomb] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.regcoulomb2">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.friction.</span></span><span class="sig-name descname"><span class="pre">regcoulomb2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.regcoulomb2" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<blockquote>
+<div><p>Regularized Coulomb 2 friction parameters class for ISSM.</p>
+<p>This class encapsulates the parameters for the regularized Coulomb 2 friction law (see Zoet and Iverson 2020 or Choi et al., 2022) in the ISSM (Ice Sheet System Model) framework.
+It defines the main friction-related parameters specific to the regularized Coulomb 2 law.</p>
+<dl class="simple">
+<dt>other<span class="classifier">any, optional</span></dt><dd><p>Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<p>C :</p>
+</div></blockquote>
+<dl>
+<dt>darray, default=np.nan</dt><dd><blockquote>
+<div><p>Friction coefficient [SI].</p>
+</div></blockquote>
+<dl class="simple">
+<dt>K<span class="classifier">ndarray, default=np.nan</span></dt><dd><p>K parameter for velocity controlling plastic limit.</p>
+</dd>
+<dt>m<span class="classifier">ndarray, default=np.nan</span></dt><dd><p>m exponent.</p>
+</dd>
+<dt>effective_pressure_limit<span class="classifier">float, default=0</span></dt><dd><p>Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>__init__(self, other=None)</dt><dd><p>Initializes the friction parameters, optionally inheriting from another instance.</p>
+</dd>
+<dt>__repr__(self)</dt><dd><p>Returns a detailed string representation of the friction parameters.</p>
+</dd>
+<dt>__str__(self)</dt><dd><p>Returns a short string identifying the class.</p>
+</dd>
+<dt>marshall_class(self, fid, prefix, md=None)</dt><dd><p>Marshall parameters to a binary file.</p>
+</dd>
+</dl>
+<p>md.friction = pyissm.model.classes.friction.regcoulomb2()</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.regcoulomb2.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.regcoulomb2.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.regcoulomb2.extrude">
+<span class="sig-name descname"><span class="pre">extrude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.regcoulomb2.extrude" title="Link to this definition"></a></dt>
+<dd><p>Extrude friction.regcoloumb2 fields to 3D</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.regcoulomb2.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.regcoulomb2.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall [friction.regcoulomb2] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.schoof">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.friction.</span></span><span class="sig-name descname"><span class="pre">schoof</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.schoof" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Schoof friction parameters class for ISSM.</p>
+<p>This class encapsulates the parameters for the Schoof sliding law in the ISSM (Ice Sheet System Model) framework.
+It defines the main friction-related parameters specific to the Schoof law.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.schoof.C">
+<span class="sig-name descname"><span class="pre">C</span></span><a class="headerlink" href="#pyissm.model.classes.friction.schoof.C" title="Link to this definition"></a></dt>
+<dd><p>Friction coefficient [SI].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.schoof.Cmax">
+<span class="sig-name descname"><span class="pre">Cmax</span></span><a class="headerlink" href="#pyissm.model.classes.friction.schoof.Cmax" title="Link to this definition"></a></dt>
+<dd><p>Iken’s bound (typically between 0.17 and 0.84) [SI].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.schoof.m">
+<span class="sig-name descname"><span class="pre">m</span></span><a class="headerlink" href="#pyissm.model.classes.friction.schoof.m" title="Link to this definition"></a></dt>
+<dd><p>m exponent (generally taken as m = 1/n = 1/3).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.schoof.coupling">
+<span class="sig-name descname"><span class="pre">coupling</span></span><a class="headerlink" href="#pyissm.model.classes.friction.schoof.coupling" title="Link to this definition"></a></dt>
+<dd><p>Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.schoof.effective_pressure">
+<span class="sig-name descname"><span class="pre">effective_pressure</span></span><a class="headerlink" href="#pyissm.model.classes.friction.schoof.effective_pressure" title="Link to this definition"></a></dt>
+<dd><p>Effective Pressure for the forcing if not coupled [Pa].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.schoof.effective_pressure_limit">
+<span class="sig-name descname"><span class="pre">effective_pressure_limit</span></span><a class="headerlink" href="#pyissm.model.classes.friction.schoof.effective_pressure_limit" title="Link to this definition"></a></dt>
+<dd><p>Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.schoof.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.schoof.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the friction parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.schoof.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.schoof.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the friction parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.schoof.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.schoof.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.schoof.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.schoof.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file.</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.friction = pyissm.model.classes.friction.schoof()</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.schoof.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.schoof.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.schoof.extrude">
+<span class="sig-name descname"><span class="pre">extrude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.schoof.extrude" title="Link to this definition"></a></dt>
+<dd><p>Extrude friction.schoof fields to 3D</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<dd><p>Marshall [friction.schoof] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.shakti">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.friction.</span></span><span class="sig-name descname"><span class="pre">shakti</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.shakti" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Shakti friction parameters class for ISSM.</p>
+<p>This class encapsulates the parameters for the Shakti friction law in the ISSM (Ice Sheet System Model) framework.
+It defines the main friction-related parameters specific to the Shakti law.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.shakti.coefficient">
+<span class="sig-name descname"><span class="pre">coefficient</span></span><a class="headerlink" href="#pyissm.model.classes.friction.shakti.coefficient" title="Link to this definition"></a></dt>
+<dd><p>Friction coefficient [SI].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.shakti.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.shakti.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the friction parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.shakti.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.shakti.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the friction parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.shakti.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.shakti.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.shakti.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.shakti.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file.</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.friction = pyissm.model.classes.friction.shakti()</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.shakti.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.shakti.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.shakti.extrude">
+<span class="sig-name descname"><span class="pre">extrude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.shakti.extrude" title="Link to this definition"></a></dt>
+<dd><p>Extrude friction.shakti fields to 3D</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<dd><p>Marshall [friction.shakti] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.waterlayer">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.friction.</span></span><span class="sig-name descname"><span class="pre">waterlayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.waterlayer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Waterlayer friction parameters class for ISSM.</p>
+<p>This class encapsulates the parameters for the waterlayer friction law in the ISSM (Ice Sheet System Model) framework.
+It defines the main friction-related parameters specific to the waterlayer law.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.waterlayer.coefficient">
+<span class="sig-name descname"><span class="pre">coefficient</span></span><a class="headerlink" href="#pyissm.model.classes.friction.waterlayer.coefficient" title="Link to this definition"></a></dt>
+<dd><p>Friction coefficient [SI].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.waterlayer.f">
+<span class="sig-name descname"><span class="pre">f</span></span><a class="headerlink" href="#pyissm.model.classes.friction.waterlayer.f" title="Link to this definition"></a></dt>
+<dd><p>f variable for effective pressure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.waterlayer.p">
+<span class="sig-name descname"><span class="pre">p</span></span><a class="headerlink" href="#pyissm.model.classes.friction.waterlayer.p" title="Link to this definition"></a></dt>
+<dd><p>p exponent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.waterlayer.q">
+<span class="sig-name descname"><span class="pre">q</span></span><a class="headerlink" href="#pyissm.model.classes.friction.waterlayer.q" title="Link to this definition"></a></dt>
+<dd><p>q exponent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.waterlayer.water_layer">
+<span class="sig-name descname"><span class="pre">water_layer</span></span><a class="headerlink" href="#pyissm.model.classes.friction.waterlayer.water_layer" title="Link to this definition"></a></dt>
+<dd><p>Water thickness at the base of the ice (m).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.waterlayer.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.waterlayer.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the friction parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.waterlayer.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.waterlayer.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the friction parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.waterlayer.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.waterlayer.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.waterlayer.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.waterlayer.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file.</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.friction = pyissm.model.classes.friction.waterlayer()</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.waterlayer.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.waterlayer.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.waterlayer.extrude">
+<span class="sig-name descname"><span class="pre">extrude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.waterlayer.extrude" title="Link to this definition"></a></dt>
+<dd><p>Extrude friction.schoof fields to 3D</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
+<dd><p>Marshall [friction.waterlayer] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.weertman">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.friction.</span></span><span class="sig-name descname"><span class="pre">weertman</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.weertman" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Weertman friction parameters class for ISSM.</p>
+<p>This class encapsulates the parameters for the Weertman sliding law in the ISSM (Ice Sheet System Model) framework.
+It defines the main friction-related parameters specific to the Weertman law.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.weertman.C">
+<span class="sig-name descname"><span class="pre">C</span></span><a class="headerlink" href="#pyissm.model.classes.friction.weertman.C" title="Link to this definition"></a></dt>
+<dd><p>Friction coefficient [SI].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.weertman.m">
+<span class="sig-name descname"><span class="pre">m</span></span><a class="headerlink" href="#pyissm.model.classes.friction.weertman.m" title="Link to this definition"></a></dt>
+<dd><p>m exponent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.weertman.linearize">
+<span class="sig-name descname"><span class="pre">linearize</span></span><a class="headerlink" href="#pyissm.model.classes.friction.weertman.linearize" title="Link to this definition"></a></dt>
+<dd><p>0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.weertman.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.weertman.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the friction parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.weertman.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.weertman.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the friction parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.weertman.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.weertman.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.weertman.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.weertman.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file.</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.friction = pyissm.model.classes.friction.weertman()</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.friction.weertman.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.friction.weertman.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
+<dd><p>Marshall [friction.weertman] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 

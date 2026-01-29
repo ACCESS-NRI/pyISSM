@@ -52,6 +52,7 @@
 <li class="toctree-l3"><a class="reference internal" href="pyissm.data.html">pyissm.data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pyissm.learn.html">pyissm.learn</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="pyissm.model.html">pyissm.model</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyissm.model.Model.html">pyissm.model.Model</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">pyissm.model.bc</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.html">pyissm.model.classes</a></li>
@@ -103,29 +104,119 @@
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_ice_front_nodes</span></code>(md, ice_front_exp)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.bc.get_ice_front_nodes" title="pyissm.model.bc.get_ice_front_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_ice_front_nodes</span></code></a>(md, ice_front_exp)</p></td>
 <td><p>Identify nodes on the ice front from the provided contour file.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ice_sheet_bc</span></code>(md)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.model.bc.set_ice_sheet_bc" title="pyissm.model.bc.set_ice_sheet_bc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ice_sheet_bc</span></code></a>(md)</p></td>
 <td><p>Set ice sheet boundary conditions for the ISSM model.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ice_shelf_bc</span></code>(md[, ice_front_exp])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.bc.set_ice_shelf_bc" title="pyissm.model.bc.set_ice_shelf_bc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ice_shelf_bc</span></code></a>(md[, ice_front_exp])</p></td>
 <td><p>Set ice shelf boundary conditions for the ISSM model.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_marine_ice_sheet_bc</span></code>(md[, ice_front_exp])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.model.bc.set_marine_ice_sheet_bc" title="pyissm.model.bc.set_marine_ice_sheet_bc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_marine_ice_sheet_bc</span></code></a>(md[, ice_front_exp])</p></td>
 <td><p>Set marine ice sheet boundary conditions for the ISSM model.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_molho_bc</span></code>(md)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.bc.set_molho_bc" title="pyissm.model.bc.set_molho_bc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_molho_bc</span></code></a>(md)</p></td>
 <td><p>Set MOLHO boundary conditions for ISSM model.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_neumann_bc</span></code>(md, node_on_ice_front)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.model.bc.set_neumann_bc" title="pyissm.model.bc.set_neumann_bc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_neumann_bc</span></code></a>(md, node_on_ice_front)</p></td>
 <td><p>Set Neumann boundary conditions for the ice front.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_sb_dirichlet_bc</span></code>(md)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.bc.set_sb_dirichlet_bc" title="pyissm.model.bc.set_sb_dirichlet_bc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_sb_dirichlet_bc</span></code></a>(md)</p></td>
 <td><p>Set Dirichlet boundary conditions on boundary (excluding ice front).</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.model.bc.get_ice_front_nodes">
+<span class="sig-prename descclassname"><span class="pre">pyissm.model.bc.</span></span><span class="sig-name descname"><span class="pre">get_ice_front_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ice_front_exp</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.bc.get_ice_front_nodes" title="Link to this definition"></a></dt>
+<dd><p>Identify nodes on the ice front from the provided contour file.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.model.bc.set_ice_sheet_bc">
+<span class="sig-prename descclassname"><span class="pre">pyissm.model.bc.</span></span><span class="sig-name descname"><span class="pre">set_ice_sheet_bc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.bc.set_ice_sheet_bc" title="Link to this definition"></a></dt>
+<dd><p>Set ice sheet boundary conditions for the ISSM model.</p>
+<p>Parameters:
+md : Model</p>
+<blockquote>
+<div><p>The ISSM model object.</p>
+</div></blockquote>
+<p>Returns:
+md : Model</p>
+<blockquote>
+<div><p>The ISSM model object with updated boundary conditions.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.model.bc.set_ice_shelf_bc">
+<span class="sig-prename descclassname"><span class="pre">pyissm.model.bc.</span></span><span class="sig-name descname"><span class="pre">set_ice_shelf_bc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ice_front_exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.bc.set_ice_shelf_bc" title="Link to this definition"></a></dt>
+<dd><p>Set ice shelf boundary conditions for the ISSM model.</p>
+<p>Parameters:
+md : Model</p>
+<blockquote>
+<div><p>The ISSM model object.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>ice_front_exp<span class="classifier">str, optional</span></dt><dd><p>Path to the ice front contour file. If None, no ice front is assumed.</p>
+</dd>
+</dl>
+<p>Returns:
+md : Model</p>
+<blockquote>
+<div><p>The ISSM model object with updated boundary conditions.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.model.bc.set_marine_ice_sheet_bc">
+<span class="sig-prename descclassname"><span class="pre">pyissm.model.bc.</span></span><span class="sig-name descname"><span class="pre">set_marine_ice_sheet_bc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ice_front_exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.bc.set_marine_ice_sheet_bc" title="Link to this definition"></a></dt>
+<dd><p>Set marine ice sheet boundary conditions for the ISSM model.</p>
+<p>Parameters:
+md : Model</p>
+<blockquote>
+<div><p>The ISSM model object.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>ice_front_exp<span class="classifier">str, optional</span></dt><dd><p>Path to the ice front contour file. If None, the ice front is guessed from ocean levelset.</p>
+</dd>
+</dl>
+<p>Returns:
+md : Model</p>
+<blockquote>
+<div><p>The ISSM model object with updated boundary conditions.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.model.bc.set_molho_bc">
+<span class="sig-prename descclassname"><span class="pre">pyissm.model.bc.</span></span><span class="sig-name descname"><span class="pre">set_molho_bc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.bc.set_molho_bc" title="Link to this definition"></a></dt>
+<dd><p>Set MOLHO boundary conditions for ISSM model.</p>
+<p>Parameters:
+md : Model</p>
+<blockquote>
+<div><p>The ISSM model object.</p>
+</div></blockquote>
+<p>Returns:
+md : Model</p>
+<blockquote>
+<div><p>The ISSM model object with updated boundary conditions.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.model.bc.set_neumann_bc">
+<span class="sig-prename descclassname"><span class="pre">pyissm.model.bc.</span></span><span class="sig-name descname"><span class="pre">set_neumann_bc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_on_ice_front</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.bc.set_neumann_bc" title="Link to this definition"></a></dt>
+<dd><p>Set Neumann boundary conditions for the ice front.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.model.bc.set_sb_dirichlet_bc">
+<span class="sig-prename descclassname"><span class="pre">pyissm.model.bc.</span></span><span class="sig-name descname"><span class="pre">set_sb_dirichlet_bc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.bc.set_sb_dirichlet_bc" title="Link to this definition"></a></dt>
+<dd><p>Set Dirichlet boundary conditions on boundary (excluding ice front).</p>
+</dd></dl>
+
 </section>
 
 

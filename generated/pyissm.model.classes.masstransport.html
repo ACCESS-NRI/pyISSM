@@ -52,6 +52,7 @@
 <li class="toctree-l3"><a class="reference internal" href="pyissm.data.html">pyissm.data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pyissm.learn.html">pyissm.learn</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="pyissm.model.html">pyissm.model</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyissm.model.Model.html">pyissm.model.Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyissm.model.bc.html">pyissm.model.bc</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="pyissm.model.classes.html">pyissm.model.classes</a></li>
@@ -103,7 +104,8 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="pyissm.model.classes.masstransport">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.</span></span><span class="sig-name descname"><span class="pre">masstransport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.masstransport" title="Link to this definition"></a></dt>
-<dd><p>Mass transport solution parameters class for ISSM.</p>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Mass transport solution parameters class for ISSM.</p>
 <p>This class encapsulates parameters for configuring mass transport simulations in the ISSM (Ice Sheet System Model) framework.
 It controls ice thickness evolution, free surface behavior, stabilization methods, and hydrostatic adjustments
 for both grounded and floating ice.</p>
@@ -277,6 +279,56 @@ default values for unspecified fields.</p>
 </tr>
 </tbody>
 </table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.masstransport.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.masstransport.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.masstransport.extrude">
+<span class="sig-name descname"><span class="pre">extrude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.masstransport.extrude" title="Link to this definition"></a></dt>
+<dd><p>Extrude masstransport fields to 3D</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd><p>Marshall [masstransport] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">process_outputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_default_outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd><p>Process requested outputs, expanding ‘default’ to appropriate outputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional</em>) – Model object containing mesh information.</p></li>
+<li><p><strong>return_default_outputs</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Whether to also return the list of default outputs.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>outputs</strong> (<em>list</em>) – List of output strings with ‘default’ expanded to actual output names.</p></li>
+<li><p><strong>default_outputs</strong> (<em>list, optional</em>) – Returned only if <cite>return_default_outputs=True</cite>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>

@@ -105,11 +105,78 @@
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">averaging</span></code>(md, data, iterations[, layer])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.tools.interp.averaging" title="pyissm.tools.interp.averaging"><code class="xref py py-obj docutils literal notranslate"><span class="pre">averaging</span></code></a>(md, data, iterations[, layer])</p></td>
 <td><p>Smooth input data over a mesh using area/volume-weighted nodal averaging.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.interp.averaging">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.interp.</span></span><span class="sig-name descname"><span class="pre">averaging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.interp.averaging" title="Link to this definition"></a></dt>
+<dd><p>Smooth input data over a mesh using area/volume-weighted nodal averaging.</p>
+<p>This function performs an iterative smoothing of data defined either on mesh
+elements or on mesh vertices. For element-defined data, it first distributes
+element values to nodes using element areas/volumes as weights. For vertex-
+defined data, it uses the provided nodal values as the starting point. Each
+iteration computes element-averaged values from current nodal values and then
+recomputes nodal values as the area/volume-weighted average of adjacent
+element averages. The algorithm supports 2-D meshes, full 3-D meshes (using
+element volumes), and extraction of a single 2-D layer from a 3-D mesh.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>md</strong> (<em>ISSM model object</em>)</p></li>
+<li><p><strong>data</strong> (<em>array_like</em>) – 1-D array-like of scalar values defined either on elements or on
+vertices. Its length must be equal to either:
+- md.mesh.numberofelements  (data on elements), or
+- md.mesh.numberofvertices  (data on vertices).
+If <cite>layer</cite> is provided for a 3-D mesh, the vertex-based length should be
+md.mesh.numberofvertices2d and element-based length md.mesh.numberofelements2d.</p></li>
+<li><p><strong>iterations</strong> (<em>int</em>) – Number of smoothing iterations to perform. Must be a non-negative
+integer. A value of 0 will still perform the initial element-&gt;node
+distribution if <cite>data</cite> is provided on elements.</p></li>
+<li><p><strong>layer</strong> (<em>int</em><em>, </em><em>optional</em>) – Layer index to extract when working with a 3-D mesh. Default is 0,
+meaning operate on the full mesh. If non-zero, it must satisfy
+1 &lt;= layer &lt;= md.mesh.numberoflayers and the function will operate on
+the corresponding 2-D layer (using mesh.elements2d, x2d, y2d, etc.).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>average</strong> – Dense column vector containing the smoothed nodal values. The length n is
+md.mesh.numberofvertices when <cite>layer == 0</cite>, or md.mesh.numberofvertices2d
+when a 2-D layer is extracted.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray, shape (n, 1)</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>Exception</strong> – If the length of <cite>data</cite> does not match the expected number of elements or
+    vertices for the mesh/layer combination.</p></li>
+<li><p><strong>ValueError</strong> – If a non-zero <cite>layer</cite> is provided for a 3-D mesh but is outside the valid
+    range (not in 1..md.mesh.numberoflayers).</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Weighting: element areas (2-D) or volumes (3-D) are used to weight the
+contribution of each element to its corner nodes when distributing element
+values to nodes and when recomputing nodal values from element averages.</p></li>
+<li><p>Indexing: mesh connectivity arrays are expected to be 1-based in the model
+and are converted to 0-based indices internally.</p></li>
+<li><p>Output is returned as a dense array (not a sparse matrix) for compatibility
+with downstream code (e.g. C routines) that expect full arrays.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Smooth element data on a 2-D mesh for 5 iterations</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">avg</span> <span class="o">=</span> <span class="n">averaging</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="n">element_data</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Smooth nodal data on layer 2 of a 3-D mesh</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">avg2d</span> <span class="o">=</span> <span class="n">averaging</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="n">vertex_data_2d</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </section>
 
 

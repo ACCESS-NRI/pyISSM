@@ -105,29 +105,261 @@
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">compare_bin_files</span></code>(file1, file2[, out_file, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.tools.general.compare_bin_files" title="pyissm.tools.general.compare_bin_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compare_bin_files</span></code></a>(file1, file2[, out_file, ...])</p></td>
 <td><p>Compare two ISSM binary files.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_units</span></code>(input_units, output_units, data)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.tools.general.convert_units" title="pyissm.tools.general.convert_units"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_units</span></code></a>(input_units, output_units, data)</p></td>
 <td><p>Convert numerical data between supported geophysical units.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_field_layer</span></code>(md, field, layer)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.tools.general.extract_field_layer" title="pyissm.tools.general.extract_field_layer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_field_layer</span></code></a>(md, field, layer)</p></td>
 <td><p>Extract a 2D horizontal layer from a 3D field defined on the model's vertices.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_nested_attr</span></code>(obj, *attrs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.tools.general.has_nested_attr" title="pyissm.tools.general.has_nested_attr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_nested_attr</span></code></a>(obj, *attrs)</p></td>
 <td><p>Check whether an object has a chain of nested attributes.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ll_to_xy</span></code>(lat, lon, sign[, central_meridian, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.tools.general.ll_to_xy" title="pyissm.tools.general.ll_to_xy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ll_to_xy</span></code></a>(lat, lon, sign[, central_meridian, ...])</p></td>
 <td><p>Convert geographic coordinates (latitude, longitude) to Cartesian coordinates (x, y) using the polar stereographic projection.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">planetradius</span></code>(planet)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.tools.general.planetradius" title="pyissm.tools.general.planetradius"><code class="xref py py-obj docutils literal notranslate"><span class="pre">planetradius</span></code></a>(planet)</p></td>
 <td><p>Return the mean radius of a specified planetary body.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xy_to_ll</span></code>(x, y, sign[, central_meridian, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.tools.general.xy_to_ll" title="pyissm.tools.general.xy_to_ll"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xy_to_ll</span></code></a>(x, y, sign[, central_meridian, ...])</p></td>
 <td><p>Convert Cartesian coordinates (x, y) to geographic coordinates (latitude, longitude) using the polar stereographic projection.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.general.compare_bin_files">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.general.</span></span><span class="sig-name descname"><span class="pre">compare_bin_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">compare_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compare_shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compare_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compare_mattype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.general.compare_bin_files" title="Link to this definition"></a></dt>
+<dd><p>Compare two ISSM binary files.</p>
+<p>This function compares two binary files in ISSM format and reports differences
+based on the selected comparison mode. Exactly one of the comparison modes must
+be enabled.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file1</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Path to the first binary file to compare.</p></li>
+<li><p><strong>file2</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Path to the second binary file to compare.</p></li>
+<li><p><strong>out_file</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – Path to write the comparison report. If not provided, output is printed
+to the console. Default is None.</p></li>
+<li><p><strong>compare_data</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, compare the actual data values in the files. Default is False.</p></li>
+<li><p><strong>compare_shape</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, compare the shape of array fields. Default is False.</p></li>
+<li><p><strong>compare_format</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, compare the data type format of fields. Default is False.</p></li>
+<li><p><strong>compare_mattype</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, compare the matrix type codes of fields. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Output is either written to a file (if <cite>out_file</cite> is specified) or
+printed to the console.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If exactly one of the compare_* options is not True.</p></li>
+<li><p><strong>TypeError</strong> – If an unsupported type code is encountered in the binary file.</p></li>
+<li><p><strong>struct.error</strong> – If there is an error reading the binary file format.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Exactly ONE of the <cite>compare_data</cite>, <cite>compare_shape</cite>, <cite>compare_format</cite>, or
+<cite>compare_mattype</cite> options must be True. An error will be raised if zero or
+more than one option is enabled.</p>
+<p>The comparison report displays fields that are missing in either file,
+along with a status indicating whether values are the same or different
+based on the selected comparison mode.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.general.convert_units">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.general.</span></span><span class="sig-name descname"><span class="pre">convert_units</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_units</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_units</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">31536000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho_ice</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">917</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.general.convert_units" title="Link to this definition"></a></dt>
+<dd><p>Convert numerical data between supported geophysical units.</p>
+<p>This function supports a variety of conversions commonly required when
+working with ISSM input/output entities. Required constants are
+consistent with those used in the Ice sheet and Sea Level System Model (ISSM).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_units</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Units of the input data. Must be one of:
+‘m’, ‘km’, ‘ms-1’, ‘myr-1’, ‘m2’, ‘km2’, ‘Gt’, ‘km3’, ‘Gtyr-1’, ‘kgs-1’.</p></li>
+<li><p><strong>output_units</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Desired units for the output data. Must be one of:
+‘m’, ‘km’, ‘ms-1’, ‘myr-1’, ‘m2’, ‘km2’, ‘Gt’, ‘km3’, ‘Gtyr-1’, ‘kgs-1’.</p></li>
+<li><p><strong>data</strong> (<em>float</em><em>, </em><em>list</em><em>, or </em><em>ndarray</em>) – Numerical value(s) to convert. Data are converted to array for computation.</p></li>
+<li><p><strong>yts</strong> (<em>float</em><em> or </em><em>int</em><em>, </em><em>optional</em>) – Seconds in a year (default = 365 * 24 * 60 * 60)</p></li>
+<li><p><strong>rho_ice</strong> (<em>float</em><em> or </em><em>int</em><em>, </em><em>optional</em>) – Ice density in kg/m3 (default: 917)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>converted_data</strong> – The data converted from <cite>input_units</cite> to <cite>output_units</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float or ndarray</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If <cite>input_units</cite> or <cite>output_units</cite> are not among the accepted units,
+    or if the requested unit conversion is not supported.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The following unit conversions are supported:</p>
+<ul class="simple">
+<li><p>Length: m &lt;-&gt; km</p></li>
+<li><p>Area: m² &lt;-&gt; km²</p></li>
+<li><p>Speed: m/s &lt;-&gt; m/yr</p></li>
+<li><p>Volume: m³ &lt;-&gt; km³</p></li>
+<li><p>Mass: Gt &lt;-&gt; km³ (using ice density 917 kg/m³)</p></li>
+<li><p>Rate: Gt/yr &lt;-&gt; kg/s</p></li>
+<li><p>Rate: kg/m²/s-1 &lt;-&gt; myr-1</p></li>
+<li><p>Rate: kg/m²/s-1 &lt;-&gt; myr-1ie</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.general.extract_field_layer">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.general.</span></span><span class="sig-name descname"><span class="pre">extract_field_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.general.extract_field_layer" title="Link to this definition"></a></dt>
+<dd><p>Extract a 2D horizontal layer from a 3D field defined on the model’s vertices.</p>
+<p>This function isolates a specific horizontal layer from a field defined over all
+3D vertices of a model. Only vertex-based fields are supported; element-based
+fields will raise an error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>md</strong> (<em>ISSM Model object</em>) – ISSM Model object containing mesh. Must be compatible with process_mesh().</p></li>
+<li><p><strong>field</strong> (<em>np.ndarray</em>) – A 1D array of shape ‘md.mesh.numberofvertices’ representing a 3D field defined on vertices.</p></li>
+<li><p><strong>layer</strong> (<em>int</em>) – The vertical layer index to extract (1-based). Must be a single integer.
+Layer indexing starts from 1 (base) to ‘md.mesh.numberoflayers’ (surface).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>select_layer</strong> (<em>np.ndarray</em>) – A 1D array of shape ‘md.mesh.numberofvertices2d’ or ‘md.mesh.numberofelements2d’ containing the field values at the specified layer.</p></li>
+<li><p><strong>select_indices</strong> (<em>np.ndarray</em>) – A 1D array of shape ‘md.mesh.numberofvertices2d’ or ‘md.mesh.numberofelements2d’ containing the indices of vertices/elements associated with the specified layer.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>This function assumes that the 3D vertex/element ordering in ‘field’ is layer-major:
+i.e., all vertices/elements in layer 1 come first, then layer 2, and so on.</p></li>
+<li><p>Depth-averaging functionality (e.g., specifying a range of layers) is not yet implemented.</p></li>
+</ul>
+<p class="rubric">Example</p>
+<p>field_2d, select_indices = extract_field_layer(md, md.results.TransientSolution.Temperature[0], layer = 1)
+field_2d, select_indices = extract_field_layer(md, md.materials.rheology_n, layer = 6)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.general.has_nested_attr">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.general.</span></span><span class="sig-name descname"><span class="pre">has_nested_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">attrs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.general.has_nested_attr" title="Link to this definition"></a></dt>
+<dd><p>Check whether an object has a chain of nested attributes.</p>
+<p>This function tests whether an object has a sequence of attributes,
+each accessible from the previous one, such as <cite>obj.a.b.c</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> (<em>object</em>) – The base object from which to start the attribute lookup.</p></li>
+<li><p><strong>*attrs</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – A sequence of attribute names representing the path to check.
+Each string in <cite>attrs</cite> should be a valid attribute of the previous one.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>has_attr</strong> – <cite>True</cite> if all nested attributes exist, <cite>False</cite> otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.general.ll_to_xy">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.general.</span></span><span class="sig-name descname"><span class="pre">ll_to_xy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sign</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">central_meridian</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">standard_parallel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.general.ll_to_xy" title="Link to this definition"></a></dt>
+<dd><p>Convert geographic coordinates (latitude, longitude) to Cartesian coordinates (x, y)
+using the polar stereographic projection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lat</strong> (<em>array_like</em>) – The latitude in degrees.</p></li>
+<li><p><strong>lon</strong> (<em>array_like</em>) – The longitude in degrees.</p></li>
+<li><p><strong>sign</strong> (<em>int</em>) – The hemisphere indicator, where 1 indicates the northern hemisphere and -1 indicates the southern hemisphere.</p></li>
+<li><p><strong>central_meridian</strong> (<em>float</em><em>, </em><em>optional</em>) – The central meridian in degrees. If not specified, defaults are used based on the hemisphere.</p></li>
+<li><p><strong>standard_parallel</strong> (<em>float</em><em>, </em><em>optional</em>) – The standard parallel in degrees. If not specified, defaults are used based on the hemisphere.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>x</strong> (<em>ndarray</em>) – The x-coordinates in meters.</p></li>
+<li><p><strong>y</strong> (<em>ndarray</em>) – The y-coordinates in meters.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If <cite>sign</cite> is not 1 or -1.
+    If only one of <cite>central_meridian</cite> or <cite>standard_parallel</cite> is specified.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The function uses the WGS84 ellipsoid parameters for the conversion.
+Special handling is included for the case when <cite>standard_parallel</cite> is 90 degrees.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.general.planetradius">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.general.</span></span><span class="sig-name descname"><span class="pre">planetradius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">planet</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.general.planetradius" title="Link to this definition"></a></dt>
+<dd><p>Return the mean radius of a specified planetary body.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>planet</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Name of the planet. Supported values are:
+- <cite>‘earth’</cite> : Earth’s mean radius in meters.
+- <cite>‘europa’</cite> : Europa’s mean radius in meters.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>radius</strong> – Planetary radius in meters.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If the input <cite>planet</cite> is not one of the supported values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.general.xy_to_ll">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.general.</span></span><span class="sig-name descname"><span class="pre">xy_to_ll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sign</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">central_meridian</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">standard_parallel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.general.xy_to_ll" title="Link to this definition"></a></dt>
+<dd><p>Convert Cartesian coordinates (x, y) to geographic coordinates (latitude, longitude)
+using the polar stereographic projection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>array_like</em>) – The x-coordinates in meters.</p></li>
+<li><p><strong>y</strong> (<em>array_like</em>) – The y-coordinates in meters.</p></li>
+<li><p><strong>sign</strong> (<em>int</em>) – The hemisphere indicator, where 1 indicates the northern hemisphere and -1 indicates the southern hemisphere.</p></li>
+<li><p><strong>central_meridian</strong> (<em>float</em><em>, </em><em>optional</em>) – The central meridian in degrees. If not specified, defaults are used based on the hemisphere.</p></li>
+<li><p><strong>standard_parallel</strong> (<em>float</em><em>, </em><em>optional</em>) – The standard parallel in degrees. If not specified, defaults are used based on the hemisphere.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>lat</strong> (<em>ndarray</em>) – The latitude in degrees.</p></li>
+<li><p><strong>lon</strong> (<em>ndarray</em>) – The longitude in degrees, adjusted by the central meridian.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If <cite>sign</cite> is not 1 or -1.
+    If only one of <cite>central_meridian</cite> or <cite>standard_parallel</cite> is specified.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The function uses the WGS84 ellipsoid parameters for the conversion.
+Special handling is included for the case when <cite>standard_parallel</cite> is 90 degrees.</p>
+</dd></dl>
+
 </section>
 
 

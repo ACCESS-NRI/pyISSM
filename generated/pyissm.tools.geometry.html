@@ -105,14 +105,69 @@
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nowicki_profile</span></code>(x)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.tools.geometry.nowicki_profile" title="pyissm.tools.geometry.nowicki_profile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nowicki_profile</span></code></a>(x)</p></td>
 <td><p>Create a theoretical ice profile at the transition zone based on Sophie Nowicki's thesis.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">slope</span></code>(md[, field])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.tools.geometry.slope" title="pyissm.tools.geometry.slope"><code class="xref py py-obj docutils literal notranslate"><span class="pre">slope</span></code></a>(md[, field])</p></td>
 <td><p>Compute the slope of a given field over the mesh elements.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.geometry.nowicki_profile">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.geometry.</span></span><span class="sig-name descname"><span class="pre">nowicki_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.geometry.nowicki_profile" title="Link to this definition"></a></dt>
+<dd><p>Create a theoretical ice profile at the transition zone
+based on Sophie Nowicki’s thesis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>array_like</em>) – Along-flow coordinate</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>b</strong> (<em>ndarray</em>) – Ice base</p></li>
+<li><p><strong>h</strong> (<em>ndarray</em>) – Ice thickness</p></li>
+<li><p><strong>sea</strong> (<em>float</em>) – Sea level</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.geometry.slope">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.geometry.</span></span><span class="sig-name descname"><span class="pre">slope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.geometry.slope" title="Link to this definition"></a></dt>
+<dd><p>Compute the slope of a given field over the mesh elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>md</strong> (<em>object</em>) – Model object containing mesh and geometry information.</p></li>
+<li><p><strong>field</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Field values at mesh nodes. If not provided, uses the surface elevation
+from md.geometry.surface. Default is None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>sx</strong> (<em>ndarray</em>) – Slope component in the x-direction at element centers.</p></li>
+<li><p><strong>sy</strong> (<em>ndarray</em>) – Slope component in the y-direction at element centers.</p></li>
+<li><p><strong>s</strong> (<em>ndarray</em>) – Magnitude of the slope at element centers.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotImplementedError</strong> – If the mesh dimension is 3D, as 3D meshes are not yet supported.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The slope is computed using nodal basis functions N(x, y) = alpha*x + beta*y + gamma.
+For 2D meshes, elements and coordinates are taken directly from the mesh.
+For 3D meshes, 2D elements and coordinates are used instead.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sx</span><span class="p">,</span> <span class="n">sy</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">slope</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sx</span><span class="p">,</span> <span class="n">sy</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">slope</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="n">md</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">bed</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </section>
 
 

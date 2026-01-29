@@ -52,6 +52,7 @@
 <li class="toctree-l3"><a class="reference internal" href="pyissm.data.html">pyissm.data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pyissm.learn.html">pyissm.learn</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="pyissm.model.html">pyissm.model</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyissm.model.Model.html">pyissm.model.Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyissm.model.bc.html">pyissm.model.bc</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="pyissm.model.classes.html">pyissm.model.classes</a></li>
@@ -103,14 +104,235 @@
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">default</span></code>([other])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.classes.dsl.default" title="pyissm.model.classes.dsl.default"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default</span></code></a>([other])</p></td>
 <td><p>Default DSL parameters class for ISSM.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mme</span></code>([other])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.model.classes.dsl.mme" title="pyissm.model.classes.dsl.mme"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mme</span></code></a>([other])</p></td>
 <td><p>Multi-Model Ensemble (MME) DSL parameters class for ISSM.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.dsl.default">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.dsl.</span></span><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.dsl.default" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Default DSL parameters class for ISSM.</p>
+<p>This class encapsulates the default parameters for dynamic sea level (DSL) in the ISSM (Ice Sheet System Model) framework.
+It defines the main DSL-related parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.dsl.default.global_average_thermosteric_sea_level">
+<span class="sig-name descname"><span class="pre">global_average_thermosteric_sea_level</span></span><a class="headerlink" href="#pyissm.model.classes.dsl.default.global_average_thermosteric_sea_level" title="Link to this definition"></a></dt>
+<dd><p>Corresponds to zostoga field in CMIP5 archives. Specified as a temporally variable quantity (in m).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float or ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.dsl.default.sea_surface_height_above_geoid">
+<span class="sig-name descname"><span class="pre">sea_surface_height_above_geoid</span></span><a class="headerlink" href="#pyissm.model.classes.dsl.default.sea_surface_height_above_geoid" title="Link to this definition"></a></dt>
+<dd><p>Corresponds to zos field in CMIP5 archives. Spatial average is 0. Specified as a spatio-temporally variable quantity (in m).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float or ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.dsl.default.sea_water_pressure_at_sea_floor">
+<span class="sig-name descname"><span class="pre">sea_water_pressure_at_sea_floor</span></span><a class="headerlink" href="#pyissm.model.classes.dsl.default.sea_water_pressure_at_sea_floor" title="Link to this definition"></a></dt>
+<dd><p>Corresponds to bpo field in CMIP5 archives. Specified as a spatio-temporally variable quantity (in m equivalent, not in Pa!).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float or ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.dsl.default.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.dsl.default.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the DSL parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.dsl.default.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.dsl.default.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the DSL parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.dsl.default.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.dsl.default.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.dsl.default.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.dsl.default.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file.</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.dsl = pyissm.model.classes.dsl.default()</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.dsl.default.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.dsl.default.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.dsl.default.extrude">
+<span class="sig-name descname"><span class="pre">extrude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.dsl.default.extrude" title="Link to this definition"></a></dt>
+<dd><p>Extrude dsl.default fields to 3D</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.dsl.default.initialise">
+<span class="sig-name descname"><span class="pre">initialise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.dsl.default.initialise" title="Link to this definition"></a></dt>
+<dd><p>Initialise empty fields in dsl.default.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd><p>Marshall [dsl.default] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.dsl.mme">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.dsl.</span></span><span class="sig-name descname"><span class="pre">mme</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.dsl.mme" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Multi-Model Ensemble (MME) DSL parameters class for ISSM.</p>
+<p>This class encapsulates the parameters for dynamic sea level (DSL) for a multi-model ensemble (MME) of CMIP5 outputs in the ISSM (Ice Sheet System Model) framework.
+It defines the main DSL-related parameters for each ensemble member.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.dsl.mme.modelid">
+<span class="sig-name descname"><span class="pre">modelid</span></span><a class="headerlink" href="#pyissm.model.classes.dsl.mme.modelid" title="Link to this definition"></a></dt>
+<dd><p>Index into the multi-model ensemble, determines which field will be used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.dsl.mme.global_average_thermosteric_sea_level">
+<span class="sig-name descname"><span class="pre">global_average_thermosteric_sea_level</span></span><a class="headerlink" href="#pyissm.model.classes.dsl.mme.global_average_thermosteric_sea_level" title="Link to this definition"></a></dt>
+<dd><p>Corresponds to zostoga field in CMIP5 archives. Specified as a temporally variable quantity (in m) for each ensemble member.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float or ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.dsl.mme.sea_surface_height_above_geoid">
+<span class="sig-name descname"><span class="pre">sea_surface_height_above_geoid</span></span><a class="headerlink" href="#pyissm.model.classes.dsl.mme.sea_surface_height_above_geoid" title="Link to this definition"></a></dt>
+<dd><p>Corresponds to zos field in CMIP5 archives. Spatial average is 0. Specified as a spatio-temporally variable quantity (in m) for each ensemble member.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float or ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.dsl.mme.sea_water_pressure_at_sea_floor">
+<span class="sig-name descname"><span class="pre">sea_water_pressure_at_sea_floor</span></span><a class="headerlink" href="#pyissm.model.classes.dsl.mme.sea_water_pressure_at_sea_floor" title="Link to this definition"></a></dt>
+<dd><p>Corresponds to bpo field in CMIP5 archives. Specified as a spatio-temporally variable quantity (in m equivalent, not in Pa!) for each ensemble member.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float or ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.dsl.mme.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.dsl.mme.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the MME DSL parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.dsl.mme.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.dsl.mme.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the MME DSL parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.dsl.mme.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.dsl.mme.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.dsl.mme.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.dsl.mme.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file.</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.dsl = pyissm.model.classes.dsl.mme()</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.dsl.mme.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.dsl.mme.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.dsl.mme.extrude">
+<span class="sig-name descname"><span class="pre">extrude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.dsl.mme.extrude" title="Link to this definition"></a></dt>
+<dd><p>Extrude dsl.mme fields to 3D</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd><p>Marshall [dsl.default] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 

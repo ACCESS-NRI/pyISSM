@@ -52,6 +52,7 @@
 <li class="toctree-l3"><a class="reference internal" href="pyissm.data.html">pyissm.data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pyissm.learn.html">pyissm.learn</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="pyissm.model.html">pyissm.model</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyissm.model.Model.html">pyissm.model.Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyissm.model.bc.html">pyissm.model.bc</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="pyissm.model.classes.html">pyissm.model.classes</a></li>
@@ -103,14 +104,720 @@
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">gadi</span></code>([config_file, other])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.classes.cluster.gadi" title="pyissm.model.classes.cluster.gadi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gadi</span></code></a>([config_file, other])</p></td>
 <td><p>Gadi HPC cluster interface for ISSM job submission and management.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">generic</span></code>([config_file, other])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.model.classes.cluster.generic" title="pyissm.model.classes.cluster.generic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generic</span></code></a>([config_file, other])</p></td>
 <td><p>Generic cluster class for ISSM.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.gadi">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.cluster.</span></span><span class="sig-name descname"><span class="pre">gadi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.cluster.gadi" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Gadi HPC cluster interface for ISSM job submission and management.</p>
+<p>This class represents the Gadi HPC cluster at the National Computational
+Infrastructure (NCI) and provides methods for configuring cluster parameters,
+building PBS queue scripts, and managing job submission and file transfers.</p>
+<p>The Gadi cluster uses PBS Pro for job scheduling and supports parallel
+execution via MPI. Configuration can be provided via YAML config files or
+programmatically through object attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config_file</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – Path to YAML configuration file containing cluster parameters.
+If provided, will override default parameters with values from the file.</p></li>
+<li><p><strong>other</strong> (<em>object</em><em>, </em><em>optional</em>) – Another cluster object to inherit matching fields from.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.gadi.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#pyissm.model.classes.cluster.gadi.name" title="Link to this definition"></a></dt>
+<dd><p>Hostname of the cluster. Defaults to ‘gadi.nci.org.au’ if not on Gadi.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.gadi.login">
+<span class="sig-name descname"><span class="pre">login</span></span><a class="headerlink" href="#pyissm.model.classes.cluster.gadi.login" title="Link to this definition"></a></dt>
+<dd><p>Login username for the cluster. Must be provided for cluster access.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.gadi.np">
+<span class="sig-name descname"><span class="pre">np</span></span><a class="headerlink" href="#pyissm.model.classes.cluster.gadi.np" title="Link to this definition"></a></dt>
+<dd><p>Number of processors to use for job execution. Default is 16.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.gadi.memory">
+<span class="sig-name descname"><span class="pre">memory</span></span><a class="headerlink" href="#pyissm.model.classes.cluster.gadi.memory" title="Link to this definition"></a></dt>
+<dd><p>Memory per node in GB. Default is 40.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.gadi.port">
+<span class="sig-name descname"><span class="pre">port</span></span><a class="headerlink" href="#pyissm.model.classes.cluster.gadi.port" title="Link to this definition"></a></dt>
+<dd><p>SSH port number for cluster connection. Default is 0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.gadi.queue">
+<span class="sig-name descname"><span class="pre">queue</span></span><a class="headerlink" href="#pyissm.model.classes.cluster.gadi.queue" title="Link to this definition"></a></dt>
+<dd><p>PBS queue name. Options include ‘normal’, ‘express’, ‘hugemem’.
+Default is ‘normal’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.gadi.time">
+<span class="sig-name descname"><span class="pre">time</span></span><a class="headerlink" href="#pyissm.model.classes.cluster.gadi.time" title="Link to this definition"></a></dt>
+<dd><p>Walltime limit for job execution in minutes. Default is 60.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.gadi.codepath">
+<span class="sig-name descname"><span class="pre">codepath</span></span><a class="headerlink" href="#pyissm.model.classes.cluster.gadi.codepath" title="Link to this definition"></a></dt>
+<dd><p>Path to the ISSM executable directory (e.g., $ISSM_DIR/bin).
+Must be provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.gadi.executionpath">
+<span class="sig-name descname"><span class="pre">executionpath</span></span><a class="headerlink" href="#pyissm.model.classes.cluster.gadi.executionpath" title="Link to this definition"></a></dt>
+<dd><p>Path to the execution/working directory on the cluster. Must be provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.gadi.project">
+<span class="sig-name descname"><span class="pre">project</span></span><a class="headerlink" href="#pyissm.model.classes.cluster.gadi.project" title="Link to this definition"></a></dt>
+<dd><p>NCI project code for job submission. Must be provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.gadi.storage">
+<span class="sig-name descname"><span class="pre">storage</span></span><a class="headerlink" href="#pyissm.model.classes.cluster.gadi.storage" title="Link to this definition"></a></dt>
+<dd><p>Storage paths to access (e.g., ‘gdata/XXX+scratch/XXX’).
+Must be provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.gadi.moduleload">
+<span class="sig-name descname"><span class="pre">moduleload</span></span><a class="headerlink" href="#pyissm.model.classes.cluster.gadi.moduleload" title="Link to this definition"></a></dt>
+<dd><p>List of module load commands needed for PBS job execution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of <a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.gadi.moduleuse">
+<span class="sig-name descname"><span class="pre">moduleuse</span></span><a class="headerlink" href="#pyissm.model.classes.cluster.gadi.moduleuse" title="Link to this definition"></a></dt>
+<dd><p>List of module use commands to specify module paths.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of <a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>All required attributes (login, codepath, executionpath, project, storage)
+must be set either via configuration file or programmatically before building
+and launching jobs. The moduleload and moduleuse lists must have equal length.</p>
+<p>Queue specifications:</p>
+<ul class="simple">
+<li><p>normal: 48 hours on up to 3072 cores</p></li>
+<li><p>express: 2 hours on up to 960 cores</p></li>
+<li><p>hugemem: 48 hours on up to 3072 cores</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cluster</span> <span class="o">=</span> <span class="n">gadi</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;gadi_config.yaml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cluster</span><span class="o">.</span><span class="n">np</span> <span class="o">=</span> <span class="mi">32</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cluster</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="s1">&#39;express&#39;</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.gadi.build_queue_script">
+<span class="sig-name descname"><span class="pre">build_queue_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">io_gather</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_valgrind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_gprof</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_dakota</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_ocean_coupling</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">executable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'issm.exe'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.cluster.gadi.build_queue_script" title="Link to this definition"></a></dt>
+<dd><p>Generate a PBS queue submission script for running ISSM models
+on the Gadi cluster. The script includes resource specifications, module
+loading, and execution commands.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dir_name</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Directory name where the model execution files are stored.</p></li>
+<li><p><strong>model_name</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Name of the model, used for output file naming.</p></li>
+<li><p><strong>solution</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Solution type or identifier to pass to the executable.</p></li>
+<li><p><strong>io_gather</strong> (<em>bool</em>) – If True, output files are pre-gathered. If False, output binary files
+are concatenated after execution.</p></li>
+<li><p><strong>is_valgrind</strong> (<em>bool</em>) – If True, raises NotImplementedError as Valgrind is not supported.</p></li>
+<li><p><strong>is_gprof</strong> (<em>bool</em>) – If True, raises NotImplementedError as gprof is not supported.</p></li>
+<li><p><strong>is_dakota</strong> (<em>bool</em>) – If True, raises NotImplementedError as DAKOTA is not supported.</p></li>
+<li><p><strong>is_ocean_coupling</strong> (<em>bool</em>) – If True, raises NotImplementedError as ocean coupling is not supported.</p></li>
+<li><p><strong>executable</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – Name of the executable to run. Default is ‘issm.exe’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>IOError</strong> – If Python wrappers are not installed.</p></li>
+<li><p><strong>NotImplementedError</strong> – If any of the unsupported features (DAKOTA, ocean coupling, Valgrind, gprof)
+    are requested.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Writes a queue script file named ‘{model_name}.queue’ to the current directory.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.gadi.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.cluster.gadi.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.gadi.download">
+<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.cluster.gadi.download" title="Link to this definition"></a></dt>
+<dd><p>Download files from a remote cluster to the local machine.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dir_name</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – The name of the directory on the remote cluster containing the files
+to download.</p></li>
+<li><p><strong>file_list</strong> (<em>list</em><em> of </em><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – A list of filenames to download from the remote cluster directory.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.gadi.launch_queue_job">
+<span class="sig-name descname"><span class="pre">launch_queue_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">restart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.cluster.gadi.launch_queue_job" title="Link to this definition"></a></dt>
+<dd><p>Launch a job on the Gadi cluster queue system.</p>
+<p>This method submits a job to the Gadi PBS queue system. It handles both
+fresh job submissions and job restarts, with optional batch processing mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_name</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Name of the model to be executed on the cluster.</p></li>
+<li><p><strong>dir_name</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Name of the directory where the job will be executed.</p></li>
+<li><p><strong>restart</strong> (<em>bool</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – If not None, indicates this is a restart of an existing job.
+When restarting, the method assumes the job directory already exists
+and only submits the queue script via qsub. Default is None.</p></li>
+<li><p><strong>batch</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag indicating whether to run in batch mode. Currently unused for
+Gadi cluster but maintained for interface compatibility.
+Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The method performs different operations based on the restart parameter:</p>
+<ul class="simple">
+<li><p>If restart is not None: Changes to the existing execution directory and
+submits the queue script using qsub.</p></li>
+<li><p>If restart is None: Removes any existing directory, creates a new one,
+moves and extracts the tar.gz file, then submits the queue script using qsub.</p></li>
+</ul>
+<p>The job is launched via SSH connection to the cluster using the cluster’s
+name, login credentials, and port configuration.</p>
+<p class="rubric">Examples</p>
+<p>Launch a new job:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cluster</span><span class="o">.</span><span class="n">launch_queue_job</span><span class="p">(</span><span class="s1">&#39;simulation_01&#39;</span><span class="p">,</span> <span class="s1">&#39;run_dir&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Restart an existing job:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cluster</span><span class="o">.</span><span class="n">launch_queue_job</span><span class="p">(</span><span class="s1">&#39;simulation_01&#39;</span><span class="p">,</span> <span class="s1">&#39;run_dir&#39;</span><span class="p">,</span> <span class="n">restart</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.gadi.upload_queue_job">
+<span class="sig-name descname"><span class="pre">upload_queue_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.cluster.gadi.upload_queue_job" title="Link to this definition"></a></dt>
+<dd><p>Upload job files to the cluster queue system.</p>
+<p>This method compresses the specified files into a tar.gz archive and transfers it to the
+cluster using SCP. If running in interactive mode, also includes error and
+output log files in the archive.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_name</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Name of the model, used for naming log files in interactive mode (not used here).</p></li>
+<li><p><strong>dir_name</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Name of the directory/archive to be created (without extension).</p></li>
+<li><p><strong>file_list</strong> (<em>list</em><em> of </em><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – List of file paths to be included in the compressed archive.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The function creates a tar.gz archive with the name <cite>{dir_name}.tar.gz</cite>
+containing all files in <cite>file_list</cite>. The compressed archive is then transferred to the cluster using the
+cluster’s configured connection parameters (name, execution path, login,
+and port).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.generic">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.cluster.</span></span><span class="sig-name descname"><span class="pre">generic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.cluster.generic" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Generic cluster class for ISSM.</p>
+<p>This class provides a generic interface for managing cluster configurations
+and job execution in the Ice Sheet System Model (ISSM) framework. It handles cluster
+parameters, queue script generation, job submission, and result retrieval.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config_file</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – Path to YAML configuration file containing cluster parameters.
+If provided, will override default parameters with values from the file.</p></li>
+<li><p><strong>other</strong> (<em>object</em><em>, </em><em>optional</em>) – Another cluster object to inherit matching fields from.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.generic.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#pyissm.model.classes.cluster.generic.name" title="Link to this definition"></a></dt>
+<dd><p>Name of the cluster (defaults to hostname).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.generic.login">
+<span class="sig-name descname"><span class="pre">login</span></span><a class="headerlink" href="#pyissm.model.classes.cluster.generic.login" title="Link to this definition"></a></dt>
+<dd><p>Login username for the cluster (defaults to current username).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.generic.np">
+<span class="sig-name descname"><span class="pre">np</span></span><a class="headerlink" href="#pyissm.model.classes.cluster.generic.np" title="Link to this definition"></a></dt>
+<dd><p>Number of processors to use (default: 1).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.generic.port">
+<span class="sig-name descname"><span class="pre">port</span></span><a class="headerlink" href="#pyissm.model.classes.cluster.generic.port" title="Link to this definition"></a></dt>
+<dd><p>Port number for connections (default: 0).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.generic.interactive">
+<span class="sig-name descname"><span class="pre">interactive</span></span><a class="headerlink" href="#pyissm.model.classes.cluster.generic.interactive" title="Link to this definition"></a></dt>
+<dd><p>Interactive mode flag (default: 1).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.generic.codepath">
+<span class="sig-name descname"><span class="pre">codepath</span></span><a class="headerlink" href="#pyissm.model.classes.cluster.generic.codepath" title="Link to this definition"></a></dt>
+<dd><p>Path to the ISSM executables directory (default: $ISSM_DIR/bin).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.generic.executionpath">
+<span class="sig-name descname"><span class="pre">executionpath</span></span><a class="headerlink" href="#pyissm.model.classes.cluster.generic.executionpath" title="Link to this definition"></a></dt>
+<dd><p>Path to the execution directory on the cluster (default: $ISSM_DIR/execution).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.generic.valgrind">
+<span class="sig-name descname"><span class="pre">valgrind</span></span><a class="headerlink" href="#pyissm.model.classes.cluster.generic.valgrind" title="Link to this definition"></a></dt>
+<dd><p>Path to valgrind executable for memory debugging (default: $ISSM_DIR/externalpackages/valgrind/bin/valgrind).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.generic.valgrindlib">
+<span class="sig-name descname"><span class="pre">valgrindlib</span></span><a class="headerlink" href="#pyissm.model.classes.cluster.generic.valgrindlib" title="Link to this definition"></a></dt>
+<dd><p>Path to valgrind MPI debug library (default: $ISSM_DIR/externalpackages/valgrind/install/lib/libmpidebug.so).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.generic.valgrindsup">
+<span class="sig-name descname"><span class="pre">valgrindsup</span></span><a class="headerlink" href="#pyissm.model.classes.cluster.generic.valgrindsup" title="Link to this definition"></a></dt>
+<dd><p>List of valgrind suppression files (default: $ISSM_DIR/externalpackages/valgrind/issm.supp).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of <a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.generic.verbose">
+<span class="sig-name descname"><span class="pre">verbose</span></span><a class="headerlink" href="#pyissm.model.classes.cluster.generic.verbose" title="Link to this definition"></a></dt>
+<dd><p>Verbose output flag (default: 1).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.generic.shell">
+<span class="sig-name descname"><span class="pre">shell</span></span><a class="headerlink" href="#pyissm.model.classes.cluster.generic.shell" title="Link to this definition"></a></dt>
+<dd><p>Shell to use for command execution (default: ‘/bin/sh’).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">build_queue_script(dir_name,</span> <span class="pre">model_name,</span> <span class="pre">solution,</span> <span class="pre">io_gather,</span> <span class="pre">is_valgrind,</span></span></dt>
+<dd><blockquote>
+<div><p>is_gprof, is_dakota, is_ocean_coupling, executable=’issm.exe’)</p>
+</div></blockquote>
+<p>Generate queue script for model execution.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">build_kriging_queue_script(model_name,</span> <span class="pre">solution,</span> <span class="pre">io_gather,</span> <span class="pre">is_valgrind,</span></span></dt>
+<dd><blockquote>
+<div><p>is_gprof, executable=’kriging.exe’)</p>
+</div></blockquote>
+<p>Generate queue script for kriging execution.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.generic.upload_queue_job">
+<span class="sig-name descname"><span class="pre">upload_queue_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.cluster.generic.upload_queue_job" title="Link to this definition"></a></dt>
+<dd><p>Upload job files to the cluster.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.generic.launch_queue_job">
+<span class="sig-name descname"><span class="pre">launch_queue_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">restart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.cluster.generic.launch_queue_job" title="Link to this definition"></a></dt>
+<dd><p>Launch job execution on the cluster.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.generic.download">
+<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.cluster.generic.download" title="Link to this definition"></a></dt>
+<dd><p>Download job results from the cluster.</p>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This class inherits from class_registry.manage_state to provide state
+management capabilities. Configuration parameters can be overridden
+via YAML configuration files or by inheriting from other cluster objects.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cluster</span> <span class="o">=</span> <span class="n">generic</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cluster</span><span class="o">.</span><span class="n">np</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cluster</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;my_cluster&#39;</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.generic.build_kriging_queue_script">
+<span class="sig-name descname"><span class="pre">build_kriging_queue_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">io_gather</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_valgrind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_gprof</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">executable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'kriging.exe'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.cluster.generic.build_kriging_queue_script" title="Link to this definition"></a></dt>
+<dd><p>Build a queue script for executing kriging models on the cluster.</p>
+<p>This method generates platform-specific execution scripts (bash for Linux/Mac,
+batch for Windows) that handle kriging model execution with various configurations
+including MPI, debugging tools, and profiling.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_name</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Name of the kriging model to execute.</p></li>
+<li><p><strong>solution</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Solution type or configuration parameter.</p></li>
+<li><p><strong>io_gather</strong> (<em>bool</em>) – Flag indicating whether to gather I/O operations. If False, output
+files will be concatenated.</p></li>
+<li><p><strong>is_valgrind</strong> (<em>bool</em>) – Flag to enable Valgrind memory debugging tool execution.</p></li>
+<li><p><strong>is_gprof</strong> (<em>bool</em>) – Flag to enable gprof profiling tool execution.</p></li>
+<li><p><strong>executable</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – Name of the executable file to run. Default is ‘kriging.exe’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>IOError</strong> – If Python wrappers are not installed.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>On Linux/Mac systems, creates a ‘.queue’ bash script</p></li>
+<li><p>On Windows systems, creates a ‘.bat’ batch script</p></li>
+<li><p>Automatically handles MPI execution for kriging operations</p></li>
+<li><p>In interactive mode, creates empty error and output log files</p></li>
+<li><p>Supports memory debugging with Valgrind and profiling with gprof</p></li>
+<li><p>Specifically designed for kriging executable execution</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.generic.build_queue_script">
+<span class="sig-name descname"><span class="pre">build_queue_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">io_gather</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_valgrind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_gprof</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_dakota</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_ocean_coupling</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">executable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'issm.exe'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.cluster.generic.build_queue_script" title="Link to this definition"></a></dt>
+<dd><p>Build a queue script for executing ISSM models on the cluster.</p>
+<p>This method generates platform-specific execution scripts (bash for Linux/Mac,
+batch for Windows) that handle model execution with various configurations
+including MPI, debugging tools, and specialized executables.
+:type dir_name: str
+:param dir_name: Directory name where the model files are located.
+:type dir_name: str
+:type model_name: str
+:param model_name: Name of the model to execute.
+:type model_name: str
+:type solution: str
+:param solution: Solution type or configuration parameter.
+:type solution: str
+:type io_gather: bool
+:param io_gather: Flag indicating whether to gather I/O operations. If False, output</p>
+<blockquote>
+<div><p>files will be concatenated.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>is_valgrind</strong> (<em>bool</em>) – Flag to enable Valgrind memory debugging tool execution.</p></li>
+<li><p><strong>is_gprof</strong> (<em>bool</em>) – Flag to enable gprof profiling tool execution.</p></li>
+<li><p><strong>is_dakota</strong> (<em>bool</em>) – Flag to use DAKOTA optimization executable.</p></li>
+<li><p><strong>is_ocean_coupling</strong> (<em>bool</em>) – Flag to use ocean coupling executable.</p></li>
+<li><p><strong>executable</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – Name of the executable file to run. Default is ‘issm.exe’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>IOError</strong> – If Python wrappers are not installed or if DAKOTA support is
+    requested but not available in the ISSM build.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>On Linux/Mac systems, creates a ‘.queue’ bash script</p></li>
+<li><p>On Windows systems, creates a ‘.bat’ batch script</p></li>
+<li><p>Automatically handles MPI execution when available</p></li>
+<li><p>In interactive mode, creates empty error and output log files</p></li>
+<li><p>Supports various debugging and profiling tools integration</p></li>
+<li><p>Handles different executable types based on coupling requirements</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.cluster.generic.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.cluster.generic.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd><p>Download files from a remote cluster to the local machine.
+This method retrieves specified files from a remote cluster directory
+to the current local directory. On Windows systems, this operation
+is skipped as it’s not supported.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dir_name</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – The name of the directory on the remote cluster containing the files
+to download.</p></li>
+<li><p><strong>file_list</strong> (<em>list</em><em> of </em><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – A list of filenames to download from the remote cluster directory.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>This method does nothing on Windows platforms and returns immediately.</p></li>
+<li><p>Files are copied from the cluster’s execution path combined with the
+specified directory name.</p></li>
+<li><p>The actual file transfer is handled by the <cite>model.io.issm_scp_in</cite> function.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">launch_queue_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">restart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd><p>Launch a job on the cluster queue system.
+This method builds and executes the appropriate launch command for submitting
+a job to the cluster’s queue system. It handles both fresh job submissions
+and job restarts, with optional batch processing mode.
+:type model_name: str
+:param model_name: Name of the model to be executed on the cluster.
+:type model_name: str
+:type dir_name: str
+:param dir_name: Name of the directory where the job will be executed.
+:type dir_name: str
+:type restart: bool or None, optional
+:param restart: If not None, indicates this is a restart of an existing job.</p>
+<blockquote>
+<div><p>When restarting, the method assumes the job directory already exists
+and only executes the queue script. Default is None.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>batch</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag indicating whether to run in batch mode. When True, only
+extracts the tar.gz file without executing the queue script.
+When False (default), extracts and immediately executes the job.
+Only relevant when restart is None.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The method performs different operations based on the restart parameter:
+- If restart is not None: Changes to the execution directory and runs</p>
+<blockquote>
+<div><p>the existing queue script.</p>
+</div></blockquote>
+<ul class="simple">
+<li><dl class="simple">
+<dt>If restart is None: Removes any existing directory, creates a new one,</dt><dd><p>moves and extracts the tar.gz file, and optionally runs the queue script
+depending on the batch parameter.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>The job is launched via SSH connection to the cluster using the cluster’s
+name, login credentials, and port configuration.</p>
+<p class="rubric">Examples</p>
+<p>Launch a new job:
+&gt;&gt;&gt; cluster.launch_queue_job(‘simulation_01’, ‘run_dir’)
+Restart an existing job:
+&gt;&gt;&gt; cluster.launch_queue_job(‘simulation_01’, ‘run_dir’, restart=True)
+Launch in batch mode (extract only, no execution):
+&gt;&gt;&gt; cluster.launch_queue_job(‘simulation_01’, ‘run_dir’, batch=True)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">upload_queue_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd><p>Upload job files to the cluster queue system.</p>
+<p>Compresses the specified files into a tar.gz archive and transfers it to the
+cluster using SCP. If running in interactive mode, also includes error and
+output log files in the archive.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_name</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Name of the model, used for naming log files in interactive mode.</p></li>
+<li><p><strong>dir_name</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Name of the directory/archive to be created (without extension).</p></li>
+<li><p><strong>file_list</strong> (<em>list</em><em> of </em><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – List of file paths to be included in the compressed archive.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The function creates a tar.gz archive with the name <cite>{dir_name}.tar.gz</cite>
+containing all files in <cite>file_list</cite>. In interactive mode, it also includes
+<cite>{model_name}.errlog</cite> and <cite>{model_name}.outlog</cite> files.
+The compressed archive is then transferred to the cluster using the
+cluster’s configured connection parameters (name, execution path, login,
+and port).</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">model.io.issm_scp_out</span></code></dt><dd><p>Function used for transferring files to cluster</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 

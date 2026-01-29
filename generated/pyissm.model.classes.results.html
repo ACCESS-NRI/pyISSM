@@ -52,6 +52,7 @@
 <li class="toctree-l3"><a class="reference internal" href="pyissm.data.html">pyissm.data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pyissm.learn.html">pyissm.learn</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="pyissm.model.html">pyissm.model</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyissm.model.Model.html">pyissm.model.Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyissm.model.bc.html">pyissm.model.bc</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="pyissm.model.classes.html">pyissm.model.classes</a></li>
@@ -103,20 +104,217 @@
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">default</span></code>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.classes.results.default" title="pyissm.model.classes.results.default"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default</span></code></a>()</p></td>
 <td><p>Default results container class for ISSM.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">resultsdakota</span></code>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.model.classes.results.resultsdakota" title="pyissm.model.classes.results.resultsdakota"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resultsdakota</span></code></a>()</p></td>
 <td><p>Results container class for Dakota-based ISSM runs.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">solution</span></code>(*args)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.classes.results.solution" title="pyissm.model.classes.results.solution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solution</span></code></a>(*args)</p></td>
 <td><p>Results container class for ISSM solution steps.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">solutionstep</span></code>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.model.classes.results.solutionstep" title="pyissm.model.classes.results.solutionstep"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solutionstep</span></code></a>()</p></td>
 <td><p>Results container class for a single ISSM solution step.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.results.default">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.results.</span></span><span class="sig-name descname"><span class="pre">default</span></span><a class="headerlink" href="#pyissm.model.classes.results.default" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Default results container class for ISSM.</p>
+<p>This class serves as the default results container in the ISSM (Ice Sheet System Model) framework.
+It stores simulation results and provides methods for displaying and accessing the stored data.
+The class dynamically stores results as attributes and provides formatted string representations
+of the results structure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>None</strong></p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.results.default.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.results.default.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the default results container.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.results.default.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.results.default.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the results structure showing field names and sizes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.results.default.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.results.default.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This class dynamically stores results as attributes. The actual attributes depend on the
+simulation type and requested outputs. Common attributes may include velocity fields,
+thickness, pressure, temperature, and other solution variables.</p>
+<p class="rubric">Examples</p>
+<p>results = pyissm.model.classes.results.default()</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.results.default.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.results.default.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.results.resultsdakota">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.results.</span></span><span class="sig-name descname"><span class="pre">resultsdakota</span></span><a class="headerlink" href="#pyissm.model.classes.results.resultsdakota" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Results container class for Dakota-based ISSM runs.</p>
+<p>This class is designed to store and manage results from Dakota uncertainty quantification or optimization
+runs within the ISSM (Ice Sheet System Model) framework. It dynamically stores results as attributes,
+which may include lists of results for each Dakota evaluation, summary statistics, or other relevant data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>None</strong></p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.results.resultsdakota.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.results.resultsdakota.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the resultsdakota container.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.results.resultsdakota.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.results.resultsdakota.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a string representation of the results structure showing field names and summary information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.results.resultsdakota.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.results.resultsdakota.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This class is typically used when ISSM is run in conjunction with Dakota for parameter studies,
+uncertainty quantification, or optimization. The actual attributes depend on the Dakota study
+configuration and requested outputs.</p>
+<p class="rubric">Examples</p>
+<p>results = pyissm.model.classes.results.resultsdakota()</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.results.resultsdakota.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.results.resultsdakota.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.results.solution">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.results.</span></span><span class="sig-name descname"><span class="pre">solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.results.solution" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Results container class for ISSM solution steps.</p>
+<p>This class is designed to store and manage the results of solution steps within the ISSM (Ice Sheet System Model)
+framework. Each instance contains a list of solution steps, where each step holds the results for a particular
+time or iteration in the simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> (<em>list</em><em>, </em><em>optional</em>) – If provided, should be a list of solutionstep instances. If not provided, initializes with a single default solutionstep.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.results.solution.steps">
+<span class="sig-name descname"><span class="pre">steps</span></span><a class="headerlink" href="#pyissm.model.classes.results.solution.steps" title="Link to this definition"></a></dt>
+<dd><p>List containing the solution steps for the simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of <a class="reference internal" href="#pyissm.model.classes.results.solutionstep" title="pyissm.model.classes.results.solutionstep">solutionstep</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.results.solution.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">\*args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.results.solution.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the solution container, optionally with a list of solutionstep instances.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.results.solution.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.results.solution.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a string representation of the solution structure, showing field names and values.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.results.solution.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.results.solution.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This class is typically used to organize results from time-dependent or iterative ISSM simulations.
+Each solutionstep instance in the steps list contains the results for a single step.</p>
+<p class="rubric">Examples</p>
+<p>results = pyissm.model.classes.results.solution()</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.results.solution.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.results.solution.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.results.solutionstep">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.results.</span></span><span class="sig-name descname"><span class="pre">solutionstep</span></span><a class="headerlink" href="#pyissm.model.classes.results.solutionstep" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Results container class for a single ISSM solution step.</p>
+<p>This class is designed to store and manage the results for a single solution step within the ISSM (Ice Sheet System Model)
+framework. Each instance holds the results for a particular time or iteration in the simulation, such as velocity, thickness,
+temperature, or other relevant fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>None</strong></p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">(Dynamic)</span></span></dt>
+<dd><p>Attributes are dynamically assigned based on the simulation outputs for this step. Typical attributes may include
+velocity, thickness, pressure, temperature, etc.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.results.solutionstep.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.results.solutionstep.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the solutionstep container.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.results.solutionstep.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.results.solutionstep.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a string representation of the solutionstep structure, showing field names and values.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.results.solutionstep.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.results.solutionstep.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This class is typically used as an element of the steps list in the solution class, representing a single time step or iteration.</p>
+<p class="rubric">Examples</p>
+<p>step = pyissm.model.classes.results.solutionstep()</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.results.solutionstep.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.results.solutionstep.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.results.solutionstep.get_fieldnames">
+<span class="sig-name descname"><span class="pre">get_fieldnames</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.results.solutionstep.get_fieldnames" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 

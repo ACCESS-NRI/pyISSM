@@ -104,11 +104,41 @@
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">arch_read</span></code>(filename, fieldname)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.tools.archive.arch_read" title="pyissm.tools.archive.arch_read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arch_read</span></code></a>(filename, fieldname)</p></td>
 <td><p>Read data from an ISSM archive file.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.archive.arch_read">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.archive.</span></span><span class="sig-name descname"><span class="pre">arch_read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fieldname</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.archive.arch_read" title="Link to this definition"></a></dt>
+<dd><p>Read data from an ISSM archive file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Path to the ISSM archive file.</p></li>
+<li><p><strong>fieldname</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Name of the field to read from the archive.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Data read from the specified field in the archive.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> – If the archive file does not exist.</p></li>
+<li><p><strong>KeyError</strong> – If the specified field is not found in the archive.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">arch_read</span><span class="p">(</span><span class="s1">&#39;test101.arch&#39;</span><span class="p">,</span> <span class="s1">&#39;fieldname&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </section>
 
 

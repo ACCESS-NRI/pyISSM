@@ -104,14 +104,142 @@
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">exp_read</span></code>(filename)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.tools.exp.exp_read" title="pyissm.tools.exp.exp_read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exp_read</span></code></a>(filename)</p></td>
 <td><p>Read contours from an exp file.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">exp_write</span></code>(contours, filename)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.tools.exp.exp_write" title="pyissm.tools.exp.exp_write"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exp_write</span></code></a>(contours, filename)</p></td>
 <td><p>Write contours to an exp file.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.exp.exp_read">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.exp.</span></span><span class="sig-name descname"><span class="pre">exp_read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.exp.exp_read" title="Link to this definition"></a></dt>
+<dd><p>Read contours from an exp file.</p>
+<p>This function reads contour data from a file in <a href="#id3"><span class="problematic" id="id4">*</span></a>.exp format. The function can handle
+files containing multiple contours. Each contour is returned as a dictionary
+containing coordinate data, metadata, and geometric properties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Path to the input exp file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><strong>contours</strong> – List of contour data read from the file. Each contour dictionary contains:
+- ‘x’ : np.ndarray</p>
+<blockquote>
+<div><p>X coordinates of the contour points</p>
+</div></blockquote>
+<ul class="simple">
+<li><dl class="simple">
+<dt>’y’<span class="classifier">np.ndarray</span></dt><dd><p>Y coordinates of the contour points</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>’name’<span class="classifier">str</span></dt><dd><p>Name of the contour from the file</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>’density’<span class="classifier">float</span></dt><dd><p>Density value for the contour</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>’nods’<span class="classifier">int</span></dt><dd><p>Number of nodes/points in the contour</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>’icon’<span class="classifier">str, optional</span></dt><dd><p>Icon value from the file, if present</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>’closed’<span class="classifier">bool</span></dt><dd><p>Whether the contour is closed (first and last points are identical)</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>IOError</strong> – If the input file does not exist</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The function expects exp files with specific formatting including contour headers,
+point counts, density values, and coordinate data. The function handles variations
+in header spacing (e.g., ‘# Points Count Value’ vs ‘# Points Count  Value’).
+Invalid formatting may cause parsing errors.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">contours</span> <span class="o">=</span> <span class="n">exp_read</span><span class="p">(</span><span class="s1">&#39;input.exp&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Read </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">contours</span><span class="p">)</span><span class="si">}</span><span class="s2"> contours&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">contour</span> <span class="ow">in</span> <span class="n">contours</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Contour &#39;</span><span class="si">{</span><span class="n">contour</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; has </span><span class="si">{</span><span class="n">contour</span><span class="p">[</span><span class="s1">&#39;nods&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> points&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.exp.exp_write">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.exp.</span></span><span class="sig-name descname"><span class="pre">exp_write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contours</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.exp.exp_write" title="Link to this definition"></a></dt>
+<dd><p>Write contours to an exp file.</p>
+<p>This function writes contour data to a file in <a href="#id5"><span class="problematic" id="id6">*</span></a>.exp format. The function can handle
+both single contours and lists of contours. Each contour should be a dictionary
+containing ‘x’ and ‘y’ coordinate data, and optionally ‘name’ and ‘density’ fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>contours</strong> (<em>dict</em><em> or </em><em>list</em><em> of </em><em>dict</em>) – <p>Contour data to write. If a dictionary, represents a single contour.
+If a list, represents multiple contours. Each contour dictionary should contain:
+- ‘x’ : array-like or scalar</p>
+<blockquote>
+<div><p>X coordinates of the contour points</p>
+</div></blockquote>
+<ul>
+<li><dl class="simple">
+<dt>’y’<span class="classifier">array-like or scalar</span></dt><dd><p>Y coordinates of the contour points</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>’name’<span class="classifier">str, optional</span></dt><dd><p>Name of the contour. If not provided, filename is used</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>’density’<span class="classifier">int, optional</span></dt><dd><p>Density value for the contour. Default is 1.0</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p></li>
+<li><p><strong>filename</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Path to the output exp file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – If X and Y coordinates are not of identical size</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The exp file format includes headers with contour names, point counts,
+density values, and coordinate data formatted to 10 decimal places.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">contour</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;triangle&#39;</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">exp_write</span><span class="p">(</span><span class="n">contour</span><span class="p">,</span> <span class="s1">&#39;output.exp&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">contours</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;density&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;line2&#39;</span><span class="p">}</span>
+<span class="gp">... </span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">exp_write</span><span class="p">(</span><span class="n">contours</span><span class="p">,</span> <span class="s1">&#39;multiple_contours.exp&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </section>
 
 

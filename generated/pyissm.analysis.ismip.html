@@ -98,14 +98,76 @@
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_perc_ice_cover</span></code>(total_ice_area, ice_area)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.analysis.ismip.calc_perc_ice_cover" title="pyissm.analysis.ismip.calc_perc_ice_cover"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_perc_ice_cover</span></code></a>(total_ice_area, ice_area)</p></td>
 <td><p>Calculate the percentage ice cover, relative to the of total ice area.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_ismip_variable</span></code>(md, ismip_variable_name)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.analysis.ismip.get_ismip_variable" title="pyissm.analysis.ismip.get_ismip_variable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_ismip_variable</span></code></a>(md, ismip_variable_name)</p></td>
 <td><p>Retrieve a specific ISMIP variable from a model object.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.analysis.ismip.calc_perc_ice_cover">
+<span class="sig-prename descclassname"><span class="pre">pyissm.analysis.ismip.</span></span><span class="sig-name descname"><span class="pre">calc_perc_ice_cover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_ice_area</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ice_area</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.analysis.ismip.calc_perc_ice_cover" title="Link to this definition"></a></dt>
+<dd><p>Calculate the percentage ice cover, relative to the of total ice area.</p>
+<p>This function computes the fraction of the ice area that is grounded (i.e.,
+not floating). The result is returned as a percentage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>total_ice_area</strong> (<em>ndarray</em>) – Array representing the total ice area.</p></li>
+<li><p><strong>ice_area</strong> (<em>ndarray</em>) – Array representing the ice area for percentage coverage to be computed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ice_area_perc</strong> – Array with the same shape as <cite>ice_area</cite>, where each
+element represents the percentage of the total_ice_area that is covered by the ice_area.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.analysis.ismip.get_ismip_variable">
+<span class="sig-prename descclassname"><span class="pre">pyissm.analysis.ismip.</span></span><span class="sig-name descname"><span class="pre">get_ismip_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ismip_variable_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.analysis.ismip.get_ismip_variable" title="Link to this definition"></a></dt>
+<dd><p>Retrieve a specific ISMIP variable from a model object.</p>
+<p>This function extracts and calculates a requested ISMIP (Ice Sheet Model Intercomparison Project)
+variable from a given model object, if the necessary data is available. It supports area-based
+variables calculated from grounded and floating ice components stored in the model’s
+transient solution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>md</strong> (<em>object</em>) – The model object containing transient solution results, typically with
+attributes like <cite>md.results.TransientSolution.GroundedArea</cite> and <cite>FloatingArea</cite>.</p></li>
+<li><p><strong>ismip_variable_name</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Name of the ISMIP variable to compute. Must be one of:
+- ‘land_ice_area_fraction’ (assumes all ice in ISSM is land ice and returns 100 %)
+- ‘floating_ice_shelf_area_fraction’
+- ‘grounded_ice_sheet_area_fraction’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>variable</strong> – The computed variable as a percentage, or <cite>None</cite> if the required data is
+not available in the model object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array-like or None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>None explicitly</strong><strong>, </strong><strong>but prints a warning if the requested variable cannot be computed.</strong> – </p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>‘land_ice_area_fraction’ assumes all ice is land ice (returns 100% where data is available).</p></li>
+<li><p>‘floating_ice_shelf_area_fraction’ computes the fraction of total ice that is floating.</p></li>
+<li><p>‘grounded_ice_sheet_area_fraction’ computes the fraction of total ice that is grounded.</p></li>
+<li><p>Missing required attributes in <cite>md</cite> will result in the variable being skipped.</p></li>
+</ul>
+</dd></dl>
+
 </section>
 
 

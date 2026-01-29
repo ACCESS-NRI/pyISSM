@@ -52,6 +52,7 @@
 <li class="toctree-l3"><a class="reference internal" href="pyissm.data.html">pyissm.data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pyissm.learn.html">pyissm.learn</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="pyissm.model.html">pyissm.model</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyissm.model.Model.html">pyissm.model.Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pyissm.model.bc.html">pyissm.model.bc</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="pyissm.model.classes.html">pyissm.model.classes</a></li>
@@ -103,20 +104,1340 @@
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh2d</span></code>([other])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.classes.mesh.mesh2d" title="pyissm.model.classes.mesh.mesh2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh2d</span></code></a>([other])</p></td>
 <td><p>Horizontal 2D Mesh Class definition for ISSM.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh2dvertical</span></code>([other])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.model.classes.mesh.mesh2dvertical" title="pyissm.model.classes.mesh.mesh2dvertical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh2dvertical</span></code></a>([other])</p></td>
 <td><p>Vertical 2D Mesh Class definition for ISSM.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh3dprisms</span></code>([other])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.classes.mesh.mesh3dprisms" title="pyissm.model.classes.mesh.mesh3dprisms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh3dprisms</span></code></a>([other])</p></td>
 <td><p>3D Prism Mesh Class definition for ISSM.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh3dsurface</span></code>([other])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.model.classes.mesh.mesh3dsurface" title="pyissm.model.classes.mesh.mesh3dsurface"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh3dsurface</span></code></a>([other])</p></td>
 <td><p>3D Surface Mesh Class definition for ISSM.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.mesh.</span></span><span class="sig-name descname"><span class="pre">mesh2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Horizontal 2D Mesh Class definition for ISSM.</p>
+<p>This class defines the default parameters for a 2D triangular mesh used in ISSM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.x">
+<span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.x" title="Link to this definition"></a></dt>
+<dd><p>Vertices x coordinate [m]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.y">
+<span class="sig-name descname"><span class="pre">y</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.y" title="Link to this definition"></a></dt>
+<dd><p>Vertices y coordinate [m]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.elements">
+<span class="sig-name descname"><span class="pre">elements</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.elements" title="Link to this definition"></a></dt>
+<dd><p>Vertex indices of the mesh elements</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.numberofelements">
+<span class="sig-name descname"><span class="pre">numberofelements</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.numberofelements" title="Link to this definition"></a></dt>
+<dd><p>Number of elements</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.numberofvertices">
+<span class="sig-name descname"><span class="pre">numberofvertices</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.numberofvertices" title="Link to this definition"></a></dt>
+<dd><p>Number of vertices</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.numberofedges">
+<span class="sig-name descname"><span class="pre">numberofedges</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.numberofedges" title="Link to this definition"></a></dt>
+<dd><p>Number of edges of the 2d mesh</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.lat">
+<span class="sig-name descname"><span class="pre">lat</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.lat" title="Link to this definition"></a></dt>
+<dd><p>Vertices latitude [degrees]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.long">
+<span class="sig-name descname"><span class="pre">long</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.long" title="Link to this definition"></a></dt>
+<dd><p>Vertices longitude [degrees]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.epsg">
+<span class="sig-name descname"><span class="pre">epsg</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.epsg" title="Link to this definition"></a></dt>
+<dd><p>EPSG code (ex: 3413 for UPS Greenland, 3031 for UPS Antarctica)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.scale_factor">
+<span class="sig-name descname"><span class="pre">scale_factor</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.scale_factor" title="Link to this definition"></a></dt>
+<dd><p>Projection correction for volume, area, etc. computation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.vertexonboundary">
+<span class="sig-name descname"><span class="pre">vertexonboundary</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.vertexonboundary" title="Link to this definition"></a></dt>
+<dd><p>Vertices on the boundary of the domain flag list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.edges">
+<span class="sig-name descname"><span class="pre">edges</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.edges" title="Link to this definition"></a></dt>
+<dd><p>Edges of the 2d mesh (vertex1 vertex2 element1 element2)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.segments">
+<span class="sig-name descname"><span class="pre">segments</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.segments" title="Link to this definition"></a></dt>
+<dd><p>Edges on domain boundary (vertex1 vertex2 element)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.segmentmarkers">
+<span class="sig-name descname"><span class="pre">segmentmarkers</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.segmentmarkers" title="Link to this definition"></a></dt>
+<dd><p>Number associated to each segment</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.vertexconnectivity">
+<span class="sig-name descname"><span class="pre">vertexconnectivity</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.vertexconnectivity" title="Link to this definition"></a></dt>
+<dd><p>List of elements connected to vertex_i</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.elementconnectivity">
+<span class="sig-name descname"><span class="pre">elementconnectivity</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.elementconnectivity" title="Link to this definition"></a></dt>
+<dd><p>List of elements adjacent to element_i</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.average_vertex_connectivity">
+<span class="sig-name descname"><span class="pre">average_vertex_connectivity</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.average_vertex_connectivity" title="Link to this definition"></a></dt>
+<dd><p>Average number of vertices connected to one vertex</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=25</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.extractedvertices">
+<span class="sig-name descname"><span class="pre">extractedvertices</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.extractedvertices" title="Link to this definition"></a></dt>
+<dd><p>Vertices extracted from the model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.extractedelements">
+<span class="sig-name descname"><span class="pre">extractedelements</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.extractedelements" title="Link to this definition"></a></dt>
+<dd><p>Elements extracted from the model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the default mesh2d parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the mesh2d object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.domain_type">
+<span class="sig-name descname"><span class="pre">domain_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.domain_type" title="Link to this definition"></a></dt>
+<dd><p>Returns the domain type of the mesh.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.dimension">
+<span class="sig-name descname"><span class="pre">dimension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.dimension" title="Link to this definition"></a></dt>
+<dd><p>Returns the dimension of the mesh.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.element_type">
+<span class="sig-name descname"><span class="pre">element_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.element_type" title="Link to this definition"></a></dt>
+<dd><p>Returns the element type of the mesh.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.mesh = pyissm.model.classes.mesh.mesh2d()</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2d.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2d.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">dimension</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">domain_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">element_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd><p>Marshall [mesh.mesh2d] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.mesh.</span></span><span class="sig-name descname"><span class="pre">mesh2dvertical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Vertical 2D Mesh Class definition for ISSM.</p>
+<p>This class defines the default parameters for a 2D triangular mesh in the vertical plane used in ISSM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.x">
+<span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.x" title="Link to this definition"></a></dt>
+<dd><p>Vertices x coordinate [m]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.y">
+<span class="sig-name descname"><span class="pre">y</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.y" title="Link to this definition"></a></dt>
+<dd><p>Vertices y coordinate [m]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.elements">
+<span class="sig-name descname"><span class="pre">elements</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.elements" title="Link to this definition"></a></dt>
+<dd><p>Vertex indices of the mesh elements</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.numberofelements">
+<span class="sig-name descname"><span class="pre">numberofelements</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.numberofelements" title="Link to this definition"></a></dt>
+<dd><p>Number of elements</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.numberofvertices">
+<span class="sig-name descname"><span class="pre">numberofvertices</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.numberofvertices" title="Link to this definition"></a></dt>
+<dd><p>Number of vertices</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.numberofedges">
+<span class="sig-name descname"><span class="pre">numberofedges</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.numberofedges" title="Link to this definition"></a></dt>
+<dd><p>Number of edges of the 2d mesh</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.lat">
+<span class="sig-name descname"><span class="pre">lat</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.lat" title="Link to this definition"></a></dt>
+<dd><p>Vertices latitude [degrees]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.long">
+<span class="sig-name descname"><span class="pre">long</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.long" title="Link to this definition"></a></dt>
+<dd><p>Vertices longitude [degrees]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.epsg">
+<span class="sig-name descname"><span class="pre">epsg</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.epsg" title="Link to this definition"></a></dt>
+<dd><p>EPSG code (ex: 3413 for UPS Greenland, 3031 for UPS Antarctica)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int or float, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.scale_factor">
+<span class="sig-name descname"><span class="pre">scale_factor</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.scale_factor" title="Link to this definition"></a></dt>
+<dd><p>Projection correction for volume, area, etc. computation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.vertexonboundary">
+<span class="sig-name descname"><span class="pre">vertexonboundary</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.vertexonboundary" title="Link to this definition"></a></dt>
+<dd><p>Vertices on the boundary of the domain flag list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.vertexonbase">
+<span class="sig-name descname"><span class="pre">vertexonbase</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.vertexonbase" title="Link to this definition"></a></dt>
+<dd><p>Vertices on the bed of the domain flag list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.vertexonsurface">
+<span class="sig-name descname"><span class="pre">vertexonsurface</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.vertexonsurface" title="Link to this definition"></a></dt>
+<dd><p>Vertices on the surface of the domain flag list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.edges">
+<span class="sig-name descname"><span class="pre">edges</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.edges" title="Link to this definition"></a></dt>
+<dd><p>Edges of the 2d mesh (vertex1 vertex2 element1 element2)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.segments">
+<span class="sig-name descname"><span class="pre">segments</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.segments" title="Link to this definition"></a></dt>
+<dd><p>Edges on domain boundary (vertex1 vertex2 element)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.segmentmarkers">
+<span class="sig-name descname"><span class="pre">segmentmarkers</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.segmentmarkers" title="Link to this definition"></a></dt>
+<dd><p>Number associated to each segment</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.vertexconnectivity">
+<span class="sig-name descname"><span class="pre">vertexconnectivity</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.vertexconnectivity" title="Link to this definition"></a></dt>
+<dd><p>List of elements connected to vertex_i</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.elementconnectivity">
+<span class="sig-name descname"><span class="pre">elementconnectivity</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.elementconnectivity" title="Link to this definition"></a></dt>
+<dd><p>List of elements adjacent to element_i</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.average_vertex_connectivity">
+<span class="sig-name descname"><span class="pre">average_vertex_connectivity</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.average_vertex_connectivity" title="Link to this definition"></a></dt>
+<dd><p>Average number of vertices connected to one vertex</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=25</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the default mesh2dvertical parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the mesh2dvertical object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.domain_type">
+<span class="sig-name descname"><span class="pre">domain_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.domain_type" title="Link to this definition"></a></dt>
+<dd><p>Returns the domain type of the mesh.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.dimension">
+<span class="sig-name descname"><span class="pre">dimension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.dimension" title="Link to this definition"></a></dt>
+<dd><p>Returns the dimension of the mesh.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.element_type">
+<span class="sig-name descname"><span class="pre">element_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.element_type" title="Link to this definition"></a></dt>
+<dd><p>Returns the element type of the mesh.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.mesh = pyissm.model.classes.mesh.mesh2dvertical()</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">dimension</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">domain_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">element_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<dd><p>Marshall [mesh.mesh2dvertical] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh2dvertical.vertex_flags">
+<span class="sig-name descname"><span class="pre">vertex_flags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh2dvertical.vertex_flags" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.mesh.</span></span><span class="sig-name descname"><span class="pre">mesh3dprisms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>3D Prism Mesh Class definition for ISSM.</p>
+<p>This class defines the default parameters for a 3D mesh composed of extruded prisms, used in ISSM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.x">
+<span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.x" title="Link to this definition"></a></dt>
+<dd><p>Vertices x coordinate [m]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.y">
+<span class="sig-name descname"><span class="pre">y</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.y" title="Link to this definition"></a></dt>
+<dd><p>Vertices y coordinate [m]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.z">
+<span class="sig-name descname"><span class="pre">z</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.z" title="Link to this definition"></a></dt>
+<dd><p>Vertices z coordinate [m]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.elements">
+<span class="sig-name descname"><span class="pre">elements</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.elements" title="Link to this definition"></a></dt>
+<dd><p>Vertex indices of the 3D mesh elements</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.numberoflayers">
+<span class="sig-name descname"><span class="pre">numberoflayers</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.numberoflayers" title="Link to this definition"></a></dt>
+<dd><p>Number of extrusion layers</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.numberofelements">
+<span class="sig-name descname"><span class="pre">numberofelements</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.numberofelements" title="Link to this definition"></a></dt>
+<dd><p>Number of elements in the 3D mesh</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.numberofvertices">
+<span class="sig-name descname"><span class="pre">numberofvertices</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.numberofvertices" title="Link to this definition"></a></dt>
+<dd><p>Number of vertices in the 3D mesh</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.lat">
+<span class="sig-name descname"><span class="pre">lat</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.lat" title="Link to this definition"></a></dt>
+<dd><p>Vertices latitude [degrees]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.long">
+<span class="sig-name descname"><span class="pre">long</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.long" title="Link to this definition"></a></dt>
+<dd><p>Vertices longitude [degrees]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.epsg">
+<span class="sig-name descname"><span class="pre">epsg</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.epsg" title="Link to this definition"></a></dt>
+<dd><p>EPSG code (ex: 3413 for UPS Greenland, 3031 for UPS Antarctica)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.scale_factor">
+<span class="sig-name descname"><span class="pre">scale_factor</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.scale_factor" title="Link to this definition"></a></dt>
+<dd><p>Projection correction for volume, area, etc. computation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.vertexonbase">
+<span class="sig-name descname"><span class="pre">vertexonbase</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.vertexonbase" title="Link to this definition"></a></dt>
+<dd><p>Lower vertices flags list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.vertexonsurface">
+<span class="sig-name descname"><span class="pre">vertexonsurface</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.vertexonsurface" title="Link to this definition"></a></dt>
+<dd><p>Upper vertices flags list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.lowerelements">
+<span class="sig-name descname"><span class="pre">lowerelements</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.lowerelements" title="Link to this definition"></a></dt>
+<dd><p>Lower element list (NaN for element on the lower layer)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.lowervertex">
+<span class="sig-name descname"><span class="pre">lowervertex</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.lowervertex" title="Link to this definition"></a></dt>
+<dd><p>Lower vertex list (NaN for vertex on the lower surface)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.upperelements">
+<span class="sig-name descname"><span class="pre">upperelements</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.upperelements" title="Link to this definition"></a></dt>
+<dd><p>Upper element list (NaN for element on the upper layer)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.uppervertex">
+<span class="sig-name descname"><span class="pre">uppervertex</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.uppervertex" title="Link to this definition"></a></dt>
+<dd><p>Upper vertex list (NaN for vertex on the upper surface)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.vertexonboundary">
+<span class="sig-name descname"><span class="pre">vertexonboundary</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.vertexonboundary" title="Link to this definition"></a></dt>
+<dd><p>Vertices on the boundary of the domain flag list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.vertexconnectivity">
+<span class="sig-name descname"><span class="pre">vertexconnectivity</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.vertexconnectivity" title="Link to this definition"></a></dt>
+<dd><p>List of elements connected to vertex_i</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.elementconnectivity">
+<span class="sig-name descname"><span class="pre">elementconnectivity</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.elementconnectivity" title="Link to this definition"></a></dt>
+<dd><p>List of elements adjacent to element_i</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.average_vertex_connectivity">
+<span class="sig-name descname"><span class="pre">average_vertex_connectivity</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.average_vertex_connectivity" title="Link to this definition"></a></dt>
+<dd><p>Average number of vertices connected to one vertex</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=25</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.x2d">
+<span class="sig-name descname"><span class="pre">x2d</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.x2d" title="Link to this definition"></a></dt>
+<dd><p>2D mesh vertices x coordinate [m]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.y2d">
+<span class="sig-name descname"><span class="pre">y2d</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.y2d" title="Link to this definition"></a></dt>
+<dd><p>2D mesh vertices y coordinate [m]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.elements2d">
+<span class="sig-name descname"><span class="pre">elements2d</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.elements2d" title="Link to this definition"></a></dt>
+<dd><p>2D mesh vertex indices of the mesh elements</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.numberofvertices2d">
+<span class="sig-name descname"><span class="pre">numberofvertices2d</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.numberofvertices2d" title="Link to this definition"></a></dt>
+<dd><p>Number of vertices in the original 2D mesh</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.numberofelements2d">
+<span class="sig-name descname"><span class="pre">numberofelements2d</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.numberofelements2d" title="Link to this definition"></a></dt>
+<dd><p>Number of elements in the original 2D mesh</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.extractedvertices">
+<span class="sig-name descname"><span class="pre">extractedvertices</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.extractedvertices" title="Link to this definition"></a></dt>
+<dd><p>Vertices extracted from the model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.extractedelements">
+<span class="sig-name descname"><span class="pre">extractedelements</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.extractedelements" title="Link to this definition"></a></dt>
+<dd><p>Elements extracted from the model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the default mesh3dprisms parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the mesh3dprisms object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.domain_type">
+<span class="sig-name descname"><span class="pre">domain_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.domain_type" title="Link to this definition"></a></dt>
+<dd><p>Returns the domain type of the mesh.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.dimension">
+<span class="sig-name descname"><span class="pre">dimension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.dimension" title="Link to this definition"></a></dt>
+<dd><p>Returns the dimension of the mesh.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.element_type">
+<span class="sig-name descname"><span class="pre">element_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.element_type" title="Link to this definition"></a></dt>
+<dd><p>Returns the element type of the mesh.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.mesh = pyissm.model.classes.mesh.mesh3dprisms()</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dprisms.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dprisms.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">dimension</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">domain_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">element_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id11">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id11" title="Link to this definition"></a></dt>
+<dd><p>Marshall [mesh.mesh3dprisms] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.mesh.</span></span><span class="sig-name descname"><span class="pre">mesh3dsurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>3D Surface Mesh Class definition for ISSM.</p>
+<p>This class defines the default parameters for a 3D triangular surface mesh used in ISSM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.x">
+<span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.x" title="Link to this definition"></a></dt>
+<dd><p>Vertices x coordinate [m]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.y">
+<span class="sig-name descname"><span class="pre">y</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.y" title="Link to this definition"></a></dt>
+<dd><p>Vertices y coordinate [m]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.z">
+<span class="sig-name descname"><span class="pre">z</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.z" title="Link to this definition"></a></dt>
+<dd><p>Vertices z coordinate [m]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.elements">
+<span class="sig-name descname"><span class="pre">elements</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.elements" title="Link to this definition"></a></dt>
+<dd><p>Vertex indices of the mesh elements</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.numberofelements">
+<span class="sig-name descname"><span class="pre">numberofelements</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.numberofelements" title="Link to this definition"></a></dt>
+<dd><p>Number of elements</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.numberofvertices">
+<span class="sig-name descname"><span class="pre">numberofvertices</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.numberofvertices" title="Link to this definition"></a></dt>
+<dd><p>Number of vertices</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.numberofedges">
+<span class="sig-name descname"><span class="pre">numberofedges</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.numberofedges" title="Link to this definition"></a></dt>
+<dd><p>Number of edges of the 3d mesh</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.lat">
+<span class="sig-name descname"><span class="pre">lat</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.lat" title="Link to this definition"></a></dt>
+<dd><p>Vertices latitude [degrees]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.long">
+<span class="sig-name descname"><span class="pre">long</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.long" title="Link to this definition"></a></dt>
+<dd><p>Vertices longitude [degrees]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.r">
+<span class="sig-name descname"><span class="pre">r</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.r" title="Link to this definition"></a></dt>
+<dd><p>Vertices radius [m]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.vertexonboundary">
+<span class="sig-name descname"><span class="pre">vertexonboundary</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.vertexonboundary" title="Link to this definition"></a></dt>
+<dd><p>Vertices on the boundary of the domain flag list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.edges">
+<span class="sig-name descname"><span class="pre">edges</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.edges" title="Link to this definition"></a></dt>
+<dd><p>Edges of the 3d mesh (vertex1 vertex2 element1 element2)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.segments">
+<span class="sig-name descname"><span class="pre">segments</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.segments" title="Link to this definition"></a></dt>
+<dd><p>Edges on domain boundary (vertex1 vertex2 element)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.segmentmarkers">
+<span class="sig-name descname"><span class="pre">segmentmarkers</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.segmentmarkers" title="Link to this definition"></a></dt>
+<dd><p>Number associated to each segment</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.vertexconnectivity">
+<span class="sig-name descname"><span class="pre">vertexconnectivity</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.vertexconnectivity" title="Link to this definition"></a></dt>
+<dd><p>List of elements connected to vertex_i</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.elementconnectivity">
+<span class="sig-name descname"><span class="pre">elementconnectivity</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.elementconnectivity" title="Link to this definition"></a></dt>
+<dd><p>List of elements adjacent to element_i</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.average_vertex_connectivity">
+<span class="sig-name descname"><span class="pre">average_vertex_connectivity</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.average_vertex_connectivity" title="Link to this definition"></a></dt>
+<dd><p>Average number of vertices connected to one vertex</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=25</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.extractedvertices">
+<span class="sig-name descname"><span class="pre">extractedvertices</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.extractedvertices" title="Link to this definition"></a></dt>
+<dd><p>Vertices extracted from the model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.extractedelements">
+<span class="sig-name descname"><span class="pre">extractedelements</span></span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.extractedelements" title="Link to this definition"></a></dt>
+<dd><p>Elements extracted from the model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the default mesh3dsurface parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the mesh3dsurface object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.domain_type">
+<span class="sig-name descname"><span class="pre">domain_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.domain_type" title="Link to this definition"></a></dt>
+<dd><p>Returns the domain type of the mesh.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.dimension">
+<span class="sig-name descname"><span class="pre">dimension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.dimension" title="Link to this definition"></a></dt>
+<dd><p>Returns the dimension of the mesh.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.element_type">
+<span class="sig-name descname"><span class="pre">element_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.element_type" title="Link to this definition"></a></dt>
+<dd><p>Returns the element type of the mesh.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.mesh = pyissm.model.classes.mesh.mesh3dsurface()</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.mesh.mesh3dsurface.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.mesh.mesh3dsurface.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id12">
+<span class="sig-name descname"><span class="pre">dimension</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id12" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id13">
+<span class="sig-name descname"><span class="pre">domain_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id13" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id14">
+<span class="sig-name descname"><span class="pre">element_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id14" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id15">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id15" title="Link to this definition"></a></dt>
+<dd><p>Marshall [mesh.mesh3dsurface] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
