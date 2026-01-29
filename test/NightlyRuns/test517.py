@@ -29,6 +29,7 @@ md.inversion.vx_obs = md.initialization.vx
 md.inversion.vy_obs = md.initialization.vy
 
 md.inversion = pyissm.model.classes.inversion.m1qn3(md.inversion)
+md.cluster.np = 1
 
 # Execute model
 md = pyissm.model.execute.solve(md, 'Stressbalance')

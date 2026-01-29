@@ -2,6 +2,7 @@
 import numpy as np
 import pyissm
 
+# Parameterise model
 md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Pig.exp', 10000)
 md = pyissm.model.param.set_mask(md, '../assets/Exp/PigShelves.exp', '../assets/Exp/PigIslands.exp')
 md = pyissm.model.param.parameterize(md, '../assets/Par/Pig.py')
@@ -36,7 +37,9 @@ md.levelset.spclevelset = np.full((md.mesh.numberofvertices,), np.nan)
 md.levelset.migration_max = 1e10
 
 md.transient.requested_outputs = ['default', 'CalvingMeltingrate']
-md.cluster.np = 2  
+md.cluster.np = 2
+
+# Execute model
 md = pyissm.model.execute.solve(md, 'Transient')
 
 # Fields and tolerances to track changes

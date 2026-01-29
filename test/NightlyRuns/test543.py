@@ -86,7 +86,7 @@ md.frontalforcings.monthlyvals_trends      = trendsM
 md.frontalforcings.monthlyvals_datebreaks  = datebreaksM
 md.frontalforcings.isdischargearma         = isdischargearma
 if(isdischargearma==0):
-   md.frontalforcings.subglacial_discharge    = 0.01*ones(md.mesh.numberofvertices,1)
+   md.frontalforcings.subglacial_discharge    = 0.01 * np.ones(md.mesh.numberofvertices,1)
 else:
     md.frontalforcings.sd_num_breaks         = sd_num_breaks
     md.frontalforcings.sd_num_params         = sd_num_params
