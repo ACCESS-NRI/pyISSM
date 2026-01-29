@@ -39,9 +39,9 @@ jobs:
         run: |
           pip install sphinx sphinx-rtd-theme sphinx-autodoc-typehints
        
-        # Step 5: Generate .rst files from docstrings 
-      - name: Generate .rst files
-        run: sphinx-apidoc -f -o docs/source/ src/pyissm/
+      #   # Step 5: Generate .rst files from docstrings 
+      # - name: Generate .rst files
+      #   run: sphinx-apidoc -f -o docs/source/ src/pyissm/
         
         # Step 6: Build the HTML documentation
       - name: Build HTML

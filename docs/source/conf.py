@@ -15,18 +15,21 @@ sys.path.insert(0, os.path.abspath('../src'))
 
 # Define project information
 project = 'pyissm'
-copyright = '2025, ACCESS-NRI'
+copyright = '2026, ACCESS-NRI'
 author = 'ACCESS-NRI'
-release = 'v0.0.1dev1'
+release = 'v0.0.1.dev190126'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
     'sphinx.ext.napoleon',
     'sphinx_autodoc_typehints',
 ]
+
+autosummary_generate = True
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
