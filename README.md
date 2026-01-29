@@ -3,6 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/pyissm)](https://pypi.org/project/pyissm/)
 [![Conda](https://img.shields.io/conda/v/accessnri/pyissm)](https://anaconda.org/accessnri/pyissm)
 [![ISSM-pyISSM Tests](https://github.com/ACCESS-NRI/pyISSM/actions/workflows/issm-tests.yml/badge.svg)](https://github.com/ACCESS-NRI/pyISSM/actions/workflows/issm-tests.yml)
+[![Docs](https://img.shields.io/badge/docs-online-brightgreen?style=flat-square)](https://access-nri.github.io/pyISSM/index.html)
 
 
 ---
