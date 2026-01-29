@@ -11,7 +11,7 @@ Quick Links
 - `Overview <overview>`_ - A high-level introduction to pyISSM features and capabilities.
 - `Installation <installation>`_ - Instructions for installing pyISSM.
 - `Contributing Guidelines <contributing>`_ - How to contribute to pyISSM development and documentation.
-- `Module Reference <modules>`_ - Detailed API documentation for pyISSM submodules and classes.
+- `Module Reference <pyissm>`_ - Detailed API documentation for pyISSM submodules and classes.
 
 Getting Started
 -------------------
@@ -28,5 +28,5 @@ We welcome contributions from the community! If you're interested in contributin
 
    overview
    installation
-   modules
+   pyissm
    contributing
