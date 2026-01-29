@@ -1,0 +1,13 @@
+pyissm.data.interp
+==================
+
+.. automodule:: pyissm.data.interp
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      points_to_mesh
+      xr_to_mesh
+   

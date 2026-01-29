@@ -55,6 +55,22 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/pyissm.model.classes.html">pyissm.model.classes</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#tools">Tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyissm.tools.html">pyissm.tools</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#data">Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyissm.data.html">pyissm.data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#plot">Plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyissm.plot.html">pyissm.plot</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#analysis">Analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyissm.analysis.html">pyissm.analysis</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
@@ -86,9 +102,15 @@
              
   <section id="pyissm-api-reference">
 <span id="api"></span><h1>pyissm API Reference<a class="headerlink" href="#pyissm-api-reference" title="Link to this heading"></a></h1>
+<p id="module-pyissm">pyISSM comprises six major sub-packages:
+- ` <code class="docutils literal notranslate"><span class="pre">pyissm.model</span></code> &lt;<a class="reference internal" href="#model-class">model-class</a>&gt;`_ - contains the central functionality, including the core <code class="docutils literal notranslate"><span class="pre">Model</span></code> class and all model <a class="reference internal" href="#model-subclasses">sub-classes</a>.
+- ` <code class="docutils literal notranslate"><span class="pre">pyissm.tools</span></code> &lt;<a class="reference internal" href="#tools">tools</a>&gt;`_ - contains diverse tools for interacting with the ISSM Model object.
+- ` <code class="docutils literal notranslate"><span class="pre">pyissm.data</span></code> &lt;<a class="reference internal" href="#data">data</a>&gt;`_ - contains tailored tools for interacting with external datasets, including interpolation routines.
+- ` <code class="docutils literal notranslate"><span class="pre">pyissm.plot</span></code> &lt;<a class="reference internal" href="#plot">plot</a>&gt;`_ - contains tailored tools for visualising ISSM models.
+- ` <code class="docutils literal notranslate"><span class="pre">pyissm.analysis</span></code> &lt;<a class="reference internal" href="#analysis">analysis</a>&gt;`_ - contains tailored post-processing tools.</p>
 <section id="pyissm-model-class">
-<span id="module-pyissm"></span><h2>pyISSM Model Class<a class="headerlink" href="#pyissm-model-class" title="Link to this heading"></a></h2>
-<p>Many pyISSM functions use the central pyISSM <cite>Model</cite> class.</p>
+<span id="model-class"></span><h2>pyISSM Model Class<a class="headerlink" href="#pyissm-model-class" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">pyISSM</span></code> is developed around a central <code class="docutils literal notranslate"><span class="pre">Model()</span></code> class.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/pyissm.model.Model.html#pyissm.model.Model" title="pyissm.model.Model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyissm.model.Model</span></code></a>()</p></td>
@@ -98,10 +120,55 @@
 </table>
 </section>
 <section id="pyissm-model-sub-classes">
-<h2>pyISSM Model sub-classes<a class="headerlink" href="#pyissm-model-sub-classes" title="Link to this heading"></a></h2>
+<span id="model-subclasses"></span><h2>pyISSM Model sub-classes<a class="headerlink" href="#pyissm-model-sub-classes" title="Link to this heading"></a></h2>
+<p>Each ISSM model contains a series of sub-classes that define model components and parameters (e.g., <code class="docutils literal notranslate"><span class="pre">mesh</span></code>, <code class="docutils literal notranslate"><span class="pre">geometry</span></code>, etc.).</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/pyissm.model.classes.html#module-pyissm.model.classes" title="pyissm.model.classes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyissm.model.classes</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="tools">
+<span id="id1"></span><h2>Tools<a class="headerlink" href="#tools" title="Link to this heading"></a></h2>
+<p>Utilities and helper functions for interacting with the ISSM <code class="docutils literal notranslate"><span class="pre">Model</span></code> object.</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyissm.tools.html#module-pyissm.tools" title="pyissm.tools"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyissm.tools</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="data">
+<span id="id2"></span><h2>Data<a class="headerlink" href="#data" title="Link to this heading"></a></h2>
+<p>Function for interacting with external datasets and interpolation routines.</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyissm.data.html#module-pyissm.data" title="pyissm.data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyissm.data</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="plot">
+<span id="id3"></span><h2>Plot<a class="headerlink" href="#plot" title="Link to this heading"></a></h2>
+<p>Visualisation utilities, including plotting of model meshes, boundary conditions, fields, and results.</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyissm.plot.html#module-pyissm.plot" title="pyissm.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyissm.plot</span></code></a></p></td>
+<td><p>Functions to visualize ISSM Models</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="analysis">
+<span id="id4"></span><h2>Analysis<a class="headerlink" href="#analysis" title="Link to this heading"></a></h2>
+<p>Post-processing tools for analysing ISSM models, including derived fields and metrics.</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyissm.analysis.html#module-pyissm.analysis" title="pyissm.analysis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyissm.analysis</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 </tbody>

@@ -1,0 +1,13 @@
+pyissm.analysis.ismip
+=====================
+
+.. automodule:: pyissm.analysis.ismip
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      calc_perc_ice_cover
+      get_ismip_variable
+   

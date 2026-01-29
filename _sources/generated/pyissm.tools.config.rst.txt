@@ -1,0 +1,19 @@
+pyissm.tools.config
+===================
+
+.. automodule:: pyissm.tools.config
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_hostname
+      get_issm_dir
+      get_username
+      iluasm_options
+      is_pc
+      issm_gsl_solver
+      issm_mumps_solver
+      mumps_options
+   

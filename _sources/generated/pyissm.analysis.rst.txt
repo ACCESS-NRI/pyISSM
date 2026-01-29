@@ -1,0 +1,13 @@
+﻿pyissm.analysis
+===============
+
+.. automodule:: pyissm.analysis
+
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   ismip

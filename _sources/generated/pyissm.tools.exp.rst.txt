@@ -1,0 +1,13 @@
+pyissm.tools.exp
+================
+
+.. automodule:: pyissm.tools.exp
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      exp_read
+      exp_write
+   
