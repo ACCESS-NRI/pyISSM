@@ -58,6 +58,16 @@ class outputdefinition(class_registry.manage_state):
         s = 'ISSM - outputdefinition Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude outputdefinition fields to 3D
+        """
+        for definition in self.definitions:
+            definition.extrude(md)
+
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         class_utils.check_field(md, fieldname = 'outputdefinition.definitions', string_list = True)
@@ -91,8 +101,8 @@ class outputdefinition(class_registry.manage_state):
         data = []
         
         for definition in self.definitions:
-            ## Marshal each definition
-            definition.marshall(prefix, md, fid)
+            ## Marshall each definition
+            definition.marshall_class(fid, prefix, md)
 
             ## Extract the class name and capitalize the first letter
             class_name = definition.__class__.__name__

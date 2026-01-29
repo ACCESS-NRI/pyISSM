@@ -1,7 +1,8 @@
 import numpy as np
+import warnings
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 ## ------------------------------------------------------
 ## frontalforcings.default
@@ -63,6 +64,16 @@ class default(class_registry.manage_state):
         s = 'ISSM - frontalforcings.default Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude frontalforcings.default fields to 3D
+        """
+        self.meltingrate = mesh.project_3d(md, vector = self.meltingrate, type = 'node')
+        self.ablationrate = mesh.project_3d(md, vector = self.ablationrate, type = 'node')
+            
+        return self
+
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
 
@@ -174,6 +185,15 @@ class rignot(class_registry.manage_state):
         s = 'ISSM - frontalforcings.rignot Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude frontalforcings.rignot fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.frontalforcings.rignot.extrude: 3D extrusion not implemented for frontalforcings.rignot. Returning unchanged (2D) frontalforcing fields.')
+            
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         # Early return
@@ -211,7 +231,7 @@ class rignot(class_registry.manage_state):
         execute.WriteData(fid, prefix, name = 'md.frontalforcings.parameterization', data = 2, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, name = 'md.frontalforcings.basin_id', data = self.basin_id - 0, format = 'IntMat', mattype = 2) # 0-indexed
+        execute.WriteData(fid, prefix, name = 'md.frontalforcings.basin_id', data = self.basin_id - 1, format = 'IntMat', mattype = 2) # 0-indexed
         execute.WriteData(fid, prefix, obj = self, fieldname = 'num_basins', format = 'Integer')
         execute.WriteData(fid, prefix, obj = self, fieldname = 'subglacial_discharge', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'thermalforcing', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
@@ -372,6 +392,15 @@ class rignotarma(class_registry.manage_state):
         s = 'ISSM - frontalforcings.rignotarma Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude frontalforcings.rignotarma fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.frontalforcings.rignotarma.extrude: 3D extrusion not implemented for frontalforcings.rignotarma. Returning unchanged (2D) frontalforcing fields.')
+            
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         ## NOTE: Logic checks here taken from $ISSM_DIR/src/m/classes/frontalforcingsrignotarma.py
@@ -501,26 +530,28 @@ class rignotarma(class_registry.manage_state):
 
         ## Scale parameters
         ## NOTE: Scaling logic here taken from $ISSM_DIR/src/m/classes/frontalforcingsrignotarma.py
+        nper = self.num_breaks + 1
         polyParams_scaled = np.copy(self.polynomialparams)
-        polyParams_scaled_2d = np.zeros((self.num_basins, self.num_breaks + 1 * self.num_params))
+        polyParams_scaled_2d = np.zeros((self.num_basins, nper * self.num_params))
+        
 
         if(self.num_params > 1):
             # Case 3D #
-            if(self.num_basins > 1 and self.num_breaks + 1 > 1):
+            if(self.num_basins > 1 and nper > 1):
                 for ii in range(self.num_params):
                     polyParams_scaled[:,:,ii] = polyParams_scaled[:, :, ii] * (1 / md.constants.yts) ** ii
                 # Fit in 2D array #
                 for ii in range(self.num_params):
-                    polyParams_scaled_2d[:, ii * (self.num_breaks + 1):(ii + 1) * (self.num_breaks + 1)] = 1 * polyParams_scaled[:, :, ii]
+                    polyParams_scaled_2d[:, ii * nper:(ii + 1) * nper] = 1 * polyParams_scaled[:, :, ii]
             # Case 2D and higher-order params at increasing row index #
             elif(self.num_basins == 1):
                 for ii in range(self.num_params):
                     polyParams_scaled[ii, :] = polyParams_scaled[ii, :] * (1 / md.constants.yts) ** ii
                 # Fit in row array #
                 for ii in range(self.num_params):
-                    polyParams_scaled_2d[0, ii * (self.num_breaks + 1):(ii + 1) * (self.num_breaks + 1)] = 1 * polyParams_scaled[ii, :]
+                    polyParams_scaled_2d[0, ii * nper:(ii + 1) * nper] = 1 * polyParams_scaled[ii, :]
             # Case 2D and higher-order params at increasing column index #
-            elif(self.num_breaks + 1 == 1):
+            elif(nper == 1):
                 for ii in range(self.num_params):
                     polyParams_scaled[:, ii] = polyParams_scaled[:, ii] * (1 / md.constants.yts) ** ii
                 # 2D array is already in correct format #
@@ -528,7 +559,7 @@ class rignotarma(class_registry.manage_state):
         else:
             # 2D array is already in correct format and no need for scaling #
             polyParams_scaled_2d = np.copy(polyParams_scaled)
-        if(self.num_breaks + 1 == 1):
+        if(nper == 1):
             dbreaks = np.zeros((self.num_basins, 1))
         else:
             dbreaks = np.copy(self.datebreaks)
@@ -544,41 +575,42 @@ class rignotarma(class_registry.manage_state):
             else:
                 trendsM3d = self.monthlyvals_trends
         # Create 2D arrays from 3D arrays if needed #
-        if(self.monthlyvals_numbreaks + 1 > 1 and np.all(np.isnan(self.monthlyvals_intercepts))==False):
-            interceptsM = np.zeros((self.num_basins, 12 * self.monthlyvals_numbreaks + 1)) 
-            trendsM     = np.zeros((self.num_basins, 12 * self.monthlyvals_numbreaks + 1))
-            for ii in range(self.monthlyvals_numbreaks + 1):
+        if((self.monthlyvals_numbreaks + 1) > 1 and np.all(np.isnan(self.monthlyvals_intercepts))==False):
+            interceptsM = np.zeros((self.num_basins, 12 * (self.monthlyvals_numbreaks + 1))) 
+            trendsM     = np.zeros((self.num_basins, 12 * (self.monthlyvals_numbreaks + 1)))
+            for ii in range((self.monthlyvals_numbreaks + 1)):
                 interceptsM[:, ii * 12 : (ii + 1) * 12] = 1 * interceptsM3d[:,:,ii]
                 trendsM[:, ii * 12 : (ii + 1) * 12] = 1 * trendsM3d[:,:,ii]
-        elif(self.monthlyvals_numbreaks + 1 == 1 and np.all(np.isnan(self.monthlyvals_intercepts)) == False):
+        elif((self.monthlyvals_numbreaks + 1) == 1 and np.all(np.isnan(self.monthlyvals_intercepts)) == False):
             interceptsM = 1 * interceptsM3d
             trendsM     = 1 * trendsM3d
-        if(self.monthlyvals_numbreaks + 1 == 1):
+        if((self.monthlyvals_numbreaks + 1) == 1):
             dMbreaks = np.zeros((self.num_basins, 1))
         else:
             dMbreaks = np.copy(self.monthlyvals_datebreaks)
 
         ### Deal with the subglacial discharge polynomial ###
         if(self.isdischargearma):
+            sd_nper = self.sd_num_breaks + 1
             sdpolyParams_scaled   = np.copy(self.sd_polynomialparams)
-            sdpolyParams_scaled_2d = np.zeros((self.num_basins, self.sd_num_breaks + 1 * self.sd_num_params))
+            sdpolyParams_scaled_2d = np.zeros((self.num_basins, sd_nper * self.sd_num_params))
             if(self.sd_num_params > 1):
                 # Case 3D #
-                if(self.num_basins>1 and self.sd_num_breaks + 1 > 1):
+                if(self.num_basins>1 and sd_nper > 1):
                     for ii in range(self.sd_num_params):
                         sdpolyParams_scaled[:, :, ii] = sdpolyParams_scaled[:, :, ii] * (1 / md.constants.yts) ** ii
                     # Fit in 2D array #
                     for ii in range(self.sd_num_params):
-                        sdpolyParams_scaled_2d[:, ii * self.sd_num_breaks + 1 : (ii + 1) * self.sd_num_breaks + 1] = 1 * sdpolyParams_scaled[:, :, ii]
+                        sdpolyParams_scaled_2d[:, ii * sd_nper : (ii + 1) * sd_nper] = 1 * sdpolyParams_scaled[:, :, ii]
                 # Case 2D and higher-order params at increasing row index #
                 elif(self.num_basins == 1):
                     for ii in range(self.sd_num_params):
                         sdpolyParams_scaled[ii, :] = sdpolyParams_scaled[ii, :] * (1 / md.constants.yts) ** ii
                     # Fit in row array #
                     for ii in range(self.num_params):
-                        sdpolyParams_scaled_2d[0, ii * self.sd_num_breaks + 1 : (ii + 1) * self.sd_num_breaks + 1] = 1 * sdpolyParams_scaled[ii, :]
+                        sdpolyParams_scaled_2d[0, ii * sd_nper : (ii + 1) * sd_nper] = 1 * sdpolyParams_scaled[ii, :]
                 # Case 2D and higher-order params at incrasing column index #
-                elif(self.sd_num_breaks + 1 == 1):
+                elif(sd_nper == 1):
                     for ii in range(self.sd_num_params):
                         sdpolyParams_scaled[:, ii] = sdpolyParams_scaled[:, ii] * (1 / md.constants.yts) ** ii
                     # 2D array is already in correct format #
@@ -586,7 +618,7 @@ class rignotarma(class_registry.manage_state):
             else:
                 # 2D array is already in correct format and no need for scaling #
                 sdpolyParams_scaled_2d = np.copy(sdpolyParams_scaled)
-            if(self.sd_num_breaks + 1 == 1):
+            if(sd_nper == 1):
                 sd_dbreaks = np.zeros((self.num_basins, 1))
             else:
                 sd_dbreaks = np.copy(self.sd_datebreaks)

@@ -1,7 +1,8 @@
 import numpy as np
+import warnings
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 ## ------------------------------------------------------
 ## hydrology.armapw
@@ -110,6 +111,15 @@ class armapw(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - hydrology.armapw Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude hydrology.armapw fields to 3D
+        """
+        self.basin_id = mesh.project_3d(md, vector = self.basin_id, type = 'element')
+            
+        return self
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -219,24 +229,25 @@ class armapw(class_registry.manage_state):
 
         # Scale the parameters #
         polyParams_Scaled   = np.copy(self.polynomialparams)
-        polyParams_Scaled_2d = np.zeros((self.num_basins, self.num_breaks + 1 * self.num_params))
+        nper = self.num_breaks + 1
+        polyParams_Scaled_2d = np.zeros((self.num_basins, nper * self.num_params))
         if(self.num_params>1):
             # Case 3D #
-            if(self.num_basins > 1 and self.num_breaks + 1 > 1):
+            if(self.num_basins > 1 and nper > 1):
                 for ii in range(self.num_params):
                     polyParams_Scaled[:, :, ii] = polyParams_Scaled[:, :, ii] * (1. / md.constants.yts) ** (ii)
                 # Fit in 2D array #
                 for ii in range(self.num_params):
-                    polyParams_Scaled_2d[:, ii * self.num_breaks + 1:(ii + 1) * self.num_breaks + 1] = 1 * polyParams_Scaled[:, :, ii]
+                    polyParams_Scaled_2d[:, ii * nper :(ii + 1) * nper] = 1 * polyParams_Scaled[:, :, ii]
             # Case 2D and higher-order params at increasing row index #
             elif(self.num_basins==1):
                 for ii in range(self.num_params):
                     polyParams_Scaled[ii, :] = polyParams_Scaled[ii, :] * (1. / md.constants.yts) ** (ii)
                 # Fit in row array #
                 for ii in range(self.num_params):
-                    polyParams_Scaled_2d[0, ii * self.num_breaks + 1 : (ii + 1) * self.num_breaks + 1] = 1 * polyParams_Scaled[ii, :]
+                    polyParams_Scaled_2d[0, ii * nper : (ii + 1) * nper] = 1 * polyParams_Scaled[ii, :]
             # Case 2D and higher-order params at incrasing column index #
-            elif(self.num_breaks + 1 == 1):
+            elif(nper == 1):
                 for ii in range(self.num_params):
                     polyParams_Scaled[:, ii] = polyParams_Scaled[:, ii] * (1. / md.constants.yts) ** (ii)
                 # 2D array is already in correct format #
@@ -245,7 +256,7 @@ class armapw(class_registry.manage_state):
             # 2D array is already in correct format and no need for scaling#
             polyParams_Scaled_2d = np.copy(polyParams_Scaled)
 
-        if(self.num_breaks + 1 == 1):
+        if(nper == 1):
             dbreaks = np.zeros((self.num_basins, 1))
         else:
             dbreaks = np.copy(self.datebreaks)
@@ -473,6 +484,21 @@ class dc(class_registry.manage_state):
         s = 'ISSM - hydrology.dc Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude hydrology.dc fields to 3D
+        """
+        self.spcsediment_head = mesh.project_3d(md, vector = self.spcsediment_head, type = 'node', layer = 1)
+        self.sediment_transmitivity = mesh.project_3d(md, vector = self.sediment_transmitivity, type = 'node', layer = 1)
+        self.basal_moulin_input = mesh.project_3d(md, vector = self.basal_moulin_input, type = 'node', layer = 1)
+        self.mask_thawed_node = mesh.project_3d(md, vector = self.mask_thawed_node, type = 'node', layer = 1)
+        if self.isefficientlayer == 1:
+            self.spcepl_head = mesh.project_3d(md, vector = self.spcepl_head, type = 'node', layer = 1)
+            self.mask_eplactive_node = mesh.project_3d(md, vector = self.mask_eplactive_node, type = 'node', layer = 1)
+
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         #Early return if required analysis not present
@@ -480,7 +506,7 @@ class dc(class_registry.manage_state):
             return md
 
         class_utils.check_field(md, fieldname = 'hydrology.water_compressibility', scalar = True, gt = 0.)
-        class_utils.check_field(md, fieldname = 'hydrology.isefficientlayer', scalar = True, value = [0, 1])
+        class_utils.check_field(md, fieldname = 'hydrology.isefficientlayer', scalar = True, values = [0, 1])
         class_utils.check_field(md, fieldname = 'hydrology.penalty_factor', scalar = True, gt = 0)
         class_utils.check_field(md, fieldname = 'hydrology.penalty_lock', scalar = True, ge = 0.)
         class_utils.check_field(md, fieldname = 'hydrology.rel_tol', scalar = True, gt = 0.)
@@ -517,10 +543,22 @@ class dc(class_registry.manage_state):
             class_utils.check_field(md, fieldname = 'hydrology.epl_thick_comp', scalar = True, values = [0, 1])
             class_utils.check_field(md, fieldname = 'hydrology.eplflip_lock', scalar = True, ge = 0.)
             if self.epl_colapse_thickness > self.epl_initial_thickness:
-                md.checkmessage('Colapsing thickness for EPL larger than initial thickness')
+                md.check_message('Colapsing thickness for EPL larger than initial thickness')
             class_utils.check_field(md, fieldname = 'hydrology.epl_conductivity', scalar = True, gt = 0.)
 
         return md
+    
+    # Initialise empty fields of correct dimensions
+    def initialise(self, md):
+        """
+        Initialise empty fields in hydrology.dc.
+        """
+        self.epl_colapse_thickness = self.sediment_transmitivity / self.epl_conductivity
+        if np.all(np.isnan(self.basal_moulin_input)):
+            self.basal_moulin_input = np.zeros((md.mesh.numberofvertices))
+            warnings.warn("pyissm.model.classes.hydrology.dc: no hydrology.basal_moulin_input specified: values set as zero")
+
+        return self
 
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,
@@ -787,6 +825,20 @@ class glads(class_registry.manage_state):
         s = 'ISSM - hydrology.glads Class'
         return s
 
+    # Extrude to 3D mesh
+    # TODO: Confirm that extrude() is necessary for hydrology.glads. No extrude() exists for MATLAB.
+    def extrude(self, md):
+        """
+        Extrude hydrology.glads fields to 3D
+        """
+        self.sheet_conductivity = mesh.project_3d(md, vector = self.sheet_conductivity, type = 'node', layer = 1)
+        self.bump_height = mesh.project_3d(md, vector = self.bump_height, type = 'node', layer = 1)
+        self.spcphi = mesh.project_3d(md, vector = self.spcphi, type = 'node', layer = 1)
+        self.moulin_input = mesh.project_3d(md, vector = self.moulin_input, type = 'node', layer = 1)
+        self.neumannflux = mesh.project_3d(md, vector = self.neumannflux, type = 'node', layer = 1)
+
+        return self
+
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         # Early return if required analysis not present
@@ -978,6 +1030,15 @@ class pism(class_registry.manage_state):
         s = 'ISSM - hydrology.pism Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude hydrology.pism fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.hydrology.pism.extrude: 3D extrusion not implemented for hydrology.pism. Returning unchanged (2D) hydrology fields.')
+
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
 
@@ -1140,7 +1201,7 @@ class shakti(class_registry.manage_state):
         self.spchead = np.nan
         self.neumannflux = np.nan
         self.relaxation = 1
-        self.storage = np.nan
+        self.storage = 0
         self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
@@ -1170,6 +1231,15 @@ class shakti(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - hydrology.shakti Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude hydrology.shakti fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.hydrology.shakti.extrude: 3D extrusion not implemented for hydrology.shakti. Returning unchanged (2D) hydrology fields.')
+
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -1266,9 +1336,9 @@ class shakti(class_registry.manage_state):
         execute.WriteData(fid, prefix, obj = self, fieldname = 'bump_height', format = 'DoubleMat', mattype = 2)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'reynolds', format = 'DoubleMat', mattype = 2)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'englacial_input', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'moulin_input', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'spchead', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'neumannflux', format = 'DoubleMat', mattype = 2, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'moulin_input', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'spchead', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'neumannflux', format = 'DoubleMat', mattype = 2, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
         
         ## Write Double fields
         fieldnames = ['gap_height_min', 'gap_height_max', 'relaxation']
@@ -1276,13 +1346,15 @@ class shakti(class_registry.manage_state):
             execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
 
         ## Write conditional fields
-        # NOTE: We first have to check if we have a NumPy array here
-        if np.size(self.storage) == 1 or (((np.shape(self.storage)[0] == md.mesh.numberofvertices) or (np.shape(self.storage)[0] == md.mesh.numberofvertices + 1)) or ((len(np.shape(self.storage)) == 2) and (np.shape(self.storage)[0] == md.mesh.numberofelements) and (np.shape(self.storage)[1] > 1))):
-            mattype = 1
-            tsl = md.mesh.numberofvertices + 1
-        else:
-            mattype = 2
-            tsl = md.mesh.numberofelements + 1
+        mattype, tsl = (1, md.mesh.numberofvertices + 1) if (
+            (not np.isscalar(self.storage))
+            and (
+                np.shape(self.storage)[0] in (md.mesh.numberofvertices, md.mesh.numberofvertices + 1)
+                or (len(np.shape(self.storage)) == 2
+                    and np.shape(self.storage)[0] == md.mesh.numberofelements
+                    and np.shape(self.storage)[1] > 1)
+            )
+        ) else (2, md.mesh.numberofelements + 1)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'storage', format = 'DoubleMat', mattype = mattype, timeserieslength = tsl, yts = md.constants.yts)
 
         ## Write other fields
@@ -1352,6 +1424,15 @@ class shreve(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - hydrology.shreve Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude hydrology.shreve fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.hydrology.shreve.extrude: 3D extrusion not implemented for hydrology.shreve. Returning unchanged (2D) hydrology fields.')
+
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -1495,6 +1576,15 @@ class tws(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - hydrology.tws Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude hydrology.tws fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.hydrology.tws.extrude: 3D extrusion not implemented for hydrology.tws. Returning unchanged (2D) hydrology fields.')
+
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):

@@ -2,7 +2,7 @@ import numpy as np
 import warnings
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 @class_registry.register_class
 class flowequation(class_registry.manage_state):
@@ -135,6 +135,19 @@ class flowequation(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - flowequation Class'
         return s
+        
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude flowequation fields to 3D
+        """
+        self.element_equation = mesh.project_3d(md, vector = self.element_equation, type = 'element')
+        self.vertex_equation = mesh.project_3d(md, vector = self.vertex_equation, type = 'node')
+        self.borderSSA = mesh.project_3d(md, vector = self.borderSSA, type = 'node')
+        self.borderHO = mesh.project_3d(md, vector = self.borderHO, type = 'node')
+        self.borderFS = mesh.project_3d(md, vector = self.borderFS, type = 'node')
+            
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -178,7 +191,7 @@ class flowequation(class_registry.manage_state):
             raise RuntimeError(f'pyissm.model.classes.flowequation.check_consistency: unknown domain_type: {md.mesh.domain_type()}.')
     
         if not (self.isSIA or self.isSSA or self.isL1L2 or self.isMOLHO or self.isHO or self.isFS):
-            md.checkmessage("no element types set for this model")
+            md.check_message("no element types set for this model")
         if 'StressbalanceSIAAnalysis' in analyses:
             if any(self.element_equation == 1):
                 if np.any(np.logical_and(self.vertex_equation, md.mask.ocean_levelset)):

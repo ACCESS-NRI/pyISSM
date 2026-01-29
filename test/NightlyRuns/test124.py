@@ -1,0 +1,46 @@
+#Test Name: SquareShelfConstrainedTranFSFreeSurface
+import pyissm
+
+md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 150000)
+md = pyissm.model.param.set_mask(md, 'all', None)
+md = pyissm.model.param.parameterize(md, '../assets/Par/SquareShelfConstrained.py')
+md = md.extrude(3, 1)
+md = pyissm.model.param.set_flow_equation(md, FS = 'all')
+
+#Free surface
+md.masstransport.isfreesurface = 1
+md.timestepping.time_step = 0.00001
+md.timestepping.final_time = 0.00005
+
+#Go solve
+md.cluster.np = 3
+md = pyissm.model.execute.solve(md, 'Transient')
+
+#Fields and tolerances to track changes
+field_names = ['Vx1', 'Vy1', 'Vel1', 'Pressure1', 'Bed1', 'Surface1', 'Thickness1',
+               'Vx2', 'Vy2', 'Vel2', 'Pressure2', 'Bed2', 'Surface2', 'Thickness2',
+               'Vx3', 'Vy3', 'Vel3', 'Pressure3', 'Bed3', 'Surface3', 'Thickness3']
+field_tolerances = [2e-09, 3e-9, 3e-9, 3e-9, 1e-13, 1e-12, 7e-8,
+                    2e-09, 3e-9, 3e-9, 3e-9, 1e-10, 1e-10, 2e-7,
+                    3e-09, 3e-9, 3e-9, 3e-9, 1e-10, 1e-10, 3e-7]
+field_values = [md.results.TransientSolution[0].Vx,
+                md.results.TransientSolution[0].Vy,
+                md.results.TransientSolution[0].Vel,
+                md.results.TransientSolution[0].Pressure,
+                md.results.TransientSolution[0].Base,
+                md.results.TransientSolution[0].Surface,
+                md.results.TransientSolution[0].Thickness,
+                md.results.TransientSolution[1].Vx,
+                md.results.TransientSolution[1].Vy,
+                md.results.TransientSolution[1].Vel,
+                md.results.TransientSolution[1].Pressure,
+                md.results.TransientSolution[1].Base,
+                md.results.TransientSolution[1].Surface,
+                md.results.TransientSolution[1].Thickness,
+                md.results.TransientSolution[2].Vx,
+                md.results.TransientSolution[2].Vy,
+                md.results.TransientSolution[2].Vel,
+                md.results.TransientSolution[2].Pressure,
+                md.results.TransientSolution[2].Base,
+                md.results.TransientSolution[2].Surface,
+                md.results.TransientSolution[2].Thickness]

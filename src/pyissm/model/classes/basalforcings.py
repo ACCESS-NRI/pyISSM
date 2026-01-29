@@ -2,7 +2,7 @@ import numpy as np
 import warnings
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 ## ------------------------------------------------------
 ## basalforcings.default
@@ -73,6 +73,18 @@ class default(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - basalforcings.default Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude basalforcings.default fields to 3D
+        """
+        self.groundedice_melting_rate = mesh.project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
+        self.perturbation_melting_rate = mesh.project_3d(md, vector = self.perturbation_melting_rate, type = 'node', layer = 1)
+        self.floatingice_melting_rate = mesh.project_3d(md, vector = self.floatingice_melting_rate, type = 'node', layer = 1)
+        self.geothermalflux = mesh.project_3d(md, vector = self.geothermalflux, type = 'node', layer = 1) # Bedrock only gets geothermal flux        
+
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -236,6 +248,17 @@ class pico(class_registry.manage_state):
         s = 'ISSM - basalforcings.pico Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude basalforcings.pico fields to 3D
+        """
+        self.basin_id = mesh.project_3d(md, vector = self.basin_id, type = 'element', layer = 1)
+        self.geothermalflux = mesh.project_3d(md, vector = self.geothermalflux, type = 'element', layer = 1) # Bedrock only gets geothermal flux        
+        self.groundedice_melting_rate = mesh.project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
+
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
 
@@ -379,10 +402,10 @@ class linear(class_registry.manage_state):
 
     # Initialise with default parameters
     def __init__(self, other=None):
-        self.deepwater_melting_rate = 0.
-        self.deepwater_elevation = 0.
+        self.deepwater_melting_rate = 50.
+        self.deepwater_elevation = -800.
         self.upperwater_melting_rate = 0.
-        self.upperwater_elevation = 0.
+        self.upperwater_elevation = -400.
         self.groundedice_melting_rate = np.nan
         self.perturbation_melting_rate = np.nan
         self.geothermalflux = np.nan
@@ -407,6 +430,17 @@ class linear(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - basalforcings.linear Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude basalforcings.linear fields to 3D
+        """
+        self.perturbation_melting_rate = mesh.project_3d(md, vector = self.perturbation_melting_rate, type = 'node', layer = 1)
+        self.groundedice_melting_rate = mesh.project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
+        self.geothermalflux = mesh.project_3d(md, vector = self.geothermalflux, type = 'node', layer = 1) # Bedrock only gets geothermal flux        
+
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -594,6 +628,15 @@ class lineararma(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - basalforcings.lineararma Class'
 
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude basalforcings.lineararma fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.basalforcings.lineararma.extrude: 3D extrusion not implemented for basalforcings.lineararma. Returning unchanged (2D) basalforcing fields.')        
+
+        return self
+
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         if 'MasstransportAnalysis' in analyses:
@@ -702,25 +745,26 @@ class lineararma(class_registry.manage_state):
         ## Scale parameters
         ## NOTE: Scaling logic here taken from $ISSM_DIR/src/m/classes/linearbasalforcingsarma.py
         polyParams_scaled = np.copy(self.polynomialparams)
-        polyParams_scaled_2d = np.zeros((self.num_basins, self.num_breaks + self.num_params))
+        nper = self.num_breaks + 1
+        polyParams_scaled_2d = np.zeros((self.num_basins, nper * self.num_params))
 
         if(self.num_params > 1):
             # Case 3D
-            if(self.num_basins > 1 and self.num_breaks + 1 > 1):
+            if(self.num_basins > 1 and nper > 1):
                 for ii in range(self.num_params):
                     polyParams_scaled[:, :, ii] = polyParams_scaled[:, :, ii] * (1. / md.constants.yts) ** (ii + 1)
                 ## Fit in 2D array
                 for ii in range(self.num_params):
-                    polyParams_scaled_2d[:, ii * (self.num_breaks + 1):(ii + 1) * (self.num_breaks + 1)] = 1 * polyParams_scaled[:, :, ii]
+                    polyParams_scaled_2d[:, ii * nper:(ii + 1) * nper] = 1 * polyParams_scaled[:, :, ii]
             # Case 2D and higher-order params at increasing row index #
             elif(self.num_basins == 1):
                 for ii in range(self.num_params):
                     polyParams_scaled[ii, :] = polyParams_scaled[ii,:] * (1. / md.constants.yts) ** (ii + 1)
                 ## Fit in row array
                 for ii in range(self.num_params):
-                    polyParams_scaled_2d[0, ii * (self.num_breaks + 1):(ii + 1) * (self.num_breaks + 1)] = 1 * polyParams_scaled[ii, :]
+                    polyParams_scaled_2d[0, ii * nper:(ii + 1) * nper] = 1 * polyParams_scaled[ii, :]
             # Case 2D and higher-order params at incrasing column index #
-            elif(self.num_breaks + 1 == 1):
+            elif(nper == 1):
                 for ii in range(self.num_params):
                     polyParams_scaled[:, ii] = polyParams_scaled[:, ii] * (1. / md.constants.yts) ** (ii + 1)
                 # 2D array is already in correct format #
@@ -730,7 +774,7 @@ class lineararma(class_registry.manage_state):
             # 2D array is already in correct format #
             polyParams_scaled_2d = np.copy(polyParams_scaled)
 
-        if(self.num_breaks + 1 == 1):
+        if(nper == 1):
             dbreaks = np.zeros((self.num_basins, 1))
         else:
             dbreaks = np.copy(self.datebreaks)
@@ -753,8 +797,8 @@ class lineararma(class_registry.manage_state):
         execute.WriteData(fid, prefix, obj = self, fieldname = 'deepwater_elevation', format = 'DoubleMat')
         execute.WriteData(fid, prefix, obj = self, fieldname = 'upperwater_melting_rate', format = 'DoubleMat', scale = 1. / md.constants.yts, yts = md.constants.yts)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'upperwater_elevation', format = 'DoubleMat')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'groundedice_melting_rate', format = 'DoubleMat', scale = 1. / md.constants.yts, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'geothermalflux', format = 'DoubleMat', scale = 1. / md.constants.yts, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'groundedice_melting_rate', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, scale = 1. / md.constants.yts, yts = md.constants.yts)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'geothermalflux', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
         ## Write IntMat fields
         execute.WriteData(fid, prefix, obj = self, fieldname = 'basin_id', data = self.basin_id - 1, format = 'IntMat', mattype = 2)  # 0-indexed
@@ -838,6 +882,16 @@ class mismip(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - basalforcings.mismip Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude basalforcings.mismip fields to 3D
+        """
+        self.groundedice_melting_rate = mesh.project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
+        self.geothermalflux = mesh.project_3d(md, vector = self.geothermalflux, type = 'node', layer = 1)  #bedrock only gets geothermal flux
+
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -1024,6 +1078,16 @@ class plume(class_registry.manage_state):
         s = 'ISSM - basalforcings.plume Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude basalforcings.plume fields to 3D
+        """
+        self.groundedice_melting_rate = mesh.project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
+        self.floatingice_melting_rate = mesh.project_3d(md, vector = self.floatingice_melting_rate, type = 'node', layer = 1)
+
+        return self
+    
     # Check model consistency
     def checkconsistency(self, md, solution, analyses):
         if 'MasstransportAnalysis' in analyses and not (solution == 'TransientSolution' and md.transient.ismasstransport == 0):
@@ -1180,6 +1244,21 @@ class spatiallinear(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - basalforcings.spatiallinear Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude basalforcings.spatiallinear fields to 3D
+        """
+        self.groundedice_melting_rate = mesh.project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1) 
+        self.deepwater_melting_rate = mesh.project_3d(md, vector = self.deepwater_melting_rate, type = 'node', layer = 1) 
+        self.deepwater_elevation = mesh.project_3d(md, vector = self.deepwater_elevation, type = 'node', layer = 1)
+        self.upperwater_melting_rate = mesh.project_3d(md, vector = self.upperwater_melting_rate, type = 'node', layer = 1) 
+        self.upperwater_elevation = mesh.project_3d(md, vector = self.upperwater_elevation, type = 'node', layer = 1) 
+        self.geothermalflux = mesh.project_3d(md, vector = self.geothermalflux, type = 'node', layer = 1) # Bedrock only gets geothermal flux
+        self.perturbation_melting_rate = mesh.project_3d(md, vector = self.upperwater_melting_rate, type = 'node', layer = 1) 
+
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):

@@ -1,7 +1,7 @@
 import numpy as np
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 @class_registry.register_class
 class thermal(class_registry.manage_state):
@@ -109,6 +109,19 @@ class thermal(class_registry.manage_state):
         s = 'ISSM - thermal Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude thermal fields to 3D
+        """
+        self.spctemperature = mesh.project_3d(md, vector = self.spctemperature, type = 'node', layer = md.mesh.numberoflayers, padding = np.nan)
+        if isinstance(md.initialization.temperature, np.ndarray) and np.size(md.initialization.temperature, axis=0) == md.mesh.numberofvertices:
+            self.spctemperature = float('NaN') * np.ones((md.mesh.numberofvertices))
+            pos = np.where(md.mesh.vertexonsurface)[0]
+            self.spctemperature[pos] = md.initialization.temperature[pos]  #impose observed temperature on surface
+            
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         # Early return if required analyses/solution are not present
@@ -137,7 +150,7 @@ class thermal(class_registry.manage_state):
             class_utils.check_field(md, fieldname = 'thermal.isdynamicbasalspc', scalar = True, values = [0, 1])
             if(md.thermal.isenthalpy):
                 if np.isnan(md.stressbalance.reltol):
-                    md.checkmessage("for a steadystate computation, thermal.reltol (relative convergence criterion) must be defined!")
+                    md.check_message("for a steadystate computation, thermal.reltol (relative convergence criterion) must be defined!")
                 class_utils.check_field(md, fieldname = 'thermal.reltol', gt = 0. , message = "reltol must be larger than zero")
 
         return md

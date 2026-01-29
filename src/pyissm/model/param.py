@@ -128,11 +128,11 @@ def set_flow_equation(md,
     # If fill is specified, fill unassigned elements with the specified flow equation
     if fill is not None:
         if fill.lower() == 'sia':
-            sia_flag = ~ssa_flag & ~ho_flag
+            sia_flag[~(ssa_flag | ho_flag)] = True
         elif fill.lower() == 'ssa':
-            ssa_flag = ~sia_flag & ~ho_flag & ~fs_flag
+            ssa_flag[~(sia_flag | ho_flag | fs_flag)] = True
         elif fill.lower() == 'ho':
-            ho_flag = ~sia_flag & ~ssa_flag & ~fs_flag
+            ho_flag[~(sia_flag | ssa_flag | fs_flag)] = True
     
     # Check that all elements only have one (compatible) flow equation assigned
     flag = [sia_flag, ssa_flag, ho_flag, l1l2_flag, molho_flag, fs_flag]
@@ -150,8 +150,8 @@ def set_flow_equation(md,
         raise ValueError('pyissm.model.param.set_flow_equation: L1L2 cannot be coupled to other flow equations.')
     if np.any(molho_flag) and np.any(sia_flag | ssa_flag | ho_flag | fs_flag | l1l2_flag):
         raise ValueError('pyissm.model.param.set_flow_equation: MOLHO cannot be coupled to other flow equations.')
-    if np.any(fs_flag) & np.any(sia_flag | ssa_flag | ho_flag | l1l2_flag | molho_flag):
-        raise ValueError('pyissm.model.param.set_flow_equation: FS cannot be coupled to other flow equations.')
+    if np.any(fs_flag) & np.any(sia_flag | l1l2_flag | molho_flag):
+        raise ValueError('pyissm.model.param.set_flow_equation: FS cannot be coupled to SAI, L1L2, or MOLHO.')
         
     ##  Check HO or FS are not used for a 2D mesh
     if md.mesh.domain_type() == '2Dhorizontal':
@@ -244,17 +244,57 @@ def set_flow_equation(md,
             common_elements[ho_flag] = False
             ssa_flag[common_elements] = False
             ssaho_flag[common_elements] = True
+
+            ### Recompute nodes associated to these elements
             ssa_node[:] = False
             ssa_node[md.mesh.elements[ssa_flag].ravel() - 1] = True
-            
-            ### Rule out elements that don't touch the 2 boundaries
-            pos = hofs_flag.nonzero()[0]
-            elist = (
-                np.sum(fs_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
-                - np.sum(ho_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
-            )
 
-            ### Update flags based on elist values
+            ### Rule out elements that don't touch the 2 boundaries
+            pos = np.where(ssaho_flag)[0]
+            elist = (
+                np.any(ssa_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
+                - np.any(ho_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
+            )
+            
+            pos1 = pos[elist == 1]
+            ho_flag[pos1] = True
+            ssaho_flag[pos1] = False
+
+            pos2 = pos[elist == -1]
+            ssa_flag[pos2] = True
+            ssaho_flag[pos2] = False
+
+            ### Recompute nodes associated to these elements
+            ssa_node[:] = False
+            ssa_node[md.mesh.elements[ssa_flag].ravel() - 1] = True
+            ho_node[:] = False
+            ho_node[md.mesh.elements[ho_flag].ravel() - 1] = True
+            ssaho_node[:] = False
+            ssaho_node[md.mesh.elements[ssaho_flag].ravel() - 1] = True
+
+        ## Couple HO and FS
+        elif any(ho_flag) and any(fs_flag):
+            hofs_node[ho_node & fs_node] = True
+
+            ### FS elements in contact with this layer become HOFS elements
+            matrix_elements = hofs_node[md.mesh.elements - 1]
+            common_elements = np.sum(matrix_elements, axis=1) != 0
+            common_elements[ho_flag] = False
+
+            fs_flag[common_elements] = False
+            hofs_flag[common_elements] = True
+
+            ### Recompute nodes associated to these elements
+            fs_node[:] = False
+            fs_node[md.mesh.elements[fs_flag].ravel() - 1] = True
+
+            ### Rule out elements that don't touch the 2 boundaries
+            pos = np.where(hofs_flag)[0]
+            elist = (
+                np.any(fs_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
+                - np.any(ho_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
+            )
+            
             pos1 = pos[elist == 1]
             fs_flag[pos1] = True
             hofs_flag[pos1] = False
@@ -263,13 +303,13 @@ def set_flow_equation(md,
             ho_flag[pos2] = True
             hofs_flag[pos2] = False
 
-            ### Recompute nodes associated to these elements
+            ## Recompute nodes again
             fs_node[:] = False
-            fs_node[md.mesh.elements[fs_flag, :] - 1] = True
+            fs_node[md.mesh.elements[fs_flag].ravel() - 1] = True
             ho_node[:] = False
-            ho_node[md.mesh.elements[ho_flag, :] - 1] = True
+            ho_node[md.mesh.elements[ho_flag].ravel() - 1] = True
             hofs_node[:] = False
-            hofs_node[md.mesh.elements[hofs_flag, :] - 1] = True
+            hofs_node[md.mesh.elements[hofs_flag].ravel() - 1] = True
 
         ## Couple FS and SSA
         elif any(fs_flag) and any(ssa_flag):
@@ -289,8 +329,8 @@ def set_flow_equation(md,
             ### Rule out elements that don't touch the 2 boundaries
             pos = ssafs_flag.nonzero()[0]
             elist = (
-                np.sum(ssa_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
-                - np.sum(fs_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
+                np.any(ssa_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
+                - np.any(fs_node[md.mesh.elements[pos, :] - 1], axis=1).astype(int)
             )
 
             ### Update flags based on elist values

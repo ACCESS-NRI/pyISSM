@@ -171,3 +171,68 @@ def cuffey(temperature):
     rigidity = np.where(rigidity < 0, 1e6, rigidity)
 
     return rigidity
+
+def nye(temperature, ice_type):
+    """
+    Compute ice rigidity using Nye's flow law.
+
+    Rigidity (s^(1/n) Pa) is the flow-law parameter B in:
+        sigma = B * epsilon^(1/n)
+
+    Parameters
+    ----------
+    temperature : float or array-like
+        Ice temperature in Kelvin.
+    ice_type : int
+        1 = CO2 ice
+        2 = H2O ice
+
+    Returns
+    -------
+    rigidity : ndarray
+        Ice rigidity with same shape as `temperature`.
+    """
+
+    # Convert input to np array
+    T = np.asarray(temperature, dtype=float)
+
+    # Gas constant (J mol^-1 K^-1)
+    Rg = 8.3144598
+
+    if ice_type == 1:  # CO2 ice
+        A_const = 1.0e13    # s^-1 MPa
+        Q = 66900.0         # J mol^-1
+        n = 8.0
+
+        if np.any((T > 200) & (T < 220)):
+            warnings.warn(
+                "CO2 ICE: possible melting (200 K < T < 220 K)",
+                RuntimeWarning,
+            )
+        if np.any(T >= 220):
+            warnings.warn(
+                "CO2 ICE: guaranteed melting (T ≥ 220 K)",
+                RuntimeWarning,
+            )
+
+    elif ice_type == 2:  # H2O ice
+        A_const = 9.0e4     # s^-1 MPa
+        Q = 60000.0         # J mol^-1
+        n = 3.0
+
+        if np.any(T > 273.15):
+            warnings.warn(
+                "H2O ICE: guaranteed melting (T > 273.15 K)",
+                RuntimeWarning,
+            )
+
+    else:
+        raise ValueError("ice_type must be 1 (CO2) or 2 (H2O)")
+
+    # Arrhenius law
+    A = A_const * np.exp(-Q / (Rg * T))  # s^-1 MPa
+
+    # Rigidity (convert MPa → Pa)
+    rigidity = A ** (-1.0 / n) * 1.0e6   # s^(1/n) Pa
+
+    return rigidity

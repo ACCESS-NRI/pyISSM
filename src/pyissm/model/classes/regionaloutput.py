@@ -2,7 +2,7 @@ import numpy as np
 import os
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 from pyissm import tools
 
 @class_registry.register_class
@@ -51,7 +51,7 @@ class regionaloutput(class_registry.manage_state):
     """
 
     # Initialise with default parameters
-    def __init__(self, other = None):
+    def __init__(self, other = None, **kwargs):
         self.name = ''
         self.definitionstring = ''
         self.outputnamestring = ''
@@ -60,6 +60,10 @@ class regionaloutput(class_registry.manage_state):
 
         # Inherit matching fields from provided class
         super().__init__(other)
+
+        # apply kwargs
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
     # Define repr
     def __repr__(self):
@@ -76,6 +80,14 @@ class regionaloutput(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - regionaloutput Class'
         return s
+    
+    def extrude(self, md):
+        """
+        Extrude regionaloutput fields to 3D mesh
+        """
+        self.mask = mesh.project_3d(md, vector = self.mask, type = 'node')
+
+        return self
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -90,7 +102,7 @@ class regionaloutput(class_registry.manage_state):
             if not os.path.isfile(self.maskexpstring):
                 raise RuntimeError("pyissm.model.classes.regionaloutput.check_consistency: file name for mask exp does not point to a legitimate file on disk!")
             else:
-                self.setmaskfromexp(md)
+                self.mask = tools.wrappers.ContourToMesh(md.mesh.elements, md.mesh.x, md.mesh.y, self.maskexpstring, 'node', 1)
 
         OutputdefinitionStringArray = []
         for i in range(1, 100):
@@ -134,7 +146,7 @@ class regionaloutput(class_registry.manage_state):
             raise RuntimeError('regionaloutput.marshall_class: Python wrappers not installed. Unable to compute regional mask, required to marshall class.')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'name', format = 'String')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'definitionstring', format = 'String')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'outputnamestring', format = 'String')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'mask', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, data = self.name, name = 'md.regionaloutput.name', format = 'String')
+        execute.WriteData(fid, prefix, data = self.definitionstring, name = 'md.regionaloutput.definitionstring', format = 'String')
+        execute.WriteData(fid, prefix, data = self.outputnamestring, name = 'md.regionaloutput.outputnamestring', format = 'String')
+        execute.WriteData(fid, prefix, data = self.mask, name = 'md.regionaloutput.mask', format = 'DoubleMat', mattype = 1)

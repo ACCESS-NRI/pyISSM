@@ -2,7 +2,7 @@ import numpy as np
 import warnings
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 from pyissm import tools
 
 ## ------------------------------------------------------
@@ -136,6 +136,24 @@ class default(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - inversion.default Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude inversion.default fields to 3D
+        """
+        self.vx_obs = mesh.project_3d(md, vector = self.vx_obs, type = 'node')
+        self.vy_obs = mesh.project_3d(md, vector = self.vy_obs, type = 'node')
+        self.vel_obs = mesh.project_3d(md, vector = self.vel_obs, type = 'node')
+        self.thickness_obs = mesh.project_3d(md, vector = self.thickness_obs, type = 'node')
+        if not np.any(np.isnan(self.cost_functions_coefficients)):
+            self.cost_functions_coefficients = mesh.project_3d(md, vector = self.cost_functions_coefficients, type = 'node')
+        if not np.any(np.isnan(self.min_parameters)):
+            self.min_parameters = mesh.project_3d(md, vector = self.min_parameters, type = 'node')
+        if not np.any(np.isnan(self.max_parameters)):
+            self.max_parameters = mesh.project_3d(md, vector = self.max_parameters, type = 'node')
+            
+        return self
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -174,7 +192,7 @@ class default(class_registry.manage_state):
         # Only SSA, MMOLHO, L1L2, HO and FS are supported right now
         if solution == 'StressbalanceSolution':
             if not (md.flowequation.isSSA or md.flowequation.isMOLHO or md.flowequation.isHO or md.flowequation.isFS or md.flowequation.isL1L2):
-                md.checkmessage("'inversion can only be performed for SSA, MOLHO, HO or FS ice flow models")
+                md.check_message("inversion can only be performed for SSA, MOLHO, HO or FS ice flow models")
         
         # Balancethicknesssolution
         if solution == 'BalancethicknessSolution':
@@ -373,6 +391,24 @@ class m1qn3(class_registry.manage_state):
         s = 'ISSM - inversion.m1qn3 Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude inversion.m1qn3 fields to 3D
+        """
+        self.vx_obs = mesh.project_3d(md, vector = self.vx_obs, type = 'node')
+        self.vy_obs = mesh.project_3d(md, vector = self.vy_obs, type = 'node')
+        self.vel_obs = mesh.project_3d(md, vector = self.vel_obs, type = 'node')
+        self.thickness_obs = mesh.project_3d(md, vector = self.thickness_obs, type = 'node')
+        if not np.any(np.isnan(self.cost_functions_coefficients)):
+            self.cost_functions_coefficients = mesh.project_3d(md, vector = self.cost_functions_coefficients, type = 'node')
+        if not np.any(np.isnan(self.min_parameters)):
+            self.min_parameters = mesh.project_3d(md, vector = self.min_parameters, type = 'node')
+        if not np.any(np.isnan(self.max_parameters)):
+            self.max_parameters = mesh.project_3d(md, vector = self.max_parameters, type = 'node')
+            
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         # Early return if inversion disabled
@@ -409,6 +445,7 @@ class m1qn3(class_registry.manage_state):
 
         if solution == 'BalancethicknessSolution':
             class_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'inversion.surface_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         elif solution == 'BalancethicknessSoftSolution':
             class_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         else:
@@ -453,8 +490,15 @@ class m1qn3(class_registry.manage_state):
             execute.WriteData(fid, prefix, obj = self, fieldname = 'vx_obs', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts)
             execute.WriteData(fid, prefix, obj = self, fieldname = 'vy_obs', format = 'DoubleMat', mattype = 1, scale =  1. / md.constants.yts)
             execute.WriteData(fid, prefix, obj = self, fieldname = 'vz_obs', format = 'DoubleMat', mattype = 1, scale =  1. / md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'thickness_obs', format = 'DoubleMat', mattype = 1)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'surface_obs', format = 'DoubleMat', mattype = 1)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'vel_obs', format = 'DoubleMat', mattype = 1, scale =  1. / md.constants.yts)
+
+            ## Write conditional mattype
+            if np.size(self.thickness_obs) == md.mesh.numberofelements:
+                mattype = 2
+            else:
+                mattype = 1
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'thickness_obs', format = 'DoubleMat', mattype = mattype)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'surface_obs', format = 'DoubleMat', mattype = mattype)
 
             ## Write other fields
             execute.WriteData(fid, prefix, obj = self, fieldname = 'incomplete_adjoint', format = 'Boolean')
@@ -612,6 +656,27 @@ class tao(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - inversion.tao Class'
         return s
+
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude inversion.tao fields to 3D
+        """
+        self.vx_obs = mesh.project_3d(md, vector = self.vx_obs, type = 'node')
+        self.vy_obs = mesh.project_3d(md, vector = self.vy_obs, type = 'node')
+        self.vel_obs = mesh.project_3d(md, vector = self.vel_obs, type = 'node')
+        self.thickness_obs = mesh.project_3d(md, vector = self.thickness_obs, type = 'node')
+        
+        if np.size(self.cost_functions_coefficients) > 1:
+            self.cost_functions_coefficients = mesh.project_3d(md, vector = self.cost_functions_coefficients, type = 'node')
+
+        if np.size(self.min_parameters) > 1:
+            self.min_parameters = mesh.project_3d(md, vector = self.min_parameters, type = 'node')
+
+        if np.size(self.max_parameters) > 1:
+            self.max_parameters = mesh.project_3d(md, vector = self.max_parameters, type = 'node')
+            
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -622,7 +687,7 @@ class tao(class_registry.manage_state):
         
         if tools.wrappers.check_wrappers_installed():                
             if not tools.wrappers.IssmConfig('_HAVE_TAO_')[0]:
-                md = md.checkmessage('TAO has not been installed, ISSM needs to be reconfigured and recompiled with TAO')
+                md = md.check_message('TAO has not been installed, ISSM needs to be reconfigured and recompiled with TAO')
         else:
             warnings.warn('pyissm.model.classes.inversion.tao.check_consistency: Python wrappers not installed. Unable to check for TAO installation.\n'
                           'Proceeding without TAO installation check.')

@@ -1,7 +1,7 @@
 import numpy as np
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 @class_registry.register_class
 class geometry(class_registry.manage_state):
@@ -72,6 +72,18 @@ class geometry(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - geometry Class'
         return s
+
+    def extrude(self, md):
+        """
+        Extrude geometry fields to 3D mesh
+        """
+        self.surface = mesh.project_3d(md, vector = self.surface, type = 'node')
+        self.thickness = mesh.project_3d(md, vector = self.thickness, type = 'node')
+        self.hydrostatic_ratio = mesh.project_3d(md, vector = self.hydrostatic_ratio, type = 'node')
+        self.base = mesh.project_3d(md, vector = self.base, type = 'node')
+        self.bed = mesh.project_3d(md, vector = self.bed, type = 'node')
+        
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -83,14 +95,14 @@ class geometry(class_registry.manage_state):
             class_utils.check_field(md, fieldname = 'geometry.base', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
             class_utils.check_field(md, fieldname = 'geometry.thickness', ge = 0, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
             if any(abs(self.thickness - self.surface + self.base) > 1e-9):
-                md.checkmessage('equality thickness = surface-base violated')
+                md.check_message('equality thickness = surface-base violated')
             if solution == 'TransientSolution' and md.transient.isgroundingline:
                 class_utils.check_field(md, fieldname = 'geometry.bed', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
                 if np.any(self.bed - self.base > 1e-12):
-                    md.checkmessage('base < bed on one or more vertices')
+                    md.check_message('base < bed on one or more vertices')
                 pos = np.where(md.mask.ocean_levelset > 0)
                 if np.any(np.abs(self.bed[pos] - self.base[pos]) > 1e-9):
-                    md.checkmessage('equality base = bed on grounded ice violated')
+                    md.check_message('equality base = bed on grounded ice violated')
                 class_utils.check_field(md, fieldname = 'geometry.bed', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
 
         return md

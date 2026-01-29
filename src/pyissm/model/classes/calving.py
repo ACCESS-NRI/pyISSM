@@ -1,7 +1,8 @@
 import numpy as np
+import warnings
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 ## ------------------------------------------------------
 ## calving.default
@@ -59,6 +60,15 @@ class default(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - calving.default Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude calving.default fields to 3D
+        """
+        self.calvingrate = mesh.project_3d(md, vector = self.calvingrate, type = 'node')
+            
+        return self
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -163,6 +173,15 @@ class crevassedepth(class_registry.manage_state):
         s = 'ISSM - calving.crevassedepth Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude calving.crevassedepth fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.calving.crevassedepth.extrude: 3D extrusion not implemented for calving.crevassedepth. Returning unchanged (2D) calving fields.')
+            
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         # Early return if not transient with moving front
@@ -266,6 +285,15 @@ class dev(class_registry.manage_state):
         s = 'ISSM - calving.dev Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude calving.dev fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.calving.dev.extrude: 3D extrusion not implemented for calving.dev. Returning unchanged (2D) calving fields.')
+            
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         # Early return if not transient with moving front
@@ -361,6 +389,15 @@ class levermann(class_registry.manage_state):
         s = 'ISSM - calving.levermann Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude calving.levermann fields to 3D
+        """
+        self.coeff = mesh.project_3d(md, vector = self.coeff, type = 'node')
+            
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         # Early return if not transient with moving front
@@ -453,6 +490,15 @@ class minthickness(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - calving.minthickness Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude calving.minthickness fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.calving.minthickness.extrude: 3D extrusion not implemented for calving.minthickness. Returning unchanged (2D) calving fields.')
+            
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
@@ -594,6 +640,15 @@ class parameterization(class_registry.manage_state):
         s = 'ISSM - calving.parameterization Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude calving.parameterization fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.calving.parameterization.extrude: 3D extrusion not implemented for calving.parameterization. Returning unchanged (2D) calving fields.')
+            
+        return self
+
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         # Early return if not transient with moving front
@@ -690,8 +745,8 @@ class vonmises(class_registry.manage_state):
 
     # Initialise with default parameters
     def __init__(self, other = None):
-        self.stress_threshold_groundedice = 0
-        self.stress_threshold_floatingice = 0
+        self.stress_threshold_groundedice = 1e6
+        self.stress_threshold_floatingice = 150e3
         self.min_thickness = 0.
 
         # Inherit matching fields from provided class
@@ -710,6 +765,15 @@ class vonmises(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - calving.vonmises Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude calving.vonmises fields to 3D
+        """
+        warnings.warn('pyissm.model.classes.calving.vonmises.extrude: 3D extrusion not implemented for calving.vonmises. Returning unchanged (2D) calving fields.')
+            
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):

@@ -1,11 +1,11 @@
 import numpy as np
 import warnings
 
-from pyissm.model.classes import friction
+from pyissm.model.classes import friction, basalforcings, calving, smb, frontalforcings
 from pyissm.model.classes import hydrology
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 @class_registry.register_class
 class stochasticforcing(class_registry.manage_state):
@@ -102,6 +102,15 @@ class stochasticforcing(class_registry.manage_state):
         s = 'ISSM - stochasticforcing Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude stochasticforcing fields to 3D
+        """
+        self.default_id = mesh.project_3d(md, vector = self.default_id, type = 'element')
+
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         # Early return if stochasticforcing not enabled
@@ -127,13 +136,18 @@ class stochasticforcing(class_registry.manage_state):
                except:
                    raise TypeError('pyissm.model.classes.stochasticforcing.check_consistency: an entry in md.stochasticforcing.covariance is not positive definite')
         elif(len(np.shape(self.covariance))==2):
+            self.covariance = self.covariance[:, :, np.newaxis]
             numtcovmat = 1
-            lsCovmats = [self.covariance]
+            lsCovmats = [self.covariance[:, :, 0]]
             # Check that covariance matrix is positive definite (this is done internally by linalg)
-            try:
-                np.linalg.cholesky(self.covariance)
-            except:
-                raise TypeError('pyissm.model.classes.stochasticforcing.check_consistency:md.stochasticforcing.covariance is not positive definite')
+            for k in range(self.covariance.shape[2]):
+                try:
+                    np.linalg.cholesky(self.covariance[:, :, k])
+                except np.linalg.LinAlgError:
+                    raise TypeError(
+                        'pyissm.model.classes.stochasticforcing.check_consistency: '
+                        'md.stochasticforcing.covariance is not positive definite'
+                    )
 
         # Check that all fields agree with the corresponding md class and if any field needs the default params
         checkdefaults = False  # Need to check defaults only if one of the fields does not have its own dimensionality
@@ -145,23 +159,38 @@ class stochasticforcing(class_registry.manage_state):
         else:
             ispwHydroarma = 0
 
-        component_map = {
-            'SMB': md.smb,
-            'FrontalForcings': md.frontalforcings,
-            'Calving': md.calving,
-            'Basalforcings': md.basalforcings,
-            'Friction': md.friction
+        # Build module tuple of allowed classes from the dictionary
+        component_class_map = {}
+        modules = {
+            'basalforcings': basalforcings,
+            'calving': calving,
+            'frontalforcings': frontalforcings,
+            'smb': smb,
+            'friction': friction,
         }
+
+        for comp_name, module in modules.items():
+            # Filter classes in the dictionary that are defined in this module
+            component_class_map[comp_name] = tuple(
+                cls for cls in structstoch.values()
+                if cls.__module__ == module.__name__
+            )
 
         for field in self.fields:
             expected_class = structstoch.get(field)
             if expected_class is None:
                 raise ValueError(f'Field {field} in stochasticforcing is not recognized.')
             
-            # Identify which md submodel this field belongs to
-            component = next((obj for key, obj in component_map.items() if key in field), None)
-            if component is None:
-                raise ValueError(f"Cannot identify model component for stochasticforcing field '{field}'")
+            if not isinstance(expected_class, type):
+                raise TypeError(f"{field}: expected_class = {expected_class} is not a class")
+            
+            # Identify the md component
+            for comp_name, allowed_classes in component_class_map.items():
+                if issubclass(expected_class, allowed_classes):
+                    component = getattr(md, comp_name)
+                    break
+            else:
+                raise ValueError(f"Cannot identify component for stochasticforcing field '{field}'")
             
             # Handle friction (WaterPressure)
             if "WaterPressure" in field:
@@ -173,7 +202,7 @@ class stochasticforcing(class_registry.manage_state):
                         f"stochasticforcing field '{field}' only supported for md.friction.coupling in [0, 1, 2]"
                     )
 
-                if isinstance(md.friction, friction) and np.any(md.friction.q == 0):
+                if isinstance(md.friction, friction.default) and np.any(md.friction.q == 0):
                     raise TypeError(f"stochasticforcing field '{field}' requires non-zero q exponent")
 
                 continue
@@ -196,15 +225,14 @@ class stochasticforcing(class_registry.manage_state):
         # Mapping of supported ARMA fields to their md components
         # NOTE: Maintain legacy naming for compatibility with MATLAB version
         arma_fields = {
-            "SMBarma": ("smb", "arma_timestep", "num_basins", "indSMBarma"),
-            "FrontalForcingsRignotarma": ("frontalforcings", "arma_timestep", "num_basins", "indTFarma"),
-            "FrontalForcingsSubglacialDischargearma": ("frontalforcings", "sd_arma_timestep", "num_basins", "indSdarma"),
-            "BasalforcingsDeepwaterMeltingRatearma": ("basalforcings", "arma_timestep", "num_basins", "indBDWarma"),
-            "hydrologyarmapw": ("hydrology", "arma_timestep", "num_basins", "indPwarma"),
+            "SMBarma": ("smb", "arma_timestep", "num_basins"),
+            "FrontalForcingsRignotarma": ("frontalforcings", "arma_timestep", "num_basins"),
+            "FrontalForcingsSubglacialDischargearma": ("frontalforcings", "sd_arma_timestep", "num_basins"),
+            "BasalforcingsDeepwaterMeltingRatearma": ("basalforcings", "arma_timestep", "num_basins"),
+            "hydrologyarmapw": ("hydrology", "arma_timestep", "num_basins"),
         }
 
         # Initialise index variables for compatibility
-        indSMBarma = indTFarma = indSdarma = indBDWarma = indPwarma = -1
         indices = {}
         timesteps = {}
 
@@ -354,7 +382,7 @@ class stochasticforcing(class_registry.manage_state):
             ## Write fields
             execute.WriteData(fid, prefix, name = 'md.stochasticforcing.num_fields', data = num_fields, format = 'Integer')
             execute.WriteData(fid, prefix, obj = self, fieldname = 'fields', format = 'StringArray')
-            execute.WriteData(fid, prefix, name = 'md.stochasticforcing.dimensions', data = dimensions, format = 'IntMat', mattype = 2)
+            execute.WriteData(fid, prefix, name = 'md.stochasticforcing.dimensions', data = dimensions, format = 'IntMat')
             execute.WriteData(fid, prefix, name = 'md.stochasticforcing.default_id', data = self.default_id - 1, format = 'IntMat', mattype = 2) # 0-indexed
             execute.WriteData(fid, prefix, obj = self, fieldname = 'defaultdimension', format = 'Integer')
             execute.WriteData(fid, prefix, name = 'md.stochasticforcing.num_timescovariance', data = numtcovmat, format = 'Integer')

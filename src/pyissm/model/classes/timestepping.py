@@ -108,7 +108,7 @@ class default(class_registry.manage_state):
         class_utils.check_field(md, fieldname = 'timestepping.cycle_forcing', scalar = True, values = [0, 1])
         
         if (self.final_time - self.start_time) < 0:
-            md.checkmessage('timestepping.final_time should be larger than timestepping.start_time')
+            md.check_message('timestepping.final_time should be larger than timestepping.start_time')
         
         if solution == 'TransientSolution':
             class_utils.check_field(md, fieldname = 'timestepping.time_step', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
@@ -267,7 +267,7 @@ class adaptive(class_registry.manage_state):
         class_utils.check_field(md, fieldname = 'timestepping.time_step_max', scalar = True, ge = md.timestepping.time_step_min, allow_nan = False, allow_inf = False)
         class_utils.check_field(md, fieldname = 'timestepping.cfl_coefficient', scalar = True, gt = 0, le = 1)
         if self.final_time - self.start_time < 0:
-            md.checkmessage("timestepping.final_time should be larger than timestepping.start_time")
+            md.check_message("timestepping.final_time should be larger than timestepping.start_time")
         class_utils.check_field(md, fieldname = 'timestepping.interp_forcing', scalar = True, values = [0, 1])
         class_utils.check_field(md, fieldname = 'timestepping.average_forcing', scalar = True, values = [0, 1])
         class_utils.check_field(md, fieldname = 'timestepping.cycle_forcing', scalar = True, values = [0, 1])

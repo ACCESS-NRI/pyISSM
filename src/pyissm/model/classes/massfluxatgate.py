@@ -50,7 +50,7 @@ class massfluxatgate(class_registry.manage_state):
     """
 
     # Initialise with default parameters
-    def __init__(self, other = None):
+    def __init__(self, other = None, **kwargs):
         self.name = ''
         self.definitionstring = ''
         self.profilename = ''
@@ -58,6 +58,10 @@ class massfluxatgate(class_registry.manage_state):
 
         # Inherit matching fields from provided class
         super().__init__(other)
+
+        # apply kwargs
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
     # Define repr
     def __repr__(self):
@@ -124,7 +128,7 @@ class massfluxatgate(class_registry.manage_state):
             raise RuntimeError('massfluxatgate.marshall_class: Python wrappers not installed. Unable to compute segments for mass flux variable, required to marshall class.')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'name', format = 'String')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'definitionstring', format = 'String')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'segments', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, data = self.name, name = 'md.massfluxatgate.name', format = 'String')
+        execute.WriteData(fid, prefix, data = self.definitionstring, name = 'md.massfluxatgate.definitionstring', format = 'String')
+        execute.WriteData(fid, prefix, data = self.segments, name = 'md.massfluxatgate.segments', format = 'DoubleMat', mattype = 1)
 

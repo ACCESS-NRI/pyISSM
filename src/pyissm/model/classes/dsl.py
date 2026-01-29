@@ -1,7 +1,8 @@
 import numpy as np
+import warnings
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 ## ------------------------------------------------------
 ## dsl.default
@@ -66,6 +67,16 @@ class default(class_registry.manage_state):
         s = 'ISSM - dsl Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude dsl.default fields to 3D
+        """
+        self.sea_surface_height_above_geoid = mesh.project_3d(md, vector = self.sea_surface_height_above_geoid, type = 'node', layer = 1)
+        self.sea_water_pressure_at_sea_floor = mesh.project_3d(md, vector = self.sea_water_pressure_at_sea_floor, type = 'node', layer = 1)
+
+        return self
+    
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         # Early return if no sealevelchange analysis or if transient solution without isslc or oceantransport
@@ -79,6 +90,26 @@ class default(class_registry.manage_state):
             class_utils.check_field(md, fieldname = 'dsl.sea_water_pressure_at_sea_floor', allow_empty = True)
 
         return md
+    
+    # Initialise empty fields of correct dimensions
+    def initialise(self, md):
+        """
+        Initialise empty fields in dsl.default.
+        """
+
+        if np.all(np.isnan(self.global_average_thermosteric_sea_level)):
+            self.global_average_thermosteric_sea_level = np.array([0, 0]).reshape(-1, 1)
+            warnings.warn('pyissm.model.classes.dsl.default: no dsl.global_average_thermosteric_sea_level specified: transient values set to zero')
+
+        if np.all(np.isnan(self.sea_surface_height_above_geoid)):
+            self.sea_surface_height_above_geoid = np.append(np.zeros((md.mesh.numberofvertices, 1)), 0).reshape(-1, 1)
+            warnings.warn('pyissm.model.classes.dsl.default: no dsl.sea_surface_height_above_geoid specified: transient values set to zero')
+
+        if np.all(np.isnan(self.sea_water_pressure_at_sea_floor)):
+            self.sea_water_pressure_at_sea_floor = np.append(np.zeros((md.mesh.numberofvertices, 1)), 0).reshape(-1, 1)
+            warnings.warn('pyissm.model.classes.dsl.default: no dsl.sea_water_pressure_at_sea_floor specified: transient values set to zero')
+
+        return self
 
     # Marshall method for saving the dsl.default parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -176,6 +207,16 @@ class mme(class_registry.manage_state):
         s = 'ISSM - dsl mme Class'
         return s
     
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude dsl.mme fields to 3D
+        """
+        for i in range(len(self.global_average_thermosteric_sea_level)):
+            self.sea_surface_height_above_geoid[i] = mesh.project_3d(md, vector = self.self.sea_surface_height_above_geoid[i], type = 'node', layer = 1)
+            self.sea_water_pressure_at_sea_floor[i] = mesh.project_3d(md, vector = self.sea_water_pressure_at_sea_floor[i], type = 'node', layer = 1)
+
+        return self    
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):

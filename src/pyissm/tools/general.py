@@ -5,6 +5,8 @@ This module contains various utility functions that are used throughout the ISSM
 """
 
 import numpy as np
+import struct
+import math
 from pyissm import model
 
 ## ------------------------------------------------------------------------------------
@@ -539,3 +541,272 @@ def ll_to_xy(lat,
         y[near_pole] = 0.0
 
     return x, y
+
+def compare_bin_files(
+    file1,
+    file2,
+    out_file = None,
+    *,
+    compare_data = False,
+    compare_shape = False,
+    compare_format = False,
+    compare_mattype = False,
+):
+    """
+    Compare two ISSM binary files.
+
+    This function compares two binary files in ISSM format and reports differences
+    based on the selected comparison mode. Exactly one of the comparison modes must
+    be enabled.
+
+    Parameters
+    ----------
+    file1 : str
+        Path to the first binary file to compare.
+    file2 : str
+        Path to the second binary file to compare.
+    out_file : str, optional
+        Path to write the comparison report. If not provided, output is printed
+        to the console. Default is None.
+    compare_data : bool, optional
+        If True, compare the actual data values in the files. Default is False.
+    compare_shape : bool, optional
+        If True, compare the shape of array fields. Default is False.
+    compare_format : bool, optional
+        If True, compare the data type format of fields. Default is False.
+    compare_mattype : bool, optional
+        If True, compare the matrix type codes of fields. Default is False.
+
+    Returns
+    -------
+    None
+        Output is either written to a file (if `out_file` is specified) or
+        printed to the console.
+
+    Raises
+    ------
+    ValueError
+        If exactly one of the compare_* options is not True.
+    TypeError
+        If an unsupported type code is encountered in the binary file.
+    struct.error
+        If there is an error reading the binary file format.
+
+    Notes
+    -----
+    Exactly ONE of the `compare_data`, `compare_shape`, `compare_format`, or
+    `compare_mattype` options must be True. An error will be raised if zero or
+    more than one option is enabled.
+
+    The comparison report displays fields that are missing in either file,
+    along with a status indicating whether values are the same or different
+    based on the selected comparison mode.
+    """
+
+    # Parse arguments -- enforce one option
+    modes = {
+        "data": compare_data,
+        "shape": compare_shape,
+        "format": compare_format,
+        "mattype": compare_mattype,
+    }
+    active = [k for k, v in modes.items() if v]
+
+    if len(active) != 1:
+        raise ValueError(
+            "Exactly one comparison mode must be True: "
+            "compare_data, compare_shape, compare_format, compare_mattype"
+        )
+
+    mode = active[0]
+
+    # Define internal helper functions
+    ## Map binary file codes to formats
+    def _code_to_format(code):
+        return {
+            1: 'Boolean',
+            2: 'Integer',
+            3: 'Double',
+            4: 'String',
+            5: 'BooleanMat',
+            6: 'IntMat',
+            7: 'DoubleMat',
+            8: 'MatArray',
+            9: 'StringArray',
+        }.get(code)
+
+    ## Unpack binary file to a dictionary
+    def _read_bin_to_dict(infile):
+        data = {}
+
+        with open(infile, "rb") as f:
+            while True:
+                try:
+                    namesize = struct.unpack("i", f.read(4))[0]
+                except struct.error:
+                    break
+
+                name = struct.unpack(
+                    f"{namesize}s", f.read(namesize)
+                )[0].decode("ASCII")
+
+                reclen = struct.unpack("q", f.read(8))[0]
+                code = struct.unpack("i", f.read(4))[0]
+                fmt = _code_to_format(code)
+
+                mattype = None
+                shape = None
+
+                if fmt in ("Boolean", "Integer"):
+                    val = struct.unpack("i", f.read(reclen - 4))[0]
+
+                elif fmt == "Double":
+                    val = struct.unpack("d", f.read(reclen - 4))[0]
+
+                elif fmt == "String":
+                    strlen = struct.unpack("i", f.read(4))[0]
+                    val = struct.unpack(
+                        f"{strlen}s", f.read(strlen)
+                    )[0].decode("ASCII")
+
+                elif fmt in ("BooleanMat", "IntMat", "DoubleMat"):
+                    mattype = struct.unpack("i", f.read(4))[0]
+                    n0 = struct.unpack("i", f.read(4))[0]
+                    n1 = struct.unpack("i", f.read(4))[0]
+                    shape = (n0, n1)
+
+                    mat = np.zeros(shape)
+                    for i in range(n0):
+                        for j in range(n1):
+                            mat[i, j] = struct.unpack("d", f.read(8))[0]
+                    val = mat
+
+                elif fmt in ("MatArray", "StringArray"):
+                    f.seek(reclen - 4, 1)
+                    val = None
+
+                else:
+                    raise TypeError(f"Unsupported type code {code} ({name})")
+
+                data[name] = dict(
+                    value=val,
+                    code=code,
+                    format=fmt,
+                    mattype=mattype,
+                    shape=shape,
+                )
+
+        return data
+
+    ## Summarise a given field
+    def _summarize(record):
+        if record is None:
+            return "<missing>"
+
+        if mode == "format":
+            return f"{record['format']} (code {record['code']})"
+
+        if mode == "mattype":
+            return str(record["mattype"])
+
+        if mode == "shape":
+            return str(record["shape"])
+
+        # mode == "data"
+        val = record["value"]
+        if val is None:
+            return "N/A"
+
+        if isinstance(val, np.ndarray):
+            if val.size == 0:
+                return f"empty {val.shape}"
+            elif np.all(np.isnan(val)):
+                return f"{val.shape}, all NaN"
+            return (
+                f"{val.shape}, "
+                f"min={np.nanmin(val):.3g}, "
+                f"max={np.nanmax(val):.3g}, "
+                f"NaNs={np.isnan(val).sum()}"
+            )
+
+        if isinstance(val, float):
+            return "NaN" if math.isnan(val) else str(val)
+
+        return str(val)
+
+    ## Compare two fields
+    def _compare(r1, r2):
+        if mode == "format":
+            return (
+                "SAME" if
+                (r1["code"], r1["format"]) == (r2["code"], r2["format"])
+                else "DIFFERENT"
+            )
+
+        if mode == "mattype":
+            return "SAME" if r1["mattype"] == r2["mattype"] else "DIFFERENT"
+
+        if mode == "shape":
+            return "SAME" if r1["shape"] == r2["shape"] else "DIFFERENT"
+
+        # mode == "data"
+        v1, v2 = r1["value"], r2["value"]
+
+        if isinstance(v1, np.ndarray) and isinstance(v2, np.ndarray):
+            both_nan = np.isnan(v1) & np.isnan(v2)
+            diff = ~both_nan & (v1 != v2)
+            return "SAME" if np.count_nonzero(diff) == 0 else "DIFFERENT"
+
+        if isinstance(v1, float) and isinstance(v2, float):
+            if math.isnan(v1) and math.isnan(v2):
+                return "SAME"
+
+        return "SAME" if v1 == v2 else "DIFFERENT"
+
+    # Read files
+    d1 = _read_bin_to_dict(file1)
+    d2 = _read_bin_to_dict(file2)
+
+    # Order fields
+    keys = sorted(set(d1) | set(d2))
+    rows = []
+
+    # Loop over fields [rows]
+    for k in keys:
+        r1 = d1.get(k)
+        r2 = d2.get(k)
+
+        if r1 is None or r2 is None:
+            rows.append((k, "MISSING", _summarize(r1), _summarize(r2)))
+        else:
+            status = _compare(r1, r2)
+            rows.append((k, status, _summarize(r1), _summarize(r2)))
+
+    # Construct output
+    headers = ("Field", "Status", f"File 1 ({mode})", f"File 2 ({mode})")
+    colw = [
+        max(len(h), *(len(str(r[i])) for r in rows))
+        for i, h in enumerate(headers)
+    ]
+
+    lines = []
+    lines.append(f"Comparing ({mode}):\n  File 1: {file1}\n  File 2: {file2}\n")
+    lines.append(
+        f"{headers[0]:<{colw[0]}}  {headers[1]:<{colw[1]}}  "
+        f"{headers[2]:<{colw[2]}}  {headers[3]:<{colw[3]}}"
+    )
+    lines.append("-" * (sum(colw) + 6))
+
+    for r in rows:
+        lines.append(
+            f"{r[0]:<{colw[0]}}  {r[1]:<{colw[1]}}  "
+            f"{r[2]:<{colw[2]}}  {r[3]:<{colw[3]}}"
+        )
+
+    # Print output (to file or terminal)
+    if out_file:
+        with open(out_file, "w") as f:
+            f.write("\n".join(lines))
+        print(f'Output written to file: {out_file}.')
+    else:
+        print("\n".join(lines))
