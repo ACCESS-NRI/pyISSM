@@ -4,6 +4,14 @@ pyissm.tools package
 Submodules
 ----------
 
+pyissm.tools.archive module
+---------------------------
+
+.. automodule:: pyissm.tools.archive
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 pyissm.tools.config module
 --------------------------
 

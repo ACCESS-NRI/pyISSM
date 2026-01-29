@@ -8,14 +8,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>pyissm.tools package &mdash; pyissm v0.0.1dev1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="_static/documentation_options.js?v=37c38653"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -97,6 +97,40 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 </section>
+<section id="module-pyissm.tools.archive">
+<span id="pyissm-tools-archive-module"></span><h2>pyissm.tools.archive module<a class="headerlink" href="#module-pyissm.tools.archive" title="Link to this heading"></a></h2>
+<p>This module contains functions to read and write ISSM archive files.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.archive.arch_read">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.archive.</span></span><span class="sig-name descname"><span class="pre">arch_read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fieldname</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.archive.arch_read" title="Link to this definition"></a></dt>
+<dd><p>Read data from an ISSM archive file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.initialization.initialization.str" title="pyissm.model.classes.initialization.initialization.str"><em>str</em></a>) – Path to the ISSM archive file.</p></li>
+<li><p><strong>fieldname</strong> (<a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.initialization.initialization.str" title="pyissm.model.classes.initialization.initialization.str"><em>str</em></a>) – Name of the field to read from the archive.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Data read from the specified field in the archive.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> – If the archive file does not exist.</p></li>
+<li><p><strong>KeyError</strong> – If the specified field is not found in the archive.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">arch_read</span><span class="p">(</span><span class="s1">&#39;test101.arch&#39;</span><span class="p">,</span> <span class="s1">&#39;fieldname&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
 <section id="module-pyissm.tools.config">
 <span id="pyissm-tools-config-module"></span><h2>pyissm.tools.config module<a class="headerlink" href="#module-pyissm.tools.config" title="Link to this heading"></a></h2>
 <p>Configuration functions for ISSM</p>
@@ -111,7 +145,7 @@
 <dd class="field-odd"><p>The hostname of the current machine.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>str</p>
+<dd class="field-even"><p><a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.initialization.initialization.str" title="pyissm.model.classes.initialization.initialization.str">str</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -141,7 +175,7 @@ by querying the appropriate environment variable based on the operating system.<
 cannot be determined.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>str</p>
+<dd class="field-even"><p><a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.initialization.initialization.str" title="pyissm.model.classes.initialization.initialization.str">str</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -316,7 +350,7 @@ files containing multiple contours. Each contour is returned as a dictionary
 containing coordinate data, metadata, and geometric properties.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – Path to the input exp file</p>
+<dd class="field-odd"><p><strong>filename</strong> (<a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.initialization.initialization.str" title="pyissm.model.classes.initialization.initialization.str"><em>str</em></a>) – Path to the input exp file</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><p><strong>contours</strong> – List of contour data read from the file. Each contour dictionary contains:
@@ -413,7 +447,7 @@ If a list, represents multiple contours. Each contour dictionary should contain:
 </li>
 </ul>
 </p></li>
-<li><p><strong>filename</strong> (<em>str</em>) – Path to the output exp file</p></li>
+<li><p><strong>filename</strong> (<a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.initialization.initialization.str" title="pyissm.model.classes.initialization.initialization.str"><em>str</em></a>) – Path to the output exp file</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -441,6 +475,50 @@ density values, and coordinate data formatted to 10 decimal places.</p>
 <p>Utility functions for ISSM</p>
 <p>This module contains various utility functions that are used throughout the ISSM codebase.</p>
 <dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.general.compare_bin_files">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.general.</span></span><span class="sig-name descname"><span class="pre">compare_bin_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">compare_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compare_shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compare_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compare_mattype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.general.compare_bin_files" title="Link to this definition"></a></dt>
+<dd><p>Compare two ISSM binary files.</p>
+<p>This function compares two binary files in ISSM format and reports differences
+based on the selected comparison mode. Exactly one of the comparison modes must
+be enabled.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file1</strong> (<a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.initialization.initialization.str" title="pyissm.model.classes.initialization.initialization.str"><em>str</em></a>) – Path to the first binary file to compare.</p></li>
+<li><p><strong>file2</strong> (<a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.initialization.initialization.str" title="pyissm.model.classes.initialization.initialization.str"><em>str</em></a>) – Path to the second binary file to compare.</p></li>
+<li><p><strong>out_file</strong> (<a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.initialization.initialization.str" title="pyissm.model.classes.initialization.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – Path to write the comparison report. If not provided, output is printed
+to the console. Default is None.</p></li>
+<li><p><strong>compare_data</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, compare the actual data values in the files. Default is False.</p></li>
+<li><p><strong>compare_shape</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, compare the shape of array fields. Default is False.</p></li>
+<li><p><strong>compare_format</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, compare the data type format of fields. Default is False.</p></li>
+<li><p><strong>compare_mattype</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, compare the matrix type codes of fields. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Output is either written to a file (if <cite>out_file</cite> is specified) or
+printed to the console.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If exactly one of the compare_* options is not True.</p></li>
+<li><p><strong>TypeError</strong> – If an unsupported type code is encountered in the binary file.</p></li>
+<li><p><strong>struct.error</strong> – If there is an error reading the binary file format.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Exactly ONE of the <cite>compare_data</cite>, <cite>compare_shape</cite>, <cite>compare_format</cite>, or
+<cite>compare_mattype</cite> options must be True. An error will be raised if zero or
+more than one option is enabled.</p>
+<p>The comparison report displays fields that are missing in either file,
+along with a status indicating whether values are the same or different
+based on the selected comparison mode.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="pyissm.tools.general.convert_units">
 <span class="sig-prename descclassname"><span class="pre">pyissm.tools.general.</span></span><span class="sig-name descname"><span class="pre">convert_units</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_units</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_units</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">31536000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho_ice</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">917</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.general.convert_units" title="Link to this definition"></a></dt>
 <dd><p>Convert numerical data between supported geophysical units.</p>
@@ -450,9 +528,9 @@ consistent with those used in the Ice sheet and Sea Level System Model (ISSM).</
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>input_units</strong> (<em>str</em>) – Units of the input data. Must be one of:
+<li><p><strong>input_units</strong> (<a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.initialization.initialization.str" title="pyissm.model.classes.initialization.initialization.str"><em>str</em></a>) – Units of the input data. Must be one of:
 ‘m’, ‘km’, ‘ms-1’, ‘myr-1’, ‘m2’, ‘km2’, ‘Gt’, ‘km3’, ‘Gtyr-1’, ‘kgs-1’.</p></li>
-<li><p><strong>output_units</strong> (<em>str</em>) – Desired units for the output data. Must be one of:
+<li><p><strong>output_units</strong> (<a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.initialization.initialization.str" title="pyissm.model.classes.initialization.initialization.str"><em>str</em></a>) – Desired units for the output data. Must be one of:
 ‘m’, ‘km’, ‘ms-1’, ‘myr-1’, ‘m2’, ‘km2’, ‘Gt’, ‘km3’, ‘Gtyr-1’, ‘kgs-1’.</p></li>
 <li><p><strong>data</strong> (<em>float</em><em>, </em><em>list</em><em>, or </em><em>ndarray</em>) – Numerical value(s) to convert. Data are converted to array for computation.</p></li>
 <li><p><strong>yts</strong> (<em>float</em><em> or </em><em>int</em><em>, </em><em>optional</em>) – Seconds in a year (default = 365 * 24 * 60 * 60)</p></li>
@@ -529,7 +607,7 @@ each accessible from the previous one, such as <cite>obj.a.b.c</cite>.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>obj</strong> (<em>object</em>) – The base object from which to start the attribute lookup.</p></li>
-<li><p><strong>*attrs</strong> (<em>str</em>) – A sequence of attribute names representing the path to check.
+<li><p><strong>*attrs</strong> (<a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.initialization.initialization.str" title="pyissm.model.classes.initialization.initialization.str"><em>str</em></a>) – A sequence of attribute names representing the path to check.
 Each string in <cite>attrs</cite> should be a valid attribute of the previous one.</p></li>
 </ul>
 </dd>
@@ -580,7 +658,7 @@ Special handling is included for the case when <cite>standard_parallel</cite> is
 <dd><p>Return the mean radius of a specified planetary body.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>planet</strong> (<em>str</em>) – Name of the planet. Supported values are:
+<dd class="field-odd"><p><strong>planet</strong> (<a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.initialization.initialization.str" title="pyissm.model.classes.initialization.initialization.str"><em>str</em></a>) – Name of the planet. Supported values are:
 - <cite>‘earth’</cite> : Earth’s mean radius in meters.
 - <cite>‘europa’</cite> : Europa’s mean radius in meters.</p>
 </dd>
@@ -633,6 +711,26 @@ Special handling is included for the case when <cite>standard_parallel</cite> is
 <span id="pyissm-tools-geometry-module"></span><h2>pyissm.tools.geometry module<a class="headerlink" href="#module-pyissm.tools.geometry" title="Link to this heading"></a></h2>
 <p>Geometry-related functions for ISSM</p>
 <p>This module contains functions to compute geometric properties on ISSM model meshes.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.geometry.nowicki_profile">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.geometry.</span></span><span class="sig-name descname"><span class="pre">nowicki_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.geometry.nowicki_profile" title="Link to this definition"></a></dt>
+<dd><p>Create a theoretical ice profile at the transition zone
+based on Sophie Nowicki’s thesis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>array_like</em>) – Along-flow coordinate</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>b</strong> (<em>ndarray</em>) – Ice base</p></li>
+<li><p><strong>h</strong> (<em>ndarray</em>) – Ice thickness</p></li>
+<li><p><strong>sea</strong> (<em>float</em>) – Sea level</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="pyissm.tools.geometry.slope">
 <span class="sig-prename descclassname"><span class="pre">pyissm.tools.geometry.</span></span><span class="sig-name descname"><span class="pre">slope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.geometry.slope" title="Link to this definition"></a></dt>
@@ -776,6 +874,31 @@ the polynomial result. To ensure physical plausibility, any negative
 computed rigidity values are replaced with 1e6.</p>
 <p>The function preserves the shape of the input (broadcasting rules of NumPy
 apply) and returns an array of the same shape.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.materials.nye">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.materials.</span></span><span class="sig-name descname"><span class="pre">nye</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ice_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.materials.nye" title="Link to this definition"></a></dt>
+<dd><p>Compute ice rigidity using Nye’s flow law.</p>
+<dl class="simple">
+<dt>Rigidity (s^(1/n) Pa) is the flow-law parameter B in:</dt><dd><p>sigma = B * epsilon^(1/n)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temperature</strong> (<em>float</em><em> or </em><em>array-like</em>) – Ice temperature in Kelvin.</p></li>
+<li><p><strong>ice_type</strong> (<em>int</em>) – 1 = CO2 ice
+2 = H2O ice</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>rigidity</strong> – Ice rigidity with same shape as <cite>temperature</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -923,8 +1046,8 @@ apply) and returns an array of the same shape.</p>
 <li><p><strong>index</strong> (<em>array_like</em>) – Mesh triangulation connectivity (element indices).</p></li>
 <li><p><strong>x</strong> (<em>array_like</em>) – X coordinates of the mesh nodes.</p></li>
 <li><p><strong>y</strong> (<em>array_like</em>) – Y coordinates of the mesh nodes.</p></li>
-<li><p><strong>contour_name</strong> (<em>str</em>) – Name of .exp file containing the contours.</p></li>
-<li><p><strong>interp_type</strong> (<em>str</em>) – Type of interpolation. Must be one of ‘element’, ‘node’, or ‘element and node’.</p></li>
+<li><p><strong>contour_name</strong> (<a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.initialization.initialization.str" title="pyissm.model.classes.initialization.initialization.str"><em>str</em></a>) – Name of .exp file containing the contours.</p></li>
+<li><p><strong>interp_type</strong> (<a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.initialization.initialization.str" title="pyissm.model.classes.initialization.initialization.str"><em>str</em></a>) – Type of interpolation. Must be one of ‘element’, ‘node’, or ‘element and node’.</p></li>
 <li><p><strong>edge_value</strong> (<em>int</em>) – Value (0, 1 or 2) associated to the nodes on the edges of the polygons.</p></li>
 </ul>
 </dd>
@@ -958,7 +1081,7 @@ Otherwise: not returned.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>array_like</em>) – X coordinates of the nodes.</p></li>
 <li><p><strong>y</strong> (<em>array_like</em>) – Y coordinates of the nodes.</p></li>
-<li><p><strong>contourname</strong> (<em>str</em>) – Name of .exp/.shp file containing the contours, or resulting structure
+<li><p><strong>contourname</strong> (<a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.initialization.initialization.str" title="pyissm.model.classes.initialization.initialization.str"><em>str</em></a>) – Name of .exp/.shp file containing the contours, or resulting structure
 from call to expread/shpread.</p></li>
 <li><p><strong>edgevalue</strong> (<em>int</em>) – Value (0, 1 or 2) defining the value associated to the nodes on the
 edges of the polygons.</p></li>
@@ -1012,7 +1135,7 @@ edges of the polygons.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>array_like</em>) – X coordinates of the cloud points.</p></li>
 <li><p><strong>y</strong> (<em>array_like</em>) – Y coordinates of the cloud points.</p></li>
-<li><p><strong>contourname</strong> (<em>str</em>) – Name of .exp file containing the contours.</p></li>
+<li><p><strong>contourname</strong> (<a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.initialization.initialization.str" title="pyissm.model.classes.initialization.initialization.str"><em>str</em></a>) – Name of .exp file containing the contours.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1074,7 +1197,7 @@ of the contour segments.</p>
 <li><p><strong>y_prime</strong> (<em>array_like</em>) – Y coordinates of the mesh vertices onto which we interpolate.</p></li>
 <li><p><strong>default_value</strong> (<em>float</em><em> or </em><em>array_like</em><em>, </em><em>optional</em>) – Default value(s) to use for interpolation. Can be a scalar or vector
 of size len(x_prime).</p></li>
-<li><p><strong>contourname</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of contour file. Linear interpolation will happen on all x_prime,
+<li><p><strong>contourname</strong> (<a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.initialization.initialization.str" title="pyissm.model.classes.initialization.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – Name of contour file. Linear interpolation will happen on all x_prime,
 y_prime inside the contour, default value will be adopted on the rest
 of the mesh.</p></li>
 </ul>
@@ -1194,7 +1317,7 @@ of the mesh.</p></li>
 <p>Wrapper function for $ISSM_DIR/lib/IssmConfig_python.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>string</strong> (<em>str</em>) – The configuration parameter name to retrieve.</p>
+<dd class="field-odd"><p><strong>string</strong> (<a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.initialization.initialization.str" title="pyissm.model.classes.initialization.initialization.str"><em>str</em></a>) – The configuration parameter name to retrieve.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The configuration value associated with the specified parameter string.</p>
@@ -1249,7 +1372,7 @@ intersection with a triangular mesh.</p>
 <li><p><strong>index</strong> (<em>array_like</em>) – Indices of the mesh elements defining the triangulation connectivity.</p></li>
 <li><p><strong>x</strong> (<em>array_like</em>) – X coordinates of the mesh nodes.</p></li>
 <li><p><strong>y</strong> (<em>array_like</em>) – Y coordinates of the mesh nodes.</p></li>
-<li><p><strong>filename</strong> (<em>str</em>) – Path to an Argus-style .exp file containing the segments. Can contain
+<li><p><strong>filename</strong> (<a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.initialization.initialization.str" title="pyissm.model.classes.initialization.initialization.str"><em>str</em></a>) – Path to an Argus-style .exp file containing the segments. Can contain
 groups of disconnected segments.</p></li>
 </ul>
 </dd>
@@ -1336,8 +1459,8 @@ of segments intersecting the mesh.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>domain_outline_filename</strong> (<em>str</em>) – Path to an Argus domain outline file defining the mesh boundary.</p></li>
-<li><p><strong>rifts_filename</strong> (<em>str</em><em>, </em><em>optional</em><em>, </em><em>default=None</em>) – Path to an Argus rifts file defining internal rifts within the domain.</p></li>
+<li><p><strong>domain_outline_filename</strong> (<a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.initialization.initialization.str" title="pyissm.model.classes.initialization.initialization.str"><em>str</em></a>) – Path to an Argus domain outline file defining the mesh boundary.</p></li>
+<li><p><strong>rifts_filename</strong> (<a class="reference internal" href="pyissm.model.classes.html#pyissm.model.classes.initialization.initialization.str" title="pyissm.model.classes.initialization.initialization.str"><em>str</em></a><em>, </em><em>optional</em><em>, </em><em>default=None</em>) – Path to an Argus rifts file defining internal rifts within the domain.</p></li>
 <li><p><strong>area</strong> (<em>float</em><em>, </em><em>default=1000000</em>) – Maximum area allowed for any element of the resulting mesh.</p></li>
 </ul>
 </dd>
