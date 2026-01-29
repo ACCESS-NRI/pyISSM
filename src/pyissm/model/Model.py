@@ -529,7 +529,7 @@ class Model():
             # Put 0 for vz
             md2.stressbalance.spcvz[nodestoflag2] = 0
         if np.any(np.logical_not(np.isnan(md1.thermal.spctemperature))):
-            md2.thermal.spctemperature[nodestoflag2] = 1
+            md2.thermal.spctemperature[nodestoflag2] = md2.thermal.spctemperature[nodestoflag2]
 
         # Results fields
         if md1.results:

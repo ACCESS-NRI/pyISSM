@@ -1,7 +1,7 @@
 import numpy as np
 import warnings
 
-from pyissm.model.classes import friction
+from pyissm.model.classes import friction, basalforcings, calving, smb, frontalforcings
 from pyissm.model.classes import hydrology
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
@@ -159,23 +159,38 @@ class stochasticforcing(class_registry.manage_state):
         else:
             ispwHydroarma = 0
 
-        component_map = {
-            'SMB': md.smb,
-            'FrontalForcings': md.frontalforcings,
-            'Calving': md.calving,
-            'Basalforcings': md.basalforcings,
-            'Friction': md.friction
+        # Build module tuple of allowed classes from the dictionary
+        component_class_map = {}
+        modules = {
+            'basalforcings': basalforcings,
+            'calving': calving,
+            'frontalforcings': frontalforcings,
+            'smb': smb,
+            'friction': friction,
         }
+
+        for comp_name, module in modules.items():
+            # Filter classes in the dictionary that are defined in this module
+            component_class_map[comp_name] = tuple(
+                cls for cls in structstoch.values()
+                if cls.__module__ == module.__name__
+            )
 
         for field in self.fields:
             expected_class = structstoch.get(field)
             if expected_class is None:
                 raise ValueError(f'Field {field} in stochasticforcing is not recognized.')
             
-            # Identify which md submodel this field belongs to
-            component = next((obj for key, obj in component_map.items() if key in field), None)
-            if component is None:
-                raise ValueError(f"Cannot identify model component for stochasticforcing field '{field}'")
+            if not isinstance(expected_class, type):
+                raise TypeError(f"{field}: expected_class = {expected_class} is not a class")
+            
+            # Identify the md component
+            for comp_name, allowed_classes in component_class_map.items():
+                if issubclass(expected_class, allowed_classes):
+                    component = getattr(md, comp_name)
+                    break
+            else:
+                raise ValueError(f"Cannot identify component for stochasticforcing field '{field}'")
             
             # Handle friction (WaterPressure)
             if "WaterPressure" in field:
@@ -367,7 +382,7 @@ class stochasticforcing(class_registry.manage_state):
             ## Write fields
             execute.WriteData(fid, prefix, name = 'md.stochasticforcing.num_fields', data = num_fields, format = 'Integer')
             execute.WriteData(fid, prefix, obj = self, fieldname = 'fields', format = 'StringArray')
-            execute.WriteData(fid, prefix, name = 'md.stochasticforcing.dimensions', data = dimensions, format = 'IntMat', mattype = 2)
+            execute.WriteData(fid, prefix, name = 'md.stochasticforcing.dimensions', data = dimensions, format = 'IntMat')
             execute.WriteData(fid, prefix, name = 'md.stochasticforcing.default_id', data = self.default_id - 1, format = 'IntMat', mattype = 2) # 0-indexed
             execute.WriteData(fid, prefix, obj = self, fieldname = 'defaultdimension', format = 'Integer')
             execute.WriteData(fid, prefix, name = 'md.stochasticforcing.num_timescovariance', data = numtcovmat, format = 'Integer')
