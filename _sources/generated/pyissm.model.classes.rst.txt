@@ -1,4 +1,4 @@
-pyissm.model.classes
+﻿pyissm.model.classes
 ====================
 
 .. automodule:: pyissm.model.classes

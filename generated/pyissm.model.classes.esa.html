@@ -47,23 +47,69 @@
 <li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../pyissm.html">pyissm API Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="pyissm.html">pyissm</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="pyissm.analysis.html">pyissm.analysis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyissm.data.html">pyissm.data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyissm.learn.html">pyissm.learn</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="pyissm.model.html">pyissm.model</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="pyissm.model.html#pyissm.model.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyissm.model.Model.html">pyissm.model.Model</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyissm.model.bc.html">pyissm.model.bc</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="pyissm.model.classes.html">pyissm.model.classes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyissm.model.execute.html">pyissm.model.execute</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyissm.model.io.html">pyissm.model.io</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyissm.model.mesh.html">pyissm.model.mesh</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyissm.model.param.html">pyissm.model.param</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#pyissm-model-class">pyISSM Model Class</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../pyissm.html#pyissm-model-sub-classes">pyISSM Model sub-classes</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="pyissm.model.classes.html">pyissm.model.classes</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.amr.html">pyissm.model.classes.amr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.autodiff.html">pyissm.model.classes.autodiff</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.balancethickness.html">pyissm.model.classes.balancethickness</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.basalforcings.html">pyissm.model.classes.basalforcings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.calving.html">pyissm.model.classes.calving</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.class_registry.html">pyissm.model.classes.class_registry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.class_utils.html">pyissm.model.classes.class_utils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.cluster.html">pyissm.model.classes.cluster</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.constants.html">pyissm.model.classes.constants</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.damage.html">pyissm.model.classes.damage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.debris.html">pyissm.model.classes.debris</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.debug.html">pyissm.model.classes.debug</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.dependent.html">pyissm.model.classes.dependent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.dsl.html">pyissm.model.classes.dsl</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">pyissm.model.classes.esa</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.flowequation.html">pyissm.model.classes.flowequation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.friction.html">pyissm.model.classes.friction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.frontalforcings.html">pyissm.model.classes.frontalforcings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.geometry.html">pyissm.model.classes.geometry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.groundingline.html">pyissm.model.classes.groundingline</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.hydrology.html">pyissm.model.classes.hydrology</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.independent.html">pyissm.model.classes.independent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.initialization.html">pyissm.model.classes.initialization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.inversion.html">pyissm.model.classes.inversion</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.issmsettings.html">pyissm.model.classes.issmsettings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.levelset.html">pyissm.model.classes.levelset</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.love.html">pyissm.model.classes.love</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.lovenumbers.html">pyissm.model.classes.lovenumbers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.mask.html">pyissm.model.classes.mask</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.massfluxatgate.html">pyissm.model.classes.massfluxatgate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.masstransport.html">pyissm.model.classes.masstransport</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.materials.html">pyissm.model.classes.materials</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.mesh.html">pyissm.model.classes.mesh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.miscellaneous.html">pyissm.model.classes.miscellaneous</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.misfit.html">pyissm.model.classes.misfit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.nodalvalue.html">pyissm.model.classes.nodalvalue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.offlinesolidearthsolution.html">pyissm.model.classes.offlinesolidearthsolution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.organizer.html">pyissm.model.classes.organizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.outputdefinition.html">pyissm.model.classes.outputdefinition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.private.html">pyissm.model.classes.private</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.qmu.html">pyissm.model.classes.qmu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.radaroverlay.html">pyissm.model.classes.radaroverlay</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.regionaloutput.html">pyissm.model.classes.regionaloutput</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.results.html">pyissm.model.classes.results</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.rifts.html">pyissm.model.classes.rifts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.rotational.html">pyissm.model.classes.rotational</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.sampling.html">pyissm.model.classes.sampling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.smb.html">pyissm.model.classes.smb</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.solidearth.html">pyissm.model.classes.solidearth</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.steadystate.html">pyissm.model.classes.steadystate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.stochasticforcing.html">pyissm.model.classes.stochasticforcing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.stressbalance.html">pyissm.model.classes.stressbalance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.surfaceload.html">pyissm.model.classes.surfaceload</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.thermal.html">pyissm.model.classes.thermal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.timestepping.html">pyissm.model.classes.timestepping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.toolkits.html">pyissm.model.classes.toolkits</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.transient.html">pyissm.model.classes.transient</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.verbose.html">pyissm.model.classes.verbose</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="pyissm.plot.html">pyissm.plot</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html">pyissm.tools</a></li>
 </ul>
 </li>
 </ul>
@@ -86,8 +132,6 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../pyissm.html">pyissm API Reference</a></li>
-          <li class="breadcrumb-item"><a href="pyissm.html">pyissm</a></li>
-          <li class="breadcrumb-item"><a href="pyissm.model.html">pyissm.model</a></li>
           <li class="breadcrumb-item"><a href="pyissm.model.classes.html">pyissm.model.classes</a></li>
       <li class="breadcrumb-item active">pyissm.model.classes.esa</li>
       <li class="wy-breadcrumbs-aside">

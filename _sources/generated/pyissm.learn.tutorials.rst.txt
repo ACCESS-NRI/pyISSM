@@ -1,6 +1,0 @@
-pyissm.learn.tutorials
-======================
-
-.. automodule:: pyissm.learn.tutorials
-
-   

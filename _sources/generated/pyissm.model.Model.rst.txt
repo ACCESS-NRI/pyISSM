@@ -1,4 +1,4 @@
-pyissm.model.Model
+﻿pyissm.model.Model
 ==================
 
 .. currentmodule:: pyissm.model

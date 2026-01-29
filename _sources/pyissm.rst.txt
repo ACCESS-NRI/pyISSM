@@ -1,10 +1,27 @@
+.. _api:
+
 pyissm API Reference
 ===================
 
-This section provides full documentation for the pyISSM package.
+.. automodule:: pyissm
+
+.. currentmodule:: pyissm
+
+pyISSM Model Class
+-------------------
+Many pyISSM functions use the central pyISSM `Model` class.
 
 .. autosummary::
    :toctree: generated
    :recursive:
 
-   pyissm
+   pyissm.model.Model
+
+pyISSM Model sub-classes
+-------------------
+
+.. autosummary::
+   :toctree: generated
+   :recursive:
+
+   pyissm.model.classes
