@@ -1,0 +1,25 @@
+pyissm.model.classes.stochasticforcing
+======================================
+
+.. currentmodule:: pyissm.model.classes
+
+.. autoclass:: stochasticforcing
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~stochasticforcing.__init__
+      ~stochasticforcing.check_consistency
+      ~stochasticforcing.extrude
+      ~stochasticforcing.marshall_class
+   
+   
+
+   
+   
+   

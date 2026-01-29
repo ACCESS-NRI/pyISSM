@@ -1,0 +1,24 @@
+pyissm.model.classes.massfluxatgate
+===================================
+
+.. currentmodule:: pyissm.model.classes
+
+.. autoclass:: massfluxatgate
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~massfluxatgate.__init__
+      ~massfluxatgate.check_consistency
+      ~massfluxatgate.marshall_class
+   
+   
+
+   
+   
+   

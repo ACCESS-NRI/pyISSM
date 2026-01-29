@@ -1,0 +1,25 @@
+pyissm.model.classes.geometry
+=============================
+
+.. currentmodule:: pyissm.model.classes
+
+.. autoclass:: geometry
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~geometry.__init__
+      ~geometry.check_consistency
+      ~geometry.extrude
+      ~geometry.marshall_class
+   
+   
+
+   
+   
+   

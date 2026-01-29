@@ -1,0 +1,37 @@
+pyissm.model.mesh
+=================
+
+.. automodule:: pyissm.model.mesh
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      bamg
+      bamg_flowband
+      compute_hessian
+      compute_metric
+      depth_average
+      elements_from_edge
+      export_gmsh
+      find_element_types
+      find_node_types
+      find_segments
+      flag_elements
+      get_element_areas_volumes
+      get_mesh
+      get_nodal_functions_coeff
+      grid_model_field
+      make_gridded_domain_mask
+      mesh_convert
+      model_intersect_3d
+      model_merge_3d
+      process_mesh
+      project_2d
+      project_3d
+      round_mesh
+      square_mesh
+      triangle
+      twod_to_3d
+   

@@ -1,0 +1,18 @@
+pyissm.model.bc
+===============
+
+.. automodule:: pyissm.model.bc
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_ice_front_nodes
+      set_ice_sheet_bc
+      set_ice_shelf_bc
+      set_marine_ice_sheet_bc
+      set_molho_bc
+      set_neumann_bc
+      set_sb_dirichlet_bc
+   

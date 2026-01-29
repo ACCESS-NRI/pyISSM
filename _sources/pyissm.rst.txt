@@ -1,33 +1,10 @@
-pyissm package
-==============
+pyissm API Reference
+===================
 
-Subpackages
------------
+This section provides full documentation for the pyISSM package.
 
-.. toctree::
-   :maxdepth: 4
+.. autosummary::
+   :toctree: generated
+   :recursive:
 
-   pyissm.analysis
-   pyissm.data
-   pyissm.learn
-   pyissm.model
-   pyissm.tools
-
-Submodules
-----------
-
-pyissm.plot module
-------------------
-
-.. automodule:: pyissm.plot
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
-Module contents
----------------
-
-.. automodule:: pyissm
-   :members:
-   :show-inheritance:
-   :undoc-members:
+   pyissm

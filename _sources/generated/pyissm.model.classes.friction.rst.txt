@@ -1,0 +1,23 @@
+pyissm.model.classes.friction
+=============================
+
+.. automodule:: pyissm.model.classes.friction
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      coulomb
+      coulomb2
+      default
+      hydro
+      josh
+      pism
+      regcoulomb
+      regcoulomb2
+      schoof
+      shakti
+      waterlayer
+      weertman
+   

@@ -1,0 +1,15 @@
+pyissm.model.classes.mesh
+=========================
+
+.. automodule:: pyissm.model.classes.mesh
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      mesh2d
+      mesh2dvertical
+      mesh3dprisms
+      mesh3dsurface
+   

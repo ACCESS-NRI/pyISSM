@@ -1,0 +1,23 @@
+pyissm.model.classes.radaroverlay
+=================================
+
+.. currentmodule:: pyissm.model.classes
+
+.. autoclass:: radaroverlay
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~radaroverlay.__init__
+      ~radaroverlay.check_consistency
+   
+   
+
+   
+   
+   

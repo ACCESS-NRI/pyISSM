@@ -1,0 +1,13 @@
+pyissm.model.classes.qmu
+========================
+
+.. automodule:: pyissm.model.classes.qmu
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      default
+      statistics
+   

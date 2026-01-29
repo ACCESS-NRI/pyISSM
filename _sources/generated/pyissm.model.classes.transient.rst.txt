@@ -1,0 +1,26 @@
+pyissm.model.classes.transient
+==============================
+
+.. currentmodule:: pyissm.model.classes
+
+.. autoclass:: transient
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~transient.__init__
+      ~transient.check_consistency
+      ~transient.deactivate_all
+      ~transient.marshall_class
+      ~transient.process_outputs
+   
+   
+
+   
+   
+   

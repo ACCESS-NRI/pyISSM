@@ -1,0 +1,25 @@
+pyissm.model.classes.mask
+=========================
+
+.. currentmodule:: pyissm.model.classes
+
+.. autoclass:: mask
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~mask.__init__
+      ~mask.check_consistency
+      ~mask.extrude
+      ~mask.marshall_class
+   
+   
+
+   
+   
+   

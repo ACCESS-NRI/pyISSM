@@ -1,0 +1,25 @@
+pyissm.model.classes.outputdefinition
+=====================================
+
+.. currentmodule:: pyissm.model.classes
+
+.. autoclass:: outputdefinition
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~outputdefinition.__init__
+      ~outputdefinition.check_consistency
+      ~outputdefinition.extrude
+      ~outputdefinition.marshall_class
+   
+   
+
+   
+   
+   

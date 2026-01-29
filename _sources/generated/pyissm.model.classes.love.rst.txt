@@ -1,0 +1,13 @@
+pyissm.model.classes.love
+=========================
+
+.. automodule:: pyissm.model.classes.love
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      default
+      fourier
+   

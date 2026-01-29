@@ -1,0 +1,14 @@
+pyissm.tools.materials
+======================
+
+.. automodule:: pyissm.tools.materials
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      cuffey
+      nye
+      paterson
+   

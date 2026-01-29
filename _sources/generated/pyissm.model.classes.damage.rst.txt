@@ -1,0 +1,26 @@
+pyissm.model.classes.damage
+===========================
+
+.. currentmodule:: pyissm.model.classes
+
+.. autoclass:: damage
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~damage.__init__
+      ~damage.check_consistency
+      ~damage.extrude
+      ~damage.marshall_class
+      ~damage.process_outputs
+   
+   
+
+   
+   
+   

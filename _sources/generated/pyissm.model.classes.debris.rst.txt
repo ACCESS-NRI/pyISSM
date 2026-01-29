@@ -1,0 +1,26 @@
+pyissm.model.classes.debris
+===========================
+
+.. currentmodule:: pyissm.model.classes
+
+.. autoclass:: debris
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~debris.__init__
+      ~debris.check_consistency
+      ~debris.extrude
+      ~debris.marshall_class
+      ~debris.process_outputs
+   
+   
+
+   
+   
+   

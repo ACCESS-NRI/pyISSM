@@ -1,0 +1,23 @@
+pyissm.model.classes.private
+============================
+
+.. currentmodule:: pyissm.model.classes
+
+.. autoclass:: private
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~private.__init__
+      ~private.check_consistency
+   
+   
+
+   
+   
+   

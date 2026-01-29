@@ -1,0 +1,18 @@
+﻿pyissm
+======
+
+.. automodule:: pyissm
+
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   analysis
+   data
+   learn
+   model
+   plot
+   tools

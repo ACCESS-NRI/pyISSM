@@ -1,0 +1,25 @@
+pyissm.model.classes.steadystate
+================================
+
+.. currentmodule:: pyissm.model.classes
+
+.. autoclass:: steadystate
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~steadystate.__init__
+      ~steadystate.check_consistency
+      ~steadystate.marshall_class
+      ~steadystate.process_outputs
+   
+   
+
+   
+   
+   

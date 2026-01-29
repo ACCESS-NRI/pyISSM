@@ -1,0 +1,24 @@
+pyissm.model.classes.constants
+==============================
+
+.. currentmodule:: pyissm.model.classes
+
+.. autoclass:: constants
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~constants.__init__
+      ~constants.check_consistency
+      ~constants.marshall_class
+   
+   
+
+   
+   
+   

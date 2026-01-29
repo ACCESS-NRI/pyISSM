@@ -1,0 +1,26 @@
+pyissm.model.classes.masstransport
+==================================
+
+.. currentmodule:: pyissm.model.classes
+
+.. autoclass:: masstransport
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~masstransport.__init__
+      ~masstransport.check_consistency
+      ~masstransport.extrude
+      ~masstransport.marshall_class
+      ~masstransport.process_outputs
+   
+   
+
+   
+   
+   

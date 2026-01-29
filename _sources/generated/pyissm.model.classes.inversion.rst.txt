@@ -1,0 +1,14 @@
+pyissm.model.classes.inversion
+==============================
+
+.. automodule:: pyissm.model.classes.inversion
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      default
+      m1qn3
+      tao
+   

@@ -1,0 +1,25 @@
+pyissm.model.classes.initialization
+===================================
+
+.. currentmodule:: pyissm.model.classes
+
+.. autoclass:: initialization
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~initialization.__init__
+      ~initialization.check_consistency
+      ~initialization.extrude
+      ~initialization.marshall_class
+   
+   
+
+   
+   
+   

@@ -1,0 +1,18 @@
+pyissm.model.classes.basalforcings
+==================================
+
+.. automodule:: pyissm.model.classes.basalforcings
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      default
+      linear
+      lineararma
+      mismip
+      pico
+      plume
+      spatiallinear
+   

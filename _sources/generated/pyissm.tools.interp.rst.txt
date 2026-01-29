@@ -1,0 +1,12 @@
+pyissm.tools.interp
+===================
+
+.. automodule:: pyissm.tools.interp
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      averaging
+   

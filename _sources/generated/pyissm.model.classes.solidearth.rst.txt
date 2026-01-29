@@ -1,0 +1,15 @@
+pyissm.model.classes.solidearth
+===============================
+
+.. automodule:: pyissm.model.classes.solidearth
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      earth
+      europa
+      settings
+      solution
+   

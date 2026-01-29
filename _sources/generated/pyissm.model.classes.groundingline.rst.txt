@@ -1,0 +1,25 @@
+pyissm.model.classes.groundingline
+==================================
+
+.. currentmodule:: pyissm.model.classes
+
+.. autoclass:: groundingline
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~groundingline.__init__
+      ~groundingline.check_consistency
+      ~groundingline.marshall_class
+      ~groundingline.process_outputs
+   
+   
+
+   
+   
+   

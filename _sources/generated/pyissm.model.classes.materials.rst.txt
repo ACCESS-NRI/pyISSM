@@ -1,0 +1,18 @@
+pyissm.model.classes.materials
+==============================
+
+.. automodule:: pyissm.model.classes.materials
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      composite
+      damageice
+      enhancedice
+      estar
+      hydro
+      ice
+      litho
+   

@@ -1,0 +1,18 @@
+pyissm.tools.general
+====================
+
+.. automodule:: pyissm.tools.general
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      compare_bin_files
+      convert_units
+      extract_field_layer
+      has_nested_attr
+      ll_to_xy
+      planetradius
+      xy_to_ll
+   

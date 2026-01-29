@@ -1,0 +1,26 @@
+pyissm.model.classes.verbose
+============================
+
+.. currentmodule:: pyissm.model.classes
+
+.. autoclass:: verbose
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~verbose.VerboseToBinary
+      ~verbose.__init__
+      ~verbose.check_consistency
+      ~verbose.deactivate_all
+      ~verbose.marshall_class
+   
+   
+
+   
+   
+   

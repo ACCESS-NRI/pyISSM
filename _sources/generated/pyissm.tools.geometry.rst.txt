@@ -1,0 +1,13 @@
+pyissm.tools.geometry
+=====================
+
+.. automodule:: pyissm.tools.geometry
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      nowicki_profile
+      slope
+   

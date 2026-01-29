@@ -1,0 +1,26 @@
+pyissm.model.classes.thermal
+============================
+
+.. currentmodule:: pyissm.model.classes
+
+.. autoclass:: thermal
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~thermal.__init__
+      ~thermal.check_consistency
+      ~thermal.extrude
+      ~thermal.marshall_class
+      ~thermal.process_outputs
+   
+   
+
+   
+   
+   

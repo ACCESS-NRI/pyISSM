@@ -1,0 +1,19 @@
+pyissm.model
+============
+
+.. automodule:: pyissm.model
+
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   Model
+   bc
+   classes
+   execute
+   io
+   mesh
+   param

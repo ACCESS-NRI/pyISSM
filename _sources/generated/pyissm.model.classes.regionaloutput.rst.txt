@@ -1,0 +1,25 @@
+pyissm.model.classes.regionaloutput
+===================================
+
+.. currentmodule:: pyissm.model.classes
+
+.. autoclass:: regionaloutput
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~regionaloutput.__init__
+      ~regionaloutput.check_consistency
+      ~regionaloutput.extrude
+      ~regionaloutput.marshall_class
+   
+   
+
+   
+   
+   

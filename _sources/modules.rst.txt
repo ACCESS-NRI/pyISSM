@@ -1,7 +1,0 @@
-pyissm
-======
-
-.. toctree::
-   :maxdepth: 4
-
-   pyissm

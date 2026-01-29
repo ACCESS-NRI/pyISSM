@@ -1,0 +1,20 @@
+pyissm.model.classes.class\_registry
+====================================
+
+.. automodule:: pyissm.model.classes.class_registry
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      create_instance
+      map_classtype
+      register_class
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      manage_state
+   

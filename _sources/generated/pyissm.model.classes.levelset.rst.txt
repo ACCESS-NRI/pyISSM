@@ -1,0 +1,25 @@
+pyissm.model.classes.levelset
+=============================
+
+.. currentmodule:: pyissm.model.classes
+
+.. autoclass:: levelset
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~levelset.__init__
+      ~levelset.check_consistency
+      ~levelset.extrude
+      ~levelset.marshall_class
+   
+   
+
+   
+   
+   

@@ -1,0 +1,26 @@
+pyissm.model.classes.stressbalance
+==================================
+
+.. currentmodule:: pyissm.model.classes
+
+.. autoclass:: stressbalance
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~stressbalance.__init__
+      ~stressbalance.check_consistency
+      ~stressbalance.extrude
+      ~stressbalance.marshall_class
+      ~stressbalance.process_outputs
+   
+   
+
+   
+   
+   

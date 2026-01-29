@@ -1,0 +1,449 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyissm.model.classes.flowequation &mdash; pyissm v0.0.1.dev190126 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d96f5a32"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pyissm.model.classes.friction" href="pyissm.model.classes.friction.html" />
+    <link rel="prev" title="pyissm.model.classes.esa" href="pyissm.model.classes.esa.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pyissm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../pyissm.html">pyissm API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="pyissm.html">pyissm</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="pyissm.analysis.html">pyissm.analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.data.html">pyissm.data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.learn.html">pyissm.learn</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="pyissm.model.html">pyissm.model</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.Model.html">pyissm.model.Model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.bc.html">pyissm.model.bc</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="pyissm.model.classes.html">pyissm.model.classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.execute.html">pyissm.model.execute</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.io.html">pyissm.model.io</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.mesh.html">pyissm.model.mesh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.param.html">pyissm.model.param</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.plot.html">pyissm.plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.tools.html">pyissm.tools</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyissm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../pyissm.html">pyissm API Reference</a></li>
+          <li class="breadcrumb-item"><a href="pyissm.html">pyissm</a></li>
+          <li class="breadcrumb-item"><a href="pyissm.model.html">pyissm.model</a></li>
+          <li class="breadcrumb-item"><a href="pyissm.model.classes.html">pyissm.model.classes</a></li>
+      <li class="breadcrumb-item active">pyissm.model.classes.flowequation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/pyissm.model.classes.flowequation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pyissm-model-classes-flowequation">
+<h1>pyissm.model.classes.flowequation<a class="headerlink" href="#pyissm-model-classes-flowequation" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.</span></span><span class="sig-name descname"><span class="pre">flowequation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.flowequation" title="Link to this definition"></a></dt>
+<dd><p>Flow equation parameters class for ISSM.</p>
+<p>This class encapsulates parameters for configuring flow equations in the ISSM (Ice Sheet System Model) framework.
+It allows users to select and configure different ice flow approximations such as SIA, SSA, Higher-Order, and Full-Stokes,
+along with their associated numerical methods and boundary conditions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation.isSIA">
+<span class="sig-name descname"><span class="pre">isSIA</span></span><a class="headerlink" href="#pyissm.model.classes.flowequation.isSIA" title="Link to this definition"></a></dt>
+<dd><p>Is the Shallow Ice Approximation (SIA) used?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation.isL1L2">
+<span class="sig-name descname"><span class="pre">isL1L2</span></span><a class="headerlink" href="#pyissm.model.classes.flowequation.isL1L2" title="Link to this definition"></a></dt>
+<dd><p>Are L1L2 equations used?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation.isSSA">
+<span class="sig-name descname"><span class="pre">isSSA</span></span><a class="headerlink" href="#pyissm.model.classes.flowequation.isSSA" title="Link to this definition"></a></dt>
+<dd><p>Is the Shelfy-Stream Approximation (SSA) used?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation.isMOLHO">
+<span class="sig-name descname"><span class="pre">isMOLHO</span></span><a class="headerlink" href="#pyissm.model.classes.flowequation.isMOLHO" title="Link to this definition"></a></dt>
+<dd><p>Are MOno-layer Higher-Order (MOLHO) equations used?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation.isHO">
+<span class="sig-name descname"><span class="pre">isHO</span></span><a class="headerlink" href="#pyissm.model.classes.flowequation.isHO" title="Link to this definition"></a></dt>
+<dd><p>Is the Higher-Order (HO) approximation used?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation.isFS">
+<span class="sig-name descname"><span class="pre">isFS</span></span><a class="headerlink" href="#pyissm.model.classes.flowequation.isFS" title="Link to this definition"></a></dt>
+<dd><p>Are the Full-Stokes (FS) equations used?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation.isNitscheBC">
+<span class="sig-name descname"><span class="pre">isNitscheBC</span></span><a class="headerlink" href="#pyissm.model.classes.flowequation.isNitscheBC" title="Link to this definition"></a></dt>
+<dd><p>Is weakly imposed condition used?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation.FSNitscheGamma">
+<span class="sig-name descname"><span class="pre">FSNitscheGamma</span></span><a class="headerlink" href="#pyissm.model.classes.flowequation.FSNitscheGamma" title="Link to this definition"></a></dt>
+<dd><p>Gamma value for the Nitsche term.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=1e6</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation.fe_SSA">
+<span class="sig-name descname"><span class="pre">fe_SSA</span></span><a class="headerlink" href="#pyissm.model.classes.flowequation.fe_SSA" title="Link to this definition"></a></dt>
+<dd><p>Finite Element for SSA: ‘P1’, ‘P1bubble’, ‘P1bubblecondensed’, ‘P2’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str">str</a>, default=’P1’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation.fe_HO">
+<span class="sig-name descname"><span class="pre">fe_HO</span></span><a class="headerlink" href="#pyissm.model.classes.flowequation.fe_HO" title="Link to this definition"></a></dt>
+<dd><p>Finite Element for HO: ‘P1’, ‘P1bubble’, ‘P1bubblecondensed’, ‘P2’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str">str</a>, default=’P1’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation.fe_FS">
+<span class="sig-name descname"><span class="pre">fe_FS</span></span><a class="headerlink" href="#pyissm.model.classes.flowequation.fe_FS" title="Link to this definition"></a></dt>
+<dd><p>Finite Element for FS: ‘MINI’, ‘MINIcondensed’, ‘TaylorHood’, ‘XTaylorHood’, ‘OneLayerP4z’, ‘CrouzeixRaviart’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str">str</a>, default=’MINIcondensed’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation.augmented_lagrangian_r">
+<span class="sig-name descname"><span class="pre">augmented_lagrangian_r</span></span><a class="headerlink" href="#pyissm.model.classes.flowequation.augmented_lagrangian_r" title="Link to this definition"></a></dt>
+<dd><p>Augmented Lagrangian parameter r.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=1</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation.augmented_lagrangian_rhop">
+<span class="sig-name descname"><span class="pre">augmented_lagrangian_rhop</span></span><a class="headerlink" href="#pyissm.model.classes.flowequation.augmented_lagrangian_rhop" title="Link to this definition"></a></dt>
+<dd><p>Augmented Lagrangian parameter rhop.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=1</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation.augmented_lagrangian_rlambda">
+<span class="sig-name descname"><span class="pre">augmented_lagrangian_rlambda</span></span><a class="headerlink" href="#pyissm.model.classes.flowequation.augmented_lagrangian_rlambda" title="Link to this definition"></a></dt>
+<dd><p>Augmented Lagrangian parameter rlambda.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=1</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation.augmented_lagrangian_rholambda">
+<span class="sig-name descname"><span class="pre">augmented_lagrangian_rholambda</span></span><a class="headerlink" href="#pyissm.model.classes.flowequation.augmented_lagrangian_rholambda" title="Link to this definition"></a></dt>
+<dd><p>Augmented Lagrangian parameter rholambda.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=1</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation.XTH_theta">
+<span class="sig-name descname"><span class="pre">XTH_theta</span></span><a class="headerlink" href="#pyissm.model.classes.flowequation.XTH_theta" title="Link to this definition"></a></dt>
+<dd><p>XTH theta parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation.vertex_equation">
+<span class="sig-name descname"><span class="pre">vertex_equation</span></span><a class="headerlink" href="#pyissm.model.classes.flowequation.vertex_equation" title="Link to this definition"></a></dt>
+<dd><p>Vertex equation parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation.element_equation">
+<span class="sig-name descname"><span class="pre">element_equation</span></span><a class="headerlink" href="#pyissm.model.classes.flowequation.element_equation" title="Link to this definition"></a></dt>
+<dd><p>Element equation parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation.borderSSA">
+<span class="sig-name descname"><span class="pre">borderSSA</span></span><a class="headerlink" href="#pyissm.model.classes.flowequation.borderSSA" title="Link to this definition"></a></dt>
+<dd><p>Border parameter for SSA.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation.borderHO">
+<span class="sig-name descname"><span class="pre">borderHO</span></span><a class="headerlink" href="#pyissm.model.classes.flowequation.borderHO" title="Link to this definition"></a></dt>
+<dd><p>Border parameter for HO.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation.borderFS">
+<span class="sig-name descname"><span class="pre">borderFS</span></span><a class="headerlink" href="#pyissm.model.classes.flowequation.borderFS" title="Link to this definition"></a></dt>
+<dd><p>Border parameter for FS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.flowequation.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the flowequation parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.flowequation.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the flowequation parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.flowequation.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.flowequation.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.flowequation.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file.</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.flowequation = pyissm.model.classes.flowequation()
+md.flowequation.isSSA = 1
+md.flowequation.fe_SSA = ‘P1bubble’
+md.flowequation.FSNitscheGamma = 1e5</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd><p>Initialize the instance with optional field inheritance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>object</em><em>, </em><em>optional</em>) – Another instance to inherit field values from. If provided, any
+fields in the current instance that differ from the default values
+and exist in ‘other’ will be replaced with the values from ‘other’.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The inheritance process:
+1. Iterates through all attributes of the current instance
+2. Checks if the same attribute exists in the ‘other’ instance
+3. Compares field values using _fields_equal()
+4. If different, replaces the current value with the ‘other’ value</p>
+<p>This enables the common ISSM pattern where classes can inherit
+configurations from existing instances while maintaining their
+default values for unspecified fields.</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code>([other])</p></td>
+<td><p>Initialize the instance with optional field inheritance.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_consistency</span></code>(md, solution, analyses)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">extrude</span></code>(md)</p></td>
+<td><p>Extrude flowequation fields to 3D</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">marshall_class</span></code>(fid, prefix[, md])</p></td>
+<td><p>Marshall [flowequation] parameters to a binary file.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyissm.model.classes.esa.html" class="btn btn-neutral float-left" title="pyissm.model.classes.esa" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyissm.model.classes.friction.html" class="btn btn-neutral float-right" title="pyissm.model.classes.friction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, ACCESS-NRI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,24 @@
+pyissm.model.classes.rifts
+==========================
+
+.. currentmodule:: pyissm.model.classes
+
+.. autoclass:: rifts
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~rifts.__init__
+      ~rifts.check_consistency
+      ~rifts.marshall_class
+   
+   
+
+   
+   
+   

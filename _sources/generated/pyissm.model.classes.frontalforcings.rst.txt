@@ -1,0 +1,14 @@
+pyissm.model.classes.frontalforcings
+====================================
+
+.. automodule:: pyissm.model.classes.frontalforcings
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      default
+      rignot
+      rignotarma
+   

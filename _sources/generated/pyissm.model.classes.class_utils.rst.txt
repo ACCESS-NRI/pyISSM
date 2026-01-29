@@ -1,0 +1,24 @@
+pyissm.model.classes.class\_utils
+=================================
+
+.. automodule:: pyissm.model.classes.class_utils
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      check_field
+      cluster_queue_requirements
+      dict_display
+      displayunit
+      fielddisplay
+      getlongestfieldname
+      list_display
+      marshall_inversion_cost_functions
+      parsedisplay
+      supported_analyses
+      supported_inversion_control_parameters
+      supported_inversion_cost_functions
+      supported_stochastic_forcings
+   

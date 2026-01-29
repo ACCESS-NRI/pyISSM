@@ -1,0 +1,25 @@
+pyissm.model.classes.flowequation
+=================================
+
+.. currentmodule:: pyissm.model.classes
+
+.. autoclass:: flowequation
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~flowequation.__init__
+      ~flowequation.check_consistency
+      ~flowequation.extrude
+      ~flowequation.marshall_class
+   
+   
+
+   
+   
+   

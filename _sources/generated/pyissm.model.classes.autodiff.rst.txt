@@ -1,0 +1,24 @@
+pyissm.model.classes.autodiff
+=============================
+
+.. currentmodule:: pyissm.model.classes
+
+.. autoclass:: autodiff
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~autodiff.__init__
+      ~autodiff.check_consistency
+      ~autodiff.marshall_class
+   
+   
+
+   
+   
+   

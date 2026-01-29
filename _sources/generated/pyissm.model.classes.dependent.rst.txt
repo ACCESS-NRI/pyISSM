@@ -1,0 +1,23 @@
+pyissm.model.classes.dependent
+==============================
+
+.. currentmodule:: pyissm.model.classes
+
+.. autoclass:: dependent
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~dependent.__init__
+      ~dependent.check_consistency
+   
+   
+
+   
+   
+   
