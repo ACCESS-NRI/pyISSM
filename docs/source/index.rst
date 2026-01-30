@@ -10,8 +10,9 @@ Quick Links
 -------------------
 - `Overview <overview>`_ - A high-level introduction to pyISSM features and capabilities.
 - `Installation <installation>`_ - Instructions for installing pyISSM.
-- `Contributing Guidelines <contributing>`_ - How to contribute to pyISSM development and documentation.
+- `Tutorials <tutorials>`_ - Hands-on tutorials demonstrating common pyISSM workflows.
 - `API Reference <pyissm>`_ - Detailed API documentation for pyISSM submodules and classes.
+- `Contributing Guidelines <contributing>`_ - How to contribute to pyISSM development and documentation.
 
 Getting Started
 -------------------
@@ -20,7 +21,7 @@ To get started with pyISSM, please refer to the `installation <installation>`_ g
 
 Tutorials
 -------------------
-For customised pyISSM tutorials, please refere to the `tutorials <tutorials>`_ section.
+For hands-on pyISSM tutorials, please refere to the `tutorials <tutorials>`_ section.
 
 
 Contributing
@@ -33,6 +34,6 @@ We welcome contributions from the community! If you're interested in contributin
 
    overview
    installation
-   pyissm
    tutorials
+   pyissm
    contributing
