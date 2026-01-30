@@ -27,11 +27,15 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.napoleon',
     'sphinx_autodoc_typehints',
-    'nbsphinx'
+    'myst_nb'
 ]
 
-# nbsphinx options
-nbsphinx_allow_errors = True
+# Register suffixes
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".md": "markdown",
+    ".ipynb": "myst-nb",
+}
 
 # Sphinx options
 autosummary_generate = True
