@@ -5,7 +5,7 @@ pyissm API Reference
 .. automodule:: pyissm
 .. currentmodule:: pyissm
 
-pyISSM comprises six major sub-packages:
+pyISSM comprises five major sub-packages:
 
 - ``pyissm.model`` - contains the central functionality, including the core ``Model`` class and all model sub-classes.
 - ``pyissm.tools`` - contains diverse tools for interacting with the ISSM Model object.
