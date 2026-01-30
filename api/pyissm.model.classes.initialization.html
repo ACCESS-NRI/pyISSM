@@ -1,0 +1,528 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyissm.model.classes.initialization &mdash; pyissm v0.0.1.dev190126 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d96f5a32"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pyissm.model.classes.inversion" href="pyissm.model.classes.inversion.html" />
+    <link rel="prev" title="pyissm.model.classes.independent" href="pyissm.model.classes.independent.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pyissm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../pyissm.html">pyissm API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#pyissm-model-class">pyISSM Model Class</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../pyissm.html#pyissm-model-sub-classes">pyISSM Model sub-classes</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="pyissm.model.classes.html">pyissm.model.classes</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.amr.html">pyissm.model.classes.amr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.autodiff.html">pyissm.model.classes.autodiff</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.balancethickness.html">pyissm.model.classes.balancethickness</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.basalforcings.html">pyissm.model.classes.basalforcings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.calving.html">pyissm.model.classes.calving</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.class_registry.html">pyissm.model.classes.class_registry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.class_utils.html">pyissm.model.classes.class_utils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.cluster.html">pyissm.model.classes.cluster</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.constants.html">pyissm.model.classes.constants</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.damage.html">pyissm.model.classes.damage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.debris.html">pyissm.model.classes.debris</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.debug.html">pyissm.model.classes.debug</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.dependent.html">pyissm.model.classes.dependent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.dsl.html">pyissm.model.classes.dsl</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.esa.html">pyissm.model.classes.esa</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.flowequation.html">pyissm.model.classes.flowequation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.friction.html">pyissm.model.classes.friction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.frontalforcings.html">pyissm.model.classes.frontalforcings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.geometry.html">pyissm.model.classes.geometry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.groundingline.html">pyissm.model.classes.groundingline</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.hydrology.html">pyissm.model.classes.hydrology</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.independent.html">pyissm.model.classes.independent</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">pyissm.model.classes.initialization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.inversion.html">pyissm.model.classes.inversion</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.issmsettings.html">pyissm.model.classes.issmsettings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.levelset.html">pyissm.model.classes.levelset</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.love.html">pyissm.model.classes.love</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.lovenumbers.html">pyissm.model.classes.lovenumbers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.mask.html">pyissm.model.classes.mask</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.massfluxatgate.html">pyissm.model.classes.massfluxatgate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.masstransport.html">pyissm.model.classes.masstransport</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.materials.html">pyissm.model.classes.materials</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.mesh.html">pyissm.model.classes.mesh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.miscellaneous.html">pyissm.model.classes.miscellaneous</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.misfit.html">pyissm.model.classes.misfit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.nodalvalue.html">pyissm.model.classes.nodalvalue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.offlinesolidearthsolution.html">pyissm.model.classes.offlinesolidearthsolution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.organizer.html">pyissm.model.classes.organizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.outputdefinition.html">pyissm.model.classes.outputdefinition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.private.html">pyissm.model.classes.private</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.qmu.html">pyissm.model.classes.qmu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.radaroverlay.html">pyissm.model.classes.radaroverlay</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.regionaloutput.html">pyissm.model.classes.regionaloutput</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.results.html">pyissm.model.classes.results</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.rifts.html">pyissm.model.classes.rifts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.rotational.html">pyissm.model.classes.rotational</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.sampling.html">pyissm.model.classes.sampling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.smb.html">pyissm.model.classes.smb</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.solidearth.html">pyissm.model.classes.solidearth</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.steadystate.html">pyissm.model.classes.steadystate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.stochasticforcing.html">pyissm.model.classes.stochasticforcing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.stressbalance.html">pyissm.model.classes.stressbalance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.surfaceload.html">pyissm.model.classes.surfaceload</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.thermal.html">pyissm.model.classes.thermal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.timestepping.html">pyissm.model.classes.timestepping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.toolkits.html">pyissm.model.classes.toolkits</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.transient.html">pyissm.model.classes.transient</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.verbose.html">pyissm.model.classes.verbose</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#tools">Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#data">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#plot">Plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#analysis">Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyissm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../pyissm.html">pyissm API Reference</a></li>
+          <li class="breadcrumb-item"><a href="pyissm.model.classes.html">pyissm.model.classes</a></li>
+      <li class="breadcrumb-item active">pyissm.model.classes.initialization</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/pyissm.model.classes.initialization.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pyissm-model-classes-initialization">
+<h1>pyissm.model.classes.initialization<a class="headerlink" href="#pyissm-model-classes-initialization" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.</span></span><span class="sig-name descname"><span class="pre">initialization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.initialization" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Initialization field values class for ISSM.</p>
+<p>This class encapsulates initial field values for various physical quantities in the ISSM (Ice Sheet System Model) framework.
+It provides storage for initial conditions of velocity, pressure, temperature, and other state variables
+that are used to initialize ice sheet model simulations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.vx">
+<span class="sig-name descname"><span class="pre">vx</span></span><a class="headerlink" href="#pyissm.model.classes.initialization.vx" title="Link to this definition"></a></dt>
+<dd><p>x component of velocity [m/yr].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.vy">
+<span class="sig-name descname"><span class="pre">vy</span></span><a class="headerlink" href="#pyissm.model.classes.initialization.vy" title="Link to this definition"></a></dt>
+<dd><p>y component of velocity [m/yr].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.vz">
+<span class="sig-name descname"><span class="pre">vz</span></span><a class="headerlink" href="#pyissm.model.classes.initialization.vz" title="Link to this definition"></a></dt>
+<dd><p>z component of velocity [m/yr].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.vel">
+<span class="sig-name descname"><span class="pre">vel</span></span><a class="headerlink" href="#pyissm.model.classes.initialization.vel" title="Link to this definition"></a></dt>
+<dd><p>velocity norm [m/yr].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.pressure">
+<span class="sig-name descname"><span class="pre">pressure</span></span><a class="headerlink" href="#pyissm.model.classes.initialization.pressure" title="Link to this definition"></a></dt>
+<dd><p>pressure [Pa].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.temperature">
+<span class="sig-name descname"><span class="pre">temperature</span></span><a class="headerlink" href="#pyissm.model.classes.initialization.temperature" title="Link to this definition"></a></dt>
+<dd><p>temperature [K].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.enthalpy">
+<span class="sig-name descname"><span class="pre">enthalpy</span></span><a class="headerlink" href="#pyissm.model.classes.initialization.enthalpy" title="Link to this definition"></a></dt>
+<dd><p>enthalpy [J].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.waterfraction">
+<span class="sig-name descname"><span class="pre">waterfraction</span></span><a class="headerlink" href="#pyissm.model.classes.initialization.waterfraction" title="Link to this definition"></a></dt>
+<dd><p>fraction of water in the ice.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.sediment_head">
+<span class="sig-name descname"><span class="pre">sediment_head</span></span><a class="headerlink" href="#pyissm.model.classes.initialization.sediment_head" title="Link to this definition"></a></dt>
+<dd><p>sediment water head of subglacial system [m].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.epl_head">
+<span class="sig-name descname"><span class="pre">epl_head</span></span><a class="headerlink" href="#pyissm.model.classes.initialization.epl_head" title="Link to this definition"></a></dt>
+<dd><p>epl water head of subglacial system [m].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.epl_thickness">
+<span class="sig-name descname"><span class="pre">epl_thickness</span></span><a class="headerlink" href="#pyissm.model.classes.initialization.epl_thickness" title="Link to this definition"></a></dt>
+<dd><p>thickness of the epl [m].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.watercolumn">
+<span class="sig-name descname"><span class="pre">watercolumn</span></span><a class="headerlink" href="#pyissm.model.classes.initialization.watercolumn" title="Link to this definition"></a></dt>
+<dd><p>thickness of subglacial water [m].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.hydraulic_potential">
+<span class="sig-name descname"><span class="pre">hydraulic_potential</span></span><a class="headerlink" href="#pyissm.model.classes.initialization.hydraulic_potential" title="Link to this definition"></a></dt>
+<dd><p>Hydraulic potential (for GlaDS) [Pa].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.channelarea">
+<span class="sig-name descname"><span class="pre">channelarea</span></span><a class="headerlink" href="#pyissm.model.classes.initialization.channelarea" title="Link to this definition"></a></dt>
+<dd><p>subglacial water channel area (for GlaDS) [m2].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.sealevel">
+<span class="sig-name descname"><span class="pre">sealevel</span></span><a class="headerlink" href="#pyissm.model.classes.initialization.sealevel" title="Link to this definition"></a></dt>
+<dd><p>sea level [m].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.bottompressure">
+<span class="sig-name descname"><span class="pre">bottompressure</span></span><a class="headerlink" href="#pyissm.model.classes.initialization.bottompressure" title="Link to this definition"></a></dt>
+<dd><p>bottom pressure [Pa].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.dsl">
+<span class="sig-name descname"><span class="pre">dsl</span></span><a class="headerlink" href="#pyissm.model.classes.initialization.dsl" title="Link to this definition"></a></dt>
+<dd><p>dynamic sea level [m].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.str">
+<span class="sig-name descname"><span class="pre">str</span></span><a class="headerlink" href="#pyissm.model.classes.initialization.str" title="Link to this definition"></a></dt>
+<dd><p>surface temperature rate [K/yr].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><a class="headerlink" href="#pyissm.model.classes.initialization.sample" title="Link to this definition"></a></dt>
+<dd><p>Realization of a Gaussian random field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.debris">
+<span class="sig-name descname"><span class="pre">debris</span></span><a class="headerlink" href="#pyissm.model.classes.initialization.debris" title="Link to this definition"></a></dt>
+<dd><p>Surface debris layer [m].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.age">
+<span class="sig-name descname"><span class="pre">age</span></span><a class="headerlink" href="#pyissm.model.classes.initialization.age" title="Link to this definition"></a></dt>
+<dd><p>Initial age [yr].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.initialization.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the initialization parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.initialization.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the initialization parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.initialization.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.initialization.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.initialization = pyissm.model.classes.initialization()
+md.initialization.vx = vx_initial
+md.initialization.vy = vy_initial
+md.initialization.temperature = temp_initial</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd><p>Initialize the instance with optional field inheritance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>object</em><em>, </em><em>optional</em>) – Another instance to inherit field values from. If provided, any
+fields in the current instance that differ from the default values
+and exist in ‘other’ will be replaced with the values from ‘other’.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The inheritance process:
+1. Iterates through all attributes of the current instance
+2. Checks if the same attribute exists in the ‘other’ instance
+3. Compares field values using _fields_equal()
+4. If different, replaces the current value with the ‘other’ value</p>
+<p>This enables the common ISSM pattern where classes can inherit
+configurations from existing instances while maintaining their
+default values for unspecified fields.</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code>([other])</p></td>
+<td><p>Initialize the instance with optional field inheritance.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_consistency</span></code>(md, solution, analyses)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">extrude</span></code>(md)</p></td>
+<td><p>Extrude initialization fields to 3D</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">marshall_class</span></code>(fid, prefix[, md])</p></td>
+<td><p>Marshall [initialization] parameters to a binary file.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.initialization.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.initialization.extrude">
+<span class="sig-name descname"><span class="pre">extrude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.initialization.extrude" title="Link to this definition"></a></dt>
+<dd><p>Extrude initialization fields to 3D</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd><p>Marshall [initialization] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyissm.model.classes.independent.html" class="btn btn-neutral float-left" title="pyissm.model.classes.independent" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyissm.model.classes.inversion.html" class="btn btn-neutral float-right" title="pyissm.model.classes.inversion" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, ACCESS-NRI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

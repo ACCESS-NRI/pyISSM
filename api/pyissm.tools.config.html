@@ -1,0 +1,368 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyissm.tools.config &mdash; pyissm v0.0.1.dev190126 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d96f5a32"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pyissm.tools.exp" href="pyissm.tools.exp.html" />
+    <link rel="prev" title="pyissm.tools.archive" href="pyissm.tools.archive.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pyissm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../pyissm.html">pyissm API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#pyissm-model-class">pyISSM Model Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#pyissm-model-sub-classes">pyISSM Model sub-classes</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../pyissm.html#tools">Tools</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="pyissm.tools.html">pyissm.tools</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pyissm.tools.archive.html">pyissm.tools.archive</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">pyissm.tools.config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.tools.exp.html">pyissm.tools.exp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.tools.general.html">pyissm.tools.general</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.tools.geometry.html">pyissm.tools.geometry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.tools.interp.html">pyissm.tools.interp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.tools.materials.html">pyissm.tools.materials</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.tools.wrappers.html">pyissm.tools.wrappers</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#data">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#plot">Plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#analysis">Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyissm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../pyissm.html">pyissm API Reference</a></li>
+          <li class="breadcrumb-item"><a href="pyissm.tools.html">pyissm.tools</a></li>
+      <li class="breadcrumb-item active">pyissm.tools.config</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/pyissm.tools.config.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pyissm.tools.config">
+<span id="pyissm-tools-config"></span><h1>pyissm.tools.config<a class="headerlink" href="#module-pyissm.tools.config" title="Link to this heading"></a></h1>
+<p>Configuration functions for ISSM</p>
+<p>This module contains various functions that relate to the configuration of the ISSM codebase.</p>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.tools.config.get_hostname" title="pyissm.tools.config.get_hostname"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_hostname</span></code></a>()</p></td>
+<td><p>Get the hostname of the current machine.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.tools.config.get_issm_dir" title="pyissm.tools.config.get_issm_dir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_issm_dir</span></code></a>()</p></td>
+<td><p>Return the ISSM installation directory, or None if not configured.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.tools.config.get_username" title="pyissm.tools.config.get_username"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_username</span></code></a>()</p></td>
+<td><p>Get the username of the current user.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.tools.config.iluasm_options" title="pyissm.tools.config.iluasm_options"><code class="xref py py-obj docutils literal notranslate"><span class="pre">iluasm_options</span></code></a>(**kwargs)</p></td>
+<td><p>Set the ILU-ASM options for PETSc linear solver configuration.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.tools.config.is_pc" title="pyissm.tools.config.is_pc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_pc</span></code></a>()</p></td>
+<td><p>Check if the current operating system is Windows.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.tools.config.issm_gsl_solver" title="pyissm.tools.config.issm_gsl_solver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">issm_gsl_solver</span></code></a>(**kwargs)</p></td>
+<td><p>Set the GSL solver options for ISSM linear solver configuration.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.tools.config.issm_mumps_solver" title="pyissm.tools.config.issm_mumps_solver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">issm_mumps_solver</span></code></a>(**kwargs)</p></td>
+<td><p>Set the ISSM MUMPS solver options.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.tools.config.mumps_options" title="pyissm.tools.config.mumps_options"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mumps_options</span></code></a>(**kwargs)</p></td>
+<td><p>Set the MUMPS options for PETSc linear solver configuration.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.config.get_hostname">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.config.</span></span><span class="sig-name descname"><span class="pre">get_hostname</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.config.get_hostname" title="Link to this definition"></a></dt>
+<dd><p>Get the hostname of the current machine.</p>
+<p>This function retrieves the hostname of the machine on which the code is running.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The hostname of the current machine.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str">str</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hostname</span> <span class="o">=</span> <span class="n">get_hostname</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.config.get_issm_dir">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.config.</span></span><span class="sig-name descname"><span class="pre">get_issm_dir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.config.get_issm_dir" title="Link to this definition"></a></dt>
+<dd><p>Return the ISSM installation directory, or None if not configured.</p>
+<p>This function checks the appropriate ISSM_DIR environment variable
+(ISSM_DIR_WIN on Windows, ISSM_DIR otherwise). If the variable is not
+set, it issues a warning with instructions and returns None.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.config.get_username">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.config.</span></span><span class="sig-name descname"><span class="pre">get_username</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.config.get_username" title="Link to this definition"></a></dt>
+<dd><p>Get the username of the current user.</p>
+<p>This function retrieves the username of the user currently logged into the system
+by querying the appropriate environment variable based on the operating system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The username of the current user. Returns an empty string if the username
+cannot be determined.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str">str</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">username</span> <span class="o">=</span> <span class="n">get_username</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+<span class="go">&#39;john_doe&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.config.iluasm_options">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.config.</span></span><span class="sig-name descname"><span class="pre">iluasm_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.config.iluasm_options" title="Link to this definition"></a></dt>
+<dd><p>Set the ILU-ASM options for PETSc linear solver configuration.</p>
+<p>This function configures ILU (Incomplete LU factorization) with ASM (Additive Schwarz Method)
+preconditioner options for PETSc. It provides default settings for iterative solving
+and allows user customization through keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dict</em>) – Additional ILU-ASM options to override or supplement the defaults.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing ILU-ASM configuration options with defaults
+updated with any user-provided options.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>collections.OrderedDict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The function sets up an iterative solver configuration with:
+- AIJ matrix type for sparse matrices
+- GMRES Krylov subspace method
+- Additive Schwarz Method (ASM) preconditioner with ILU subdomain solver
+- 5-level overlap between subdomains
+- Maximum 100 iterations with relative tolerance of 1e-15</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">opts</span> <span class="o">=</span> <span class="n">iluasm_options</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">opts</span> <span class="o">=</span> <span class="n">iluasm_options</span><span class="p">(</span><span class="n">ksp_max_it</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">opts</span> <span class="o">=</span> <span class="n">iluasm_options</span><span class="p">(</span><span class="n">pc_asm_overlap</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">ksp_rtol</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.config.is_pc">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.config.</span></span><span class="sig-name descname"><span class="pre">is_pc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.config.is_pc" title="Link to this definition"></a></dt>
+<dd><p>Check if the current operating system is Windows.</p>
+<p>This function determines whether the code is running on a Windows operating system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the operating system is Windows, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_windows</span> <span class="o">=</span> <span class="n">is_pc</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">is_windows</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.config.issm_gsl_solver">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.config.</span></span><span class="sig-name descname"><span class="pre">issm_gsl_solver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.config.issm_gsl_solver" title="Link to this definition"></a></dt>
+<dd><p>Set the GSL solver options for ISSM linear solver configuration.</p>
+<p>This function configures GSL (GNU Scientific Library) solver options for use with
+the ISSM toolkit. It provides default settings optimized for ISSM’s native GSL
+solver interface and allows user customization through keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dict</em>) – Additional GSL solver options to override or supplement the defaults.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing GSL solver configuration options with defaults
+updated with any user-provided options.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>collections.OrderedDict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function sets up ISSM’s native GSL solver interface with:
+- ‘dense’ matrix type for dense matrix operations
+- ‘seq’ vector type for sequential vector operations
+- ‘gsl’ solver type for GSL-based solving</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">opts</span> <span class="o">=</span> <span class="n">issm_gsl_solver</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">opts</span> <span class="o">=</span> <span class="n">issm_gsl_solver</span><span class="p">(</span><span class="n">solver_type</span><span class="o">=</span><span class="s1">&#39;gsl&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.config.issm_mumps_solver">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.config.</span></span><span class="sig-name descname"><span class="pre">issm_mumps_solver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.config.issm_mumps_solver" title="Link to this definition"></a></dt>
+<dd><p>Set the ISSM MUMPS solver options.</p>
+<p>This function configures MUMPS (MUltifrontal Massively Parallel sparse direct Solver)
+options for use with the ISSM toolkit. It provides default settings optimized for
+ISSM’s native solver interface and allows user customization through keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dict</em>) – Additional MUMPS options to override or supplement the defaults.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing ISSM MUMPS solver configuration options with defaults
+updated with any user-provided options.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>collections.OrderedDict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function sets up ISSM’s native MUMPS solver interface with:
+- ‘mpiparse’ matrix type for ISSM’s sparse matrix format
+- ‘mpi’ vector type for parallel vector operations
+- ‘mumps’ solver type for direct factorization</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">opts</span> <span class="o">=</span> <span class="n">issm_mumps_solver</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">opts</span> <span class="o">=</span> <span class="n">issm_mumps_solver</span><span class="p">(</span><span class="n">solver_type</span><span class="o">=</span><span class="s1">&#39;mumps&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.config.mumps_options">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.config.</span></span><span class="sig-name descname"><span class="pre">mumps_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.config.mumps_options" title="Link to this definition"></a></dt>
+<dd><p>Set the MUMPS options for PETSc linear solver configuration.</p>
+<p>This function configures MUMPS (MUltifrontal Massively Parallel sparse direct Solver)
+options based on the PETSc version detected in the system. It provides version-specific
+defaults and allows user customization through keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dict</em>) – Additional MUMPS options to override or supplement the defaults.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing MUMPS configuration options with PETSc version-specific
+defaults updated with any user-provided options.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>collections.OrderedDict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The function automatically detects PETSc major and minor versions and sets
+appropriate defaults:
+- PETSc v2.x: Uses ‘aijumps’ matrix type
+- PETSc v3.x: Uses ‘mpiaij’ matrix type with additional solver package configuration
+For PETSc v3.9+, uses ‘pc_factor_mat_solver_type’, otherwise uses the deprecated
+‘pc_factor_mat_solver_package’.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">opts</span> <span class="o">=</span> <span class="n">mumps_options</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">opts</span> <span class="o">=</span> <span class="n">mumps_options</span><span class="p">(</span><span class="n">mat_mumps_icntl_14</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">opts</span> <span class="o">=</span> <span class="n">mumps_options</span><span class="p">(</span><span class="n">mat_mumps_icntl_28</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">mat_mumps_icntl_29</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyissm.tools.archive.html" class="btn btn-neutral float-left" title="pyissm.tools.archive" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyissm.tools.exp.html" class="btn btn-neutral float-right" title="pyissm.tools.exp" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, ACCESS-NRI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

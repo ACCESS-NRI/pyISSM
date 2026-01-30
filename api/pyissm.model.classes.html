@@ -1,0 +1,364 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyissm.model.classes &mdash; pyissm v0.0.1.dev190126 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d96f5a32"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pyissm.model.classes.amr" href="pyissm.model.classes.amr.html" />
+    <link rel="prev" title="pyissm.model.Model" href="pyissm.model.Model.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pyissm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../pyissm.html">pyissm API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#pyissm-model-class">pyISSM Model Class</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../pyissm.html#pyissm-model-sub-classes">pyISSM Model sub-classes</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">pyissm.model.classes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.amr.html">pyissm.model.classes.amr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.autodiff.html">pyissm.model.classes.autodiff</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.balancethickness.html">pyissm.model.classes.balancethickness</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.basalforcings.html">pyissm.model.classes.basalforcings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.calving.html">pyissm.model.classes.calving</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.class_registry.html">pyissm.model.classes.class_registry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.class_utils.html">pyissm.model.classes.class_utils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.cluster.html">pyissm.model.classes.cluster</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.constants.html">pyissm.model.classes.constants</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.damage.html">pyissm.model.classes.damage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.debris.html">pyissm.model.classes.debris</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.debug.html">pyissm.model.classes.debug</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.dependent.html">pyissm.model.classes.dependent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.dsl.html">pyissm.model.classes.dsl</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.esa.html">pyissm.model.classes.esa</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.flowequation.html">pyissm.model.classes.flowequation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.friction.html">pyissm.model.classes.friction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.frontalforcings.html">pyissm.model.classes.frontalforcings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.geometry.html">pyissm.model.classes.geometry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.groundingline.html">pyissm.model.classes.groundingline</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.hydrology.html">pyissm.model.classes.hydrology</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.independent.html">pyissm.model.classes.independent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.initialization.html">pyissm.model.classes.initialization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.inversion.html">pyissm.model.classes.inversion</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.issmsettings.html">pyissm.model.classes.issmsettings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.levelset.html">pyissm.model.classes.levelset</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.love.html">pyissm.model.classes.love</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.lovenumbers.html">pyissm.model.classes.lovenumbers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.mask.html">pyissm.model.classes.mask</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.massfluxatgate.html">pyissm.model.classes.massfluxatgate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.masstransport.html">pyissm.model.classes.masstransport</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.materials.html">pyissm.model.classes.materials</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.mesh.html">pyissm.model.classes.mesh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.miscellaneous.html">pyissm.model.classes.miscellaneous</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.misfit.html">pyissm.model.classes.misfit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.nodalvalue.html">pyissm.model.classes.nodalvalue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.offlinesolidearthsolution.html">pyissm.model.classes.offlinesolidearthsolution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.organizer.html">pyissm.model.classes.organizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.outputdefinition.html">pyissm.model.classes.outputdefinition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.private.html">pyissm.model.classes.private</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.qmu.html">pyissm.model.classes.qmu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.radaroverlay.html">pyissm.model.classes.radaroverlay</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.regionaloutput.html">pyissm.model.classes.regionaloutput</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.results.html">pyissm.model.classes.results</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.rifts.html">pyissm.model.classes.rifts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.rotational.html">pyissm.model.classes.rotational</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.sampling.html">pyissm.model.classes.sampling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.smb.html">pyissm.model.classes.smb</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.solidearth.html">pyissm.model.classes.solidearth</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.steadystate.html">pyissm.model.classes.steadystate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.stochasticforcing.html">pyissm.model.classes.stochasticforcing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.stressbalance.html">pyissm.model.classes.stressbalance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.surfaceload.html">pyissm.model.classes.surfaceload</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.thermal.html">pyissm.model.classes.thermal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.timestepping.html">pyissm.model.classes.timestepping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.toolkits.html">pyissm.model.classes.toolkits</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.transient.html">pyissm.model.classes.transient</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.verbose.html">pyissm.model.classes.verbose</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#tools">Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#data">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#plot">Plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#analysis">Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyissm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../pyissm.html">pyissm API Reference</a></li>
+      <li class="breadcrumb-item active">pyissm.model.classes</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/pyissm.model.classes.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pyissm.model.classes">
+<span id="pyissm-model-classes"></span><h1>pyissm.model.classes<a class="headerlink" href="#module-pyissm.model.classes" title="Link to this heading"></a></h1>
+<p>ISSM Model sub-classes and available parameterisations.</p>
+<p class="rubric">Modules</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.amr.html#pyissm.model.classes.amr" title="pyissm.model.classes.amr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">amr</span></code></a>([other])</p></td>
+<td><p>Adaptive Mesh Refinement (AMR) class for ISSM.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.autodiff.html#pyissm.model.classes.autodiff" title="pyissm.model.classes.autodiff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">autodiff</span></code></a>([other])</p></td>
+<td><p>Automatic differentiation parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.balancethickness.html#pyissm.model.classes.balancethickness" title="pyissm.model.classes.balancethickness"><code class="xref py py-obj docutils literal notranslate"><span class="pre">balancethickness</span></code></a>([other])</p></td>
+<td><p>Balance thickness solution parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.basalforcings.html#module-pyissm.model.classes.basalforcings" title="pyissm.model.classes.basalforcings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">basalforcings</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.calving.html#module-pyissm.model.classes.calving" title="pyissm.model.classes.calving"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calving</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.class_registry.html#module-pyissm.model.classes.class_registry" title="pyissm.model.classes.class_registry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">class_registry</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.class_utils.html#module-pyissm.model.classes.class_utils" title="pyissm.model.classes.class_utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">class_utils</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.cluster.html#module-pyissm.model.classes.cluster" title="pyissm.model.classes.cluster"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cluster</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.constants.html#pyissm.model.classes.constants" title="pyissm.model.classes.constants"><code class="xref py py-obj docutils literal notranslate"><span class="pre">constants</span></code></a>([other])</p></td>
+<td><p>Physical constants class for ISSM.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.damage.html#pyissm.model.classes.damage" title="pyissm.model.classes.damage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">damage</span></code></a>([other])</p></td>
+<td><p>Damage mechanics parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.debris.html#pyissm.model.classes.debris" title="pyissm.model.classes.debris"><code class="xref py py-obj docutils literal notranslate"><span class="pre">debris</span></code></a>([other])</p></td>
+<td><p>Debris transport parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.debug.html#pyissm.model.classes.debug" title="pyissm.model.classes.debug"><code class="xref py py-obj docutils literal notranslate"><span class="pre">debug</span></code></a>([other])</p></td>
+<td><p>Debug parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.dependent.html#pyissm.model.classes.dependent" title="pyissm.model.classes.dependent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dependent</span></code></a>([md, other])</p></td>
+<td><p>Dependent variable parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.dsl.html#module-pyissm.model.classes.dsl" title="pyissm.model.classes.dsl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dsl</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.esa.html#pyissm.model.classes.esa" title="pyissm.model.classes.esa"><code class="xref py py-obj docutils literal notranslate"><span class="pre">esa</span></code></a>([other])</p></td>
+<td><p>Elastic solid earth adjustment (ESA) parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.flowequation.html#pyissm.model.classes.flowequation" title="pyissm.model.classes.flowequation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flowequation</span></code></a>([other])</p></td>
+<td><p>Flow equation parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.friction.html#module-pyissm.model.classes.friction" title="pyissm.model.classes.friction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">friction</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.frontalforcings.html#module-pyissm.model.classes.frontalforcings" title="pyissm.model.classes.frontalforcings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">frontalforcings</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.geometry.html#pyissm.model.classes.geometry" title="pyissm.model.classes.geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">geometry</span></code></a>([other])</p></td>
+<td><p>Geometry parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.groundingline.html#pyissm.model.classes.groundingline" title="pyissm.model.classes.groundingline"><code class="xref py py-obj docutils literal notranslate"><span class="pre">groundingline</span></code></a>([other])</p></td>
+<td><p>Grounding line migration parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.hydrology.html#module-pyissm.model.classes.hydrology" title="pyissm.model.classes.hydrology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hydrology</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.independent.html#pyissm.model.classes.independent" title="pyissm.model.classes.independent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">independent</span></code></a>([other])</p></td>
+<td><p>Independent variable parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization" title="pyissm.model.classes.initialization"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialization</span></code></a>([other])</p></td>
+<td><p>Initialization field values class for ISSM.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.inversion.html#module-pyissm.model.classes.inversion" title="pyissm.model.classes.inversion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inversion</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.issmsettings.html#pyissm.model.classes.issmsettings" title="pyissm.model.classes.issmsettings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">issmsettings</span></code></a>([other])</p></td>
+<td><p>ISSM general settings class for ISSM.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.levelset.html#pyissm.model.classes.levelset" title="pyissm.model.classes.levelset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">levelset</span></code></a>([other])</p></td>
+<td><p>Level-set method parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.love.html#module-pyissm.model.classes.love" title="pyissm.model.classes.love"><code class="xref py py-obj docutils literal notranslate"><span class="pre">love</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.lovenumbers.html#pyissm.model.classes.lovenumbers" title="pyissm.model.classes.lovenumbers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lovenumbers</span></code></a>([other])</p></td>
+<td><p>Love numbers parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.mask.html#pyissm.model.classes.mask" title="pyissm.model.classes.mask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mask</span></code></a>([other])</p></td>
+<td><p>Mask parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.massfluxatgate.html#pyissm.model.classes.massfluxatgate" title="pyissm.model.classes.massfluxatgate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">massfluxatgate</span></code></a>([other])</p></td>
+<td><p>Mass flux at gate parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.masstransport.html#pyissm.model.classes.masstransport" title="pyissm.model.classes.masstransport"><code class="xref py py-obj docutils literal notranslate"><span class="pre">masstransport</span></code></a>([other])</p></td>
+<td><p>Mass transport solution parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.materials.html#module-pyissm.model.classes.materials" title="pyissm.model.classes.materials"><code class="xref py py-obj docutils literal notranslate"><span class="pre">materials</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.mesh.html#module-pyissm.model.classes.mesh" title="pyissm.model.classes.mesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.miscellaneous.html#pyissm.model.classes.miscellaneous" title="pyissm.model.classes.miscellaneous"><code class="xref py py-obj docutils literal notranslate"><span class="pre">miscellaneous</span></code></a>([other])</p></td>
+<td><p>Miscellaneous parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.misfit.html#pyissm.model.classes.misfit" title="pyissm.model.classes.misfit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">misfit</span></code></a>([other])</p></td>
+<td><p>Misfit parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.nodalvalue.html#module-pyissm.model.classes.nodalvalue" title="pyissm.model.classes.nodalvalue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nodalvalue</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.offlinesolidearthsolution.html#pyissm.model.classes.offlinesolidearthsolution" title="pyissm.model.classes.offlinesolidearthsolution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">offlinesolidearthsolution</span></code></a>([other])</p></td>
+<td><p>OfflineSolidEarthSolution class for ISSM.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.organizer.html#module-pyissm.model.classes.organizer" title="pyissm.model.classes.organizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">organizer</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.outputdefinition.html#pyissm.model.classes.outputdefinition" title="pyissm.model.classes.outputdefinition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">outputdefinition</span></code></a>([other])</p></td>
+<td><p>Output definition parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.private.html#pyissm.model.classes.private" title="pyissm.model.classes.private"><code class="xref py py-obj docutils literal notranslate"><span class="pre">private</span></code></a>([other])</p></td>
+<td><p>Private parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.qmu.html#module-pyissm.model.classes.qmu" title="pyissm.model.classes.qmu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">qmu</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.radaroverlay.html#pyissm.model.classes.radaroverlay" title="pyissm.model.classes.radaroverlay"><code class="xref py py-obj docutils literal notranslate"><span class="pre">radaroverlay</span></code></a>([other])</p></td>
+<td><p>Radar overlay parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.regionaloutput.html#pyissm.model.classes.regionaloutput" title="pyissm.model.classes.regionaloutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">regionaloutput</span></code></a>([other])</p></td>
+<td><p>Regional output parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.results.html#module-pyissm.model.classes.results" title="pyissm.model.classes.results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">results</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.rifts.html#pyissm.model.classes.rifts" title="pyissm.model.classes.rifts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rifts</span></code></a>([other])</p></td>
+<td><p>Rifts parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.rotational.html#pyissm.model.classes.rotational" title="pyissm.model.classes.rotational"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotational</span></code></a>([other])</p></td>
+<td><p>Rotational parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.sampling.html#pyissm.model.classes.sampling" title="pyissm.model.classes.sampling"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sampling</span></code></a>([other])</p></td>
+<td><p>Sampling parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.smb.html#module-pyissm.model.classes.smb" title="pyissm.model.classes.smb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">smb</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.solidearth.html#module-pyissm.model.classes.solidearth" title="pyissm.model.classes.solidearth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solidearth</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.steadystate.html#pyissm.model.classes.steadystate" title="pyissm.model.classes.steadystate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">steadystate</span></code></a>([other])</p></td>
+<td><p>Steady state solution parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.stochasticforcing.html#pyissm.model.classes.stochasticforcing" title="pyissm.model.classes.stochasticforcing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stochasticforcing</span></code></a>([other])</p></td>
+<td><p>Stochastic forcing parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.stressbalance.html#pyissm.model.classes.stressbalance" title="pyissm.model.classes.stressbalance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stressbalance</span></code></a>([other])</p></td>
+<td><p>Stress balance solution parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.surfaceload.html#pyissm.model.classes.surfaceload" title="pyissm.model.classes.surfaceload"><code class="xref py py-obj docutils literal notranslate"><span class="pre">surfaceload</span></code></a>([other])</p></td>
+<td><p>Surface load parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.thermal.html#pyissm.model.classes.thermal" title="pyissm.model.classes.thermal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">thermal</span></code></a>([other])</p></td>
+<td><p>Thermal solution parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.timestepping.html#module-pyissm.model.classes.timestepping" title="pyissm.model.classes.timestepping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">timestepping</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.toolkits.html#pyissm.model.classes.toolkits" title="pyissm.model.classes.toolkits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">toolkits</span></code></a>([other])</p></td>
+<td><p>Toolkits parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyissm.model.classes.transient.html#pyissm.model.classes.transient" title="pyissm.model.classes.transient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transient</span></code></a>([other])</p></td>
+<td><p>Transient solution parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyissm.model.classes.verbose.html#pyissm.model.classes.verbose" title="pyissm.model.classes.verbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">verbose</span></code></a>([other])</p></td>
+<td><p>Verbose parameters class for ISSM.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyissm.model.Model.html" class="btn btn-neutral float-left" title="pyissm.model.Model" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyissm.model.classes.amr.html" class="btn btn-neutral float-right" title="pyissm.model.classes.amr" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, ACCESS-NRI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,424 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyissm.plot &mdash; pyissm v0.0.1.dev190126 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d96f5a32"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pyissm.analysis" href="pyissm.analysis.html" />
+    <link rel="prev" title="pyissm.data.interp" href="pyissm.data.interp.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pyissm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../pyissm.html">pyissm API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#pyissm-model-class">pyISSM Model Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#pyissm-model-sub-classes">pyISSM Model sub-classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#tools">Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#data">Data</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../pyissm.html#plot">Plot</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">pyissm.plot</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pyissm.plot.plot_mesh2d"><code class="docutils literal notranslate"><span class="pre">plot_mesh2d()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyissm.plot.plot_model_bc"><code class="docutils literal notranslate"><span class="pre">plot_model_bc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyissm.plot.plot_model_elements"><code class="docutils literal notranslate"><span class="pre">plot_model_elements()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyissm.plot.plot_model_field"><code class="docutils literal notranslate"><span class="pre">plot_model_field()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyissm.plot.plot_model_nodes"><code class="docutils literal notranslate"><span class="pre">plot_model_nodes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyissm.plot.plot_model_ts"><code class="docutils literal notranslate"><span class="pre">plot_model_ts()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#analysis">Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyissm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../pyissm.html">pyissm API Reference</a></li>
+      <li class="breadcrumb-item active">pyissm.plot</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/pyissm.plot.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pyissm.plot">
+<span id="pyissm-plot"></span><h1>pyissm.plot<a class="headerlink" href="#module-pyissm.plot" title="Link to this heading"></a></h1>
+<p>Functions to visualize ISSM Models</p>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.plot.plot_mesh2d" title="pyissm.plot.plot_mesh2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_mesh2d</span></code></a>(mesh[, ax, color, linewidth, ...])</p></td>
+<td><p>Plot a 2D triangular mesh using matplotlib.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.plot.plot_model_bc" title="pyissm.plot.plot_model_bc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_model_bc</span></code></a>(md[, type, ax, scale, xlabel, ...])</p></td>
+<td><p>Plot Dirichlet and Neumann boundary conditions from an ISSM model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.plot.plot_model_elements" title="pyissm.plot.plot_model_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_model_elements</span></code></a>(md, ice_levelset, ...[, ...])</p></td>
+<td><p>Plot model elements by type (ice, ice-front, ocean, floating, grounded, grounding line) on a 2D mesh.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.plot.plot_model_field" title="pyissm.plot.plot_model_field"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_model_field</span></code></a>(md, field[, layer, ax, ...])</p></td>
+<td><p>Plot a 2D scalar field defined on a 2D or 3D model mesh.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.plot.plot_model_nodes" title="pyissm.plot.plot_model_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_model_nodes</span></code></a>(md, ice_levelset, ...[, ...])</p></td>
+<td><p>Plot model nodes by type (ice, ice-front, ocean, floating, grounded) on a 2D mesh.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.plot.plot_model_ts" title="pyissm.plot.plot_model_ts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_model_ts</span></code></a>(md[, data_list, ...])</p></td>
+<td><p>Plot time series data from an ISSM model's TransientSolution.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.plot.plot_mesh2d">
+<span class="sig-prename descclassname"><span class="pre">pyissm.plot.</span></span><span class="sig-name descname"><span class="pre">plot_mesh2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'X</span> <span class="pre">(m)'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Y</span> <span class="pre">(m)'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(6.4,</span> <span class="pre">4.8)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constrained_layout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_nodes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.plot.plot_mesh2d" title="Link to this definition"></a></dt>
+<dd><p>Plot a 2D triangular mesh using matplotlib.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mesh</strong> (<em>matplotlib.tri.Triangulation</em><em> or </em><em>similar</em>) – A 2D mesh object containing ‘x’, ‘y’, and triangle connectivity information.
+Can be created for ISSM models with get_mesh() or process_mesh().</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em><em>, </em><em>optional</em>) – An existing matplotlib axes object to plot on. If None, a new figure and axes are created.</p></li>
+<li><p><strong>color</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – Color of the triangle edges. Default is ‘k’ (black).</p></li>
+<li><p><strong>linewidth</strong> (<em>float</em><em>, </em><em>optional</em>) – Width of the triangle edges. Default is 0.1.</p></li>
+<li><p><strong>xlabel</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – Label for the x-axis. Default is ‘X (m)’.</p></li>
+<li><p><strong>ylabel</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – Label for the y-axis. Default is ‘Y (m)’.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em><em> of </em><em>float</em><em>, </em><em>optional</em>) – Figure size in inches if a new figure is created. Default is (6.4, 4.8).</p></li>
+<li><p><strong>constrained_layout</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use constrained layout when creating a new figure. Default is ‘True’.</p></li>
+<li><p><strong>show_nodes</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, overlay nodes on the mesh using ax.scatter(). Default is ‘False’.</p></li>
+<li><p><strong>node_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Keyword arguments passed to ax.scatter() for node display. Defaults to
+{‘marker’: ‘.’, ‘color’: ‘k’, ‘s’: 5}.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments passed to ax.triplot().</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>If ‘ax’ is None, returns ‘(fig, ax)’ of the created figure and axes.
+If ‘ax’ is provided, returns the modified ‘ax’.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matplotlib.figure.Figure or matplotlib.axes.Axes</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>fig, ax = plot_mesh2d(mesh)
+fig, ax = plot_mesh2d(mesh, color = ‘blue’, linewidth = 0.5)
+fig, (ax1, ax2) = plt.subplots(1, 2)
+ax1 = plot_mesh2d(mesh, ax = ax1)
+ax2 = plot_mesh2d(mesh, ax = ax2, show_nodes = True, node_kwargs = {‘color’: ‘red’})</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.plot.plot_model_bc">
+<span class="sig-prename descclassname"><span class="pre">pyissm.plot.</span></span><span class="sig-name descname"><span class="pre">plot_model_bc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'stressbalance'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'X</span> <span class="pre">(m)'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Y</span> <span class="pre">(m)'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(6.4,</span> <span class="pre">4.8)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constrained_layout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_mesh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_legend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.plot.plot_model_bc" title="Link to this definition"></a></dt>
+<dd><p>Plot Dirichlet and Neumann boundary conditions from an ISSM model.</p>
+<p>This function visualizes boundary conditions for a specified model
+component (e.g., <cite>stressbalance</cite>, <cite>masstransport</cite>, <cite>thermal</cite>, etc.) on
+a 2D or 3D mesh. Dirichlet conditions are plotted as colored markers,
+and Neumann boundaries (e.g. ice-front) plotted as coloured elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>md</strong> (<em>ISSM Model object</em>) – ISSM Model object containing mesh. Must be compatible with process_mesh()</p></li>
+<li><p><strong>type</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – The boundary condition type to plot. Must be one of:
+‘stressbalance’, ‘masstransport’, ‘thermal’,
+‘balancethickness’, ‘hydrology’, ‘debris’, or ‘levelset’.
+Default is ‘stressbalance’.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em><em>, </em><em>optional</em>) – Existing matplotlib Axes object. If not provided, a new figure and
+axes are created.</p></li>
+<li><p><strong>scale</strong> (<em>float</em><em>, </em><em>optional</em>) – Scaling factor for Dirichlet marker sizes. Default is 10.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em><em> of </em><em>float</em><em>, </em><em>optional</em>) – Size of the figure in inches (width, height). Default is (6.4, 4.8).</p></li>
+<li><p><strong>constrained_layout</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use constrained layout for figure spacing. Default is True.</p></li>
+<li><p><strong>show_mesh</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to display the model mesh beneath boundary markers. Default is True.</p></li>
+<li><p><strong>mesh_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional keyword arguments passed to the mesh plotting function.
+Overrides default {‘alpha’: 0.5}.</p></li>
+<li><p><strong>show_legend</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to display a legend showing boundary condition types. Default is True.</p></li>
+<li><p><strong>legend_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional keyword arguments passed to <cite>ax.legend()</cite>. Overrides default
+{‘title’: ‘Boundary condition’, ‘fontsize’: 10, ‘loc’: ‘upper right’}.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>fig</strong> (<em>matplotlib.figure.Figure</em>) – The matplotlib Figure object (only returned if <cite>ax</cite> is not provided).</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em>) – The matplotlib Axes object containing the plot.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>For 3D models, only surface boundary conditions are plotted.</p></li>
+<li><p>Neumann (ice-front) elements are included by default as blue elements.</p></li>
+<li><p>If no constraints are found for a given boundary condition, a message
+is printed and nothing is plotted for that type.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<p>fig, ax = plot_model_bc(md)
+fig, ax = plot_model_bc(md, scale = 1)
+fig, ax = plot_model_bc(md, type=’thermal’, mesh_kwargs = {‘color’: ‘grey’}, legend_kwargs = {‘title’: ‘Model BCs’})</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#pyissm.plot.plot_model_elements" title="pyissm.plot.plot_model_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_model_elements</span></code></a></dt><dd><p>Used internally to visualize Neumann conditions and mesh.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.plot.plot_model_elements">
+<span class="sig-prename descclassname"><span class="pre">pyissm.plot.</span></span><span class="sig-name descname"><span class="pre">plot_model_elements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ice_levelset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ocean_levelset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ice_elements'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'blue'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'X</span> <span class="pre">(m)'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Y</span> <span class="pre">(m)'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(6.4,</span> <span class="pre">4.8)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constrained_layout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_mesh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_legend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.plot.plot_model_elements" title="Link to this definition"></a></dt>
+<dd><p>Plot model elements by type (ice, ice-front, ocean, floating, grounded, grounding line) on a 2D mesh.</p>
+<p>This function uses level set fields to classify mesh elements and visualize them
+in a triplot visualisation. Optionally overlays the finite element mesh and includes
+a custom legend. Supports plotting in existing Matplotlib axes or creating
+a new figure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>md</strong> (<em>ISSM Model object</em>) – ISSM Model object containing mesh. Must be compatible with process_mesh().</p></li>
+<li><p><strong>ice_levelset</strong> (<em>ndarray</em>) – Array of ice level set values. Negative values indicate ice-covered nodes; zero indicates the ice front.</p></li>
+<li><p><strong>ocean_levelset</strong> (<em>ndarray</em>) – Array of ocean level set values. Negative values indicate ocean-covered nodes.</p></li>
+<li><p><strong>type</strong> (<em>{'ice_elements'</em><em>, </em><em>'ice_front_elements'</em><em>, </em><em>'ocean_elements'</em><em>, </em><em>'floating_ice_elements'</em><em>,</em>) – ‘grounded_ice_elements’, ‘grounding_line_elements’}, optional
+The element type to visualize. Default is ‘ice_elements’.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em><em>, </em><em>optional</em>) – Axes object to draw on. If None, a new figure and axes are created.</p></li>
+<li><p><strong>color</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – Color used for elements. Default is “blue”.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em><em> of </em><em>float</em><em>, </em><em>optional</em>) – Size of the figure in inches (width, height). Default is (6.4, 4.8).</p></li>
+<li><p><strong>constrained_layout</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use constrained layout in figure. Default is True.</p></li>
+<li><p><strong>show_mesh</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to overlay the triangular mesh. Default is True.</p></li>
+<li><p><strong>mesh_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional keyword arguments passed to plot_mesh2d() for customizing mesh appearance.</p></li>
+<li><p><strong>show_legend</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to display a legend identifying node types. Default is True.</p></li>
+<li><p><strong>legend_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional keyword arguments passed to ax.legend().</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>If ‘ax’ is None, returns a tuple (fig, ax) with the created figure and axes.
+If ‘ax’ is provided, returns the updated axes.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matplotlib.figure.Figure or matplotlib.axes.Axes</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>fig, ax = plot_model_elements(md, md.mask.ice_levelset, md.mask.ocean_levelset)
+fig, ax = plot_model_elements(md, md.mask.ice_levelset, md.mask.ocean_levelset, show_mesh = False)
+fig, ax = plot_model_elements(md, md.mask.ice_levelset, md.mask.ocean_levelset, type = ‘ice_front_elements’, mesh_kwargs = {‘linewidth’: 0.5, ‘color’: ‘cyan’})
+fig, ax = plot_model_elements(md, md.mask.ice_levelset, md.mask.ocean_levelset, type = ‘floating_ice_elements’, color = ‘red’)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.plot.plot_model_field">
+<span class="sig-prename descclassname"><span class="pre">pyissm.plot.</span></span><span class="sig-name descname"><span class="pre">plot_model_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_data_on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'points'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'X</span> <span class="pre">(m)'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Y</span> <span class="pre">(m)'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edgecolors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'face'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(6.4,</span> <span class="pre">4.8)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constrained_layout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_mesh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_cbar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cbar_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.plot.plot_model_field" title="Link to this definition"></a></dt>
+<dd><p>Plot a 2D scalar field defined on a 2D or 3D model mesh.</p>
+<p>This function visualizes a field defined on the mesh of an ISSM model.
+It works both 2D and 3D meshes by extracting a layer from 3D models. If no layer is specified for a 3D model,
+the surface values are plotted by default.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>md</strong> (<em>ISSM Model object</em>) – ISSM Model object containing mesh. Must be compatible with process_mesh()</p></li>
+<li><p><strong>field</strong> (<em>np.ndarray</em>) – A 1D array representing the scalar field to plot. Must be defined on vertices or elements. For 3D models, may be defined across all layers.</p></li>
+<li><p><strong>layer</strong> (<em>int</em><em>, </em><em>optional</em>) – Index of the horizontal layer to extract for 3D models (1-based indexing). Ignored for 2D models.
+If not provided, the surface layer is used by default for vertex- and element-based 3D fields.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em><em>, </em><em>optional</em>) – An existing matplotlib Axes object to plot on. If <cite>None</cite>, a new figure and axes are created.</p></li>
+<li><p><strong>plot_data_on</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – Should data be plotted on points or elements? Default is ‘points’. These options are converted to ‘shading’ used by plt.tripcolor(), as follows:
+plot_data_on = ‘points’: shading = ‘gouraud’ / plot_data_on = ‘elements’: shading = ‘flat’. When data are defined on elements, plot_data_on = ‘elements’
+is selected automatically internally.</p></li>
+<li><p><strong>xlabel</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – Label for the x-axis. Default is ‘X (m)’.</p></li>
+<li><p><strong>ylabel</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – Label for the y-axis. Default is ‘Y (m)’.</p></li>
+<li><p><strong>edgecolors</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – Color of triangle edges in the plot. Passed to ‘tripcolor’. Default is ‘face’.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Figure size in inches when creating a new figure. Default is (6.4, 4.8).</p></li>
+<li><p><strong>log</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, applies a logarithmic color normalization. Default is ‘False’.</p></li>
+<li><p><strong>constrained_layout</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use constrained layout for the figure. Default is ‘True’.</p></li>
+<li><p><strong>show_mesh</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, overlays the 2D mesh lines on the plot. Default is ‘False’.</p></li>
+<li><p><strong>show_cbar</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, adds a colorbar to the plot. Default is ‘False’.</p></li>
+<li><p><strong>mesh_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Keyword arguments passed to the mesh plotting function ‘plot_mesh2d()’.</p></li>
+<li><p><strong>cbar_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Keyword arguments passed to ‘fig.colorbar’.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional keyword arguments passed to ‘ax.tripcolor’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>If ‘ax’ is not provided, returns a tuple ‘(fig, ax)’. If ‘ax’ is provided, returns only ‘ax’.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matplotlib.figure.Figure or matplotlib.axes.Axes</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>fig, ax = plot_model_field(md, md.inversion.vel_obs)
+fig, ax = plot_model_field(md, md.results.TransientSolution.Vel[0], log = True)
+fig, ax = plot_model_field(md, md.results.TransientSolution.Temperature[-1], layer = 3)
+fig, ax = plot_model_field(md, md.results.TransientSolution.Temperature[-1], layer = 3, show_cbar = True, show_mesh = True)</p>
+<p>fig, (ax1, ax2, ax3) = plt.subplots(1, 3, constrained_layout = True)
+ax1 = plot_model_field(md, md.inversion.vel_obs, ax = ax1, log = True, cmap = ‘viridis’)
+ax2 = plot_model_field(md, md.results.StressbalanceSolution.Vel, ax = ax2, log = True, cmap = ‘viridis’)
+ax3 = issm.plot.plot_model_field(md, md.inversion.vel_obs - md.results.StressbalanceSolution.Vel, ax=ax3, cmap=’RdBu’, show_cbar = True)
+ax1.set_title(‘Observed Velocities’); ax2.set_title(‘Modelled Velocities’); ax3.set_title(‘Velocity Error’)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.plot.plot_model_nodes">
+<span class="sig-prename descclassname"><span class="pre">pyissm.plot.</span></span><span class="sig-name descname"><span class="pre">plot_model_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ice_levelset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ocean_levelset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ice_nodes'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['r',</span> <span class="pre">'k']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'o'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'X</span> <span class="pre">(m)'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Y</span> <span class="pre">(m)'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(6.4,</span> <span class="pre">4.8)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constrained_layout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_mesh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_legend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.plot.plot_model_nodes" title="Link to this definition"></a></dt>
+<dd><p>Plot model nodes by type (ice, ice-front, ocean, floating, grounded) on a 2D mesh.</p>
+<p>This function uses level set fields to classify mesh nodes and visualize them
+in a scatter plot. Optionally overlays the finite element mesh and includes
+a custom legend. Supports plotting in existing Matplotlib axes or creating
+a new figure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>md</strong> (<em>ISSM Model object</em>) – ISSM Model object containing mesh. Must be compatible with process_mesh().</p></li>
+<li><p><strong>ice_levelset</strong> (<em>ndarray</em>) – Array of ice level set values. Negative values indicate ice-covered nodes; zero indicates the ice front.</p></li>
+<li><p><strong>ocean_levelset</strong> (<em>ndarray</em>) – Array of ocean level set values. Negative values indicate ocean-covered nodes.</p></li>
+<li><p><strong>type</strong> (<em>{'ice_nodes'</em><em>, </em><em>'ice_front_nodes'</em><em>, </em><em>'ocean_nodes'</em><em>, </em><em>'floating_ice_nodes'</em><em>, </em><em>'grounded_ice_nodes'}</em><em>, </em><em>optional</em>) – The node type to visualize. Default is ‘ice_nodes’.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em><em>, </em><em>optional</em>) – Axes object to draw on. If None, a new figure and axes are created.</p></li>
+<li><p><strong>s</strong> (<em>float</em><em>, </em><em>optional</em>) – Marker size for scatter plot. Default is 5.</p></li>
+<li><p><strong>colors</strong> (<em>list</em><em> of </em><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – Colors used for binary classification. First color is for “False”, second for “True”. Default is [‘r’, ‘k’].</p></li>
+<li><p><strong>marker</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – Marker style for nodes. Default is ‘o’.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em><em> of </em><em>float</em><em>, </em><em>optional</em>) – Size of the figure in inches (width, height). Default is (6.4, 4.8).</p></li>
+<li><p><strong>constrained_layout</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use constrained layout in figure. Default is True.</p></li>
+<li><p><strong>show_mesh</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to overlay the triangular mesh. Default is True.</p></li>
+<li><p><strong>mesh_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional keyword arguments passed to plot_mesh2d() for customizing mesh appearance.</p></li>
+<li><p><strong>show_legend</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to display a legend identifying node types. Default is True.</p></li>
+<li><p><strong>legend_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional keyword arguments passed to ax.legend().</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>If ‘ax’ is None, returns a tuple (fig, ax) with the created figure and axes.
+If ‘ax’ is provided, returns the updated axes.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matplotlib.figure.Figure or matplotlib.axes.Axes</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>fig, ax = plot_model_nodes(md, md.mask.ice_levelset, md.mask.ocean_levelset)
+fig, ax = plot_model_nodes(md, md.mask.ice_levelset, md.mask.ocean_levelset, show_mesh = False)
+fig, ax = plot_model_nodes(md, md.mask.ice_levelset, md.mask.ocean_levelset, type = ‘ice_front_nodes’, mesh_kwargs = {‘linewidth’: 0.5, ‘color’: ‘cyan’})
+fig, ax = plot_model_nodes(md, md.mask.ice_levelset, md.mask.ocean_levelset, type = ‘floating_ice_nodes’, colors = [‘blue’, ‘magenta’])</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.plot.plot_model_ts">
+<span class="sig-prename descclassname"><span class="pre">pyissm.plot.</span></span><span class="sig-name descname"><span class="pre">plot_model_ts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">inf)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Time</span> <span class="pre">(years)'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(6.4,</span> <span class="pre">4.8)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'black'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constrained_layout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sharex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.plot.plot_model_ts" title="Link to this definition"></a></dt>
+<dd><p>Plot time series data from an ISSM model’s TransientSolution.</p>
+<p>Automatically extracts 1D time series arrays from <cite>md.results.TransientSolution</cite> if <cite>data_list</cite> is not provided.
+Plots each variable as a separate subplot, sharing the x-axis (time).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>md</strong> (<em>object</em>) – ISSM model object containing results with a <cite>TransientSolution</cite> attribute.</p></li>
+<li><p><strong>data_list</strong> (<em>list</em><em> of </em><em>np.ndarray</em><em>, </em><em>optional</em>) – List of 1D numpy arrays to plot. If None, all 1D arrays in <cite>md.results.TransientSolution</cite> (except ‘time’ and ‘step’) are used.</p></li>
+<li><p><strong>variable_list</strong> (<em>list</em><em> of </em><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – List of variable names corresponding to <cite>data_list</cite>. If None, names are auto-generated or extracted from <cite>TransientSolution</cite>.</p></li>
+<li><p><strong>unit_list</strong> (<em>list</em><em> of </em><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – List of units for each variable. If None, defaults to ‘Units unspecified’ or ‘ISSM Units’.</p></li>
+<li><p><strong>time</strong> (<em>tuple</em><em> of </em><em>float</em><em>, </em><em>optional</em>) – Time range (start, end) to plot. Defaults to (0, np.inf).</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em><em> of </em><em>int</em><em>, </em><em>optional</em>) – Figure size in inches. Defaults to (6.4, 4.8).</p></li>
+<li><p><strong>fontsize</strong> (<em>int</em><em>, </em><em>optional</em>) – Font size for labels and titles. Defaults to 8.</p></li>
+<li><p><strong>color</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – Line color for plots. Defaults to ‘black’.</p></li>
+<li><p><strong>show_grid</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to show grid lines on plots. Defaults to True.</p></li>
+<li><p><strong>constrained_layout</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use matplotlib’s constrained layout. Defaults to True.</p></li>
+<li><p><strong>sharex</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether subplots share the x-axis. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>fig</strong> (<em>matplotlib.figure.Figure</em>) – The matplotlib figure object containing the plots.</p></li>
+<li><p><strong>axs</strong> (<em>np.ndarray of matplotlib.axes.Axes</em>) – Array of axes objects for each subplot.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If no time array is found, no 1D time series are available, input lists are mismatched, or data arrays are not 1D.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plot_model_ts</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plot_model_ts</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="n">data_list</span><span class="o">=</span><span class="p">[</span><span class="n">arr1</span><span class="p">,</span> <span class="n">arr2</span><span class="p">],</span> <span class="n">variable_list</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Var1&#39;</span><span class="p">,</span> <span class="s1">&#39;Var2&#39;</span><span class="p">],</span> <span class="n">unit_list</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;kg&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyissm.data.interp.html" class="btn btn-neutral float-left" title="pyissm.data.interp" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyissm.analysis.html" class="btn btn-neutral float-right" title="pyissm.analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, ACCESS-NRI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

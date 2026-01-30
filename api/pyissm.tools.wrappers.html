@@ -1,0 +1,807 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyissm.tools.wrappers &mdash; pyissm v0.0.1.dev190126 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d96f5a32"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pyissm.data" href="pyissm.data.html" />
+    <link rel="prev" title="pyissm.tools.materials" href="pyissm.tools.materials.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pyissm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../pyissm.html">pyissm API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#pyissm-model-class">pyISSM Model Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#pyissm-model-sub-classes">pyISSM Model sub-classes</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../pyissm.html#tools">Tools</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="pyissm.tools.html">pyissm.tools</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pyissm.tools.archive.html">pyissm.tools.archive</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.tools.config.html">pyissm.tools.config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.tools.exp.html">pyissm.tools.exp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.tools.general.html">pyissm.tools.general</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.tools.geometry.html">pyissm.tools.geometry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.tools.interp.html">pyissm.tools.interp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.tools.materials.html">pyissm.tools.materials</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">pyissm.tools.wrappers</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#data">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#plot">Plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#analysis">Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyissm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../pyissm.html">pyissm API Reference</a></li>
+          <li class="breadcrumb-item"><a href="pyissm.tools.html">pyissm.tools</a></li>
+      <li class="breadcrumb-item active">pyissm.tools.wrappers</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/pyissm.tools.wrappers.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pyissm.tools.wrappers">
+<span id="pyissm-tools-wrappers"></span><h1>pyissm.tools.wrappers<a class="headerlink" href="#module-pyissm.tools.wrappers" title="Link to this heading"></a></h1>
+<p>Python functions for C++ Python Wrappers in ISSM</p>
+<p>This module contains various Python functions that point to Python wrappers for C++ modules in ISSM.</p>
+<p>NOTE: Functionality here requires the following:
+- ISSM has been installed using python wrappers.
+- The Python version used to install ISSM Python wrappers is the same as that used to run pyISSM.</p>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.tools.wrappers.BamgConvertMesh" title="pyissm.tools.wrappers.BamgConvertMesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BamgConvertMesh</span></code></a>(index, x, y)</p></td>
+<td><p>Convert a 2D mesh to BAMG geometry and BAMG mesh format.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.tools.wrappers.BamgMesher" title="pyissm.tools.wrappers.BamgMesher"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BamgMesher</span></code></a>(bamgmesh, bamggeom, bamgoptions)</p></td>
+<td><p>Generate a BAMG mesh from a BAMG mesh, geometry and options.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.tools.wrappers.BamgTriangulate" title="pyissm.tools.wrappers.BamgTriangulate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BamgTriangulate</span></code></a>(x, y)</p></td>
+<td><p>Delaunay triangulation of a set of points.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.tools.wrappers.ContourToMesh" title="pyissm.tools.wrappers.ContourToMesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ContourToMesh</span></code></a>(index, x, y, contour_name, ...)</p></td>
+<td><p>Flag the elements or nodes inside a contour.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.tools.wrappers.ContourToNodes" title="pyissm.tools.wrappers.ContourToNodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ContourToNodes</span></code></a>(x, y, contourname, edgevalue)</p></td>
+<td><p>Flag vertices inside contour.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.tools.wrappers.ElementConnectivity" title="pyissm.tools.wrappers.ElementConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ElementConnectivity</span></code></a>(elements, node_connectivity)</p></td>
+<td><p>Build element connectivity using node connectivity and elements.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.tools.wrappers.ExpToLevelSet" title="pyissm.tools.wrappers.ExpToLevelSet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExpToLevelSet</span></code></a>(x, y, contourname)</p></td>
+<td><p>Determine levelset distance between a contour and a cloud of points.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.tools.wrappers.InterpFromGridToMesh" title="pyissm.tools.wrappers.InterpFromGridToMesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InterpFromGridToMesh</span></code></a>(x, y, data, x_mesh, y_mesh)</p></td>
+<td><p>Interpolation from a grid onto a list of points.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.tools.wrappers.InterpFromMesh2d" title="pyissm.tools.wrappers.InterpFromMesh2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InterpFromMesh2d</span></code></a>(index, x, y, data, x_prime, ...)</p></td>
+<td><p>Interpolate data from a 2D mesh onto a set of points.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.tools.wrappers.InterpFromMeshToGrid" title="pyissm.tools.wrappers.InterpFromMeshToGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InterpFromMeshToGrid</span></code></a>(index, x, y, data, ...)</p></td>
+<td><p>Interpolate data from a mesh onto a regular grid.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.tools.wrappers.InterpFromMeshToMesh2d" title="pyissm.tools.wrappers.InterpFromMeshToMesh2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InterpFromMeshToMesh2d</span></code></a>(index, x, y, data, ...)</p></td>
+<td><p>Interpolate from a 2D triangular mesh onto a list of points.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.tools.wrappers.InterpFromMeshToMesh3d" title="pyissm.tools.wrappers.InterpFromMeshToMesh3d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InterpFromMeshToMesh3d</span></code></a>(index, x, y, z, data, ...)</p></td>
+<td><p>Interpolate from a 3D hexahedron mesh onto a list of points.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.tools.wrappers.IssmConfig" title="pyissm.tools.wrappers.IssmConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IssmConfig</span></code></a>(string)</p></td>
+<td><p>Get ISSM configuration value for a specified parameter.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.tools.wrappers.MeshPartition" title="pyissm.tools.wrappers.MeshPartition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MeshPartition</span></code></a>(md, n_partitions)</p></td>
+<td><p>Partition mesh according to the number of areas, using Metis library.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.tools.wrappers.MeshProfileIntersection" title="pyissm.tools.wrappers.MeshProfileIntersection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MeshProfileIntersection</span></code></a>(index, x, y, filename)</p></td>
+<td><p>Intersection of mesh with profile segments from an Argus .exp file.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.tools.wrappers.NodeConnectivity" title="pyissm.tools.wrappers.NodeConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NodeConnectivity</span></code></a>(elements, num_nodes)</p></td>
+<td><p>Build node connectivity using element connectivity and nodes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.tools.wrappers.ProcessRifts" title="pyissm.tools.wrappers.ProcessRifts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProcessRifts</span></code></a>(index, x, y, segments, ...)</p></td>
+<td><p>Split a mesh where a rift (or fault) is present.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.tools.wrappers.Triangle" title="pyissm.tools.wrappers.Triangle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Triangle</span></code></a>(domain_outline_filename[, ...])</p></td>
+<td><p>Generate a triangular mesh from a domain outline file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.tools.wrappers.check_wrappers_installed" title="pyissm.tools.wrappers.check_wrappers_installed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_wrappers_installed</span></code></a>()</p></td>
+<td><p>Check whether ISSM Python wrappers are installed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.tools.wrappers.load_issm_wrapper" title="pyissm.tools.wrappers.load_issm_wrapper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_issm_wrapper</span></code></a>(func)</p></td>
+<td><p>Decorator for ISSM Python wrapper functions that enables lazy loading of corresponding compiled C++ <cite>_python</cite> modules.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.wrappers.BamgConvertMesh">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.wrappers.</span></span><span class="sig-name descname"><span class="pre">BamgConvertMesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.wrappers.BamgConvertMesh" title="Link to this definition"></a></dt>
+<dd><p>Convert a 2D mesh to BAMG geometry and BAMG mesh format.</p>
+<p>Wrapper function for $ISSM_DIR/lib/BamgConvertMesh_python.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> (<em>array_like</em>) – Indices of the mesh elements.</p></li>
+<li><p><strong>x</strong> (<em>array_like</em>) – X coordinates of the mesh nodes.</p></li>
+<li><p><strong>y</strong> (<em>array_like</em>) – Y coordinates of the mesh nodes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>bamggeom</strong> (<em>BamgGeom</em>) – The generated BAMG geometry object.</p></li>
+<li><p><strong>bamgmesh</strong> (<em>BamgMesh</em>) – The generated BAMG mesh object.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bamggeom</span><span class="p">,</span> <span class="n">bamgmesh</span> <span class="o">=</span> <span class="n">BamgConvertMesh</span><span class="p">(</span><span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.wrappers.BamgMesher">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.wrappers.</span></span><span class="sig-name descname"><span class="pre">BamgMesher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bamgmesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bamggeom</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bamgoptions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.wrappers.BamgMesher" title="Link to this definition"></a></dt>
+<dd><p>Generate a BAMG mesh from a BAMG mesh, geometry and options.</p>
+<p>Wrapper function for $ISSM_DIR/lib/BamgMesher_python.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bamgmesh</strong> (<em>BamgMesh</em>) – The BAMG mesh object to refine.</p></li>
+<li><p><strong>bamggeom</strong> (<em>BamgGeom</em>) – The BAMG geometry object defining the domain.</p></li>
+<li><p><strong>bamgoptions</strong> (<em>BamgOptions</em>) – The BAMG options object containing meshing parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>bamggeom</strong> (<em>BamgGeom</em>) – The generated BAMG geometry object.</p></li>
+<li><p><strong>bamgmesh</strong> (<em>BamgMesh</em>) – The generated BAMG mesh object.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>bamggeom</strong> (<em>BamgGeom</em>) – The generated BAMG geometry object.</p></li>
+<li><p><strong>bamgmesh</strong> (<em>BamgMesh</em>) – The generated BAMG mesh object.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bamggeom</span><span class="p">,</span> <span class="n">bamgmesh</span> <span class="o">=</span> <span class="n">BamgMesher</span><span class="p">(</span><span class="n">bamgmesh</span><span class="p">,</span> <span class="n">bamggeom</span><span class="p">,</span> <span class="n">bamgoptions</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.wrappers.BamgTriangulate">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.wrappers.</span></span><span class="sig-name descname"><span class="pre">BamgTriangulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.wrappers.BamgTriangulate" title="Link to this definition"></a></dt>
+<dd><p>Delaunay triangulation of a set of points.</p>
+<p>Wrapper function for $ISSM_DIR/lib/BamgMesher_python.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>array_like</em>) – X coordinates of the points.</p></li>
+<li><p><strong>y</strong> (<em>array_like</em>) – Y coordinates of the points.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>indices</strong> – Indices of the triangles formed by the Delaunay triangulation.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">indices</span> <span class="o">=</span> <span class="n">BamgTriangulate</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.wrappers.ContourToMesh">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.wrappers.</span></span><span class="sig-name descname"><span class="pre">ContourToMesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contour_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interp_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.wrappers.ContourToMesh" title="Link to this definition"></a></dt>
+<dd><p>Flag the elements or nodes inside a contour.</p>
+<p>Wrapper function for $ISSM_DIR/lib/ContourToMesh_python.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> (<em>array_like</em>) – Mesh triangulation connectivity (element indices).</p></li>
+<li><p><strong>x</strong> (<em>array_like</em>) – X coordinates of the mesh nodes.</p></li>
+<li><p><strong>y</strong> (<em>array_like</em>) – Y coordinates of the mesh nodes.</p></li>
+<li><p><strong>contour_name</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Name of .exp file containing the contours.</p></li>
+<li><p><strong>interp_type</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Type of interpolation. Must be one of ‘element’, ‘node’, or ‘element and node’.</p></li>
+<li><p><strong>edge_value</strong> (<em>int</em>) – Value (0, 1 or 2) associated to the nodes on the edges of the polygons.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>in_nod</strong> (<em>ndarray or tuple</em>) – If <cite>interp_type</cite> is ‘node’: vector of flags (0 or 1) of size nel.
+If <cite>interp_type</cite> is ‘element and node’: tuple containing (in_nod, in_elem).
+Otherwise: not returned.</p></li>
+<li><p><strong>in_elem</strong> (<em>ndarray</em>) – If <cite>interp_type</cite> is ‘element’: vector of flags (0 or 1) of size nel.
+If <cite>interp_type</cite> is ‘element and node’: returned as second element of tuple.
+Otherwise: not returned.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">in_nod</span> <span class="o">=</span> <span class="n">ContourToMesh</span><span class="p">(</span><span class="n">md</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="s1">&#39;Contour.exp&#39;</span><span class="p">,</span> <span class="s1">&#39;node&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">in_elements</span> <span class="o">=</span> <span class="n">ContourToMesh</span><span class="p">(</span><span class="n">md</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="s1">&#39;Contour.exp&#39;</span><span class="p">,</span> <span class="s1">&#39;element&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">in_nodes</span><span class="p">,</span> <span class="n">in_elements</span> <span class="o">=</span> <span class="n">ContourToMesh</span><span class="p">(</span><span class="n">md</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="s1">&#39;Contour.exp&#39;</span><span class="p">,</span> <span class="s1">&#39;element and node&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.wrappers.ContourToNodes">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.wrappers.</span></span><span class="sig-name descname"><span class="pre">ContourToNodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contourname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edgevalue</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.wrappers.ContourToNodes" title="Link to this definition"></a></dt>
+<dd><p>Flag vertices inside contour.</p>
+<p>Wrapper function for $ISSM_DIR/lib/ContourToNodes_python.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>array_like</em>) – X coordinates of the nodes.</p></li>
+<li><p><strong>y</strong> (<em>array_like</em>) – Y coordinates of the nodes.</p></li>
+<li><p><strong>contourname</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Name of .exp/.shp file containing the contours, or resulting structure
+from call to expread/shpread.</p></li>
+<li><p><strong>edgevalue</strong> (<em>int</em>) – Value (0, 1 or 2) defining the value associated to the nodes on the
+edges of the polygons.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>flags</strong> – Vector of flags (0 or 1) of size equal to the number of nodes.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">flags</span> <span class="o">=</span> <span class="n">ContourToNodes</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;contour.exp&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.wrappers.ElementConnectivity">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.wrappers.</span></span><span class="sig-name descname"><span class="pre">ElementConnectivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_connectivity</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.wrappers.ElementConnectivity" title="Link to this definition"></a></dt>
+<dd><p>Build element connectivity using node connectivity and elements.</p>
+<p>Wrapper function for $ISSM_DIR/lib/ElementConnectivity_python.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>elements</strong> (<em>array_like</em>) – Mesh triangulation connectivity (element indices).</p></li>
+<li><p><strong>node_connectivity</strong> (<em>array_like</em>) – Node connectivity information.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>element_connectivity</strong> – Element connectivity matrix.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">element_connectivity</span> <span class="o">=</span> <span class="n">ElementConnectivity</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">node_connectivity</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.wrappers.ExpToLevelSet">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.wrappers.</span></span><span class="sig-name descname"><span class="pre">ExpToLevelSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contourname</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.wrappers.ExpToLevelSet" title="Link to this definition"></a></dt>
+<dd><p>Determine levelset distance between a contour and a cloud of points.</p>
+<p>Wrapper function for $ISSM_DIR/lib/ExpToLevelSet_python.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>array_like</em>) – X coordinates of the cloud points.</p></li>
+<li><p><strong>y</strong> (<em>array_like</em>) – Y coordinates of the cloud points.</p></li>
+<li><p><strong>contourname</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Name of .exp file containing the contours.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>distance</strong> – Distance vector representing a levelset where the 0 level is one
+of the contour segments.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">distance</span> <span class="o">=</span> <span class="n">ExpToLevelSet</span><span class="p">(</span><span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="s1">&#39;Contour.exp&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.wrappers.InterpFromGridToMesh">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.wrappers.</span></span><span class="sig-name descname"><span class="pre">InterpFromGridToMesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolation_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bilinear'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.wrappers.InterpFromGridToMesh" title="Link to this definition"></a></dt>
+<dd><p>Interpolation from a grid onto a list of points.</p>
+<p>Wrapper function for $ISSM_DIR/lib/InterpFromGridToMesh_python.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>array_like</em>) – X coordinates of the grid data (must be in increasing order).</p></li>
+<li><p><strong>y</strong> (<em>array_like</em>) – Y coordinates of the grid data (must be in increasing order).</p></li>
+<li><p><strong>data</strong> (<em>array_like</em>) – Matrix holding the data to be interpolated onto the mesh.</p></li>
+<li><p><strong>x_mesh</strong> (<em>array_like</em>) – X coordinates of the points onto which we interpolate.</p></li>
+<li><p><strong>y_mesh</strong> (<em>array_like</em>) – Y coordinates of the points onto which we interpolate.</p></li>
+<li><p><strong>default_value</strong> (<em>float</em>) – Default value to use for points outside the grid.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>data_mesh</strong> – Vector of mesh interpolated data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data_mesh</span> <span class="o">=</span> <span class="n">InterpFromGridToMesh</span><span class="p">(</span><span class="n">x_grid</span><span class="p">,</span> <span class="n">y_grid</span><span class="p">,</span> <span class="n">Vel</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;nearest&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.wrappers.InterpFromMesh2d">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.wrappers.</span></span><span class="sig-name descname"><span class="pre">InterpFromMesh2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_prime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_prime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contourname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.wrappers.InterpFromMesh2d" title="Link to this definition"></a></dt>
+<dd><p>Interpolate data from a 2D mesh onto a set of points.</p>
+<p>Wrapper function for $ISSM_DIR/lib/InterpFromMesh2d_python.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> (<em>array_like</em>) – Index of the mesh where data is defined (triangulation connectivity).</p></li>
+<li><p><strong>x</strong> (<em>array_like</em>) – X coordinates of the nodes where data is defined.</p></li>
+<li><p><strong>y</strong> (<em>array_like</em>) – Y coordinates of the nodes where data is defined.</p></li>
+<li><p><strong>data</strong> (<em>array_like</em>) – Vector holding the data to be interpolated onto the points.</p></li>
+<li><p><strong>x_prime</strong> (<em>array_like</em>) – X coordinates of the mesh vertices onto which we interpolate.</p></li>
+<li><p><strong>y_prime</strong> (<em>array_like</em>) – Y coordinates of the mesh vertices onto which we interpolate.</p></li>
+<li><p><strong>default_value</strong> (<em>float</em><em> or </em><em>array_like</em><em>, </em><em>optional</em>) – Default value(s) to use for interpolation. Can be a scalar or vector
+of size len(x_prime).</p></li>
+<li><p><strong>contourname</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – Name of contour file. Linear interpolation will happen on all x_prime,
+y_prime inside the contour, default value will be adopted on the rest
+of the mesh.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>data_prime</strong> – Vector of interpolated data at the target points.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data_prime</span> <span class="o">=</span> <span class="n">InterpFromMesh2d</span><span class="p">(</span><span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">x_new</span><span class="p">,</span> <span class="n">y_new</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data_prime</span> <span class="o">=</span> <span class="n">InterpFromMesh2d</span><span class="p">(</span><span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">x_new</span><span class="p">,</span> <span class="n">y_new</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data_prime</span> <span class="o">=</span> <span class="n">InterpFromMesh2d</span><span class="p">(</span><span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">x_new</span><span class="p">,</span> <span class="n">y_new</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">contourname</span><span class="o">=</span><span class="s1">&#39;contour.exp&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.wrappers.InterpFromMeshToGrid">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.wrappers.</span></span><span class="sig-name descname"><span class="pre">InterpFromMeshToGrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xgrid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ygrid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.wrappers.InterpFromMeshToGrid" title="Link to this definition"></a></dt>
+<dd><p>Interpolate data from a mesh onto a regular grid.</p>
+<p>Wrapper function for $ISSM_DIR/lib/InterpFromMeshToGrid_python.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> (<em>array_like</em>) – Index of the mesh where data is defined (triangulation connectivity).</p></li>
+<li><p><strong>x</strong> (<em>array_like</em>) – X coordinates of the nodes where data is defined.</p></li>
+<li><p><strong>y</strong> (<em>array_like</em>) – Y coordinates of the nodes where data is defined.</p></li>
+<li><p><strong>data</strong> (<em>array_like</em>) – Vertex values of data to be interpolated onto the grid.</p></li>
+<li><p><strong>xgrid</strong> (<em>array_like</em>) – X coordinates defining the grid.</p></li>
+<li><p><strong>ygrid</strong> (<em>array_like</em>) – Y coordinates defining the grid.</p></li>
+<li><p><strong>default_value</strong> (<em>float</em>) – Value assigned to points located outside the mesh.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>grid_data</strong> – Interpolated data on the regular grid.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">grid_data</span> <span class="o">=</span> <span class="n">InterpFromMeshToGrid</span><span class="p">(</span><span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">xgrid</span><span class="p">,</span> <span class="n">ygrid</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.wrappers.InterpFromMeshToMesh2d">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.wrappers.</span></span><span class="sig-name descname"><span class="pre">InterpFromMeshToMesh2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_interp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_interp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.wrappers.InterpFromMeshToMesh2d" title="Link to this definition"></a></dt>
+<dd><p>Interpolate from a 2D triangular mesh onto a list of points.</p>
+<p>Wrapper function for $ISSM_DIR/lib/InterpFromMeshToMesh2d_python.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> (<em>array_like</em>) – Index of the mesh where data is defined (triangulation connectivity).</p></li>
+<li><p><strong>x</strong> (<em>array_like</em>) – X coordinates of the nodes where data is defined.</p></li>
+<li><p><strong>y</strong> (<em>array_like</em>) – Y coordinates of the nodes where data is defined.</p></li>
+<li><p><strong>data</strong> (<em>array_like</em>) – Matrix holding the data to be interpolated onto the mesh (one column per field).</p></li>
+<li><p><strong>x_interp</strong> (<em>array_like</em>) – X coordinates of the points onto which we interpolate.</p></li>
+<li><p><strong>y_interp</strong> (<em>array_like</em>) – Y coordinates of the points onto which we interpolate.</p></li>
+<li><p><strong>default_value</strong> (<em>float</em><em>, </em><em>optional</em>) – Default value if point is outside of triangulation (instead of linear interpolation).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>data_prime</strong> – Vector of interpolated data at the target points.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">interpolated_temp</span> <span class="o">=</span> <span class="n">InterpFromMeshToMesh2d</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">interpolated_temp</span> <span class="o">=</span> <span class="n">InterpFromMeshToMesh2d</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">default_value</span> <span class="o">=</span> <span class="mi">253</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.wrappers.InterpFromMeshToMesh3d">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.wrappers.</span></span><span class="sig-name descname"><span class="pre">InterpFromMeshToMesh3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_prime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_prime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_prime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.wrappers.InterpFromMeshToMesh3d" title="Link to this definition"></a></dt>
+<dd><p>Interpolate from a 3D hexahedron mesh onto a list of points.</p>
+<p>Wrapper function for $ISSM_DIR/lib/InterpFromMeshToMesh3d_python.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> (<em>array_like</em>) – Index of the mesh where data is defined (hexahedron connectivity).</p></li>
+<li><p><strong>x</strong> (<em>array_like</em>) – X coordinates of the nodes where data is defined.</p></li>
+<li><p><strong>y</strong> (<em>array_like</em>) – Y coordinates of the nodes where data is defined.</p></li>
+<li><p><strong>z</strong> (<em>array_like</em>) – Z coordinates of the nodes where data is defined.</p></li>
+<li><p><strong>data</strong> (<em>array_like</em>) – Matrix holding the data to be interpolated onto the mesh.</p></li>
+<li><p><strong>x_prime</strong> (<em>array_like</em>) – X coordinates of the points onto which we interpolate.</p></li>
+<li><p><strong>y_prime</strong> (<em>array_like</em>) – Y coordinates of the points onto which we interpolate.</p></li>
+<li><p><strong>z_prime</strong> (<em>array_like</em>) – Z coordinates of the points onto which we interpolate.</p></li>
+<li><p><strong>default_value</strong> (<em>float</em><em>, </em><em>optional</em>) – Default value if no data is found (holes).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>data_prime</strong> – Vector of interpolated data at the target points.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">interpolated_temp</span> <span class="o">=</span> <span class="n">InterpFromMeshToMesh3d</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="mi">253</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.wrappers.IssmConfig">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.wrappers.</span></span><span class="sig-name descname"><span class="pre">IssmConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.wrappers.IssmConfig" title="Link to this definition"></a></dt>
+<dd><p>Get ISSM configuration value for a specified parameter.</p>
+<p>Wrapper function for $ISSM_DIR/lib/IssmConfig_python.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>string</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – The configuration parameter name to retrieve.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The configuration value associated with the specified parameter string.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>value</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">value</span> <span class="o">=</span> <span class="n">IssmConfig</span><span class="p">(</span><span class="s1">&#39;parameter_name&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.wrappers.MeshPartition">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.wrappers.</span></span><span class="sig-name descname"><span class="pre">MeshPartition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_partitions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.wrappers.MeshPartition" title="Link to this definition"></a></dt>
+<dd><p>Partition mesh according to the number of areas, using Metis library.</p>
+<p>Wrapper function for $ISSM_DIR/lib/MeshPartition_python.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>md</strong> (<em>object</em>) – ISSM model object containing the mesh to be partitioned.</p></li>
+<li><p><strong>n_partitions</strong> (<em>int</em>) – Number of partitions to divide the mesh into.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>element_partitioning</strong> (<em>ndarray</em>) – Vector of partitioning area numbers, for every element.</p></li>
+<li><p><strong>node_partitioning</strong> (<em>ndarray</em>) – Vector of partitioning area numbers, for every node.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">element_partitioning</span><span class="p">,</span> <span class="n">node_partitioning</span> <span class="o">=</span> <span class="n">MeshPartition</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.wrappers.MeshProfileIntersection">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.wrappers.</span></span><span class="sig-name descname"><span class="pre">MeshProfileIntersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.wrappers.MeshProfileIntersection" title="Link to this definition"></a></dt>
+<dd><p>Intersection of mesh with profile segments from an Argus .exp file.</p>
+<p>Wrapper function for $ISSM_DIR/lib/MeshProfileIntersection_python.</p>
+<p>Takes a .exp file (made of several profiles) and figures out its
+intersection with a triangular mesh.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> (<em>array_like</em>) – Indices of the mesh elements defining the triangulation connectivity.</p></li>
+<li><p><strong>x</strong> (<em>array_like</em>) – X coordinates of the mesh nodes.</p></li>
+<li><p><strong>y</strong> (<em>array_like</em>) – Y coordinates of the mesh nodes.</p></li>
+<li><p><strong>filename</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Path to an Argus-style .exp file containing the segments. Can contain
+groups of disconnected segments.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>segments</strong> – Array where each row represents a segment intersection with the mesh.
+Each row contains [x1, y1, x2, y2, element_id] where (x1, y1) and
+(x2, y2) are the segment extremities and element_id is the ID of the
+element containing the segment. The number of rows equals the number
+of segments intersecting the mesh.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">segments</span> <span class="o">=</span> <span class="n">MeshProfileIntersection</span><span class="p">(</span><span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="s2">&quot;profiles.exp&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.wrappers.NodeConnectivity">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.wrappers.</span></span><span class="sig-name descname"><span class="pre">NodeConnectivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_nodes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.wrappers.NodeConnectivity" title="Link to this definition"></a></dt>
+<dd><p>Build node connectivity using element connectivity and nodes.</p>
+<p>Wrapper function for $ISSM_DIR/lib/NodeConnectivity_python.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>elements</strong> (<em>array_like</em>) – Mesh triangulation connectivity (element indices).</p></li>
+<li><p><strong>num_nodes</strong> (<em>int</em>) – Number of nodes in the mesh.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>node_connectivity</strong> – Node connectivity matrix.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node_connectivity</span> <span class="o">=</span> <span class="n">NodeConnectivity</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">num_nodes</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.wrappers.ProcessRifts">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.wrappers.</span></span><span class="sig-name descname"><span class="pre">ProcessRifts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segmentmarkers</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.wrappers.ProcessRifts" title="Link to this definition"></a></dt>
+<dd><p>Split a mesh where a rift (or fault) is present.</p>
+<p>Wrapper function for $ISSM_DIR/lib/ProcessRifts_python.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> (<em>array_like</em>) – Initial triangulation connectivity (element indices).</p></li>
+<li><p><strong>x</strong> (<em>array_like</em>) – X coordinates of the initial mesh nodes.</p></li>
+<li><p><strong>y</strong> (<em>array_like</em>) – Y coordinates of the initial mesh nodes.</p></li>
+<li><p><strong>segments</strong> (<em>array_like</em>) – Initial array of exterior segments defining the domain outline.</p></li>
+<li><p><strong>segmentmarkers</strong> (<em>array_like</em>) – Initial array of flags marking each segment.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>index_prime</strong> (<em>ndarray</em>) – Resulting triangulation connectivity after rift processing.</p></li>
+<li><p><strong>x_prime</strong> (<em>ndarray</em>) – X coordinates of the resulting mesh nodes.</p></li>
+<li><p><strong>y_prime</strong> (<em>ndarray</em>) – Y coordinates of the resulting mesh nodes.</p></li>
+<li><p><strong>segments_prime</strong> (<em>ndarray</em>) – Resulting array of exterior segments.</p></li>
+<li><p><strong>segmentmarkers_prime</strong> (<em>ndarray</em>) – Resulting array of flags marking each segment.</p></li>
+<li><p><strong>rifts</strong> (<em>ndarray</em>) – Array containing the processed rift information.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">index_prime</span><span class="p">,</span> <span class="n">x_prime</span><span class="p">,</span> <span class="n">y_prime</span><span class="p">,</span> <span class="n">segments_prime</span><span class="p">,</span> <span class="n">segmentmarkers_prime</span><span class="p">,</span> <span class="n">rifts</span> <span class="o">=</span> <span class="n">ProcessRifts</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">segments</span><span class="p">,</span> <span class="n">segmentmarkers</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.wrappers.Triangle">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.wrappers.</span></span><span class="sig-name descname"><span class="pre">Triangle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">domain_outline_filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rifts_filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.wrappers.Triangle" title="Link to this definition"></a></dt>
+<dd><p>Generate a triangular mesh from a domain outline file.</p>
+<p>Wrapper function for $ISSM_DIR/lib/Triangle_python.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>domain_outline_filename</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Path to an Argus domain outline file defining the mesh boundary.</p></li>
+<li><p><strong>rifts_filename</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em><em>, </em><em>default=None</em>) – Path to an Argus rifts file defining internal rifts within the domain.</p></li>
+<li><p><strong>area</strong> (<em>float</em><em>, </em><em>default=1000000</em>) – Maximum area allowed for any element of the resulting mesh.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>index</strong> (<em>ndarray of int</em>) – Array defining the triangulation connectivity (element indices).</p></li>
+<li><p><strong>x</strong> (<em>ndarray of float</em>) – X coordinates of the mesh nodes.</p></li>
+<li><p><strong>y</strong> (<em>ndarray of float</em>) – Y coordinates of the mesh nodes.</p></li>
+<li><p><strong>segments</strong> (<em>ndarray of int</em>) – Array of exterior segments defining the domain outline.</p></li>
+<li><p><strong>segmentmarkers</strong> (<em>ndarray of int</em>) – Array of flags marking each segment (for boundary conditions or identifiers).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">index</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">segments</span><span class="p">,</span> <span class="n">segmentmarkers</span> <span class="o">=</span> <span class="n">Triangle</span><span class="p">(</span><span class="s2">&quot;domain.exp&quot;</span><span class="p">,</span> <span class="n">rifts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">area</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.wrappers.check_wrappers_installed">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.wrappers.</span></span><span class="sig-name descname"><span class="pre">check_wrappers_installed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.wrappers.check_wrappers_installed" title="Link to this definition"></a></dt>
+<dd><p>Check whether ISSM Python wrappers are installed.</p>
+<p>This function verifies the existence of the $ISSM_DIR/lib directory
+and checks for the presence of at least one compiled Python wrapper
+file with the pattern ‘<em>_python.</em>’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if ISSM Python wrappers are properly installed, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function depends on the $ISSM_DIR environment variable being set
+and calls check_issm_dir() to verify this requirement. If ISSM_DIR is
+not set, this function returns False (it does not raise an exception).
+The function looks for compiled Python wrapper files that follow the
+naming pattern ‘<em>_python.</em>’ in the $ISSM_DIR/lib directory.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">check_wrappers_installed</span><span class="p">()</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># If ISSM_DIR is not set or wrappers are missing, returns False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.tools.wrappers.load_issm_wrapper">
+<span class="sig-prename descclassname"><span class="pre">pyissm.tools.wrappers.</span></span><span class="sig-name descname"><span class="pre">load_issm_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.tools.wrappers.load_issm_wrapper" title="Link to this definition"></a></dt>
+<dd><p>Decorator for ISSM Python wrapper functions that enables lazy loading of
+corresponding compiled C++ <cite>_python</cite> modules.</p>
+<p>This decorator:
+1. Creates a <cite>_load_func</cite> method that performs lazy loading when first called.
+2. The <cite>_load_func</cite> method checks that <cite>ISSM_DIR</cite> environment variable is set.
+3. Adds the ISSM <cite>lib</cite> directory to <cite>sys.path</cite>.
+4. Verifies that the shared library (<cite>_python.*</cite>) for the function exists.
+5. Imports the <cite>_python</cite> module and caches it as <cite>func._func</cite>.
+6. Returns the cached <cite>_python</cite> function on subsequent calls.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>func</strong> (<em>function</em>) – The Python wrapper function to decorate. The decorator will create
+a <cite>_load_func</cite> method that loads and caches the corresponding
+compiled <cite>_python</cite> function as <cite>func._func</cite>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The original wrapper function with a <cite>_load_func</cite> method attached
+that handles lazy loading of the <cite>_python</cite> function.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>function</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>RuntimeError</strong> – If <cite>ISSM_DIR</cite> is not set or if the corresponding <cite>_python.*</cite> file does not exist.</p></li>
+<li><p><strong>ImportError</strong> – If the <cite>_python</cite> module cannot be imported.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The <cite>_python</cite> function is loaded lazily only when <cite>_load_func()</cite> is first called.</p></li>
+<li><p>Subsequent calls to <cite>_load_func()</cite> return the cached function without reloading.</p></li>
+<li><p>The <cite>_python</cite> module is assumed to be named as <cite>func.__name__ + ‘_python’</cite>.</p></li>
+<li><p>Wrapper functions must call <cite>func._load_func()</cite> before accessing <cite>func._func</cite>.</p></li>
+</ul>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyissm.tools.materials.html" class="btn btn-neutral float-left" title="pyissm.tools.materials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyissm.data.html" class="btn btn-neutral float-right" title="pyissm.data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, ACCESS-NRI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,943 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyissm.model.classes.calving &mdash; pyissm v0.0.1.dev190126 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d96f5a32"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pyissm.model.classes.class_registry" href="pyissm.model.classes.class_registry.html" />
+    <link rel="prev" title="pyissm.model.classes.basalforcings" href="pyissm.model.classes.basalforcings.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pyissm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../pyissm.html">pyissm API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#pyissm-model-class">pyISSM Model Class</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../pyissm.html#pyissm-model-sub-classes">pyISSM Model sub-classes</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="pyissm.model.classes.html">pyissm.model.classes</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.amr.html">pyissm.model.classes.amr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.autodiff.html">pyissm.model.classes.autodiff</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.balancethickness.html">pyissm.model.classes.balancethickness</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.basalforcings.html">pyissm.model.classes.basalforcings</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">pyissm.model.classes.calving</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.class_registry.html">pyissm.model.classes.class_registry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.class_utils.html">pyissm.model.classes.class_utils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.cluster.html">pyissm.model.classes.cluster</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.constants.html">pyissm.model.classes.constants</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.damage.html">pyissm.model.classes.damage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.debris.html">pyissm.model.classes.debris</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.debug.html">pyissm.model.classes.debug</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.dependent.html">pyissm.model.classes.dependent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.dsl.html">pyissm.model.classes.dsl</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.esa.html">pyissm.model.classes.esa</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.flowequation.html">pyissm.model.classes.flowequation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.friction.html">pyissm.model.classes.friction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.frontalforcings.html">pyissm.model.classes.frontalforcings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.geometry.html">pyissm.model.classes.geometry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.groundingline.html">pyissm.model.classes.groundingline</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.hydrology.html">pyissm.model.classes.hydrology</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.independent.html">pyissm.model.classes.independent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.initialization.html">pyissm.model.classes.initialization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.inversion.html">pyissm.model.classes.inversion</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.issmsettings.html">pyissm.model.classes.issmsettings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.levelset.html">pyissm.model.classes.levelset</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.love.html">pyissm.model.classes.love</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.lovenumbers.html">pyissm.model.classes.lovenumbers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.mask.html">pyissm.model.classes.mask</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.massfluxatgate.html">pyissm.model.classes.massfluxatgate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.masstransport.html">pyissm.model.classes.masstransport</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.materials.html">pyissm.model.classes.materials</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.mesh.html">pyissm.model.classes.mesh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.miscellaneous.html">pyissm.model.classes.miscellaneous</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.misfit.html">pyissm.model.classes.misfit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.nodalvalue.html">pyissm.model.classes.nodalvalue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.offlinesolidearthsolution.html">pyissm.model.classes.offlinesolidearthsolution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.organizer.html">pyissm.model.classes.organizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.outputdefinition.html">pyissm.model.classes.outputdefinition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.private.html">pyissm.model.classes.private</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.qmu.html">pyissm.model.classes.qmu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.radaroverlay.html">pyissm.model.classes.radaroverlay</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.regionaloutput.html">pyissm.model.classes.regionaloutput</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.results.html">pyissm.model.classes.results</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.rifts.html">pyissm.model.classes.rifts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.rotational.html">pyissm.model.classes.rotational</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.sampling.html">pyissm.model.classes.sampling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.smb.html">pyissm.model.classes.smb</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.solidearth.html">pyissm.model.classes.solidearth</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.steadystate.html">pyissm.model.classes.steadystate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.stochasticforcing.html">pyissm.model.classes.stochasticforcing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.stressbalance.html">pyissm.model.classes.stressbalance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.surfaceload.html">pyissm.model.classes.surfaceload</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.thermal.html">pyissm.model.classes.thermal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.timestepping.html">pyissm.model.classes.timestepping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.toolkits.html">pyissm.model.classes.toolkits</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.transient.html">pyissm.model.classes.transient</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyissm.model.classes.verbose.html">pyissm.model.classes.verbose</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#tools">Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#data">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#plot">Plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#analysis">Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyissm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../pyissm.html">pyissm API Reference</a></li>
+          <li class="breadcrumb-item"><a href="pyissm.model.classes.html">pyissm.model.classes</a></li>
+      <li class="breadcrumb-item active">pyissm.model.classes.calving</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/pyissm.model.classes.calving.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pyissm.model.classes.calving">
+<span id="pyissm-model-classes-calving"></span><h1>pyissm.model.classes.calving<a class="headerlink" href="#module-pyissm.model.classes.calving" title="Link to this heading"></a></h1>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.classes.calving.crevassedepth" title="pyissm.model.classes.calving.crevassedepth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crevassedepth</span></code></a>([other])</p></td>
+<td><p>Crevasse depth calving parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.model.classes.calving.default" title="pyissm.model.classes.calving.default"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default</span></code></a>([other])</p></td>
+<td><p>Default calving parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.classes.calving.dev" title="pyissm.model.classes.calving.dev"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dev</span></code></a>([other])</p></td>
+<td><p>Development calving parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.model.classes.calving.levermann" title="pyissm.model.classes.calving.levermann"><code class="xref py py-obj docutils literal notranslate"><span class="pre">levermann</span></code></a>([other])</p></td>
+<td><p>Levermann calving parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.classes.calving.minthickness" title="pyissm.model.classes.calving.minthickness"><code class="xref py py-obj docutils literal notranslate"><span class="pre">minthickness</span></code></a>([other])</p></td>
+<td><p>Minimum thickness calving parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.model.classes.calving.parameterization" title="pyissm.model.classes.calving.parameterization"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parameterization</span></code></a>([other])</p></td>
+<td><p>Parameterization calving parameters class for ISSM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.classes.calving.vonmises" title="pyissm.model.classes.calving.vonmises"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vonmises</span></code></a>([other])</p></td>
+<td><p>Von Mises calving parameters class for ISSM.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.crevassedepth">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.calving.</span></span><span class="sig-name descname"><span class="pre">crevassedepth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.crevassedepth" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Crevasse depth calving parameters class for ISSM.</p>
+<p>This class encapsulates the parameters for the crevasse depth calving model in the ISSM (Ice Sheet System Model) framework.
+It defines parameters related to crevasse opening stress, threshold, and water height.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.crevassedepth.crevasse_opening_stress">
+<span class="sig-name descname"><span class="pre">crevasse_opening_stress</span></span><a class="headerlink" href="#pyissm.model.classes.calving.crevassedepth.crevasse_opening_stress" title="Link to this definition"></a></dt>
+<dd><p>0: stress only in the ice-flow direction, 1: maximum principal stress.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, default=1</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.crevassedepth.crevasse_threshold">
+<span class="sig-name descname"><span class="pre">crevasse_threshold</span></span><a class="headerlink" href="#pyissm.model.classes.calving.crevassedepth.crevasse_threshold" title="Link to this definition"></a></dt>
+<dd><p>Ratio of full thickness to calve (e.g. 0.75 is for 75% of the total ice thickness).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=1.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.crevassedepth.water_height">
+<span class="sig-name descname"><span class="pre">water_height</span></span><a class="headerlink" href="#pyissm.model.classes.calving.crevassedepth.water_height" title="Link to this definition"></a></dt>
+<dd><p>Water height in the crevasse [m].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=0.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.crevassedepth.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.crevassedepth.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the crevasse depth calving parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.crevassedepth.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.crevassedepth.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the crevasse depth calving parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.crevassedepth.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.crevassedepth.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.crevassedepth.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.crevassedepth.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file.</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.calving = pyissm.model.classes.calving.crevassedepth()
+md.calving.crevasse_opening_stress = 1.0
+md.calving.crevasse_threshold = 0.75
+md.calving.water_height = 10.0</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.crevassedepth.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.crevassedepth.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.crevassedepth.extrude">
+<span class="sig-name descname"><span class="pre">extrude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.crevassedepth.extrude" title="Link to this definition"></a></dt>
+<dd><p>Extrude calving.crevassedepth fields to 3D</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd><p>Marshall [calving.crevassedepth] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.default">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.calving.</span></span><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.default" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Default calving parameters class for ISSM.</p>
+<p>This class encapsulates the default parameters for calving in the ISSM (Ice Sheet System Model) framework.
+It defines the calving rate parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.default.calvingrate">
+<span class="sig-name descname"><span class="pre">calvingrate</span></span><a class="headerlink" href="#pyissm.model.classes.calving.default.calvingrate" title="Link to this definition"></a></dt>
+<dd><p>Calving rate at given location [m/a].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, default=np.nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.default.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.default.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the calving parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.default.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.default.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the calving parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.default.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.default.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.default.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.default.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file.</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.calving = pyissm.model.classes.calving.default()
+md.calving.calvingrate = np.zeros((md.mesh.numberofvertices,))</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.default.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.default.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.default.extrude">
+<span class="sig-name descname"><span class="pre">extrude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.default.extrude" title="Link to this definition"></a></dt>
+<dd><p>Extrude calving.default fields to 3D</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd><p>Marshall [calving.default] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.dev">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.calving.</span></span><span class="sig-name descname"><span class="pre">dev</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.dev" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Development calving parameters class for ISSM.</p>
+<p>This class encapsulates the parameters for the development calving model in the ISSM (Ice Sheet System Model) framework.
+It defines stress thresholds for grounded and floating ice.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.dev.stress_threshold_groundedice">
+<span class="sig-name descname"><span class="pre">stress_threshold_groundedice</span></span><a class="headerlink" href="#pyissm.model.classes.calving.dev.stress_threshold_groundedice" title="Link to this definition"></a></dt>
+<dd><p>Maximum stress threshold applied to grounded ice [Pa].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=1e6</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.dev.stress_threshold_floatingice">
+<span class="sig-name descname"><span class="pre">stress_threshold_floatingice</span></span><a class="headerlink" href="#pyissm.model.classes.calving.dev.stress_threshold_floatingice" title="Link to this definition"></a></dt>
+<dd><p>Maximum stress threshold applied to floating ice [Pa].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=150e3</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.dev.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.dev.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the development calving parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.dev.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.dev.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the development calving parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.dev.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.dev.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.dev.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.dev.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file.</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.calving = pyissm.model.classes.calving.dev()
+md.calving.stress_threshold_groundedice = 2e6
+md.calving.stress_threshold_floatingice = 200e3</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.dev.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.dev.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.dev.extrude">
+<span class="sig-name descname"><span class="pre">extrude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.dev.extrude" title="Link to this definition"></a></dt>
+<dd><p>Extrude calving.dev fields to 3D</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd><p>Marshall [calving.dev] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.levermann">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.calving.</span></span><span class="sig-name descname"><span class="pre">levermann</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.levermann" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Levermann calving parameters class for ISSM.</p>
+<p>This class encapsulates the parameters for the Levermann calving model in the ISSM (Ice Sheet System Model) framework.
+It defines the proportionality coefficient used in the Levermann calving law.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.levermann.coeff">
+<span class="sig-name descname"><span class="pre">coeff</span></span><a class="headerlink" href="#pyissm.model.classes.calving.levermann.coeff" title="Link to this definition"></a></dt>
+<dd><p>Proportionality coefficient in the Levermann calving model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=2e13</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.levermann.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.levermann.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the Levermann calving parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.levermann.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.levermann.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the Levermann calving parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.levermann.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.levermann.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.levermann.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.levermann.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file.</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.calving = pyissm.model.classes.calving.levermann()</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.levermann.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.levermann.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.levermann.extrude">
+<span class="sig-name descname"><span class="pre">extrude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.levermann.extrude" title="Link to this definition"></a></dt>
+<dd><p>Extrude calving.levermann fields to 3D</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd><p>Marshall [calving.levermann] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.minthickness">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.calving.</span></span><span class="sig-name descname"><span class="pre">minthickness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.minthickness" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Minimum thickness calving parameters class for ISSM.</p>
+<p>This class encapsulates the parameters for the minimum thickness calving model in the ISSM (Ice Sheet System Model) framework.
+It defines the minimum ice thickness below which no ice is allowed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.minthickness.min_thickness">
+<span class="sig-name descname"><span class="pre">min_thickness</span></span><a class="headerlink" href="#pyissm.model.classes.calving.minthickness.min_thickness" title="Link to this definition"></a></dt>
+<dd><p>Minimum thickness below which no ice is allowed [m].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=100.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.minthickness.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.minthickness.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the minimum thickness calving parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.minthickness.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.minthickness.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the minimum thickness calving parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.minthickness.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.minthickness.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.minthickness.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.minthickness.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file.</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.calving = pyissm.model.classes.calving.minthickness()</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.minthickness.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.minthickness.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.minthickness.extrude">
+<span class="sig-name descname"><span class="pre">extrude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.minthickness.extrude" title="Link to this definition"></a></dt>
+<dd><p>Extrude calving.minthickness fields to 3D</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dd><p>Marshall [calving.minthickness] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.parameterization">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.calving.</span></span><span class="sig-name descname"><span class="pre">parameterization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.parameterization" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Parameterization calving parameters class for ISSM.</p>
+<p>This class encapsulates the parameters for the parameterization calving model in the ISSM (Ice Sheet System Model) framework.
+It defines parameters controlling the calving rate as a function of ice thickness, velocity, and other factors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.parameterization.min_thickness">
+<span class="sig-name descname"><span class="pre">min_thickness</span></span><a class="headerlink" href="#pyissm.model.classes.calving.parameterization.min_thickness" title="Link to this definition"></a></dt>
+<dd><p>Minimum thickness below which no ice is allowed [m].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=0.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.parameterization.use_param">
+<span class="sig-name descname"><span class="pre">use_param</span></span><a class="headerlink" href="#pyissm.model.classes.calving.parameterization.use_param" title="Link to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Parameterization mode selector:</dt><dd><dl class="simple">
+<dt>-1: use frontal ablation rate,</dt><dd><p>0: linear function,
+1: tanh function,
+2: tanh(thickness),
+3: tanh(normalized velocity),
+4: tanh(truncated velocity),
+5: linear(truncated velocity).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=0.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.parameterization.theta">
+<span class="sig-name descname"><span class="pre">theta</span></span><a class="headerlink" href="#pyissm.model.classes.calving.parameterization.theta" title="Link to this definition"></a></dt>
+<dd><p>Amplifier parameter for the calving law.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=0.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.parameterization.alpha">
+<span class="sig-name descname"><span class="pre">alpha</span></span><a class="headerlink" href="#pyissm.model.classes.calving.parameterization.alpha" title="Link to this definition"></a></dt>
+<dd><p>Slope parameter for the calving law.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=0.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.parameterization.xoffset">
+<span class="sig-name descname"><span class="pre">xoffset</span></span><a class="headerlink" href="#pyissm.model.classes.calving.parameterization.xoffset" title="Link to this definition"></a></dt>
+<dd><p>Offset in x-axis for the calving law.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=0.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.parameterization.yoffset">
+<span class="sig-name descname"><span class="pre">yoffset</span></span><a class="headerlink" href="#pyissm.model.classes.calving.parameterization.yoffset" title="Link to this definition"></a></dt>
+<dd><p>Offset in y-axis for the calving law.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=0.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.parameterization.vel_upperbound">
+<span class="sig-name descname"><span class="pre">vel_upperbound</span></span><a class="headerlink" href="#pyissm.model.classes.calving.parameterization.vel_upperbound" title="Link to this definition"></a></dt>
+<dd><p>Upper bound of ice velocity to reduce the calving rate [m/a].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=6000.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.parameterization.vel_threshold">
+<span class="sig-name descname"><span class="pre">vel_threshold</span></span><a class="headerlink" href="#pyissm.model.classes.calving.parameterization.vel_threshold" title="Link to this definition"></a></dt>
+<dd><p>Threshold of ice velocity to reduce the calving rate [m/a].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=0.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.parameterization.vel_lowerbound">
+<span class="sig-name descname"><span class="pre">vel_lowerbound</span></span><a class="headerlink" href="#pyissm.model.classes.calving.parameterization.vel_lowerbound" title="Link to this definition"></a></dt>
+<dd><p>Lower bound of ice velocity to reduce the calving rate [m/a].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=0.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.parameterization.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.parameterization.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the parameterization calving parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.parameterization.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.parameterization.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the parameterization calving parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.parameterization.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.parameterization.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.parameterization.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.parameterization.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file.</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.calving = pyissm.model.classes.calving.parameterization()
+md.calving.min_thickness = 50.
+md.calving.use_param = 1
+md.calving.theta = 2.0
+md.calving.alpha = 0.01
+md.calving.xoffset = 10.0
+md.calving.yoffset = 0.5
+md.calving.vel_upperbound = 5000.
+md.calving.vel_threshold = 1000.
+md.calving.vel_lowerbound = 100.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.parameterization.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.parameterization.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.parameterization.extrude">
+<span class="sig-name descname"><span class="pre">extrude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.parameterization.extrude" title="Link to this definition"></a></dt>
+<dd><p>Extrude calving.parameterization fields to 3D</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd><p>Marshall [calving.parameterization] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.vonmises">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyissm.model.classes.calving.</span></span><span class="sig-name descname"><span class="pre">vonmises</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.vonmises" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyissm.model.classes.class_registry.html#pyissm.model.classes.class_registry.manage_state" title="pyissm.model.classes.class_registry.manage_state"><code class="xref py py-class docutils literal notranslate"><span class="pre">manage_state</span></code></a></p>
+<p>Von Mises calving parameters class for ISSM.</p>
+<p>This class encapsulates the parameters for the Von Mises calving model in the ISSM (Ice Sheet System Model) framework.
+It defines stress thresholds for grounded and floating ice, as well as the minimum ice thickness below which no ice is allowed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>any</em><em>, </em><em>optional</em>) – Any other class object that contains common fields to inherit from. If values in <cite>other</cite> differ from default values, they will override the default values.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.vonmises.stress_threshold_groundedice">
+<span class="sig-name descname"><span class="pre">stress_threshold_groundedice</span></span><a class="headerlink" href="#pyissm.model.classes.calving.vonmises.stress_threshold_groundedice" title="Link to this definition"></a></dt>
+<dd><p>Maximum Von Mises stress threshold applied to grounded ice [Pa].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.vonmises.stress_threshold_floatingice">
+<span class="sig-name descname"><span class="pre">stress_threshold_floatingice</span></span><a class="headerlink" href="#pyissm.model.classes.calving.vonmises.stress_threshold_floatingice" title="Link to this definition"></a></dt>
+<dd><p>Maximum Von Mises stress threshold applied to floating ice [Pa].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.vonmises.min_thickness">
+<span class="sig-name descname"><span class="pre">min_thickness</span></span><a class="headerlink" href="#pyissm.model.classes.calving.vonmises.min_thickness" title="Link to this definition"></a></dt>
+<dd><p>Minimum thickness below which no ice is allowed [m].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, default=0.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.vonmises.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.vonmises.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the Von Mises calving parameters, optionally inheriting from another instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.vonmises.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.vonmises.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a detailed string representation of the Von Mises calving parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.vonmises.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.vonmises.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a short string identifying the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.vonmises.marshall_class">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.vonmises.marshall_class" title="Link to this definition"></a></dt>
+<dd><p>Marshall parameters to a binary file.</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>md.calving = pyissm.model.classes.calving.vonmises()
+md.calving.stress_threshold_groundedice = 1e6
+md.calving.stress_threshold_floatingice = 150e3
+md.calving.min_thickness = 50.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.vonmises.check_consistency">
+<span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.vonmises.check_consistency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyissm.model.classes.calving.vonmises.extrude">
+<span class="sig-name descname"><span class="pre">extrude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.classes.calving.vonmises.extrude" title="Link to this definition"></a></dt>
+<dd><p>Extrude calving.vonmises fields to 3D</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">marshall_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dd><p>Marshall [calving.vonmises] parameters to a binary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>file object</em>) – The file object to write the binary data to.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Prefix string used for data identification in the binary file.</p></li>
+<li><p><strong>md</strong> (<em>ISSM model object</em><em>, </em><em>optional.</em>) – ISSM model object needed in some cases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyissm.model.classes.basalforcings.html" class="btn btn-neutral float-left" title="pyissm.model.classes.basalforcings" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyissm.model.classes.class_registry.html" class="btn btn-neutral float-right" title="pyissm.model.classes.class_registry" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, ACCESS-NRI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
