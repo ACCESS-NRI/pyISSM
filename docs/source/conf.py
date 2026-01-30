@@ -30,6 +30,11 @@ extensions = [
     'myst_nb'
 ]
 
+# Myst options
+myst_enable_extensions = [
+    "colon_fence"
+]
+
 # Register suffixes
 source_suffix = {
     ".rst": "restructuredtext",
