@@ -1,3 +1,7 @@
+"""
+ISSM Model sub-classes and available parameterisations.
+"""
+
 from pyissm.model.classes.amr import amr
 from pyissm.model.classes.autodiff import autodiff
 from pyissm.model.classes.balancethickness import balancethickness
