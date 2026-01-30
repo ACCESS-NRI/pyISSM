@@ -37,6 +37,22 @@ Each ISSM model contains a series of sub-classes that define model components an
 
    pyissm.model.classes
 
+.. _model-operations:
+
+pyISSM Model operations
+-------------------
+Each ISSM model is constructed and parameterised using various model operations.
+
+.. autosummary::
+   :toctree: api
+   :recursive:
+
+   pyissm.model.bc
+   pyissm.model.execute
+   pyissm.model.io
+   pyissm.model.mesh
+   pyiss.model.param
+
 .. _tools:
 
 Tools
