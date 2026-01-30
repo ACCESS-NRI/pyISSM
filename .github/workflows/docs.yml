@@ -42,6 +42,12 @@ jobs:
       #   # Step 5: Generate .rst files from docstrings 
       # - name: Generate .rst files
       #   run: sphinx-apidoc -f -o docs/source/ src/pyissm/
+
+      # Step 5: Copy tutorials to be download-able
+      - name: Move tutorials to _static
+        run: |
+          mkdir -p docs/source/_static/tutorials
+          cp -r docs/source/tutorials/* docs/source/_static/tutorials/
         
         # Step 6: Build the HTML documentation
       - name: Build HTML
