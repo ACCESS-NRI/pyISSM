@@ -242,7 +242,7 @@ class Model():
 
         Parameters
         ----------
-        string : str
+        string : :class:`str`
             Human-readable description of the consistency error. This will be inserted
             into the printed message: ``Model consistency error: {string}``.
 
@@ -326,12 +326,12 @@ class Model():
 
         Parameters
         ----------
-        area : str or array_like
+        area : :class:`str` or ``array_like``
             Domain specification. Can be:
 
-                - A domain file path (argus type, .exp extension)
+                - A domain file path (:class:`str` - Argus file time, with .exp extension)
                 - A domain file path prefixed with '~' to invert the domain
-                - An array of element flags (boolean or integer)
+                - An array of element flags (:class:`bool` or :class:`int`)
                 - An empty string '' for empty domain
                 - The string 'all' for entire domain
 
@@ -635,19 +635,19 @@ class Model():
 
         Parameters
         ----------
-        num_layers : int, optional
+        num_layers : :class:`int`, optional
             Number of vertical layers to create. Required when using polynomial 
             extrusion (single or dual exponent). Must be at least 2.
-        extrusion_exponent : float, optional
+        extrusion_exponent : :class:`float`, optional
             Single polynomial exponent for uniform vertical distribution. Must be >= 0.
             When specified, creates extrusion list using this exponent.
-        lower_exponent : float, optional
+        lower_exponent : :class:`float`, optional
             Polynomial exponent for the lower part of the mesh. Must be >= 0.
             Used in conjunction with ``upper_exponent`` for non-uniform vertical distribution.
-        upper_exponent : float, optional
+        upper_exponent : :class:`float`, optional
             Polynomial exponent for the upper part of the mesh. Must be >= 0.
             Used in conjunction with ``lower_exponent`` for non-uniform vertical distribution.
-        coefficients : array_like, optional
+        coefficients : ``array_like``, optional
             List of coefficients between 0 and 1 defining custom vertical distribution.
             Automatically includes 0 and 1 if not present. Alternative to polynomial extrusion.
 
@@ -691,6 +691,11 @@ class Model():
         Custom coefficients (specific layer distribution):
 
         >>> md = md.extrude(coefficients=[0, 0.2, 0.5, 0.7, 0.9, 0.95, 1])
+
+        See Also
+        --------
+        :meth:`pyissm.model.Model.extract` : Extract sub-model from larger domain
+        :meth:`pyissm.model.Model.collapse` : Collapse model layers
         """
 
         ## NOTE: This function is taken directly from $ISSM_DIR/src/m/classes/model.py with only minor modifications for pyISSM integration.
@@ -913,6 +918,11 @@ class Model():
         --------
         >>> md = pyissm.model.Model()
         >>> md.collapse()
+
+        See Also
+        --------
+        :meth:`pyissm.model.Model.extract` : Extract sub-model from larger domain
+        :meth:`pyissm.model.Model.extrude` : Extrude model in vertical direction 
         """
 
         ## NOTE: This function is taken directly from $ISSM_DIR/src/m/classes/model.py with only minor modifications for pyISSM integration.
