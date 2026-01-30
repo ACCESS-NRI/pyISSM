@@ -20,7 +20,7 @@ pyISSM Model Class
 ``pyISSM`` is developed around a central ``Model()`` class.
 
 .. autosummary::
-   :toctree: generated
+   :toctree: api
    :recursive:
 
    pyissm.model.Model
@@ -32,7 +32,7 @@ pyISSM Model sub-classes
 Each ISSM model contains a series of sub-classes that define model components and parameters (e.g., ``mesh``, ``geometry``, etc.).
 
 .. autosummary::
-   :toctree: generated
+   :toctree: api
    :recursive:
 
    pyissm.model.classes
@@ -44,7 +44,7 @@ Tools
 Utilities and helper functions for interacting with the ISSM ``Model`` object.
 
 .. autosummary::
-   :toctree: generated
+   :toctree: api
    :recursive:
 
    pyissm.tools
@@ -56,7 +56,7 @@ Data
 Function for interacting with external datasets and interpolation routines.
 
 .. autosummary::
-   :toctree: generated
+   :toctree: api
    :recursive:
 
    pyissm.data
@@ -68,7 +68,7 @@ Plot
 Visualisation utilities, including plotting of model meshes, boundary conditions, fields, and results.
 
 .. autosummary::
-   :toctree: generated
+   :toctree: api
    :recursive:
 
    pyissm.plot
@@ -80,7 +80,7 @@ Analysis
 Post-processing tools for analysing ISSM models, including derived fields and metrics.
 
 .. autosummary::
-   :toctree: generated
+   :toctree: api
    :recursive:
 
    pyissm.analysis
