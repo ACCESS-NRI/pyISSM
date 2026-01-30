@@ -30,6 +30,11 @@ extensions = [
     'myst_nb'
 ]
 
+myst_enable_extensions = [
+    "html_admonition",
+    "html_image"
+]
+
 # Register suffixes
 source_suffix = {
     ".rst": "restructuredtext",
