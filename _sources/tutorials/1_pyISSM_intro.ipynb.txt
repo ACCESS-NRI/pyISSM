@@ -31,15 +31,14 @@
    "id": "bc396bf9",
    "metadata": {},
    "source": [
-    ":::{warning}\n",
+    "```{warning}\n",
     "**MATLAB -> Python Differences** \n",
     "\n",
     "For those users who are familiar with the existing MATLAB API, pyISSM will feel familiar, but not identical. pyISSM preserves ISSMs core concepts (e.g. the model object and general workflows), while adopting Pythonic syntax and conventions.\n",
     "\n",
     "Important differences include:\n",
     "- Adoption of keyword arguments, rather than positional argument pairs.\n",
-    "- Function names use snake_case (underscores)\n",
-    ":::"
+    "- Function names use snake_case (underscores)"
    ]
   },
   {
