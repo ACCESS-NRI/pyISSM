@@ -585,13 +585,20 @@ settings, and results related to ice sheet simulation.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyissm.model.Model.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.Model.__init__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Initialize default sub-classes and parameterizations for the ISSM model object.</p>
+<p>This constructor initializes all default model components and their associated
+classes, setting up the complete structure for an Ice-sheet and Sea-level System
+Model (ISSM) simulation.</p>
+<p class="rubric">Notes</p>
+<p>All attributes are initialized with their default class implementations.
+See the class docstring for detailed descriptions of each attribute.</p>
+</dd></dl>
 
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code>()</p></td>
-<td><p></p></td>
+<td><p>Initialize default sub-classes and parameterizations for the ISSM model object.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_message</span></code>(string)</p></td>
 <td><p>Notify about a model consistency error, update internal state, and return the instance.</p></td>
@@ -731,9 +738,18 @@ and output definitions if present.</p>
 <dd class="field-odd"><p><a class="reference internal" href="#pyissm.model.Model" title="pyissm.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyissm.model.Model</span></code></a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>RuntimeError</strong> – If the extracted model is empty (no elements found in the specified area).</p>
+<dd class="field-even"><p><strong>RuntimeError</strong> – <ul class="simple">
+<li><p>If the extracted model is empty (no elements found in the specified area).</p></li>
+</ul>
+</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">md2</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="s1">&#39;Domain.exp&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">md3</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="s1">&#39;~Domain.exp&#39;</span><span class="p">)</span>  <span class="c1"># Extract outside domain</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">md4</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">flag_array</span><span class="p">)</span>     <span class="c1"># Extract based on flag array</span>
+</pre></div>
+</div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
@@ -742,12 +758,6 @@ and output definitions if present.</p>
 <dt><a class="reference internal" href="#pyissm.model.Model.collapse" title="pyissm.model.Model.collapse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyissm.model.Model.collapse()</span></code></a></dt><dd><p>Collapse model layers</p>
 </dd>
 </dl>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">md2</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="s1">&#39;Domain.exp&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">md3</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="s1">&#39;~Domain.exp&#39;</span><span class="p">)</span>  <span class="c1"># Extract outside domain</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">md4</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">flag_array</span><span class="p">)</span>     <span class="c1"># Extract based on flag array</span>
-</pre></div>
 </div>
 </dd></dl>
 
@@ -783,10 +793,13 @@ Original 2D mesh is preserved in <code class="docutils literal notranslate"><spa
 <dd class="field-odd"><p><a class="reference internal" href="#pyissm.model.Model" title="pyissm.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyissm.model.Model</span></code></a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>TypeError</strong> – If <code class="docutils literal notranslate"><span class="pre">extrusion_exponent</span></code> or <code class="docutils literal notranslate"><span class="pre">lower_exponent/upper_exponent</span></code> &lt;= 0.
-    If <code class="docutils literal notranslate"><span class="pre">coefficients</span></code> contain values outside [0, 1] range.
-    If <code class="docutils literal notranslate"><span class="pre">num_layers</span></code> &lt; 2.
-    If mesh is already 3D (extrude called more than once).</p>
+<dd class="field-even"><p><strong>TypeError</strong> – <ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">extrusion_exponent</span></code> or <code class="docutils literal notranslate"><span class="pre">lower_exponent/upper_exponent</span></code> &lt;= 0.
+    - If <code class="docutils literal notranslate"><span class="pre">coefficients</span></code> contain values outside [0, 1] range.
+    - If <code class="docutils literal notranslate"><span class="pre">num_layers</span></code> &lt; 2.
+    - If mesh is already 3D (extrude called more than once).</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
