@@ -626,7 +626,7 @@ marks the instance as inconsistent by setting <code class="docutils literal notr
 and returns the instance to allow for method chaining.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>string</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Human-readable description of the consistency error. This will be inserted
+<dd class="field-odd"><p><strong>string</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Human-readable description of the consistency error. This will be inserted
 into the printed message: <code class="docutils literal notranslate"><span class="pre">Model</span> <span class="pre">consistency</span> <span class="pre">error:</span> <span class="pre">{string}</span></code>.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -689,6 +689,15 @@ averaged to create 2D equivalents.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">md</span><span class="o">.</span><span class="n">collapse</span><span class="p">()</span>
 </pre></div>
 </div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#pyissm.model.Model.extract" title="pyissm.model.Model.extract"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyissm.model.Model.extract()</span></code></a></dt><dd><p>Extract sub-model from larger domain</p>
+</dd>
+<dt><a class="reference internal" href="#pyissm.model.Model.extrude" title="pyissm.model.Model.extrude"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyissm.model.Model.extrude()</span></code></a></dt><dd><p>Extrude model in vertical direction</p>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -716,12 +725,12 @@ be considered as the entire domain.</p>
 </div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>area</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em> or </em><em>array_like</em>) – <p>Domain specification. Can be:</p>
+<dd class="field-odd"><p><strong>area</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> or <code class="docutils literal notranslate"><span class="pre">array_like</span></code>) – <p>Domain specification. Can be:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>A domain file path (argus type, .exp extension)</p></li>
+<li><p>A domain file path (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> - Argus file time, with .exp extension)</p></li>
 <li><p>A domain file path prefixed with ‘~’ to invert the domain</p></li>
-<li><p>An array of element flags (boolean or integer)</p></li>
+<li><p>An array of element flags (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>)</p></li>
 <li><p>An empty string ‘’ for empty domain</p></li>
 <li><p>The string ‘all’ for entire domain</p></li>
 </ul>
@@ -772,15 +781,15 @@ coefficients between 0 and 1.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>num_layers</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of vertical layers to create. Required when using polynomial
+<li><p><strong>num_layers</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, optional) – Number of vertical layers to create. Required when using polynomial
 extrusion (single or dual exponent). Must be at least 2.</p></li>
-<li><p><strong>extrusion_exponent</strong> (<em>float</em><em>, </em><em>optional</em>) – Single polynomial exponent for uniform vertical distribution. Must be &gt;= 0.
+<li><p><strong>extrusion_exponent</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, optional) – Single polynomial exponent for uniform vertical distribution. Must be &gt;= 0.
 When specified, creates extrusion list using this exponent.</p></li>
-<li><p><strong>lower_exponent</strong> (<em>float</em><em>, </em><em>optional</em>) – Polynomial exponent for the lower part of the mesh. Must be &gt;= 0.
+<li><p><strong>lower_exponent</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, optional) – Polynomial exponent for the lower part of the mesh. Must be &gt;= 0.
 Used in conjunction with <code class="docutils literal notranslate"><span class="pre">upper_exponent</span></code> for non-uniform vertical distribution.</p></li>
-<li><p><strong>upper_exponent</strong> (<em>float</em><em>, </em><em>optional</em>) – Polynomial exponent for the upper part of the mesh. Must be &gt;= 0.
+<li><p><strong>upper_exponent</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, optional) – Polynomial exponent for the upper part of the mesh. Must be &gt;= 0.
 Used in conjunction with <code class="docutils literal notranslate"><span class="pre">lower_exponent</span></code> for non-uniform vertical distribution.</p></li>
-<li><p><strong>coefficients</strong> (<em>array_like</em><em>, </em><em>optional</em>) – List of coefficients between 0 and 1 defining custom vertical distribution.
+<li><p><strong>coefficients</strong> (<code class="docutils literal notranslate"><span class="pre">array_like</span></code>, optional) – List of coefficients between 0 and 1 defining custom vertical distribution.
 Automatically includes 0 and 1 if not present. Alternative to polynomial extrusion.</p></li>
 </ul>
 </dd>
@@ -827,6 +836,15 @@ Original 2D mesh is preserved in <code class="docutils literal notranslate"><spa
 <p>Custom coefficients (specific layer distribution):</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">md</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">extrude</span><span class="p">(</span><span class="n">coefficients</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
 </pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#pyissm.model.Model.extract" title="pyissm.model.Model.extract"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyissm.model.Model.extract()</span></code></a></dt><dd><p>Extract sub-model from larger domain</p>
+</dd>
+<dt><a class="reference internal" href="#pyissm.model.Model.collapse" title="pyissm.model.Model.collapse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyissm.model.Model.collapse()</span></code></a></dt><dd><p>Collapse model layers</p>
+</dd>
+</dl>
 </div>
 </dd></dl>
 
