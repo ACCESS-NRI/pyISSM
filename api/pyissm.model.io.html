@@ -1,0 +1,416 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyissm.model.io &mdash; pyissm v0.0.1.dev190126 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d96f5a32"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pyissm.model.mesh" href="pyissm.model.mesh.html" />
+    <link rel="prev" title="pyissm.model.execute" href="pyissm.model.execute.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pyissm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../pyissm.html">pyissm API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#pyissm-model-class">pyISSM Model Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#pyissm-model-sub-classes">pyISSM Model sub-classes</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../pyissm.html#pyissm-model-operations">pyISSM Model operations</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.bc.html">pyissm.model.bc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.execute.html">pyissm.model.execute</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">pyissm.model.io</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pyissm.model.io.export_gridded_model"><code class="docutils literal notranslate"><span class="pre">export_gridded_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyissm.model.io.issm_scp_in"><code class="docutils literal notranslate"><span class="pre">issm_scp_in()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyissm.model.io.issm_scp_out"><code class="docutils literal notranslate"><span class="pre">issm_scp_out()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyissm.model.io.issm_ssh"><code class="docutils literal notranslate"><span class="pre">issm_ssh()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyissm.model.io.load_model"><code class="docutils literal notranslate"><span class="pre">load_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyissm.model.io.save_model"><code class="docutils literal notranslate"><span class="pre">save_model()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.mesh.html">pyissm.model.mesh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyissm.model.param.html">pyissm.model.param</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#tools">Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#data">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#plot">Plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyissm.html#analysis">Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyissm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../pyissm.html">pyissm API Reference</a></li>
+      <li class="breadcrumb-item active">pyissm.model.io</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/pyissm.model.io.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pyissm.model.io">
+<span id="pyissm-model-io"></span><h1>pyissm.model.io<a class="headerlink" href="#module-pyissm.model.io" title="Link to this heading"></a></h1>
+<p>Functions for reading and writing ISSM models.</p>
+<p>This module contains functions for reading and writing ISSM models to and from files.</p>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.io.export_gridded_model" title="pyissm.model.io.export_gridded_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">export_gridded_model</span></code></a>(md, out_file, grid_x, ...)</p></td>
+<td><p>Export gridded model variables to a NetCDF file based on a variable mapping specification.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.model.io.issm_scp_in" title="pyissm.model.io.issm_scp_in"><code class="xref py py-obj docutils literal notranslate"><span class="pre">issm_scp_in</span></code></a>(host, login, port, path, packages)</p></td>
+<td><p>Transfer files from a remote host to the current working directory using SCP or local copy.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.io.issm_scp_out" title="pyissm.model.io.issm_scp_out"><code class="xref py py-obj docutils literal notranslate"><span class="pre">issm_scp_out</span></code></a>(host, path, login, port, packages)</p></td>
+<td><p>Copy files to a remote host using SCP or create symbolic links for local transfers.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.model.io.issm_ssh" title="pyissm.model.io.issm_ssh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">issm_ssh</span></code></a>(host, login, port, command)</p></td>
+<td><p>Execute a command on a remote host via SSH or locally if on the same machine.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyissm.model.io.load_model" title="pyissm.model.io.load_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_model</span></code></a>(path)</p></td>
+<td><p>Load an ISSM model from a NetCDF file.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyissm.model.io.save_model" title="pyissm.model.io.save_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_model</span></code></a>(md, path)</p></td>
+<td><p>Save an ISSM model to a NetCDF file.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.model.io.export_gridded_model">
+<span class="sig-prename descclassname"><span class="pre">pyissm.model.io.</span></span><span class="sig-name descname"><span class="pre">export_gridded_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'linear'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">nan</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.io.export_gridded_model" title="Link to this definition"></a></dt>
+<dd><p>Export gridded model variables to a NetCDF file based on a variable mapping specification.</p>
+<p>This function interpolates ISSM model output variables onto a regular 2D grid and writes the
+results to a NetCDF file. Variables are defined in a variable map which specifies the
+desired output name, source location in the model, and optional unit conversions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>md</strong> (<em>object</em>) – The ISSM model object containing simulation results and mesh information.</p></li>
+<li><p><strong>out_file</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Path to the output NetCDF file.</p></li>
+<li><p><strong>grid_x</strong> (<em>ndarray</em>) – 2D array of X coordinates for the regular grid.</p></li>
+<li><p><strong>grid_y</strong> (<em>ndarray</em>) – 2D array of Y coordinates for the regular grid.</p></li>
+<li><p><strong>variable_map</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em> or </em><em>pd.DataFrame</em><em>, </em><em>optional</em>) – Custom variable mapping specification. If a string, it should be the path to a CSV file
+mapping model variables to output variable names and metadata. If a DataFrame, it should
+contain the same columns as the CSV file. If not provided, a default variable map will
+be used located in <cite>../files/default_variable_map.csv</cite> relative to this script.</p></li>
+<li><p><strong>method</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – Interpolation method used to grid model data. Specific variables override this option.
+Options are <cite>‘linear’</cite>, <cite>‘nearest’</cite>, etc. Default is <cite>‘linear’</cite>.</p></li>
+<li><p><strong>domain_mask</strong> (<em>ndarray</em><em>, </em><em>optional</em>) – A boolean or numerical mask to apply to the output grid. If provided, values outside
+the domain are masked or set to <cite>fill_value</cite>.</p></li>
+<li><p><strong>fill_value</strong> (<em>float</em><em>, </em><em>optional</em>) – Value to use for missing or masked data in the NetCDF output. Default is <cite>np.nan</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> – If the variable map CSV file does not exist.</p></li>
+<li><p><strong>ValueError</strong> – If the variable map file contains duplicate output variable names.</p></li>
+<li><p><strong>Exception</strong> – If any unexpected error occurs during export. The output file is removed in this case.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Supports both static and time-dependent model fields.</p></li>
+<li><p>Handles custom unit conversions as defined in the variable map.</p></li>
+<li><p>Includes ISMIP-specific variable logic where applicable.</p></li>
+<li><p>Output NetCDF will contain <cite>grid_x</cite>, <cite>grid_y</cite>, and optionally <cite>time</cite> dimensions.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.model.io.issm_scp_in">
+<span class="sig-prename descclassname"><span class="pre">pyissm.model.io.</span></span><span class="sig-name descname"><span class="pre">issm_scp_in</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">login</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">packages</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.io.issm_scp_in" title="Link to this definition"></a></dt>
+<dd><p>Transfer files from a remote host to the current working directory using SCP or local copy.</p>
+<p>This function transfers specified packages (files) from a remote path to the current
+working directory. If the host is the same as the local hostname, it performs a local
+copy operation. Otherwise, it uses SCP (Secure Copy Protocol) to transfer files from
+the remote host.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>host</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – The hostname or IP address of the remote host.</p></li>
+<li><p><strong>login</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – The username for authentication on the remote host.</p></li>
+<li><p><strong>port</strong> (<em>int</em><em> or </em><em>None</em>) – The SSH port number for the remote connection. If None, uses default port 22.</p></li>
+<li><p><strong>path</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – The remote directory path where the packages are located.</p></li>
+<li><p><strong>packages</strong> (<em>list</em><em> of </em><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – List of filenames to transfer from the remote host.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>Exception</strong> – If the SCP command fails with an error.</p></li>
+<li><p><strong>OSError</strong> – If a package does not exist after the transfer operation.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<dl class="simple">
+<dt>UserWarning</dt><dd><p>If a package does not exist on the local host during local copy operation.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>The function first attempts standard SCP commands. If those fail, it retries with
+legacy SSH options (-OT flags) to handle compatibility issues with different SSH
+configurations.
+For local transfers (when host matches local hostname), the function uses shutil.copy
+and ignores any OSError exceptions that may occur during the copy operation.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.model.io.issm_scp_out">
+<span class="sig-prename descclassname"><span class="pre">pyissm.model.io.</span></span><span class="sig-name descname"><span class="pre">issm_scp_out</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">login</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">packages</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.io.issm_scp_out" title="Link to this definition"></a></dt>
+<dd><p>Copy files to a remote host using SCP or create symbolic links for local transfers.
+This function transfers files either by creating symbolic links (for local transfers
+where host matches hostname) or by using the SCP protocol for remote transfers.
+For remote transfers, it attempts standard SCP first and falls back to legacy SSH
+options if the initial attempt fails.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>host</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Target hostname or IP address for file transfer.</p></li>
+<li><p><strong>path</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Destination directory path on the target host.</p></li>
+<li><p><strong>login</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Username for authentication on the remote host.</p></li>
+<li><p><strong>port</strong> (<em>int</em><em> or </em><em>None</em>) – SSH port number for connection. If None, uses default port 22.</p></li>
+<li><p><strong>packages</strong> (<em>list</em><em> of </em><a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – List of file/package names to transfer from current working directory.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> – If SCP transfer fails after attempting both standard and legacy options.</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<dl class="simple">
+<dt>UserWarning</dt><dd><p>When a package file does not exist and will be skipped during local transfer.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>For local transfers (same hostname), the function:
+- Creates symbolic links in the destination path
+- Removes existing files with same names before linking
+- Skips non-existent packages with warnings
+For remote transfers, the function:
+- Attempts standard SCP first
+- Falls back to SCP with legacy SSH options (-OT) if standard fails
+- Supports custom port specification with -P flag</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Local transfer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">issm_scp_out</span><span class="p">(</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="s1">&#39;/tmp/dest&#39;</span><span class="p">,</span> <span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;file1.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;file2.dat&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Remote transfer with custom port</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">issm_scp_out</span><span class="p">(</span><span class="s1">&#39;remote.server.com&#39;</span><span class="p">,</span> <span class="s1">&#39;/home/user/data&#39;</span><span class="p">,</span> <span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="mi">2222</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;data.bin&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.model.io.issm_ssh">
+<span class="sig-prename descclassname"><span class="pre">pyissm.model.io.</span></span><span class="sig-name descname"><span class="pre">issm_ssh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">login</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.io.issm_ssh" title="Link to this definition"></a></dt>
+<dd><p>Execute a command on a remote host via SSH or locally if on the same machine.</p>
+<p>This function determines whether to run a command locally or remotely based on
+hostname comparison. For remote execution, it uses platform-specific SSH clients:
+plink.exe on Windows and standard ssh on Mac/Linux. Includes a workaround for
+macOS file descriptor blocking issues.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>host</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – The hostname or IP address of the target machine.</p></li>
+<li><p><strong>login</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – The username for SSH authentication.</p></li>
+<li><p><strong>port</strong> (<em>int</em><em> or </em><em>None</em>) – The SSH port number. If None, uses default SSH port (22).</p></li>
+<li><p><strong>command</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – The command to execute on the target machine.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>On Windows, requires plink.exe in the ISSM external packages directory</p></li>
+<li><p>Prompts for username and password interactively on Windows</p></li>
+<li><p>On macOS, applies file descriptor flags to prevent “Resource temporarily
+unavailable” errors</p></li>
+<li><p>Uses shell=True for subprocess calls, which may have security implications</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.model.io.load_model">
+<span class="sig-prename descclassname"><span class="pre">pyissm.model.io.</span></span><span class="sig-name descname"><span class="pre">load_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.io.load_model" title="Link to this definition"></a></dt>
+<dd><p>Load an ISSM model from a NetCDF file.</p>
+<p>This function reads an ISSM model that has been saved in NetCDF format,
+reconstructing all model components including mesh, materials, geometry,
+boundary conditions, and results. The function handles nested objects
+and properly deserializes the complete model state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Path to the NetCDF file containing the ISSM model data.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The reconstructed ISSM model object with all components loaded
+from the NetCDF file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyissm.model.Model.html#pyissm.model.Model" title="pyissm.model.Model">model.Model</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> – If the specified NetCDF file does not exist.</p></li>
+<li><p><strong>ValueError</strong> – If the NetCDF file is corrupted or missing required metadata.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The function automatically handles different data types and converts
+NaN values to numpy.nan for consistency</p></li>
+<li><p>TransientSolution results are automatically expanded from collapsed
+format back to individual timesteps</p></li>
+<li><p>Missing or corrupted groups are skipped with warning messages</p></li>
+</ul>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#pyissm.model.io.save_model" title="pyissm.model.io.save_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_model</span></code></a></dt><dd><p>Save an ISSM model to NetCDF format</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">md</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s1">&#39;my_model.nc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model loaded with </span><span class="si">{</span><span class="n">md</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">numberofvertices</span><span class="si">}</span><span class="s2"> vertices&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyissm.model.io.save_model">
+<span class="sig-prename descclassname"><span class="pre">pyissm.model.io.</span></span><span class="sig-name descname"><span class="pre">save_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyissm.model.io.save_model" title="Link to this definition"></a></dt>
+<dd><p>Save an ISSM model to a NetCDF file.</p>
+<p>This function serializes an ISSM model and all its components to NetCDF format,
+including mesh, materials, geometry, boundary conditions, and results. The function
+handles nested objects and properly serializes the complete model state for later
+reconstruction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>md</strong> (<a class="reference internal" href="pyissm.model.Model.html#pyissm.model.Model" title="pyissm.model.Model"><em>model.Model</em></a>) – The ISSM model object to be saved, containing all model components
+such as mesh, geometry, materials, boundary conditions, and results.</p></li>
+<li><p><strong>path</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a>) – Path to the output NetCDF file where the model will be saved.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>OSError</strong> – If the output file cannot be created or written to.</p></li>
+<li><p><strong>ValueError</strong> – If the model contains unregistered classes that cannot be serialized.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The function automatically handles different data types including scalars,
+arrays, lists, and nested objects</p></li>
+<li><p>TransientSolution results are automatically collapsed from individual
+timesteps to a compact format for efficient storage</p></li>
+<li><p>Boolean values are converted to integers for NetCDF compatibility</p></li>
+<li><p>Object arrays and string arrays are properly handled with appropriate
+data type conversions</p></li>
+<li><p>Compression is enabled for most variables to reduce file size</p></li>
+</ul>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#pyissm.model.io.load_model" title="pyissm.model.io.load_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_model</span></code></a></dt><dd><p>Load an ISSM model from NetCDF format</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">save_model</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="s1">&#39;my_model.nc&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyissm.model.execute.html" class="btn btn-neutral float-left" title="pyissm.model.execute" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyissm.model.mesh.html" class="btn btn-neutral float-right" title="pyissm.model.mesh" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, ACCESS-NRI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

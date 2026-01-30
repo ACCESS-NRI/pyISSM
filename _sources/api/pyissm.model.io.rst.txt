@@ -1,0 +1,17 @@
+﻿pyissm.model.io
+===============
+
+.. automodule:: pyissm.model.io
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      export_gridded_model
+      issm_scp_in
+      issm_scp_out
+      issm_ssh
+      load_model
+      save_model
+   

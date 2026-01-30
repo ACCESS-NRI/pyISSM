@@ -1,0 +1,16 @@
+﻿pyissm.model.param
+==================
+
+.. automodule:: pyissm.model.param
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      contour_envelope
+      kill_icebergs
+      parameterize
+      set_flow_equation
+      set_mask
+   

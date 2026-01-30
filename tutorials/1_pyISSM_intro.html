@@ -102,22 +102,22 @@
 <li><p>Analysing and visualising results</p></li>
 </ul>
 <p>If you are new to pyISSM, we strongly recommend working through this notebook before moving on.</p>
-<div class="alert alert-block alert-warning">
-<b>MATLAB -> Python Differences:</b> To those users who are familiar with the existing MATLAB API, pyISSM will feel familiar, but not identical. pyISSM preserves ISSMs core concepts (e.g. the model object and general workflows), while adopting Pythonic syntax and conventions.
+<p>:::{warning}
+<strong>MATLAB -&gt; Python Differences</strong></p>
+<p>For those users who are familiar with the existing MATLAB API, pyISSM will feel familiar, but not identical. pyISSM preserves ISSMs core concepts (e.g. the model object and general workflows), while adopting Pythonic syntax and conventions.</p>
 <p>Important differences include:</p>
 <ul class="simple">
 <li><p>Adoption of keyword arguments, rather than positional argument pairs.</p></li>
-<li><p>Renaming of functions to include “_” word separation</p></li>
+<li><p>Function names use snake_case (underscores)
+:::</p></li>
 </ul>
-</div></section>
+</section>
 <section id="import-pyissm">
 <h2>Import pyISSM<a class="headerlink" href="#import-pyissm" title="Link to this heading"></a></h2>
-<p>Well start by importing <code class="docutils literal notranslate"><span class="pre">pyISSM</span></code> and getting a feel for it’s structure. Instructions for installing <code class="docutils literal notranslate"><span class="pre">pyISSM</span></code> are provided <a class="reference external" href="https://github.com/ACCESS-NRI/pyISSM">here</a>.</p>
+<p>We’ll start by importing <code class="docutils literal notranslate"><span class="pre">pyISSM</span></code> and getting a feel for it’s structure. Instructions for installing <code class="docutils literal notranslate"><span class="pre">pyISSM</span></code> are provided <a class="reference external" href="https://github.com/ACCESS-NRI/pyISSM">here</a>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import pyISSM</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;/Users/lawrence.bird/pyISSM/src/&#39;</span><span class="p">)</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pyissm</span>
 
 <span class="c1"># Check available submodules</span>
