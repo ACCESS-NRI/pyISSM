@@ -8,4 +8,4 @@ Hands-on tutorials demonstrating common pyISSM workflows.
 .. toctree::
    :maxdepth: 1
 
-   tutorials/1_pyISSM_intro.ipynb
+   _static/tutorials/1_pyISSM_intro.ipynb
