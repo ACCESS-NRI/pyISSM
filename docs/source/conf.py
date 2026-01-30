@@ -27,8 +27,13 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.napoleon',
     'sphinx_autodoc_typehints',
+    'nbsphinx'
 ]
 
+# nbsphinx options
+nbsphinx_allow_errors = True
+
+# Sphinx options
 autosummary_generate = True
 
 autodoc_default_options = {

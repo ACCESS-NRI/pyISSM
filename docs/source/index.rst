@@ -18,6 +18,11 @@ Getting Started
 
 To get started with pyISSM, please refer to the `installation <installation>`_ guide and the `overview <overview>`_ section for a comprehensive introduction to the library's features and capabilities.
 
+Tutorials
+-------------------
+For customised pyISSM tutorials, please refere to the `tutorials <tutorials>`_ section.
+
+
 Contributing
 -------------------
 We welcome contributions from the community! If you're interested in contributing to pyISSM development or documentation, please check out our `contributing guidelines <contributing>`_.
@@ -29,4 +34,5 @@ We welcome contributions from the community! If you're interested in contributin
    overview
    installation
    pyissm
+   tutorials
    contributing
