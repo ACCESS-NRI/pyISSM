@@ -1,0 +1,441 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Introduction to pyISSM &mdash; pyissm v0.0.1.dev190126 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d96f5a32"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pyissm API Reference" href="../pyissm.html" />
+    <link rel="prev" title="Tutorials" href="../tutorials.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pyissm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Introduction to pyISSM</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scope-of-this-notebook">Scope of this notebook</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#import-pyissm">Import pyISSM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-issm-model-object-md">The ISSM Model Object (<code class="docutils literal notranslate"><span class="pre">md</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alternative-parameterisations">Alternative parameterisations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../pyissm.html">pyissm API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyissm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../tutorials.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">Introduction to pyISSM</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorials/1_pyISSM_intro.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="introduction-to-pyissm">
+<h1>Introduction to pyISSM<a class="headerlink" href="#introduction-to-pyissm" title="Link to this heading"></a></h1>
+<p>This notebook provides a first introduction to <strong>pyISSM</strong>, the Python interface to the Ice-sheet and Sea-level System Model (ISSM).</p>
+<p>This notebook focuses on helping you understand how pyISSM is structured, how its syntax works, and how to interact with ISSM models in a Python-native way.</p>
+<p>By the end of this notebook, you should be comfortable navigating pyISSM, inspecting model objects, and understanding where different pieces of functionality live.</p>
+<section id="scope-of-this-notebook">
+<h2>Scope of this notebook<a class="headerlink" href="#scope-of-this-notebook" title="Link to this heading"></a></h2>
+<p>This notebook focuses on <strong>structure and syntax</strong>, not on glaciology or ice sheet model theory, or model development.</p>
+<p>Additional notebooks in this tutorial series will cover:</p>
+<ul class="simple">
+<li><p>Mesh generation</p></li>
+<li><p>Model parameterisation and boundary conditions</p></li>
+<li><p>Executing model simulations</p></li>
+<li><p>Analysing and visualising results</p></li>
+</ul>
+<p>If you are new to pyISSM, we strongly recommend working through this notebook before moving on.</p>
+<div class="alert alert-block alert-warning">
+<b>MATLAB -> Python Differences:</b> To those users who are familiar with the existing MATLAB API, pyISSM will feel familiar, but not identical. pyISSM preserves ISSMs core concepts (e.g. the model object and general workflows), while adopting Pythonic syntax and conventions.
+<p>Important differences include:</p>
+<ul class="simple">
+<li><p>Adoption of keyword arguments, rather than positional argument pairs.</p></li>
+<li><p>Renaming of functions to include “_” word separation</p></li>
+</ul>
+</div></section>
+<section id="import-pyissm">
+<h2>Import pyISSM<a class="headerlink" href="#import-pyissm" title="Link to this heading"></a></h2>
+<p>Well start by importing <code class="docutils literal notranslate"><span class="pre">pyISSM</span></code> and getting a feel for it’s structure. Instructions for installing <code class="docutils literal notranslate"><span class="pre">pyISSM</span></code> are provided <a class="reference external" href="https://github.com/ACCESS-NRI/pyISSM">here</a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import pyISSM</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;/Users/lawrence.bird/pyISSM/src/&#39;</span><span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pyissm</span>
+
+<span class="c1"># Check available submodules</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pkgutil</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;pyISSM contains the following submodules: </span><span class="si">{</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">pkgutil</span><span class="o">.</span><span class="n">iter_modules</span><span class="p">(</span><span class="n">pyissm</span><span class="o">.</span><span class="n">__path__</span><span class="p">)]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>pyISSM contains the following submodules: [&#39;analysis&#39;, &#39;data&#39;, &#39;learn&#39;, &#39;model&#39;, &#39;plot&#39;, &#39;tools&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can see that pyISSM contains five sub-modules.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">analysis</span></code> contains tailored post-processing tools</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data</span></code> contains tailored tools for interacting with external datasets, including interpolation routines.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">model</span></code> contains the central functionality, including the core <code class="docutils literal notranslate"><span class="pre">Model()</span></code> class.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plot</span></code> conatains tailored tools for visualising ISSM models.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tools</span></code> contains diverse tools for interacting with the ISSM Model Object.</p></li>
+</ul>
+<p>This notebook focuses on the structure of the <code class="docutils literal notranslate"><span class="pre">model</span></code> submodule. Other modules are primarily used for parameterising, visualising, and analysing ISSM models and will be explored in other notebooks.</p>
+</section>
+<section id="the-issm-model-object-md">
+<h2>The ISSM Model Object (<code class="docutils literal notranslate"><span class="pre">md</span></code>)<a class="headerlink" href="#the-issm-model-object-md" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">pyISSM</span></code> is developed around a central <code class="docutils literal notranslate"><span class="pre">Model()</span></code> class. Each model contains a series of sub-classes that define model components and parameters (e.g. <code class="docutils literal notranslate"><span class="pre">mesh</span></code>, <code class="docutils literal notranslate"><span class="pre">geometry</span></code>, etc.). Each model and sub-class contains detailed information that can be interrogated/explored interactively.</p>
+<p>Across the ISSM ecosystem (within the core C++ code, in MATLAB, and here in pyISSM), ISSM models are commonly named <code class="docutils literal notranslate"><span class="pre">md</span></code>.</p>
+<p>Let’s create an empty ISSM model!</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create an empty model</span>
+<span class="n">md</span> <span class="o">=</span> <span class="n">pyissm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">Model</span><span class="p">()</span>
+
+<span class="c1"># View all model sub-classes by viewing the __repr__ of the model</span>
+<span class="n">md</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/pyissm/tools/config.py:254: UserWarning: pyissm.tools.config.get_issm_dir: Environment variable ISSM_DIR is not set. This limits functionality of pyISSM.
+
+Ensure that ISSM is installed with Python wrappers and the environment is properly configured. On Linux/MacOS, add:
+
+     export ISSM_DIR=&quot;&lt;path_to_issm_directory&gt;&quot;
+     source $ISSM_DIR/etc/environment.sh
+
+to your .bash_profile or .zprofile
+  warnings.warn(&#39;pyissm.tools.config.get_issm_dir: Environment variable ISSM_DIR is not set. This limits functionality of pyISSM.\n\n&#39;
+/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/pyissm/model/classes/toolkits.py:74: UserWarning: pyissm.model.classes.toolkits: Python wrappers not installed. Unable to automatically determine toolkit information.
+Returning empty toolkits class to be defined manually.
+  warnings.warn(&#39;pyissm.model.classes.toolkits: Python wrappers not installed. Unable to automatically determine toolkit information.\n&#39;
+/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/pyissm/model/classes/cluster.py:95: UserWarning: pyissm.model.classes.cluster.generic: ISSM_DIR is not set. Returning empty cluster paths.
+
+  warnings.warn(&#39;pyissm.model.classes.cluster.generic: ISSM_DIR is not set. Returning empty cluster paths.\n&#39;)
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>   ISSM Model Class                         
+                                            
+               mesh:  mesh properties         
+               mask:  defines grounded and floating elements 
+           geometry:  surface elevation, bedrock topography, ice thickness, ... 
+          constants:  physical constants      
+                smb:  surface mass balance    
+      basalforcings:  bed forcings            
+          materials:  material properties     
+             damage:  damage propagation laws 
+           friction:  basal friction / drag properties 
+       flowequation:  flow equations          
+       timestepping:  timestepping for transient models 
+     initialization:  initial guess / state   
+              rifts:  rifts properties        
+         solidearth:  solidearth inputs and settings 
+                dsl:  dynamic sea level       
+              debug:  debugging tools (valgrind, gprof 
+            verbose:  verbosity level in solve 
+           settings:  settings properties     
+           toolkits:  PETSc options for each solution 
+            cluster:  cluster parameters (number of CPUs...) 
+   balancethickness:  parameters for balancethickness solution 
+      stressbalance:  parameters for stressbalance solution 
+      groundingline:  parameters for groundingline solution 
+          hydrology:  parameters for hydrology solution 
+      masstransport:  parameters for masstransport solution 
+            thermal:  parameters for thermal solution 
+        steadystate:  parameters for steadystate solution 
+          transient:  parameters for transient solution 
+           levelset:  parameters for moving boundaries (level-set method) 
+            calving:  parameters for calving  
+    frontalforcings:  parameters for frontalforcings 
+                esa:  parameters for elastic adjustment solution 
+           sampling:  parameters for stochastic sampler 
+               love:  parameters for love solution 
+           autodiff:  automatic differentiation parameters 
+          inversion:  parameters for inverse methods 
+                qmu:  Dakota properties       
+                amr:  adaptive mesh refinement properties 
+   outputdefinition:  output definition       
+            results:  model results           
+       radaroverlay:  radar image for plot overlay 
+      miscellaneous:  miscellaneous fields    
+  stochasticforcing:  stochasticity applied to model forcings 
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can access any model sub-class using standard Python dot notation. By default, interactively interrogating <code class="docutils literal notranslate"><span class="pre">md</span></code> will print a summary of the model, or specific model sub-class. When interrogating a model object, we see all available sub-classes (like the above example). when interrigating a model sub-class, we see all available fields/parameters within that sub-class. If a field/parameter is empty, <code class="docutils literal notranslate"><span class="pre">N/A</span></code> is displayed.</p>
+<p>Let’s have a look at pre-defined parameters in the <code class="docutils literal notranslate"><span class="pre">md.constants</span></code> sub-class, and empty fields in the <code class="docutils literal notranslate"><span class="pre">md.geometry</span></code> sub-class.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">md</span><span class="o">.</span><span class="n">constants</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>   constants parameters:
+         g                      : 9.81            -- gravitational acceleration [m/s^2]
+         omega                  : 7.292e-05       -- angular velocity of Earth [rad/s]
+         yts                    : 31536000.0      -- number of seconds in a year [s/yr]
+         referencetemperature   : 223.15          -- reference temperature used in the enthalpy model [K]
+         gravitational_constant : 6.67259e-11     -- Newtonian constant of gravitation [m^3/kg/s^2]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">md</span><span class="o">.</span><span class="n">geometry</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>   geometry parameters:
+         surface                : N/A             -- ice upper surface elevation [m]
+         thickness              : N/A             -- ice thickness [m]
+         base                   : N/A             -- ice base elevation [m]
+         bed                    : N/A             -- bed elevation [m]
+         hydrostatic_ratio      : N/A             -- hydrostatic ratio for floating ice
+</pre></div>
+</div>
+</div>
+</div>
+<p>In the next cell, all available sub-classes are listed and commented out. Spend a few minutes interrogating each of them and familiarizing yourself with the structure of a pyISSM model. You can simply uncomment one line at a time and re-run the cell to view the fields/parameters included in each sub-class.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># md.amr</span>
+<span class="c1"># md.autodiff</span>
+<span class="c1"># md.balancethickness</span>
+<span class="c1"># md.basalforcings</span>
+<span class="c1"># md.calving</span>
+<span class="c1"># md.cluster</span>
+<span class="c1"># md.constants</span>
+<span class="c1"># md.damage</span>
+<span class="c1"># md.debris</span>
+<span class="c1"># md.debug</span>
+<span class="c1"># md.dsl</span>
+<span class="c1"># md.esa</span>
+<span class="c1"># md.flowequation</span>
+<span class="c1"># md.friction</span>
+<span class="c1"># md.frontalforcings</span>
+<span class="c1"># md.geometry</span>
+<span class="c1"># md.groundingline</span>
+<span class="c1"># md.hydrology</span>
+<span class="c1"># md.initialization</span>
+<span class="c1"># md.inversion</span>
+<span class="c1"># md.levelset</span>
+<span class="c1"># md.love</span>
+<span class="c1"># md.mask</span>
+<span class="c1"># md.masstransport</span>
+<span class="c1"># md.materials</span>
+<span class="c1"># md.mesh</span>
+<span class="c1"># md.miscellaneous</span>
+<span class="c1"># md.outputdefinition</span>
+<span class="c1"># md.private</span>
+<span class="c1"># md.qmu</span>
+<span class="c1"># md.radaroverlay</span>
+<span class="c1"># md.results</span>
+<span class="c1"># md.rifts,</span>
+<span class="c1"># md.sampling</span>
+<span class="c1"># md.settings</span>
+<span class="c1"># md.smb</span>
+<span class="c1"># md.solidearth</span>
+<span class="c1"># md.steadystate</span>
+<span class="c1"># md.stochasticforcing</span>
+<span class="c1"># md.stressbalance</span>
+<span class="c1"># md.thermal</span>
+<span class="c1"># md.timestepping</span>
+<span class="c1"># md.toolkits</span>
+<span class="c1"># md.transient</span>
+<span class="c1"># md.verbose</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="alternative-parameterisations">
+<h2>Alternative parameterisations<a class="headerlink" href="#alternative-parameterisations" title="Link to this heading"></a></h2>
+<p>Within ISSM, there are multiple ways to represent various processes, depending on the use case. For example, modellers may wish to represent basal friction using the Budd friction law, or the Schoof friction law. Or, modellers may wish to use the Positive Degree Day (PDD) surface mass balance (SMB) approach, rather than a prescribed SMB. All of this flexibility is embedded in pyISSM and accessible via different model classes.</p>
+<p>Let’s take a look at a few different friction classes, accessible via <code class="docutils literal notranslate"><span class="pre">pyissm.model.classes.friction....</span></code></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># By default, md.friction uses the default friction law, which is a Budd friction law</span>
+<span class="n">md</span><span class="o">.</span><span class="n">friction</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Basal shear stress parameters: Sigma_b = coefficient^2 * Neff ^r * |u_b|^(s - 1) * u_b,
+(effective stress Neff = rho_ice * g * thickness + rho_water * g * base, r = q / p and s = 1 / p)
+         coefficient            : N/A             -- friction coefficient [SI]
+         p                      : N/A             -- p exponent
+         q                      : N/A             -- q exponent
+         coupling               : 0               -- Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet)
+         linearize              : 0               -- 0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0)
+         effective_pressure     : N/A             -- Effective Pressure for the forcing if not coupled [Pa]
+         effective_pressure_l...: 0               -- Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># To change the friction law to a Weertman friction law, we can do:</span>
+<span class="n">md</span><span class="o">.</span><span class="n">friction</span> <span class="o">=</span> <span class="n">pyissm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">friction</span><span class="o">.</span><span class="n">weertman</span><span class="p">()</span>
+<span class="n">md</span><span class="o">.</span><span class="n">friction</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Weertman sliding law parameters: Sigma_b = C^(- 1 / m) * |u_b|^(1 / m - 1) * u_b
+         C                      : N/A             -- friction coefficient [SI]
+         m                      : N/A             -- m exponent
+         linearize              : 0               -- 0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0)
+</pre></div>
+</div>
+</div>
+</div>
+<p>The same appraoch allows users to adjust the SMB parameterisation (as well as other model sub-classes). Let’s look at a few different SMB options, accessible via <code class="docutils literal notranslate"><span class="pre">pyissm.model.classes.smb....</span></code></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># By default, md.smb uses the default surface mass balance model which uses a prescribed smb field</span>
+<span class="n">md</span><span class="o">.</span><span class="n">smb</span>
+
+<span class="c1"># To change the smb model to a positive degree day smb model, we can do:</span>
+<span class="n">md</span><span class="o">.</span><span class="n">smb</span> <span class="o">=</span> <span class="n">pyissm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">smb</span><span class="o">.</span><span class="n">pdd</span><span class="p">()</span>
+<span class="n">md</span><span class="o">.</span><span class="n">smb</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>   surface forcings parameters:
+         isdelta18o             : 0               -- is temperature and precipitation delta18o parametrisation activated (0 or 1, default is 0)
+         ismungsm               : 0               -- is temperature and precipitation mungsm parametrisation activated (0 or 1, default is 0)
+         issetpddfac            : 0               -- is user passing in defined pdd factors (0 or 1, default is 0)
+         desfac                 : 0.5             -- desertification elevation factor (between 0 and 1, default is 0.5) [m]
+         s0p                    : N/A             -- should be set to elevation from precip source (between 0 and a few 1000s m, default is 0) [m]
+         s0t                    : N/A             -- should be set to elevation from temperature source (between 0 and a few 1000s m, default is 0) [m]
+         rlaps                  : 6.5             -- present day lapse rate [degree/km]
+         rlapslgm               : 6.5             -- LGM lapse rate [degree/km]
+         monthlytemperatures    : N/A             -- monthly surface temperatures [K], required if pdd is activated and delta18o not activated
+         precipitation          : N/A             -- monthly surface precipitation [m/yr water eq], required if pdd is activated and delta18o or mungsm not activated
+         delta18o               : 0               -- delta18o [per mil], required if pdd is activated and delta18o activated
+         delta18o_surface       : N/A             -- surface elevation of the delta18o site, required if pdd is activated and delta18o activated
+         temperatures_presentday: N/A             -- monthly present day surface temperatures [K], required if delta18o/mungsm is activated
+         temperatures_lgm       : N/A             -- monthly LGM surface temperatures [K], required if delta18o or mungsm is activated
+         precipitations_prese...: N/A             -- monthly surface precipitation [m/yr water eq], required if delta18o or mungsm is activated
+         precipitations_lgm     : N/A             -- monthly surface precipitation [m/yr water eq], required if delta18o or mungsm is activated
+         Tdiff                  : N/A             -- time interpolation parameter for temperature, 1D(year), required if mungsm is activated
+         sealev                 : N/A             -- sea level [m], 1D(year), required if mungsm is activated
+         temperatures_presentday: N/A             -- monthly present day surface temperatures [K], required if delta18o/mungsm is activated
+         temperatures_lgm       : N/A             -- monthly LGM surface temperatures [K], required if delta18o or mungsm is activated
+         precipitations_prese...: N/A             -- monthly surface precipitation [m/yr water eq], required if delta18o or mungsm is activated
+         precipitations_lgm     : N/A             -- monthly surface precipitation [m/yr water eq], required if delta18o or mungsm is activated
+         Pfac                   : N/A             -- time interpolation parameter for precipitation, 1D(year), required if mungsm is activated
+         Tdiff                  : N/A             -- time interpolation parameter for temperature, 1D(year), required if mungsm is activated
+         sealev                 : N/A             -- sea level [m], 1D(year), required if mungsm is activated
+         steps_per_step         : 1               -- number of smb steps per time step
+         averaging              : 0               -- averaging methods from short to long steps
+		0: Arithmetic (default)
+		1: Geometric
+		2: Harmonic
+         requested_outputs      : [&#39;default&#39;,]    -- additional outputs requested
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../tutorials.html" class="btn btn-neutral float-left" title="Tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../pyissm.html" class="btn btn-neutral float-right" title="pyissm API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, ACCESS-NRI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
