@@ -51,7 +51,7 @@ Each ISSM model is constructed and parameterised using various model operations.
    pyissm.model.execute
    pyissm.model.io
    pyissm.model.mesh
-   pyiss.model.param
+   pyissm.model.param
 
 .. _tools:
 
