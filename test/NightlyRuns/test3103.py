@@ -1,25 +1,18 @@
 #Test Name: SquareShelfConstrainedStressHOAdolcMumps
-from model import *
-from socket import gethostname
-from triangle import *
-from setmask import *
-from parameterize import *
-from setflowequation import *
-from solve import *
-from issmmumpssolver import issmmumpssolver
+import pyissm
 
 
-md = triangle(model(), '../Exp/Square.exp', 180000.)
-md = setmask(md, 'all', '')
-md = parameterize(md, '../Par/SquareShelfConstrained.py')
-md.extrude(3, 2.)
-md = setflowequation(md, 'HO', 'all')
-md.cluster = generic('name', gethostname(), 'np', 3)
+md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 180000.)
+md = pyissm.model.param.set_mask(md, 'all', None)
+md = pyissm.model.param.parameterize(md, '../assets/Par/SquareShelfConstrained.py')
+md = md.extrude(3, 2.)
+md = pyissm.model.param.set_flow_equation(md, HO = 'all')
+md.cluster.np = 3
 md.stressbalance.requested_outputs = ['default', 'StressTensorxx', 'StressTensoryy', 'StressTensorzz', 'StressTensorxy', 'StressTensorxz', 'StressTensoryz']
 
 md.autodiff.isautodiff = True
-md.toolkits.DefaultAnalysis = issmmumpssolver()
-md = solve(md, 'Stressbalance')
+md.toolkits.DefaultAnalysis = pyissm.tools.config.issm_mumps_solver()
+md = pyissm.model.execute.solve(md, 'Stressbalance')
 
 #Fields and tolerances to track changes
 field_names = ['Vx', 'Vy', 'Vz', 'Vel', 'Pressure',

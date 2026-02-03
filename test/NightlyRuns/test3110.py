@@ -1,24 +1,16 @@
 #Test Name: SquareShelfConstrainedTranSSA2dAdolcMumps
-from model import *
-from socket import gethostname
-from triangle import *
-from setmask import *
-from parameterize import *
-from setflowequation import *
-from solve import *
+import pyissm
 
 
-md = triangle(model(), '../Exp/Square.exp', 150000.)
-md = setmask(md, 'all', '')
-md = parameterize(md, '../Par/SquareShelfConstrained.py')
-md = setflowequation(md, 'SSA', 'all')
-md.cluster = generic('name', gethostname(), 'np', 3)
-
+md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 150000.)
+md = pyissm.model.param.set_mask(md, 'all', None)
+md = pyissm.model.param.parameterize(md, '../assets/Par/SquareShelfConstrained.py')
+md = pyissm.model.param.set_flow_equation(md, SSA = 'all')
+md.cluster.np = 3
 md.transient.requested_outputs = ['IceVolume']
 
 md.autodiff.isautodiff = True
-md = solve(md, 'Transient')
-
+md = pyissm.model.execute.solve(md, 'Transient')
 #Fields and tolerances to track changes
 field_names = ['Vx1', 'Vy1', 'Vel1', 'Pressure1', 'Bed1', 'Surface1', 'Thickness1', 'Volume1', 'Vx2', 'Vy2', 'Vel2', 'Pressure2', 'Bed2', 'Surface2', 'Thickness2', 'Volume2', 'Vx3', 'Vy3', 'Vel3', 'Pressure3', 'Bed3', 'Surface3', 'Thickness3', 'Volume3']
 field_tolerances = [1e-13, 1e-13, 1e-13, 1e-13, 1e-13, 1e-13, 1e-13, 1e-13,

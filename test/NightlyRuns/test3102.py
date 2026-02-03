@@ -1,23 +1,16 @@
 #Test Name: SquareShelfConstrainedStressSSA3dAdolcMumps
-from model import *
-from socket import gethostname
-from triangle import *
-from setmask import *
-from parameterize import *
-from setflowequation import *
-from solve import *
-from issmmumpssolver import issmmumpssolver
+import pyissm
 
-md = triangle(model(), '../Exp/Square.exp', 180000.)
-md = setmask(md, 'all', '')
-md = parameterize(md, '../Par/SquareShelfConstrained.py')
-md.extrude(3, 2.)
-md = setflowequation(md, 'SSA', 'all')
-md.cluster = generic('name', gethostname(), 'np', 3)
+md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 180000.)
+md = pyissm.model.param.set_mask(md, 'all', None)
+md = pyissm.model.param.parameterize(md, '../assets/Par/SquareShelfConstrained.py')
+md = md.extrude(3, 2.)
+md = pyissm.model.param.set_flow_equation(md, SSA = 'all')
+md.cluster.np = 3
 md.autodiff.isautodiff = True
-md.toolkits.DefaultAnalysis = issmmumpssolver()
+md.toolkits.DefaultAnalysis = pyissm.tools.config.issm_mumps_solver()
 
-md = solve(md, 'Stressbalance')
+md = pyissm.model.execute.solve(md, 'Stressbalance')
 
 #Fields and tolerances to track changes
 field_names = ['Vx', 'Vy', 'Vz', 'Vel', 'Pressure']

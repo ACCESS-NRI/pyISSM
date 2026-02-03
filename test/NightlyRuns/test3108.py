@@ -1,25 +1,17 @@
 #Test Name: SquareShelfConstrainedTherSteaAdolcMumps
-from model import *
-from socket import gethostname
-from triangle import *
-from setmask import *
-from parameterize import *
-from setflowequation import *
-from solve import *
-from issmmumpssolver import issmmumpssolver
+import pyissm
 
 
-md = triangle(model(), '../Exp/Square.exp', 180000.)
-md = setmask(md, 'all', '')
-md = parameterize(md, '../Par/SquareShelfConstrained.py')
-md.extrude(3, 1.)
-md = setflowequation(md, 'SSA', 'all')
+md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 180000.)
+md = pyissm.model.param.set_mask(md, 'all', None)
+md = pyissm.model.param.parameterize(md, '../assets/Par/SquareShelfConstrained.py')
+md = md.extrude(3, 1.)
+md = pyissm.model.param.set_flow_equation(md, SSA = 'all')
 md.timestepping.time_step = 0
-md.cluster = generic('name', gethostname(), 'np', 3)
-
+md.cluster.np = 3
 md.autodiff.isautodiff = True
-md.toolkits.DefaultAnalysis = issmmumpssolver()
-md = solve(md, 'Thermal')
+md.toolkits.DefaultAnalysis = pyissm.tools.config.issm_mumps_solver()
+md = pyissm.model.execute.solve(md, 'Thermal')
 
 #Fields and tolerances to track changes
 field_names = ['Temperature', 'BasalforcingsGroundediceMeltingRate']
