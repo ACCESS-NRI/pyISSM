@@ -1,23 +1,16 @@
 #Test Name: SquareShelfConstrainedStressFSAdolc
-from model import *
-from socket import gethostname
-from triangle import *
-from setmask import *
-from parameterize import *
-from setflowequation import *
-from solve import *
-from issmgslsolver import issmgslsolver
+import pyissm
 
 
-md = triangle(model(), '../Exp/Square.exp', 180000.)
-md = setmask(md, 'all', '')
-md = parameterize(md, '../Par/SquareShelfConstrained.py')
-md.extrude(3, 2.)
-md = setflowequation(md, 'FS', 'all')
-md.cluster = generic('name', gethostname(), 'np', 1)
+md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 180000.)
+md = pyissm.model.param.set_mask(md, 'all', None)
+md = pyissm.model.param.parameterize(md, '../assets/Par/SquareShelfConstrained.py')
+md = md.extrude(3, 2.)
+md = pyissm.model.param.set_flow_equation(md, FS = 'all')
+md.cluster.np = 1
 md.autodiff.isautodiff = True
-md.toolkits.DefaultAnalysis = issmgslsolver()
-md = solve(md, 'Stressbalance')
+md.toolkits.DefaultAnalysis = pyissm.tools.config.issm_gsl_solver()
+md = pyissm.model.execute.solve(md, 'Stressbalance')
 
 #Fields and tolerances to track changes
 field_names = ['Vx', 'Vy', 'Vz', 'Vel', 'Pressure']
