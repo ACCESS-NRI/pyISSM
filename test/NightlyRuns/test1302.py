@@ -11,7 +11,7 @@ at upper surface and an impose flux at its base.
 printingflag = False
 
 md = pyissm.model.Model()
-md = pyissm.mesh.triangle(md, '../assets/Exp/Square.exp', 100000.)
+md = pyissm.model.mesh.triangle(md, '../assets/Exp/Square.exp', 100000.)
 md = pyissm.model.param.set_mask(md, None, None)
 md = pyissm.model.param.parameterize(md, '../assets/Par/SquareThermal.py')
 md = md.extrude(30, 1.)  #NB: the more one extrudes, the better (10 -> relative~0.35%, 20 -> 0.1%, 30 -> 0.05%)

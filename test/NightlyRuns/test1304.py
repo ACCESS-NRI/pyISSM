@@ -12,7 +12,7 @@ surface with an imposed slope (Geothermal flux). if it is not the case, somethin
 printingflag = False
 
 md = pyissm.model.Model()
-md = pyissm.mesh.triangle(md, '../assets/Exp/Square.exp', 100000.)
+md = pyissm.model.mesh.triangle(md, '../assets/Exp/Square.exp', 100000.)
 md = pyissm.model.param.set_mask(md, None, None)
 md = pyissm.model.param.parameterize(md, '../assets/Par/SquareThermal.py')
 md = md.extrude(11, 1.)
