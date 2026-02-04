@@ -40,6 +40,9 @@ md = pyissm.model.execute.solve(md, 'Stressbalance')
 #Calculate the depth averaged velocity field (2d):
 vx = md.results.StressbalanceSolution.Vx
 vy = md.results.StressbalanceSolution.Vy
+vx = np.asarray(vx).reshape(-1, 1)
+vy = np.asarray(vy).reshape(-1, 1)
+
 vel = np.zeros((md.mesh.numberofvertices2d))
 
 for i in range(0, md.mesh.numberofvertices2d):
@@ -90,6 +93,10 @@ if printingflag:
 #       system(['mv SIAstatic.png ' ISSM_DIR '/website/doc_pdf/validation/Images/EISMINT/IceSheet'])
 
 #Fields and tolerances to track changes
+
+vx = np.asarray(vx).reshape(1, -1)
+vy = np.asarray(vy).reshape(1, -1)
+vel = np.asarray(vel).reshape(1, -1)
 field_names = ['Vx', 'Vy', 'Vel']
 field_tolerances = [1e-13, 1e-13, 1e-13]
 field_values = [vx, vy, vel]
