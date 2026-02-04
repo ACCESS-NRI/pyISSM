@@ -12,7 +12,7 @@ results = []
 
 for stabilization in range(1, 4):
     #The goal is to test the masstransport model
-    md = pyissm.model.mesh.bamg(pyissm.model.Model(), 'domain', '../assets/Exp/SquareEISMINT.exp', 'hmax', 3000.)
+    md = pyissm.model.mesh.bamg(pyissm.model.Model(), domain =  '../assets/Exp/SquareEISMINT.exp', hmax = 3000.)
     md = pyissm.model.param.set_mask(md, 'all', None)
     md = pyissm.model.param.parameterize(md, '../assets/Par/SquareEISMINT.py')
     md.smb.mass_balance[:] = 0.
