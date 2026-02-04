@@ -10,9 +10,9 @@ numlayers = 8
 resolution = 50000.
 
 #To begin with the numerical model
-md = pyissm.mesh.triangle(pyissm.model.Model(), '../Exp/SquareEISMINT750000.exp', resolution)
-md = pyissm.model.param.set_mask(md, '', '')
-md = pyissm.model.param.parameterize(md, '../Par/RoundSheetEISMINT.py')
+md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/SquareEISMINT750000.exp', resolution)
+md = pyissm.model.param.set_mask(md, None, None)
+md = pyissm.model.param.parameterize(md, '../assets/Par/RoundSheetEISMINT.py')
 
 #We extrude the model to have a 3d model
 md = md.extrude(numlayers, 1.)
