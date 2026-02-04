@@ -14,7 +14,7 @@ md.solidearth.settings.grdmodel = 2
 md.solidearth.settings.isgrd = 1
 
 md.materials = pyissm.model.classes.materials('litho','ice')
-md.materials.numlayers = 2;
+md.materials.numlayers = 2
 md.materials.radius = [10, 6271e3, 6371e3]
 md.materials.density = [3.34e3, 3.32e3]
 md.materials.lame_mu = [1.45e11, 6.7e10]
