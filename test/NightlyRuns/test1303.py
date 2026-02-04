@@ -14,7 +14,7 @@ printingflag = False
 
 md = pyissm.model.Model()
 md = pyissm.model.mesh.triangle(md, '../assets/Exp/Square.exp', 100000.)
-md = pyissm.model.param.set_mask(md, 'all', '')
+md = pyissm.model.param.set_mask(md, 'all', None)
 md = pyissm.model.param.parameterize(md, '../assets/Par/SquareThermal.py')
 md = md.extrude(11, 2.)
 md = pyissm.model.param.set_flow_equation(md, HO = 'all')
