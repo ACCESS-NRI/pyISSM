@@ -12,14 +12,14 @@ import pyissm
 #
 md = pyissm.model.Model()
 
-# Generate and save mesh (need to uncomment import of gmshplanet as well)
+#Generate and save mesh (need to uncomment import of gmshplanet as well)
 # md.mesh = gmshplanet('radius', 6.371012 * 1e3, 'resolution', 700.) # 700 km resolution mesh
 # with open('../Data/SlcTestMesh.pkl', 'wb') as slc_test_mesh_file:
 #     pickle.dump(md.mesh, slc_test_mesh_file)
 
 # Load precomputed mesh
-with open('../Data/SlcTestMesh.pkl', 'rb') as slc_test_mesh_file:
-    md.mesh = pickle.load(slc_test_mesh_file, encoding='latin1')
+with open('../assets/Data/SlcTestMesh.pkl', 'rb') as slc_test_mesh_file:
+    md.mesh = pickle.load(slc_test_mesh_file)
 
 # Geometry for the bed, arbitrary thickness of 100
 md.geometry.bed = np.zeros((md.mesh.numberofvertices, ))
