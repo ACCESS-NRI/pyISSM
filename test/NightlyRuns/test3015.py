@@ -16,19 +16,35 @@ md.toolkits.DefaultAnalysis = pyissm.tools.config.issm_gsl_solver()
 
 # Setup autodiff parameters
 index = 1  #this is the scalar component we are checking against
-indep = pyissm.model.classes.independent()
-indep.name = 'md.geometry.thickness'
-indep.type = 'vertex'
-indep.nods = md.mesh.numberofvertices
-indep.fos_forward_index = index
-md.autodiff.independents = [indep]
 
-dep = pyissm.model.classes.dependent()
-dep.name = 'IceVolume'
-dep.type = 'scalar'
-md.autodiff.dependents = [dep]
+if pyissm.tools.wrappers.IssmConfig('_HAVE_CODIPACK_'):
+    indep = indep = pyissm.model.classes.independent()
+    indep.name = 'md.geometry.thickness'
+    indep.type = 'vertex'
+    indep.nods = md.mesh.numberofvertices
+    md.autodiff.independents = [indep]
 
-md.autodiff.driver = 'fos_forward'
+    dep = pyissm.model.classes.dependent()
+    dep.name = 'IceVolume'
+    dep.type = 'scalar'
+    dep.fos_reverse_index = index
+    md.autodiff.dependents = [dep]
+
+    md.autodiff.driver = 'fos_reverse'
+else:
+    indep = indep = pyissm.model.classes.independent()
+    indep.name = 'md.geometry.thickness'
+    indep.type = 'vertex'
+    indep.nods = md.mesh.numberofvertices
+    indep.fos_forward_index = index
+    md.autodiff.independents = [indep]
+
+    dep = pyissm.model.classes.dependent()
+    dep.name = 'IceVolume'
+    dep.type = 'scalar'
+    md.autodiff.dependents = [dep]
+
+    md.autodiff.driver = 'fos_forward'
 
 # PYTHON: indices start at 0, make sure to offset index
 index = index - 1
@@ -80,7 +96,10 @@ md = pyissm.model.bc.set_ice_shelf_bc(md)
 md = pyissm.model.execute.solve(md, 'Masstransport')
 
 # Retrieve directly
-dVdh_ad = md.results.MasstransportSolution.AutodiffJacobian[0][0]
+if pyissm.tools.wrappers.IssmConfig('_HAVE_CODIPACK_'):
+    dVdh_ad = md.results.MasstransportSolution.AutodiffJacobian[index]
+else:
+    dVdh_ad = md.results.MasstransportSolution.AutodiffJacobian[0][0]
 
 print("dV / dh: analytical:  %16.16g\n       using adolc:  %16.16g\n" % (dVdh_an, dVdh_ad))
 

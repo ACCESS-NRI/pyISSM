@@ -1,4 +1,5 @@
 import numpy as np
+import os
 import warnings
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
