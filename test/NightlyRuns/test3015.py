@@ -16,16 +16,18 @@ md.toolkits.DefaultAnalysis = pyissm.tools.config.issm_gsl_solver()
 
 # Setup autodiff parameters
 index = 1  #this is the scalar component we are checking against
-md.autodiff.independents = pyissm.model.classes.independent()
-md.autodiff.independents.name = md.geometry.thickness
-md.autodiff.independents.type = 'vertex'
-md.autodiff.independents.nods = md.mesh.numberofvertices
-md.autodiff.independents.fos_forward_index = index
+indep = pyissm.model.classes.independent()
+indep.name = md.geometry.thickness
+indep.type = 'vertex'
+indep.nods = md.mesh.numberofvertices
+indep.fos_forward_index = index
+md.autodiff.independents = [indep]
 
-md.autodiff.dependents = pyissm.model.classes.dependent()
-md.autodiff.dependents.name = 'IceVolume'
-md.autodiff.dependents.type = 'scalar'
-md.autodiff.driver = 'fos_forward'
+dep = pyissm.model.classes.dependent()
+dep.name = 'IceVolume'
+dep.type = 'scalar'
+dep.driver = 'fos_forward'
+md.autodiff.dependents = [dep]
 
 # PYTHON: indices start at 0, make sure to offset index
 index = index - 1
