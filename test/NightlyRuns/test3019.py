@@ -14,16 +14,18 @@ md.autodiff.isautodiff = True
 md.verbose.autodiff = True
 
 # first run scalar reverse mode:
-indep = pyissm.model.classes.autodiff.independent()
+indep = pyissm.model.classes.independent()
 indep.name = 'md.geometry.thickness'
 indep.type = 'vertex'
 indep.nods = md.mesh.numberofvertices
 indep.fos_reverse_index = 1
+md.autodiff.independents = [indep]
 
-dep = pyissm.model.classes.autodiff.dependent()
+dep = pyissm.model.classes.dependent()
 dep.name = 'MaxVel'
 dep.type = 'scalar'
 dep.fos_reverse_index = 1
+md.autodiff.dependents = [dep]
 
 md.autodiff.driver = 'fos_reverse'
 
@@ -33,15 +35,17 @@ md = pyissm.model.execute.solve(md, 'Transient')
 jac_reverse = md.results.TransientSolution[0].AutodiffJacobian
 
 # now run vectorial forward mode
-indep = pyissm.model.classes.autodiff.independent()
+indep = pyissm.model.classes.independent()
 indep.name = 'md.geometry.thickness'
 indep.type = 'vertex'
 indep.nods = md.mesh.numberofvertices
 indep.fov_forward_indices = np.arange(1, md.mesh.numberofvertices + 1)
+md.autodiff.independents = [indep]
 
-dep = pyissm.model.classes.autodiff.dependent()
+dep = pyissm.model.classes.dependent()
 dep.name = 'MaxVel'
 dep.type = 'scalar'
+md.autodiff.dependents = [dep]
 
 md.autodiff.driver = 'fov_forward'
 
