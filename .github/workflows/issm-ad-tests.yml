@@ -76,4 +76,4 @@ jobs:
         run: |
           source $ISSM_DIR/etc/environment.sh
           cd ./test/NightlyRuns/
-          python3 -u ../run-tests.py --range 3015:3015
+          python3 -u ../run-tests.py --range 3019:3019 
