@@ -14,23 +14,28 @@ jobs:
   
   # Job 1: Check dependencies and installation
   check_dependencies:
-    uses: access-nri/pyISSM/.github/workflows/check-dependencies.yml@lb/050226_CI_Update
+    uses: access-nri/pyISSM/.github/workflows/check-dependencies.yml@lb/060226_CI_Update
 
   # Job 2: Build ISSM
   build_issm:
-    uses: access-nri/pyISSM/.github/workflows/build-issm.yml@lb/050226_CI_Update
+    uses: access-nri/pyISSM/.github/workflows/build-issm.yml@lb/060226_CI_Update
   
   # Job 3: Build ISSM AD
   build_issm_ad:
-    uses: access-nri/pyISSM/.github/workflows/build-issm-ad.yml@lb/050226_CI_Update
+    uses: access-nri/pyISSM/.github/workflows/build-issm-ad.yml@lb/060226_CI_Update
 
   # Job 4: Run ISSM tests
   issm_tests:
     needs: build_issm
-    uses: access-nri/pyISSM/.github/workflows/issm-tests.yml@lb/050226_CI_Update
+    uses: access-nri/pyISSM/.github/workflows/issm-tests.yml@lb/060226_CI_Update
+    with:
+      build-type: "issm"
+      test-args: "--exclude 443,3015"
 
   # Job 5: Run ISSM AD tests
   issm_ad_tests:
     needs: build_issm_ad
-    uses: access-nri/pyISSM/.github/workflows/issm-ad-tests.yml@lb/050226_CI_Update
-  
+    uses: access-nri/pyISSM/.github/workflows/issm-tests.yml@lb/060226_CI_Update
+    with:
+      build-type: "issm-AD"
+      test-args: "--range: 3015:3015"

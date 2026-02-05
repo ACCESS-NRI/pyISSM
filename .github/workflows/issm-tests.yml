@@ -3,6 +3,15 @@ name: Run ISSM-pyISSM Tests
 # Trigger tests when called
 on:
   workflow_call:
+    inputs:
+      build-type:
+        description: 'Type of ISSM build to restore from the cache'
+        required: true
+        type: string
+      test-args:
+        description: 'Arguments to pass to run-tests.py'
+        required: false
+        type: string
 
 # Set ISSM_DIR environment variable
 env:
@@ -64,7 +73,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ env.ISSM_DIR }}
-          key: issm-${{ env.ISSM_RELEASE }}-python${{ matrix.python-version }}-${{ runner.os }}
+          key: ${{ inputs.build-type }}-${{ env.ISSM_RELEASE }}-python${{ matrix.python-version }}-${{ runner.os }}
       
       # Check that wrappers were installed correctly
       - name: Check wrappers
@@ -77,4 +86,4 @@ jobs:
         run: |
           source $ISSM_DIR/etc/environment.sh
           cd ./test/NightlyRuns/
-          python3 -u ../run-tests.py --exclude 443,3015
+          python3 -u ../run-tests.py ${{ inputs.test-args }}
