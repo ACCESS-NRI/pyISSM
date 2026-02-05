@@ -58,7 +58,7 @@ md.autodiff.isautodiff = False
 md.geometry.thickness[index] = h2
 md.geometry.base = -md.materials.rho_ice / md.materials.rho_water * md.geometry.thickness
 md.geometry.surface = md.geometry.base + md.geometry.thickness
-md = pyissm.model.classes.bc.set_ice_shelf_bc(md)
+md = pyissm.model.bc.set_ice_shelf_bc(md)
 
 md = pyissm.model.execute.solve(md, 'Masstransport')
 V2 = md.results.MasstransportSolution.IceVolume
