@@ -60,6 +60,7 @@ class independent(class_registry.manage_state):
         self.name = ''
         self.type = ''
         self.fos_forward_index = np.nan
+        self.fos_reverse_index = np.nan
         self.fov_forward_indices = np.array([])
         self.nods = 0
         self.min_parameters = np.nan
@@ -92,7 +93,7 @@ class independent(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, i, solution, analyses, driver):
-        if not np.isnan(self.fos_forward_index):
+        if isinstance(self.fos_forward_index, float) and not np.isnan(self.fos_forward_index):
             if self.nods == 0:
                 raise TypeError('pyissm.model.classes.independent.check_consistency: nods should be set to the size of the independent variable')
 

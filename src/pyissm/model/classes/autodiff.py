@@ -221,7 +221,7 @@ class autodiff(class_registry.manage_state):
                 index = 0
 
                 for indep in self.independents:
-                    if not np.isnan(indep.fos_forward_index):
+                    if isinstance(indep.fos_forward_index, float) and not np.isnan(indep.fos_forward_index):
                         index += indep.fos_forward_index
                         break
                     else:
@@ -238,7 +238,7 @@ class autodiff(class_registry.manage_state):
                 index = 0
 
                 for dep in self.dependents:
-                    if not np.isnan(dep.fos_reverse_index):
+                    if isinstance(dep.fos_reverse_index, float) and not np.isnan(dep.fos_reverse_index):
                         index += dep.fos_reverse_index
                         break
                     else:
@@ -253,7 +253,7 @@ class autodiff(class_registry.manage_state):
                 indices = 0
 
                 for indep in self.independents:
-                    if indep.fos_forward_index.size > 0:
+                    if isinstance(indep.fov_forward_indices, np.ndarray) and indep.fov_forward_index:
                         indices += indep.fov_forward_indices
                         break
                     else:

@@ -116,7 +116,7 @@ class dependent(class_registry.manage_state):
             if self.index < 0:
                 raise ValueError('pyissm.model.classes.dependent.check_consistency: index for massflux dependent variable must be non-negative')
             
-        if not np.isnan(self.fos_reverse_index):
+        if isinstance(self.fos_reverse_index, float) and not np.isnan(self.fos_reverse_index):
             if self.nods == 0:
                 raise ValueError('pyissm.model.classes.dependent.check_consistency: nods must be specified when fos_reverse_index is used')
 
