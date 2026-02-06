@@ -24,6 +24,7 @@ md.autodiff.independents = [indep]
 dep = pyissm.model.classes.dependent()
 dep.name = 'MaxVel'
 dep.type = 'scalar'
+dep.nods = md.mesh.numberofvertices
 dep.fos_reverse_index = 1
 md.autodiff.dependents = [dep]
 
@@ -45,6 +46,7 @@ md.autodiff.independents = [indep]
 dep = pyissm.model.classes.dependent()
 dep.name = 'MaxVel'
 dep.type = 'scalar'
+dep.nods = md.mesh.numberofvertices
 md.autodiff.dependents = [dep]
 
 md.autodiff.driver = 'fov_forward'

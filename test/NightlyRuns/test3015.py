@@ -27,6 +27,7 @@ if pyissm.tools.wrappers.IssmConfig('_HAVE_CODIPACK_'):
     dep = pyissm.model.classes.dependent()
     dep.name = 'IceVolume'
     dep.type = 'scalar'
+    dep.nods = md.mesh.numberofvertices
     dep.fos_reverse_index = index
     md.autodiff.dependents = [dep]
 
@@ -42,6 +43,7 @@ else:
     dep = pyissm.model.classes.dependent()
     dep.name = 'IceVolume'
     dep.type = 'scalar'
+    dep.nods = md.mesh.numberofvertices
     md.autodiff.dependents = [dep]
 
     md.autodiff.driver = 'fos_forward'
