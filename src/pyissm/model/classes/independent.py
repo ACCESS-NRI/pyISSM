@@ -93,7 +93,7 @@ class independent(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, i, solution, analyses, driver):
-        if isinstance(self.fos_forward_index, float) and not np.isnan(self.fos_forward_index):
+        if np.isscalar(self.fos_forward_index) and not np.isnan(self.fos_forward_index):
             if self.nods == 0:
                 raise TypeError('pyissm.model.classes.independent.check_consistency: nods should be set to the size of the independent variable')
 
