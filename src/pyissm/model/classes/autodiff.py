@@ -220,18 +220,18 @@ class autodiff(class_registry.manage_state):
             if self.driver.lower() == 'fos_forward':
                 index = 0
 
-            for indep in self.independents:
-                if not np.isnan(indep.fos_forward_index):
-                    index += indep.fos_forward_index
-                    break
-                else:
-                    if indep.type == 'scalar':
-                        index += 1
+                for indep in self.independents:
+                    if not np.isnan(indep.fos_forward_index):
+                        index += indep.fos_forward_index
+                        break
                     else:
-                        index += indep.nods
+                        if indep.type == 'scalar':
+                            index += 1
+                        else:
+                            index += indep.nods
 
-            index -= 1  # Convert to c-index numbering
-            execute.WriteData(fid, prefix, name = 'md.autodiff.fos_forward_index', data = index, format = 'Integer')
+                index -= 1  # Convert to c-index numbering
+                execute.WriteData(fid, prefix, name = 'md.autodiff.fos_forward_index', data = index, format = 'Integer')
 
             ## 4 - build index for fos_reverse driver
             if self.driver.lower() == 'fos_reverse':
