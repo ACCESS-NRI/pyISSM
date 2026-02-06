@@ -30,7 +30,7 @@ jobs:
     uses: access-nri/pyISSM/.github/workflows/issm-tests.yml@lb/050226_CI_Update
     with:
       build-type: "issm"
-      test-args: "--exclude 443,3015"
+      test-args: "--exclude 443,3015,3019"
 
   # Job 5: Run ISSM AD tests
   issm_ad_tests:
@@ -38,4 +38,4 @@ jobs:
     uses: access-nri/pyISSM/.github/workflows/issm-tests.yml@lb/050226_CI_Update
     with:
       build-type: "issm-AD"
-      test-args: "--range 3015:3015"
+      test-args: "--range 3015:3019"
