@@ -253,7 +253,7 @@ class autodiff(class_registry.manage_state):
                 indices = 0
 
                 for indep in self.independents:
-                    if indep.fos_forward_index:
+                    if indep.fos_forward_index.size > 0:
                         indices += indep.fov_forward_indices
                         break
                     else:
@@ -262,7 +262,8 @@ class autodiff(class_registry.manage_state):
                         else:
                             indices += indep.nods
 
-                index -= 1  # Convert to c-index numbering
+                if np.isscalar(indices):
+                    indices -= 1  # Convert to c-index numbering
                 execute.WriteData(fid, prefix, name = 'md.autodiff.fov_forward_indices', data = indices, format = 'IntMat', mattype = 3)
 
             ## 6 - Deal with mass fluxes

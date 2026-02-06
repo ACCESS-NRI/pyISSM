@@ -62,6 +62,7 @@ class dependent(class_registry.manage_state):
         self.name = ''
         self.fos_reverse_index = np.nan
         self.exp = ''
+        self.type = ''
         self.segments = []
         self.index = -1
         self.nods = 0
