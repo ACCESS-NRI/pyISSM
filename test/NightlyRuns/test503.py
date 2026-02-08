@@ -5,7 +5,7 @@ import pyissm
 md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Pig.exp', 20000.)
 md = pyissm.model.param.set_mask(md, '../assets/Exp/PigShelves.exp', '../assets/Exp/PigIslands.exp')
 md = pyissm.model.param.parameterize(md, '../assets/Par/Pig.py')
-md = md.extrude(3, 0.9)
+md = md.extrude(4, 0.9)
 md = pyissm.model.param.set_flow_equation(md, FS = 'all')
 md.cluster.np = 3
 
