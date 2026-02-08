@@ -28,7 +28,6 @@ jobs:
           LATEST=$(gh release view --repo access-nri/issm --json tagName -q .tagName)
           echo "ISSM_RELEASE=$LATEST" >> $GITHUB_ENV
           echo "Using release: $LATEST"
-
       # Checkout the latest release of ISSM from access-nri/issm (use ISSM_RELEASE from above) into /issm directory.
       - name: Checkout ISSM latest release
         uses: actions/checkout@v3
@@ -48,7 +47,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install numpy scipy netcdf4 matplotlib
-
       # Build ISSM (or load from existing corredponding cache)
       # NOTE: Caches are ISSM release and python version specific
       - name: Cache ISSM Build
@@ -57,7 +55,7 @@ jobs:
         with:
           path: ${{ env.ISSM_DIR }}
           key: issm-${{ env.ISSM_RELEASE }}-python${{ matrix.python-version }}-${{ runner.os }}
-        
+
       # If corredponding issm cache doesn't exist, install external packages
       - name: Install external packages
         if: ${{ steps.cache-issm-build.outputs.cache-hit != 'true' }}
@@ -67,7 +65,6 @@ jobs:
           cd $ISSM_DIR/externalpackages/m1qn3    && ./install-linux.sh
           cd $ISSM_DIR/externalpackages/petsc    && ./install-3.22-linux.sh
           cd $ISSM_DIR/externalpackages/semic    && ./install.sh
-
       # If corredponding issm cache doesn't exist, build ISSM
       - name: Build ISSM
         if: ${{ steps.cache-issm-build.outputs.cache-hit != 'true' }}
@@ -79,10 +76,8 @@ jobs:
           export F77=$FC
           export F90=$FC
           export PYTHON_ROOT=${{ env.pythonLocation }}
-
           source $ISSM_DIR/etc/environment.sh
           autoreconf -ivf
-
           ./configure \
           --prefix=${ISSM_DIR} \
           --disable-static \
@@ -102,7 +97,6 @@ jobs:
           --with-triangle-dir="${ISSM_DIR}/externalpackages/triangle/install" \
           --with-semic-dir="${ISSM_DIR}/externalpackages/semic/install" \
           --with-m1qn3-dir="${ISSM_DIR}/externalpackages/m1qn3/install"
-
       # If corredponding issm cache doesn't exist, compile ISSM
       - name: Compile ISSM
         if: ${{ steps.cache-issm-build.outputs.cache-hit != 'true' }}
@@ -115,7 +109,6 @@ jobs:
         run: |
           rm -rf issm/.git
           tar -czvf issm-${{ env.ISSM_RELEASE }}-python${{ matrix.python-version }}-${{ runner.os }}.tar.gz -C issm .
-
       # If corredponding issm cache doesn't exist, upload ISSM artifact
       - name: Upload ISSM artifact
         if: ${{ steps.cache-issm-build.outputs.cache-hit != 'true' }}
