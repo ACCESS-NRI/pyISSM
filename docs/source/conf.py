@@ -9,14 +9,15 @@
 # Imports
 import os
 import sys
+from datetime import datetime
 
 # Add the source code directory to sys.path
 sys.path.insert(0, os.path.abspath('../src'))
 
 # Define project information
 project = 'pyissm'
-copyright = '2026, ACCESS-NRI'
 author = 'ACCESS-NRI'
+copyright = f"{datetime.now().year}, {author}"
 release = 'v0.0.1.dev190126'
 
 # -- General configuration ---------------------------------------------------

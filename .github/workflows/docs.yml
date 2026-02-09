@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - main
-  # Trigger on PRs for testing
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
 
 # Define jobs
