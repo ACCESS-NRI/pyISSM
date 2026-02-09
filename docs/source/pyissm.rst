@@ -7,7 +7,7 @@ pyissm API Reference
 
 pyISSM comprises five major sub-packages:
 
-- ``pyissm.model`` - contains the central functionality, including the core ``Model`` class and all model sub-classes.
+- ``pyissm.model`` - contains the central functionality, including the core ``Model()`` class and all model sub-classes.
 - ``pyissm.tools`` - contains diverse tools for interacting with the ISSM Model object.
 - ``pyissm.data`` - contains tailored tools for interacting with external datasets, including interpolation routines.
 - ``pyissm.plot`` - contains tailored tools for visualising ISSM models.
@@ -57,7 +57,7 @@ Each ISSM model is constructed and parameterised using various model operations.
 
 Tools
 -------------------
-Utilities and helper functions for interacting with the ISSM ``Model`` object.
+Utilities and helper functions for interacting with the ISSM ``Model()`` object.
 
 .. autosummary::
    :toctree: api
