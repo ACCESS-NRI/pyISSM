@@ -709,7 +709,7 @@ def export_gridded_model(md,
         Custom variable mapping specification. If a string, it should be the path to a CSV file
         mapping model variables to output variable names and metadata. If a DataFrame, it should
         contain the same columns as the CSV file. If not provided, a default variable map will
-        be used located in `../files/default_variable_map.csv` relative to this script.
+        be used located in `../assets/default_variable_map.csv` relative to this script.
     method : str, optional
         Interpolation method used to grid model data. Specific variables override this option.
         Options are `'linear'`, `'nearest'`, etc. Default is `'linear'`.
@@ -743,7 +743,7 @@ def export_gridded_model(md,
     ## Get variable map
     # If not defined, use default map in ../files
     if variable_map is None:
-        variable_map = os.path.join(os.path.dirname(__file__), '../files/default_variable_map.csv')
+        variable_map = os.path.join(os.path.dirname(__file__), '../assets/default_variable_map.csv')
         variable_map = os.path.abspath(variable_map)
 
     # If it's a string, read the CSV file
