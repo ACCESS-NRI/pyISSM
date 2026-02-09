@@ -273,7 +273,7 @@ class Model():
         Return a sorted list of registered model class attribute names.
 
         The method inspects the instance attributes and returns those whose
-        classes are registered in :class:`pyissm.model.classes.class_registry.CLASS_REGISTRY`.
+        classes are registered in :class:`classes.class_registry.CLASS_REGISTRY`.
 
         Returns
         -------
