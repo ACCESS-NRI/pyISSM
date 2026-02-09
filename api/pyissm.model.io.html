@@ -145,7 +145,7 @@ desired output name, source location in the model, and optional unit conversions
 <li><p><strong>variable_map</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em> or </em><em>pd.DataFrame</em><em>, </em><em>optional</em>) – Custom variable mapping specification. If a string, it should be the path to a CSV file
 mapping model variables to output variable names and metadata. If a DataFrame, it should
 contain the same columns as the CSV file. If not provided, a default variable map will
-be used located in <cite>../files/default_variable_map.csv</cite> relative to this script.</p></li>
+be used located in <cite>../assets/default_variable_map.csv</cite> relative to this script.</p></li>
 <li><p><strong>method</strong> (<a class="reference internal" href="pyissm.model.classes.initialization.html#pyissm.model.classes.initialization.str" title="pyissm.model.classes.initialization.str"><em>str</em></a><em>, </em><em>optional</em>) – Interpolation method used to grid model data. Specific variables override this option.
 Options are <cite>‘linear’</cite>, <cite>‘nearest’</cite>, etc. Default is <cite>‘linear’</cite>.</p></li>
 <li><p><strong>domain_mask</strong> (<em>ndarray</em><em>, </em><em>optional</em>) – A boolean or numerical mask to apply to the output grid. If provided, values outside
