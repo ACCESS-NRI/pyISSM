@@ -32,9 +32,12 @@ jobs:
     with:
       build-type: "issm"
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
       test-args: "--range 101:999 --exclude 306,443,502,503,512"
 >>>>>>> 752d67f (modify CI.yml)
+=======
+>>>>>>> 3c12c86 (Update Tests (#113))
 
   # Job 5: Run ISSM AD tests
   issm_ad_tests:
