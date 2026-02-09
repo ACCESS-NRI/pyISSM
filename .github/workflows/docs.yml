@@ -47,9 +47,6 @@ jobs:
           mkdir -p docs/source/_static/tutorials
           cp -r tutorials/* docs/source/_static/tutorials/
 
-      - name: Debug tutorials directory
-        run: ls -R docs/source/tutorials
-        
         # Step 6: Build the HTML documentation
       - name: Build HTML
         run: sphinx-build -b html docs/source/ docs/_build/html
