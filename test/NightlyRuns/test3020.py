@@ -17,12 +17,12 @@ md.stressbalance.restol = 0.000001
 
 #setup autodiff parameters
 index = 1  #this is the scalar component we are checking against
-md.autodiff.independents = pyissm.model.classes.autodiff.independent()
+md.autodiff.independents = pyissm.model.classes.independent()
 md.autodiff.independents.name = md.geometry.thickness
 md.autodiff.independents.type = 'vertex'
 md.autodiff.independents.nods = md.mesh.numberofvertices
 md.autodiff.independents.fos_forward_index = index
-md.autodiff.dependents = pyissm.model.classes.autodiff.dependent()
+md.autodiff.dependents = pyissm.model.classes.dependent()
 md.autodiff.dependents.name = ['IceVolume', 'MaxVel']
 md.autodiff.dependents.type = ['scalar', 'scalar']
 md.autodiff.driver = 'fos_forward'
