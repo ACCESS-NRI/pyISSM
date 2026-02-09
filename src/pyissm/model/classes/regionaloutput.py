@@ -56,7 +56,7 @@ class regionaloutput(class_registry.manage_state):
         self.definitionstring = ''
         self.outputnamestring = ''
         self.mask = np.nan
-        self.maskexpstring = ''
+        self.maskexpstring = None
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -98,7 +98,7 @@ class regionaloutput(class_registry.manage_state):
         if not isinstance(self.outputnamestring, str):
             raise RuntimeError("pyissm.model.classes.regionaloutput.check_consistency: 'outputnamestring' field should be a string!")
 
-        if len(self.maskexpstring) > 0:
+        if self.maskexpstring is not None:
             if not os.path.isfile(self.maskexpstring):
                 raise RuntimeError("pyissm.model.classes.regionaloutput.check_consistency: file name for mask exp does not point to a legitimate file on disk!")
             else:
@@ -133,17 +133,18 @@ class regionaloutput(class_registry.manage_state):
         None
         """
 
-        ## Create mask from exp
-        if tools.wrappers.check_wrappers_installed():
-            self.mask = tools.wrappers.ContourToMesh(index = md.mesh.elements,
-                                                    x = md.mesh.x,
-                                                    y = md.mesh.y,
-                                                    contour_name = self.maskexpstring,
-                                                    interp_type = 'node',
-                                                    edge_value = 1)
-        else:
-            ## If wrappers are not installed, raise error as mask is required to marshall class
-            raise RuntimeError('regionaloutput.marshall_class: Python wrappers not installed. Unable to compute regional mask, required to marshall class.')
+        ## Create mask from exp if maskexpstring is defined
+        if self.maskexpstring is not None:
+            if tools.wrappers.check_wrappers_installed():
+                self.mask = tools.wrappers.ContourToMesh(index = md.mesh.elements,
+                                                        x = md.mesh.x,
+                                                        y = md.mesh.y,
+                                                        contour_name = self.maskexpstring,
+                                                        interp_type = 'node',
+                                                        edge_value = 1)
+            else:
+                ## If wrappers are not installed, raise error as mask is required to marshall class
+                raise RuntimeError('regionaloutput.marshall_class: Python wrappers not installed. Unable to compute regional mask, required to marshall class.')
 
         ## Write fields
         execute.WriteData(fid, prefix, data = self.name, name = 'md.regionaloutput.name', format = 'String')

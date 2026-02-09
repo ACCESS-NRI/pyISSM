@@ -82,8 +82,8 @@ class groundingline(class_registry.manage_state):
     def check_consistency(self, md, solution, analyses):
         class_utils.check_field(md, fieldname = 'groundingline.migration', values = ['None', 'SubelementMigration', 'AggressiveMigration', 'SoftMigration', 'Contact', 'GroundingOnly'])
         class_utils.check_field(md, fieldname = 'groundingline.friction_interpolation', values = ['SubelementFriction1', 'SubelementFriction2', 'NoFrictionOnPartiallyFloating'])
-        class_utils.check_field(md, fieldname = 'groundingline.melt_interpolation', values = ['SubelementMelt1', 'SubelementMelt2', 'IntrusionMelt', 'NoMeltOnPartiallyFloating', 'FullMeltOnPartiallyFloating'])
-        class_utils.check_field(md, fieldname = 'groundingline.intrusion_distance', ge = 0)
+        class_utils.check_field(md, fieldname = 'groundingline.melt_interpolation', values = ['NoMeltOnPartiallyFloating', 'FullMeltOnPartiallyFloating', 'SubelementMelt1', 'SubelementMelt2', 'IntrusionMelt'])
+        class_utils.check_field(md, fieldname = 'groundingline.intrusion_distance', ge = 0, allow_nan = False, allow_inf = False)
         class_utils.check_field(md, fieldname = 'groundingline.requested_outputs', string_list = True)
 
         if(not self.migration == 'None' and md.transient.isgroundingline and solution == 'TransientSolution'):
@@ -164,5 +164,5 @@ class groundingline(class_registry.manage_state):
             execute.WriteData(fid, prefix, name = 'md.groundingline.' + fieldname, data = getattr(self, fieldname), format = 'String')
         
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'intrusion_distance', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'intrusion_distance', format = 'DoubleMat', mattype = 1)
         execute.WriteData(fid, prefix, name = 'md.groundingline.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
