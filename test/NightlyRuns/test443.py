@@ -44,7 +44,7 @@ md.outputdefinition.definitions = [pyissm.model.classes.regionaloutput(name = 'G
 
 md = md.extrude(3, 1.)
 md2 = copy.deepcopy(md)
-md2.collapse()
+md2 = md2.collapse()
 md.groundingline.intrusion_distance = np.zeros(md.mesh.numberofvertices, )
 
 # Execute model
