@@ -38,14 +38,11 @@ jobs:
       - name: Install dependencies
         run: |
           pip install sphinx sphinx-rtd-theme sphinx-autodoc-typehints myst-nb
-       
-      #   # Step 5: Generate .rst files from docstrings 
-      # - name: Generate .rst files
-      #   run: sphinx-apidoc -f -o docs/source/ src/pyissm/
 
-      # Step 5: Copy tutorials to be download-able
-      - name: Move tutorials to _static
+      # Step 5: Copy tutorials to be rendered (docs/source/tutorials/) and download-able (docs/source/_static/tutorials/)
+      - name: Copy tutorials
         run: |
+          cp -r tutorials/* docs/source/tutorials/*
           mkdir -p docs/source/_static/tutorials
           cp -r docs/source/tutorials/* docs/source/_static/tutorials/
         
@@ -55,7 +52,7 @@ jobs:
 
         # Step 6: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e #v4.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: docs/_build/html

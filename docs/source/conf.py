@@ -35,6 +35,9 @@ myst_enable_extensions = [
     "html_image"
 ]
 
+# Do not execute notebooks when generating Docs.
+nb_execution_mode = "off"
+
 # Register suffixes
 source_suffix = {
     ".rst": "restructuredtext",
