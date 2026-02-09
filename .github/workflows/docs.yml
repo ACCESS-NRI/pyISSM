@@ -42,6 +42,7 @@ jobs:
       # Step 5: Copy tutorials to be rendered (docs/source/tutorials/) and download-able (docs/source/_static/tutorials/)
       - name: Copy tutorials
         run: |
+          mkdir -p docs/source/tutorials
           cp -r tutorials/* docs/source/tutorials/*
           mkdir -p docs/source/_static/tutorials
           cp -r docs/source/tutorials/* docs/source/_static/tutorials/
