@@ -14,5 +14,8 @@
 
 We welcome any feedback and ideas! Let us know by submitting [issues on GitHub](https://github.com/ACCESS-NRI/pyISSM/issues) or [joining our community](https://forum.access-hive.org.au/c/cryosphere/34).
 
+## Documentation
+Read the [documentation here](https://access-nri.github.io/pyISSM/)
+
 ## License
 [![License](https://img.shields.io/github/license/ACCESS-NRI/pyissm)](https://github.com/ACCESS-NRI/pyISSM/blob/main/LICENSE)

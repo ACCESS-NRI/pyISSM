@@ -277,7 +277,7 @@ class Model():
 
         Returns
         -------
-        list of str
+        :class:`list` of :class:`str`
             Sorted list of attribute names corresponding to registered model classes.
 
         Examples
@@ -346,6 +346,7 @@ class Model():
         Raises
         ------
         :exc:`RuntimeError`
+
             - If the extracted model is empty (no elements found in the specified area).
 
         Examples
@@ -661,6 +662,7 @@ class Model():
         Raises
         ------
         :exc:`TypeError`
+
             - If ``extrusion_exponent`` or ``lower_exponent/upper_exponent`` <= 0.
             - If ``coefficients`` contain values outside [0, 1] range.
             - If ``num_layers`` < 2.
@@ -906,6 +908,7 @@ class Model():
         Raises
         ------
         :exc:`Exception`
+
             - If the model does not contain a 3D mesh.
             - If an unsupported friction type is encountered.
 
