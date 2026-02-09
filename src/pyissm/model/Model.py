@@ -1,118 +1,135 @@
 """
-Primary class for all ISSM model interactions.
+Primary ISSM model class and associated methods.
 """
 import numpy as np
 import copy
 from pyissm.model import classes, mesh, param
 from pyissm.tools import wrappers
 
-import sys
-
 class Model():
     """
     ISSM Model Class.
 
-    This class defines a high-level container for all components of an ISSM (Ice Sheet System Model) model.
-    It initializes a collection of model components, each of which may store inputs, settings, and results related
-    to various aspects of the ice sheet simulation.
 
-    Parameters
-    ----------
-    None.
+    High-level container for all components of an Ice-sheet and Sea-level System Model (ISSM)
+    model. Initializes a collection of model components, each of which may store inputs,
+    settings, and results related to ice sheet simulation.
 
     Attributes
     ----------
-    mesh : classes.mesh.mesh2d()
+    mesh : :class:`classes.mesh.mesh2d`
         Mesh properties.
-    mask : classes.mask.mask2d()
+    mask : :class:`classes.mask`
         Defines grounded and floating elements.
-    geometry : classes.geometry.geometry2d()
+    geometry : :class:`classes.geometry`
         Surface elevation, bedrock topography, ice thickness, etc.
-    constants : classes.constants()
+    constants : :class:`classes.constants`
         Physical constants.
-    smb : classes.smb.default()
+    smb : :class:`classes.smb.default`
         Surface mass balance.
-    basalforcings : classes.basalforcings.default()
+    basalforcings : :class:`classes.basalforcings.default`
         Bed forcings.
-    materials : classes.materials.ice()
+    materials : :class:`classes.materials.ice`
         Material properties.
-    damage : classes.damage()
+    damage : :class:`classes.damage`
         Damage propagation laws.
-    friction : classes.friction.default()
+    friction : :class:`classes.friction.default`
         Basal friction / drag properties.
-    flowequation : classes.flowequation()
+    flowequation : :class:`classes.flowequation`
         Flow equations.
-    timestepping : classes.timestepping.default()
+    timestepping : :class:`classes.timestepping.default`
         Timestepping for transient models.
-    initialization : classes.initialization()
+    initialization : :class:`classes.initialization`
         Initial guess / state.
-    rifts : classes.rifts()
+    rifts : :class:`classes.rifts`
         Rifts properties.
-    solidearth : classes.solidearth.earth()
+    solidearth : :class:`classes.solidearth.earth`
         Solidearth inputs and settings.
-    dsl : classes.dsl.default()
+    dsl : :class:`classes.dsl.default`
         Dynamic sea level.
-    debug : classes.debug()
+    debug : :class:`classes.debug`
         Debugging tools (valgrind, gprof).
-    verbose : classes.verbose()
+    verbose : :class:`classes.verbose`
         Verbosity level in solve.
-    settings : classes.issmsettings()
+    settings : :class:`classes.issmsettings`
         Settings properties.
-    toolkits : None
-        PETSc options for each solution.
-    cluster : None
+    toolkits : :class:`classes.toolkits`
+        Toolkit options for each solution.
+    cluster : :class:`classes.cluster.generic`
         Cluster parameters (number of CPUs, etc.).
-    balancethickness : classes.balancethickness()
+    balancethickness : :class:`classes.balancethickness`
         Parameters for balancethickness solution.
-    stressbalance : classes.stressbalance()
+    stressbalance : :class:`classes.stressbalance`
         Parameters for stressbalance solution.
-    groundingline : classes.groundingline()
+    groundingline : :class:`classes.groundingline`
         Parameters for groundingline solution.
-    hydrology : classes.hydrology.shreve()
+    hydrology : :class:`classes.hydrology.shreve`
         Parameters for hydrology solution.
-    masstransport : classes.masstransport()
+    masstransport : :class:`classes.masstransport`
         Parameters for masstransport solution.
-    thermal : classes.thermal()
+    thermal : :class:`classes.thermal`
         Parameters for thermal solution.
-    steadystate : classes.steadystate()
+    steadystate : :class:`classes.steadystate`
         Parameters for steadystate solution.
-    transient : classes.transient()
+    transient : :class:`classes.transient`
         Parameters for transient solution.
-    levelset : classes.levelset()
+    levelset : :class:`classes.levelset`
         Parameters for moving boundaries (level-set method).
-    calving : classes.calving.default()
+    calving : :class:`classes.calving.default`
         Parameters for calving.
-    frontalforcings : classes.frontalforcings.default()
+    frontalforcings : :class:`classes.frontalforcings.default`
         Parameters for frontalforcings.
-    love : classes.love.default()
+    love : :class:`classes.love.default`
         Parameters for love solution.
-    esa : classes.esa()
+    esa : :class:`classes.esa`
         Parameters for elastic adjustment solution.
-    sampling : classes.sampling()
+    sampling : :class:`classes.sampling`
         Parameters for stochastic sampler.
-    autodiff : classes.autodiff()
+    autodiff : :class:`classes.autodiff`
         Automatic differentiation parameters.
-    inversion : classes.inversion.default()
+    inversion : :class:`classes.inversion.default`
         Parameters for inverse methods.
-    qmu : classes.qmu.default()
+    qmu : :class:`classes.qmu.default`
         Dakota properties.
-    amr : classes.amr()
+    amr : :class:`classes.amr`
         Adaptive mesh refinement properties.
-    results : classes.results.default()
+    results : :class:`classes.results.default`
         Model results.
-    outputdefinition : classes.outputdefinition()
+    outputdefinition : :class:`classes.outputdefinition`
         Output definition.
-    radaroverlay : classes.radaroverlay()
+    radaroverlay : :class:`classes.radaroverlay`
         Radar image for plot overlay.
-    miscellaneous : classes.miscellaneous()
+    miscellaneous : :class:`classes.miscellaneous`
         Miscellaneous fields.
-    stochasticforcing : classes.stochasticforcing()
+    stochasticforcing : :class:`classes.stochasticforcing`
         Stochasticity applied to model forcings.
+
+    Examples
+    ----------
+    >>> md = pyissm.model.Model()
+    >>> md.mesh
+    <mesh object>
+    >>> md.mask
+    <mask object>
+    >>> md.geometry
+    <geometry object>
     """
 
     def __init__(self):
+        """
+        Initialize default sub-classes and parameterizations for the ISSM model object.
 
-        ## Initialise all as None
+        This constructor initializes all default model components and their associated
+        classes, setting up the complete structure for an Ice-sheet and Sea-level System
+        Model (ISSM) simulation.
+
+        Notes
+        -----
+        All attributes are initialized with their default class implementations.
+        See the class docstring for detailed descriptions of each attribute.
+        """
+
+        ## Initialise all default fields
         self.mesh = classes.mesh.mesh2d()
         self.mask = classes.mask()
         self.geometry = classes.geometry()
@@ -165,7 +182,7 @@ class Model():
         s = '%19s %-23s %s' % ('ISSM Model Class', '', '')
         s = '%s\n%s' % (s, '%19s %-23s %s' % ('', '', ''))
         s = '%s\n%s' % (s, '%19s:  %-23s %s' % ('mesh', 'mesh properties', ''))
-        s = '%s\n%s' % (s, '%19s:  %-23s %s' % ('mask', 'defines grounded and gloating elements', ''))
+        s = '%s\n%s' % (s, '%19s:  %-23s %s' % ('mask', 'defines grounded and floating elements', ''))
         s = '%s\n%s' % (s, '%19s:  %-23s %s' % ('geometry', 'surface elevation, bedrock topography, ice thickness, ...', ''))
         s = '%s\n%s' % (s, '%19s:  %-23s %s' % ('constants', 'physical constants', ''))
         s = '%s\n%s' % (s, '%19s:  %-23s %s' % ('smb', 'surface mass balance', ''))
@@ -189,7 +206,7 @@ class Model():
         s = '%s\n%s' % (s, '%19s:  %-23s %s' % ('groundingline', 'parameters for groundingline solution', ''))
         s = '%s\n%s' % (s, '%19s:  %-23s %s' % ('hydrology', 'parameters for hydrology solution', ''))
         s = '%s\n%s' % (s, '%19s:  %-23s %s' % ('masstransport', 'parameters for masstransport solution', ''))
-        s = '%s\n%s' % (s, '%19s:  %-23s %s' % ('thermal', 'parameters fo thermal solution', ''))
+        s = '%s\n%s' % (s, '%19s:  %-23s %s' % ('thermal', 'parameters for thermal solution', ''))
         s = '%s\n%s' % (s, '%19s:  %-23s %s' % ('steadystate', 'parameters for steadystate solution', ''))
         s = '%s\n%s' % (s, '%19s:  %-23s %s' % ('transient', 'parameters for transient solution', ''))
         s = '%s\n%s' % (s, '%19s:  %-23s %s' % ('levelset', 'parameters for moving boundaries (level-set method)', ''))
@@ -203,7 +220,7 @@ class Model():
         s = '%s\n%s' % (s, '%19s:  %-23s %s' % ('qmu', 'Dakota properties', ''))
         s = '%s\n%s' % (s, '%19s:  %-23s %s' % ('amr', 'adaptive mesh refinement properties', ''))
         s = '%s\n%s' % (s, '%19s:  %-23s %s' % ('outputdefinition', 'output definition', ''))
-        s = '%s\n%s' % (s, '%19s:  %-23s %s' % ('results', 'modelresults', ''))
+        s = '%s\n%s' % (s, '%19s:  %-23s %s' % ('results', 'model results', ''))
         s = '%s\n%s' % (s, '%19s:  %-23s %s' % ('radaroverlay', 'radar image for plot overlay', ''))
         s = '%s\n%s' % (s, '%19s:  %-23s %s' % ('miscellaneous', 'miscellaneous fields', ''))
         s = '%s\n%s' % (s, '%19s:  %-23s %s' % ('stochasticforcing', 'stochasticity applied to model forcings', ''))
@@ -214,53 +231,64 @@ class Model():
         s = 'ISSM Model Class'
         return s
     
+    # Model consistency check_message
     def check_message(self, string):
         """
         Notify about a model consistency error, update internal state, and return the instance.
 
         This method prints a formatted consistency error message to standard output,
-        marks the instance as inconsistent by setting ``self.private.isconsistent``
-        to ``False``, and returns the instance to allow for method chaining.
+        marks the instance as inconsistent by setting ``self.private.isconsistent``,
+        and returns the instance to allow for method chaining.
 
         Parameters
         ----------
-        string : str
+        string : :class:`str`
             Human-readable description of the consistency error. This will be inserted
             into the printed message: ``Model consistency error: {string}``.
 
         Returns
         -------
         self
-            The same instance on which the method was called, enabling fluent/chained
-            calls.
+            The same instance on which the method was called, enabling fluent/chained calls.
 
         Notes
         -----
-        This method has the side effect of mutating the instance state (``self.private.isconsistent``),
-        and it performs output via ``print``. It does not raise exceptions.
+        This method mutates the instance state (``self.private.isconsistent``)
+        and prints output. It does not raise exceptions.
 
         Examples
         --------
         >>> obj.check_message("missing parameter")
-        Model consistency error: missing parameter
+            Model consistency error: missing parameter
         >>> obj.private.isconsistent
-        False
+            False
         """
         print(f'Model consistency error: {string}')
         self.private.isconsistent = False
         return self
     
+    # Get all sub-class names within a model
     def model_class_names(self):
         """
         Return a sorted list of registered model class attribute names.
 
         The method inspects the instance attributes and returns those whose
-        classes are registered in ``classes.class_registry.CLASS_REGISTRY``.
+        classes are registered in :class:`classes.class_registry.CLASS_REGISTRY`.
 
         Returns
         -------
-        list of str
+        :class:`list` of :class:`str`
             Sorted list of attribute names corresponding to registered model classes.
+
+        Examples
+        ----------
+        >>> md.model_class_names()
+        ['amr', 'autodiff', 'balancethickness', 'basalforcings', 'calving', 'cluster', 'constants',
+        'damage', 'debris', 'debug', 'dsl', 'esa', 'flowequation', 'friction', 'frontalforcings',
+        'geometry', 'groundingline', 'hydrology', 'initialization', 'inversion', 'levelset', 'love',
+        'mask', 'masstransport', 'materials', 'mesh', 'miscellaneous', 'outputdefinition', 'private',
+        'qmu', 'radaroverlay', 'results', 'rifts', 'sampling', 'settings', 'smb', 'solidearth', 'steadystate',
+        'stochasticforcing', 'stressbalance', 'thermal', 'timestepping', 'toolkits', 'transient', 'verbose']
         """
         registered_classes = set(classes.class_registry.CLASS_REGISTRY.values())
         names = [
@@ -287,27 +315,29 @@ class Model():
         be considered as the entire domain.
 
         The function performs the following operations:
-        - Flags elements inside the specified area
-        - Removes elements with all three nodes in excluded regions
-        - Renumbers elements and nodes to maintain consistency
-        - Updates mesh connectivity and vertex information
-        - Adjusts boundary conditions at extraction boundaries
-        - Handles 2D/3D mesh types and their specific properties
-        - Processes results and output definitions if present
+
+            - Flags elements inside the specified area
+            - Removes elements with all three nodes in excluded regions
+            - Renumbers elements and nodes to maintain consistency
+            - Updates mesh connectivity and vertex information
+            - Adjusts boundary conditions at extraction boundaries
+            - Handles 2D/3D mesh types and their specific properties
+            - Processes results and output definitions if present
 
         Parameters
         ----------
-        area : str or array_like
+        area : :class:`str` or ``array_like``
             Domain specification. Can be:
-            - A domain file path (argus type, .exp extension)
-            - A domain file path prefixed with '~' to invert the domain
-            - An array of element flags (boolean or integer)
-            - An empty string '' for empty domain
-            - The string 'all' for entire domain
+
+                - A domain file path (:class:`str` - Argus file time, with .exp extension)
+                - A domain file path prefixed with '~' to invert the domain
+                - An array of element flags (:class:`bool` or :class:`int`)
+                - An empty string '' for empty domain
+                - The string 'all' for entire domain
 
         Returns
         -------
-        md2 : Model
+        md2 : :class:`pyissm.model.Model`
             Extracted submodel containing only the elements and nodes within the 
             specified area. The model includes updated mesh properties, renumbered 
             elements and nodes, adjusted boundary conditions, and extracted results 
@@ -315,19 +345,20 @@ class Model():
 
         Raises
         ------
-        RuntimeError
-            If the extracted model is empty (no elements found in the specified area).
+        :exc:`RuntimeError`
 
-        See Also
-        --------
-        extrude : Extrude model in vertical direction
-        collapse : Collapse model layers
+            - If the extracted model is empty (no elements found in the specified area).
 
         Examples
         --------
-        >>> md2 = extract(md, 'Domain.exp')
-        >>> md3 = extract(md, '~Domain.exp')  # Extract outside domain
-        >>> md4 = extract(md, flag_array)     # Extract based on flag array
+        >>> md2 = md.extract('Domain.exp')
+        >>> md3 = md.extract('~Domain.exp')  # Extract outside domain
+        >>> md4 = md.extract(flag_array)     # Extract based on flag array
+
+        See Also
+        --------
+        :meth:`pyissm.model.Model.extrude` : Extrude model in vertical direction
+        :meth:`pyissm.model.Model.collapse` : Collapse model layers
         """
 
         ## NOTE: This function is taken directly from $ISSM_DIR/src/m/classes/model.py with only minor modifications for pyISSM integration.
@@ -605,50 +636,49 @@ class Model():
 
         Parameters
         ----------
-        num_layers : int, optional
+        num_layers : :class:`int`, optional
             Number of vertical layers to create. Required when using polynomial 
             extrusion (single or dual exponent). Must be at least 2.
-        extrusion_exponent : float, optional
+        extrusion_exponent : :class:`float`, optional
             Single polynomial exponent for uniform vertical distribution. Must be >= 0.
             When specified, creates extrusion list using this exponent.
-        lower_exponent : float, optional
+        lower_exponent : :class:`float`, optional
             Polynomial exponent for the lower part of the mesh. Must be >= 0.
-            Used in conjunction with `upper_exponent` for non-uniform vertical distribution.
-        upper_exponent : float, optional
+            Used in conjunction with ``upper_exponent`` for non-uniform vertical distribution.
+        upper_exponent : :class:`float`, optional
             Polynomial exponent for the upper part of the mesh. Must be >= 0.
-            Used in conjunction with `lower_exponent` for non-uniform vertical distribution.
-        coefficients : array_like, optional
+            Used in conjunction with ``lower_exponent`` for non-uniform vertical distribution.
+        coefficients : ``array_like``, optional
             List of coefficients between 0 and 1 defining custom vertical distribution.
             Automatically includes 0 and 1 if not present. Alternative to polynomial extrusion.
 
         Returns
         -------
-        md : Model
+        md : :class:`pyissm.model.Model`
             The same model instance with updated 3D mesh and extruded model fields.
             Original 2D mesh is preserved in ``mesh.x2d``, ``mesh.y2d``, 
             ``mesh.elements2d``, etc.
 
         Raises
         ------
-        TypeError
-            If extrusion_exponent or lower_exponent/upper_exponent <= 0.
-        TypeError
-            If coefficients contain values outside [0, 1] range.
-        TypeError
-            If num_layers < 2.
-        TypeError
-            If mesh is already 3D (extrude called more than once).
+        :exc:`TypeError`
+
+            - If ``extrusion_exponent`` or ``lower_exponent/upper_exponent`` <= 0.
+            - If ``coefficients`` contain values outside [0, 1] range.
+            - If ``num_layers`` < 2.
+            - If mesh is already 3D (extrude called more than once).
 
         Notes
         -----
         The function performs the following operations:
-        - Creates 3D prism elements from 2D elements
-        - Distributes nodes vertically between bed and surface according to extrusion parameters
-        - Maintains vertex and element numbering relationships via ``lowervertex``, 
-          ``uppervertex``, ``lowerelements``, and ``upperelements``
-        - Projects all 2D model fields to 3D using ``extrude`` methods
-        - Updates mesh connectivity and boundary information
-        - Preserves the original 2D mesh information for reference
+
+            - Creates 3D prism elements from 2D elements
+            - Distributes nodes vertically between bed and surface according to extrusion parameters
+            - Maintains vertex and element numbering relationships via ``lowervertex``, 
+            ``uppervertex``, ``lowerelements``, and ``upperelements``
+            - Projects all 2D model fields to 3D using ``extrude`` methods
+            - Updates mesh connectivity and boundary information
+            - Preserves the original 2D mesh information for reference
 
         Examples
         --------
@@ -663,6 +693,11 @@ class Model():
         Custom coefficients (specific layer distribution):
 
         >>> md = md.extrude(coefficients=[0, 0.2, 0.5, 0.7, 0.9, 0.95, 1])
+
+        See Also
+        --------
+        :meth:`pyissm.model.Model.extract` : Extract sub-model from larger domain
+        :meth:`pyissm.model.Model.collapse` : Collapse model layers
         """
 
         ## NOTE: This function is taken directly from $ISSM_DIR/src/m/classes/model.py with only minor modifications for pyISSM integration.
@@ -852,33 +887,45 @@ class Model():
         """
         Collapse a 3D mesh into a 2D mesh.
 
-        This routine collapses a 3D model into a 2D model and collapses all the
-        fields of the 3D model by taking their depth-averaged values.
+        This method collapses a 3D model into a 2D model by depth-averaging all fields.
+        The original 3D mesh information is preserved, but the model is modified in-place.
 
-        The function performs the following operations:
-        - Projects 3D friction coefficients to 2D (at bedrock level)
-        - Averages or projects 3D observations and initialization fields to 2D
-        - Collapses boundary conditions from 3D to 2D
-        - Depth-averages velocity and material properties
-        - Projects 3D results and output definitions to 2D
-        - Rebuilds mesh connectivity for the 2D mesh
+        The following operations are performed:
+
+            - Projects 3D friction coefficients to 2D (at bedrock level)
+            - Averages or projects 3D observations and initialization fields to 2D
+            - Collapses boundary conditions from 3D to 2D
+            - Depth-averages velocity and material properties
+            - Projects 3D results and output definitions to 2D
+            - Rebuilds mesh connectivity for the 2D mesh
 
         Returns
         -------
-        md : Model
+        md : :class:`pyissm.model.Model`
             The same model instance with updated 2D mesh and collapsed fields.
             Original 3D mesh information is preserved.
 
         Raises
         ------
-        Exception
-            If the model does not contain a 3D mesh.
-        Exception
-            If an unsupported friction type is encountered.
+        :exc:`Exception`
+
+            - If the model does not contain a 3D mesh.
+            - If an unsupported friction type is encountered.
+
+        Notes
+        -----
+        This method modifies the model in-place. All 3D fields are projected or
+        averaged to create 2D equivalents.
 
         Examples
         --------
-        >>> md = md.collapse()
+        >>> md = pyissm.model.Model()
+        >>> md.collapse()
+
+        See Also
+        --------
+        :meth:`pyissm.model.Model.extract` : Extract sub-model from larger domain
+        :meth:`pyissm.model.Model.extrude` : Extrude model in vertical direction 
         """
 
         ## NOTE: This function is taken directly from $ISSM_DIR/src/m/classes/model.py with only minor modifications for pyISSM integration.
