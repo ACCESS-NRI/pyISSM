@@ -31,6 +31,10 @@ jobs:
     uses: access-nri/pyISSM/.github/workflows/issm-tests.yml@main
     with:
       build-type: "issm"
+<<<<<<< HEAD
+=======
+      test-args: "--range 101:999 --exclude 306,443,502,503,512"
+>>>>>>> 752d67f (modify CI.yml)
 
   # Job 5: Run ISSM AD tests
   issm_ad_tests:
@@ -38,4 +42,4 @@ jobs:
     uses: access-nri/pyISSM/.github/workflows/issm-tests.yml@main
     with:
       build-type: "issm-AD"
-      test-args: "--range 9999:9999"
+      test-args: "--range 3001:3999"
