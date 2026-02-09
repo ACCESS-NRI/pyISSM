@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 from . import analysis, data, plot, model, tools
+=======
+from . import analysis, data, learn, plot, model, tools
+>>>>>>> 3d54be9 (Initial documentation Infrastructure (#88))
 import importlib.metadata
 
 try:
