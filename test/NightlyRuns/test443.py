@@ -25,8 +25,7 @@ md = pyissm.model.param.set_flow_equation(md, SSA = 'all')
 md.cluster.np = 3
 
 regionalmask = np.zeros((md.mesh.numberofvertices))
-inflag = pyissm.tools.wrappers.ContourToMesh(md.mesh.elements, md.mesh.x, md.mesh.y, '../assets/Exp/SquareHalfRight.exp', 'node', 1)
-regionalmask[np.nonzero(inflag)[0]] = 1.
+regionalmask = pyissm.tools.wrappers.ContourToMesh(md.mesh.elements, md.mesh.x, md.mesh.y, '../assets/Exp/SquareHalfRight.exp', 'node', 1)
 md.transient.requested_outputs = ['default', 'GroundedArea1', 'FloatingArea1', 'TotalFloatingBmb1', 'TotalGroundedBmb1', 'TotalSmb1', 'IceMass1', 'IceVolume1', 'IceVolumeAboveFloatation1', 'IceVolumeAboveFloatation2', 'IceVolumeAboveFloatation', 'IceMassScaled1', 'IceVolumeScaled1', 'IceVolumeAboveFloatationScaled1', 'IceVolumeAboveFloatationScaled2']
 
 md.outputdefinition.definitions = [pyissm.model.classes.regionaloutput(name = 'GroundedArea1', outputnamestring = 'GroundedArea', mask = regionalmask, definitionstring = 'Outputdefinition1'),
@@ -45,7 +44,8 @@ md.outputdefinition.definitions = [pyissm.model.classes.regionaloutput(name = 'G
 
 md = md.extrude(3, 1.)
 md2 = copy.deepcopy(md)
-md2.collapse()
+md2 = md2.collapse()
+md.groundingline.intrusion_distance = np.zeros(md.mesh.numberofvertices, )
 
 # Execute model
 md = pyissm.model.execute.solve(md, 'Transient')

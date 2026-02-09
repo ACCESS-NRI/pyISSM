@@ -1,20 +1,24 @@
 name: Run ISSM-pyISSM Tests
 
-# Trigger tests on push to main, pull requests (any branch), and manual dispatch
+# Trigger tests when called
 on:
-  push:
-    branches:
-      - main
-  # pull_request:
-  workflow_dispatch:
   workflow_call:
+    inputs:
+      build-type:
+        description: 'Type of ISSM build to restore from the cache'
+        required: true
+        type: string
+      test-args:
+        description: 'Arguments to pass to run-tests.py'
+        required: false
+        type: string
 
 # Set ISSM_DIR environment variable
 env:
   ISSM_DIR: ${{ github.workspace }}/issm
 
 jobs:
-  build:
+  test:
     name: Run ISSM-pyISSM Tests
     runs-on: ubuntu-latest
     strategy:
@@ -38,11 +42,12 @@ jobs:
           echo "Using release: $LATEST"
 
       # Checkout the latest release of ISSM from access-nri/issm (use ISSM_RELEASE from above) into /issm directory.
+      # This is needed to access archive files for testing
       - name: Checkout ISSM latest release
         uses: actions/checkout@v3
         with:
           repository: access-nri/issm
-          ref: ${{ env.ISSM_RELEASE }} # Build from latest release
+          ref: ${{ env.ISSM_RELEASE }}
           path: issm
 
       # Set up python (for given version[s])
@@ -62,80 +67,13 @@ jobs:
         run: |
           pip install --upgrade --force-reinstall --editable .
 
-      # Build ISSM (or load from existing corredponding cache)
+      # Load from existing corredponding cache)
       # NOTE: Caches are ISSM release and python version specific
-      - name: Cache ISSM Build
+      - name: Restore ISSM Cache
         uses: actions/cache@v3
-        id: cache-issm-build
         with:
           path: ${{ env.ISSM_DIR }}
-          key: issm-${{ env.ISSM_RELEASE }}-python${{ matrix.python-version }}-${{ runner.os }}
-        
-      # If corredponding issm cache doesn't exist, install external packages
-      - name: Install external packages
-        if: ${{ steps.cache-issm-build.outputs.cache-hit != 'true' }}
-        run: |
-          source $ISSM_DIR/etc/environment.sh
-          cd $ISSM_DIR/externalpackages/triangle && ./install-linux.sh
-          cd $ISSM_DIR/externalpackages/m1qn3    && ./install-linux.sh
-          cd $ISSM_DIR/externalpackages/petsc    && ./install-3.22-linux.sh
-          cd $ISSM_DIR/externalpackages/semic    && ./install.sh
-
-      # If corredponding issm cache doesn't exist, build ISSM
-      - name: Build ISSM
-        if: ${{ steps.cache-issm-build.outputs.cache-hit != 'true' }}
-        working-directory: issm
-        run: |
-          export CC=$ISSM_DIR/externalpackages/petsc/install/bin/mpicc
-          export CXX=$ISSM_DIR/externalpackages/petsc/install/bin/mpicxx
-          export FC=$ISSM_DIR/externalpackages/petsc/install/bin/mpifort
-          export F77=$FC
-          export F90=$FC
-          export PYTHON_ROOT=${{ env.pythonLocation }}
-
-          source $ISSM_DIR/etc/environment.sh
-          autoreconf -ivf
-
-          ./configure \
-          --prefix=${ISSM_DIR} \
-          --disable-static \
-          --enable-development \
-          --enable-debugging \
-          --with-numthreads=4 \
-          --with-python=${PYTHON_ROOT}/bin/python3 \
-          --with-fortran-lib="-L/usr/lib/x86_64-linux-gnu -lgfortran" \
-          --with-mpi-include="${ISSM_DIR}/externalpackages/petsc/install/include" \
-          --with-mpi-libflags="-L${ISSM_DIR}/externalpackages/petsc/install/lib -lmpi -lmpicxx -lmpifort" \
-          --with-petsc-dir="${ISSM_DIR}/externalpackages/petsc/install" \
-          --with-blas-lapack-dir="${ISSM_DIR}/externalpackages/petsc/install" \
-          --with-metis-dir="${ISSM_DIR}/externalpackages/petsc/install" \
-          --with-parmetis-dir="${ISSM_DIR}/externalpackages/petsc/install" \
-          --with-scalapack-dir="${ISSM_DIR}/externalpackages/petsc/install" \
-          --with-mumps-dir="${ISSM_DIR}/externalpackages/petsc/install" \
-          --with-triangle-dir="${ISSM_DIR}/externalpackages/triangle/install" \
-          --with-semic-dir="${ISSM_DIR}/externalpackages/semic/install" \
-          --with-m1qn3-dir="${ISSM_DIR}/externalpackages/m1qn3/install"
-
-      # If corredponding issm cache doesn't exist, compile ISSM
-      - name: Compile ISSM
-        if: ${{ steps.cache-issm-build.outputs.cache-hit != 'true' }}
-        working-directory: issm
-        run: make -j4 install
-
-      # If corredponding issm cache doesn't exist, package ISSM
-      - name: Package ISSM
-        if: ${{ steps.cache-issm-build.outputs.cache-hit != 'true' }}
-        run: |
-          rm -rf issm/.git
-          tar -czvf issm-${{ env.ISSM_RELEASE }}-python${{ matrix.python-version }}-${{ runner.os }}.tar.gz -C issm .
-
-      # If corredponding issm cache doesn't exist, upload ISSM artifact
-      - name: Upload ISSM artifact
-        if: ${{ steps.cache-issm-build.outputs.cache-hit != 'true' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: issm-${{ env.ISSM_RELEASE }}-python${{ matrix.python-version }}-${{ runner.os }}
-          path: issm-${{ env.ISSM_RELEASE }}-python${{ matrix.python-version }}-${{ runner.os }}.tar.gz
+          key: ${{ inputs.build-type }}-${{ env.ISSM_RELEASE }}-python${{ matrix.python-version }}-${{ runner.os }}
       
       # Check that wrappers were installed correctly
       - name: Check wrappers
@@ -143,8 +81,9 @@ jobs:
           python3 -c "import pyissm; print('Wrappers installed:', pyissm.tools.wrappers.check_wrappers_installed())"
       
       # Run Nightly tests
+      # NOTE: Exclude AD tests
       - name: Run tests
         run: |
           source $ISSM_DIR/etc/environment.sh
           cd ./test/NightlyRuns/
-          python3 -u ../run-tests.py --exclude 306,443,502,503,512
+          python3 -u ../run-tests.py ${{ inputs.test-args }}

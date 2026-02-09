@@ -15,3 +15,26 @@ jobs:
   # Job 1: Check dependencies and installation
   check_dependencies:
     uses: access-nri/pyISSM/.github/workflows/check-dependencies.yml@main
+
+  # Job 2: Build ISSM
+  build_issm:
+    uses: access-nri/pyISSM/.github/workflows/build-issm.yml@main
+
+  # Job 3: Build ISSM AD
+  build_issm_ad:
+    uses: access-nri/pyISSM/.github/workflows/build-issm-ad.yml@main
+
+  # Job 4: Run ISSM tests
+  issm_tests:
+    needs: build_issm
+    uses: access-nri/pyISSM/.github/workflows/issm-tests.yml@main
+    with:
+      build-type: "issm"
+
+  # Job 5: Run ISSM AD tests
+  issm_ad_tests:
+    needs: build_issm_ad
+    uses: access-nri/pyISSM/.github/workflows/issm-tests.yml@main
+    with:
+      build-type: "issm-AD"
+      test-args: "--range 9999:9999"
