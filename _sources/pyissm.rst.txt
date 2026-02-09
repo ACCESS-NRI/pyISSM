@@ -15,7 +15,7 @@ pyISSM comprises five major sub-packages:
 
 .. _model-class:
 
-pyISSM Model Class
+Model Class
 -------------------
 ``pyISSM`` is developed around a central ``Model()`` class.
 
@@ -27,7 +27,7 @@ pyISSM Model Class
 
 .. _model-subclasses:
 
-pyISSM Model sub-classes
+Model sub-classes
 -------------------
 Each ISSM model contains a series of sub-classes that define model components and parameters (e.g., ``mesh``, ``geometry``, etc.).
 
@@ -39,7 +39,7 @@ Each ISSM model contains a series of sub-classes that define model components an
 
 .. _model-operations:
 
-pyISSM Model operations
+Model operations
 -------------------
 Each ISSM model is constructed and parameterised using various model operations.
 
