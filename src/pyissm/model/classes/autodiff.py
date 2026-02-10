@@ -138,15 +138,15 @@ class autodiff(class_registry.manage_state):
         # Memory reduction options
         class_utils.check_field(md, fieldname = "autodiff.enablePreaccumulation", ge = 0)
 
-        # # Driver field (must be one of allowed strings)
-        # class_utils.check_field(
-        #     md,
-        #     fieldname = "autodiff.driver",
-        #     values = [
-        #         "fos_forward", "fov_forward", "fov_forward_all",
-        #         "fos_reverse", "fov_reverse", "fov_reverse_all"
-        #     ]
-        # )
+        # Driver field (must be one of allowed strings)
+        class_utils.check_field(
+            md,
+            fieldname = "autodiff.driver",
+            values = [
+                "fos_forward", "fov_forward", "fov_forward_all",
+                "fos_reverse", "fov_reverse", "fov_reverse_all"
+            ]
+        )
 
         # # Check dependents and independents recursively
         # for dep in self.dependents:
