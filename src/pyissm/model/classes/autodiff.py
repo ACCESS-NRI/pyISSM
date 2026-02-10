@@ -263,7 +263,24 @@ class autodiff(class_registry.manage_state):
                             indices += indep.nods
 
                 index -= 1  # Convert to c-index numbering
-                execute.WriteData(fid, prefix, name = 'md.autodiff.fov_forward_indices', data = indices, format = 'IntMat', mattype = 3)
+                execute.WriteData(fid, prefix, name = 'md.autodiff.fov_forward_indices', data = index, format = 'Integer')
+
+            ## 5 - build index for fov_reverse driver
+            if self.driver.lower() == 'fov_reverse':
+                indices = 0
+
+                for dep in self.dependents:
+                    if not np.isnan(dep.fov_reverse_index):
+                        indices += dep.fov_reverse_indices
+                        break
+                    else:
+                        if dep.type == 'scalar':
+                            indices += 1
+                        else:
+                            indices += dep.nods
+
+                index -= 1  # Convert to c-index numbering
+                execute.WriteData(fid, prefix, name = 'md.autodiff.fov_reverse_indices', data = index, format = 'Integer')
 
             ## 6 - Deal with mass fluxes
             mass_flux_segments = []
