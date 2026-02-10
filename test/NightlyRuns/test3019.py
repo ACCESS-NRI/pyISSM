@@ -40,7 +40,7 @@ indep = pyissm.model.classes.independent()
 indep.name = 'md.geometry.thickness'
 indep.type = 'vertex'
 indep.nods = md.mesh.numberofvertices
-indep.fov_forward_indices = int(md.mesh.numberofvertices - 1)
+indep.fov_forward_indices = np.arange(1, md.mesh.numberofvertices + 1)
 md.autodiff.independents = [indep]
 
 dep = pyissm.model.classes.dependent()
