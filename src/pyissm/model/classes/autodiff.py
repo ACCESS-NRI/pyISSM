@@ -249,20 +249,24 @@ class autodiff(class_registry.manage_state):
 
 
             ## 5 - build index for fov_forward driver
-            if self.driver.lower() == 'fov_forward':
+            if isinstance(self.driver, str) and self.driver.lower() == "fov_forward":
                 indices = 0
 
-                for indep in self.independents:
-                    if not np.isnan(indep.fos_forward_index):
-                        indices += indep.fov_forward_indices
+                for indep in self.independents:  # indep is an independent() object
+                    # MATLAB: if ~isempty(indep.fos_forward_index)
+                    fos_fwd_idx = getattr(indep, "fos_forward_index", None)
+                    if fos_fwd_idx is not None and fos_fwd_idx != []:
+                        # MATLAB: indices = indices + indep.fov_forward_indices; break;
+                        indices += int(getattr(indep, "fov_forward_indices"))
                         break
                     else:
-                        if indep.type == 'scalar':
+                        indep_type = getattr(indep, "type", "")
+                        if isinstance(indep_type, str) and indep_type.lower() == "scalar":
                             indices += 1
                         else:
-                            indices += indep.nods
+                            indices += int(getattr(indep, "nods"))
 
-                indices -= 1  # Convert to c-index numbering
+                indices -= 1  # get C-indices numbering going
                 execute.WriteData(fid, prefix, name = 'md.autodiff.fov_forward_indices', data = indices, format = 'IntMat', mattype = 3)
 
 
