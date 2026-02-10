@@ -253,7 +253,7 @@ class autodiff(class_registry.manage_state):
                 indices = 0
 
                 for indep in self.independents:
-                    if indep.fos_forward_index:
+                    if not np.isnan(indep.fos_forward_index):
                         indices += indep.fov_forward_indices
                         break
                     else:
