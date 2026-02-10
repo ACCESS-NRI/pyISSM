@@ -641,36 +641,6 @@ def _check_timeseries(md, field, fieldname, kind, message=None):
         if np.ndim(field) > 1:
             sorted_check(field[-1, :])
 
-def _as_numeric_array_or_none(x):
-    """Return a numeric numpy array view of x, or None if x isn't numeric."""
-    # strings are never numeric
-    if isinstance(x, str):
-        return None
-    # common container types in ISSM (lists of objects etc.)
-    if isinstance(x, (list, tuple, dict)):
-        # only treat list/tuple as numeric if it cleanly converts
-        if isinstance(x, dict):
-            return None
-        try:
-            a = np.asarray(x)
-        except Exception:
-            return None
-    else:
-        try:
-            a = np.asarray(x)
-        except Exception:
-            return None
-
-    # object dtype likely means mixed/custom objects (e.g., independent() objects)
-    if a.dtype == object:
-        return None
-
-    # only run isnan/isinf on real numeric arrays
-    if not np.issubdtype(a.dtype, np.number):
-        return None
-
-    return a
-
 
 def check_field(
     md,
@@ -798,17 +768,12 @@ def check_field(
             md.check_message(message or f"{fieldname} size {n}, expected {valid}")
 
     # NaN
-    if not allow_nan:
-        a = _as_numeric_array_or_none(field)
-        if a is not None and np.any(np.isnan(a)):
-            md.check_message(message or f"{fieldname} contains NaN")
+    if not allow_nan and np.any(np.isnan(field)):
+        md.check_message(message or f"{fieldname} contains NaN")
 
     # Inf
-    if not allow_inf:
-        a = _as_numeric_array_or_none(field)
-        if a is not None and np.any(np.isinf(a)):
-            md.check_message(message or f"{fieldname} contains Inf")
-
+    if not allow_inf and np.any(np.isinf(field)):
+        md.check_message(message or f"{fieldname} contains Inf")
 
     # Type
     if cell and not isinstance(field, (list, tuple, dict)):
