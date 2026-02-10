@@ -51,29 +51,39 @@ md.autodiff.dependents = [dep]
 
 md.autodiff.driver = 'fov_forward'
 
-def debug_isnan_compat(obj, label="obj"):
-    bad = []
-    for k, v in obj.__dict__.items():
-        try:
-            a = np.asarray(v)
-            if a.dtype == object:
-                bad.append((k, type(v), "dtype=object"))
-            else:
-                # try isnan if it looks numeric-ish
-                np.isnan(a)
-        except Exception as e:
-            bad.append((k, type(v), str(e)))
-    if bad:
-        print(f"\n[{label}] potential isnan offenders:")
-        for item in bad:
-            print(" ", item)
-    else:
-        print(f"\n[{label}] looks isnan-safe")
+def probe(x, path="root"):
+    # recurse into lists/tuples
+    if isinstance(x, (list, tuple)):
+        print(f"{path}: {type(x).__name__} len={len(x)}")
+        for i, xi in enumerate(x):
+            probe(xi, f"{path}[{i}]")
+        return
 
+    # strings: never call isnan
+    if isinstance(x, str):
+        print(f"{path}: str='{x}' (skip np.isnan)")
+        return
 
-debug_isnan_compat(md.autodiff, "md.autodiff")
-debug_isnan_compat(md.autodiff.independents, "md.autodiff.independents")
-debug_isnan_compat(md.autodiff.dependents, "md.autodiff.dependents")
+    # objects: inspect attributes
+    if hasattr(x, "__dict__"):
+        for k, v in x.__dict__.items():
+            probe(v, f"{path}.{k}")
+        return
+
+    # fallback: try numpy conversion
+    try:
+        a = np.asarray(x)
+        if a.dtype == object:
+            print(f"{path}: dtype=object from {type(x)}")
+        else:
+            np.isnan(a)  # only safe for numeric dtypes
+    except Exception as e:
+        print(f"{path}: {type(x)} -> np.isnan fails: {e}")
+
+# call it like:
+probe(md.autodiff, "md.autodiff")
+probe(md.autodiff.independents, "md.autodiff.independents")
+probe(md.autodiff.dependents, "md.autodiff.dependents")
 md = pyissm.model.execute.solve(md, 'Transient')
 
 # recover jacobian:
