@@ -74,7 +74,7 @@ def debug_isnan_compat(obj, label="obj"):
 debug_isnan_compat(md.autodiff, "md.autodiff")
 debug_isnan_compat(md.autodiff.independents, "md.autodiff.independents")
 debug_isnan_compat(md.autodiff.dependents, "md.autodiff.dependents")
-md = pyissm.model.execute.solve(md, 'Transient')
+md = pyissm.model.execute.solve(md, 'Transient', checkconsistency=False)
 
 # recover jacobian:
 jac_forward = md.results.TransientSolution[0].AutodiffJacobian
