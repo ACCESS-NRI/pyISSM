@@ -52,29 +52,29 @@ md.autodiff.dependents = [dep]
 
 md.autodiff.driver = 'fov_forward'
 
-def debug_isnan_compat(obj, label="obj"):
-    bad = []
-    for k, v in obj.__dict__.items():
-        try:
-            a = np.asarray(v)
-            if a.dtype == object:
-                bad.append((k, type(v), "dtype=object"))
-            else:
-                # try isnan if it looks numeric-ish
-                np.isnan(a)
-        except Exception as e:
-            bad.append((k, type(v), str(e)))
-    if bad:
-        print(f"\n[{label}] potential isnan offenders:")
-        for item in bad:
-            print(" ", item)
-    else:
-        print(f"\n[{label}] looks isnan-safe")
+# def debug_isnan_compat(obj, label="obj"):
+#     bad = []
+#     for k, v in obj.__dict__.items():
+#         try:
+#             a = np.asarray(v)
+#             if a.dtype == object:
+#                 bad.append((k, type(v), "dtype=object"))
+#             else:
+#                 # try isnan if it looks numeric-ish
+#                 np.isnan(a)
+#         except Exception as e:
+#             bad.append((k, type(v), str(e)))
+#     if bad:
+#         print(f"\n[{label}] potential isnan offenders:")
+#         for item in bad:
+#             print(" ", item)
+#     else:
+#         print(f"\n[{label}] looks isnan-safe")
 
 
-debug_isnan_compat(md.autodiff, "md.autodiff")
-debug_isnan_compat(md.autodiff.independents, "md.autodiff.independents")
-debug_isnan_compat(md.autodiff.dependents, "md.autodiff.dependents")
+# debug_isnan_compat(md.autodiff, "md.autodiff")
+# debug_isnan_compat(md.autodiff.independents, "md.autodiff.independents")
+# debug_isnan_compat(md.autodiff.dependents, "md.autodiff.dependents")
 md = pyissm.model.execute.solve(md, 'Transient')
 
 # recover jacobian:
