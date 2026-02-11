@@ -36,40 +36,24 @@ md = pyissm.model.execute.solve(md, 'Transient')
 jac_reverse = md.results.TransientSolution[0].AutodiffJacobian
 
 # now run vectorial forward mode
-have_codipack = pyissm.tools.wrappers.IssmConfig('_HAVE_CODIPACK_')
+indep = pyissm.model.classes.independent()
+indep.name = 'md.geometry.thickness'
+indep.type = 'vertex'
+indep.nods = md.mesh.numberofvertices
+# "not empty" so the MATLAB branch triggers:
 
-if have_codipack:
-    # CoDiPack build: fov_forward not supported in core (as per CreateParametersAutododiff.cpp)
-    # Make the test only validate reverse Jacobian exists / is finite, OR skip.
+# scalar “how many directions” (not the explicit list 1..N):
+indep.fov_forward_indices = np.arange(1, md.mesh.numberofvertices + 1, dtype=int)
 
-    # ADOL-C build: fov_forward should be supported
-    indep = pyissm.model.classes.independent()
-    indep.name = 'md.geometry.thickness'
-    indep.type = 'vertex'
-    indep.nods = md.mesh.numberofvertices
-    indep.fov_forward_indices = np.arange(1, md.mesh.numberofvertices + 1, dtype=int)
-    md.autodiff.independents = [indep]
+md.autodiff.independents = [indep]
 
-    dep = pyissm.model.classes.dependent()
-    dep.name = 'MaxVel'
-    dep.type = 'scalar'
-    dep.nods = 1
-    md.autodiff.dependents = [dep]
+dep = pyissm.model.classes.dependent()
+dep.name = 'MaxVel'
+dep.type = 'scalar'
+dep.nods = md.mesh.numberofvertices
+md.autodiff.dependents = [dep]
 
-    md.autodiff.driver = 'fov_forward'
-    md = pyissm.model.execute.solve(md, 'Transient')
-    jac_forward = md.results.TransientSolution[0].AutodiffJacobian
-
-    field_names = ['Jac Forward', 'Jac Reverse', 'Jac Forward - Reverse']
-    field_tolerances = [1e-8, 1e-8, 5e-6]
-    field_values = [jac_forward, jac_reverse, jac_forward - jac_reverse]
-else:
-    field_names = ['Jac Reverse']
-    field_tolerances = [1e-8]
-    field_values = [jac_reverse]
-    # (or raise/skip depending on your harness)
-
-
+md.autodiff.driver = 'fov_forward'
 
 # def debug_isnan_compat(obj, label="obj"):
 #     bad = []
@@ -94,12 +78,12 @@ else:
 # debug_isnan_compat(md.autodiff, "md.autodiff")
 # debug_isnan_compat(md.autodiff.independents, "md.autodiff.independents")
 # debug_isnan_compat(md.autodiff.dependents, "md.autodiff.dependents")
-# md = pyissm.model.execute.solve(md, 'Transient')
+md = pyissm.model.execute.solve(md, 'Transient')
 
-# # recover jacobian:
-# jac_forward = md.results.TransientSolution[0].AutodiffJacobian
+# recover jacobian:
+jac_forward = md.results.TransientSolution[0].AutodiffJacobian
 
-# # Fields and tolerances to track changes
-# field_names = ['Jac Forward', 'Jac Reverse', 'Jac Forward - Reverse']
-# field_tolerances = [1e-8, 1e-8, 5e-6]
-# field_values = [jac_forward, jac_reverse, jac_forward - jac_reverse]
+# Fields and tolerances to track changes
+field_names = ['Jac Forward', 'Jac Reverse', 'Jac Forward - Reverse']
+field_tolerances = [1e-8, 1e-8, 5e-6]
+field_values = [jac_forward, jac_reverse, jac_forward - jac_reverse]

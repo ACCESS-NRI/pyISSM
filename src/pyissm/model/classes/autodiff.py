@@ -148,11 +148,11 @@ class autodiff(class_registry.manage_state):
             ]
         )
 
-        # # Check dependents and independents recursively
-        # for dep in self.dependents:
-        #     dep.check_consistency(md, solution, analyses)
-        # for i, indep in enumerate(self.independents):
-        #     indep.check_consistency(md, i, solution, analyses, self.driver)
+        # Check dependents and independents recursively
+        for dep in self.dependents:
+            dep.check_consistency(md, solution, analyses)
+        for i, indep in enumerate(self.independents):
+            indep.check_consistency(md, i, solution, analyses, self.driver)
 
         return md
 
@@ -248,43 +248,22 @@ class autodiff(class_registry.manage_state):
                 execute.WriteData(fid, prefix, name = 'md.autodiff.fos_reverse_index', data = index, format = 'Integer')
 
 
-                    ## 5 - build index for fov_forward driver
-        # 5 - build index for fov_forward driver
-        if isinstance(self.driver, str) and self.driver.lower() == "fov_forward":
-            indices = 0
+            ## 5 - build index for fov_forward driver
+            if self.driver.lower() == 'fov_forward':
+                indices = 0
 
-            for indep in self.independents:
-                # MATLAB run sets fov_forward_indices explicitly (1:N)'
-                fov = getattr(indep, "fov_forward_indices", np.array([]))
-                fov = np.asarray(fov)
+                for indep in self.independents:
+                    if indep.fos_forward_index:
+                        indices += indep.fov_forward_indices
+                        break
+                    else:
+                        if indep.type == 'scalar':
+                            indices += 1
+                        else:
+                            indices += indep.nods
 
-                if fov.size > 0:
-                    # treat as explicit list of indices
-                    indices = fov.astype(int)# - 1  # convert to 0-based like MATLAB
-                    execute.WriteData(
-                        fid, prefix,
-                        name="md.autodiff.fov_forward_indices",
-                        data=indices,
-                        format="IntMat",
-                        mattype=3
-                    )
-                    break
-
-                # otherwise fall back to implicit counting
-                indep_type = str(getattr(indep, "type", "")).lower()
-                indices += 1 if indep_type == "scalar" else int(getattr(indep, "nods"))
-
-            else:
-                # no independents: still write something sensible
-                indices = -1
-                execute.WriteData(fid, prefix, name="md.autodiff.fov_forward_indices", data=indices, format="Integer")
-
-
-
-                # indices -= 1  # get C-indices numbering going
-                # execute.WriteData(fid, prefix, name = 'md.autodiff.fov_forward_indices', data = indices, format = 'IntMat', mattype = 3)
-
-
+                index -= 1  # Convert to c-index numbering
+                execute.WriteData(fid, prefix, name = 'md.autodiff.fov_forward_indices', data = indices, format = 'IntMat', mattype = 3)
 
             ## 6 - Deal with mass fluxes
             mass_flux_segments = []
