@@ -78,6 +78,8 @@ class amr(class_registry.manage_state):
 
     Examples
     -------
+    .. code-block:: python
+    
         md.amr = pyissm.model.classes.amr()
         md.amr.hmin = 50
         md.amr.fieldname = 'Thickness'

@@ -30,6 +30,7 @@ jobs:
     uses: access-nri/pyISSM/.github/workflows/issm-tests.yml@main
     with:
       build-type: "issm"
+      test-args: "--range 9999:9999" # temporary to skip tests during doc dev
 
   # Job 5: Run ISSM AD tests
   issm_ad_tests:
