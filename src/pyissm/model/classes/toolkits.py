@@ -64,7 +64,7 @@ class toolkits(class_registry.manage_state):
                     raise IOError(f'toolkits: need at least MUMPS or GSL to define ISSM solver type, no default solver assigned')
 
             ## Recovery mode (same as DefaultAnalysis by default)
-            self.RecoveryAnalysis = self.DefaultAnalysis
+            self.RecoveryAnalysis = self.DefaultAnalysis.copy()
                     
             # Inherit matching fields from provided class
             super().__init__(other)

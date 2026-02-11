@@ -13,6 +13,7 @@ import subprocess
 import warnings
 import sys
 import shutil
+import collections
 
 from pyissm import analysis, model, tools
 
@@ -354,78 +355,139 @@ def save_model(md, path):
             return np.array(["".join(row.astype(str)) for row in arr], dtype='S')
         else:
             raise ValueError("Input must be a 1D or 2D char array with dtype='S1'")
+        
+    def _serialize_scalars(value, group, attr_name):
+        if isinstance(value, (int, float, str, bool)):
+            ## If it's a boolean, convert to int for NetCDF writing
+            if isinstance(value, (bool)):
+                value = int(value)
+            group.setncattr(attr_name, value)
+            return True
+        return False
+    
+    def _serialize_arrays_lists(value, group, attr_name):
+        # Handle arrays and lists (convert lists to arrays)
+        if isinstance(value, np.ndarray) or isinstance(value, list):
 
+            # If it's a list, convert to an array
+            if isinstance(value, list) and len(value) == 0:
+                # Handle empty list case
+                group.setncattr(attr_name, "__EMPTY_LIST__")
+                    
+            if isinstance(value, list):
+                value = np.array(value, dtype='S')
+            # Otherwise, check the array type
+            else:
+                # If it's an object array, convert to a string array (object arrays can't be written to NetCDF)
+                if value.dtype == object:
+                    value = np.array(value, dtype='S')
+                # Special handling for 'S1' datatype (these come from NetCDF Char variables when output from MATLAB)
+                elif value.dtype.kind == 'S':
+                    value = _char_array_to_strings(value)
+                else:
+                    value = value
+
+            # Handle the dimensions -- define a name from the size. If it doesn't already exist, create it.
+            dim_names = []
+            for i, size in enumerate(value.shape):
+                dim_name = f"dim_{i}_{size}"
+                if dim_name not in defined_dimensions:
+                    ds.createDimension(dim_name, size)
+                    defined_dimensions[dim_name] = size
+                dim_names.append(dim_name)
+
+            # Create variable.
+            # If it's a string array, turn off zlib compression
+            if value.dtype.kind == 'S':
+                var = group.createVariable(attr_name, value.dtype, dimensions=dim_names, zlib=False)
+            else:
+                var = group.createVariable(attr_name, value.dtype, dimensions=dim_names, zlib=True)
+
+            ## Add data to variable
+            var[:] = value
+
+            return True
+        return False
+    
     # Helper function to serialize an object's state
-    def _serialize_object(obj, group):
+    def _serialize_object(obj, group, path = ''):
         """
         Serializes an object's state, including nested objects.
         """
+        
+        # If the object is None, skip it.
+        if obj is None:
+            print(f"⚠️ Skipping unsupported field (NoneType): {path})")
+            return
 
-        ## Get state from the object
-        state = obj.__getstate__()
+        # Get state from the object
+        state = None
+        if hasattr(obj, '__getstate__'):
+            state = obj.__getstate__()
+        elif hasattr(obj, '__dict__'):
+            state = obj.__dict__
+
+        ## Is state is still None (failed above conditions), or not a dictionary, skip it
+        if state is None:
+            print(f"⚠️ Skipping unsupported field (no state): {path}")
+            return
+        if not isinstance(state, dict):
+            print(f"⚠️ Skipping unsupported field (state not dict-like): {path}")
+            return
 
         ## For each item, write attributes and variables...
         for attr_name, value in state.items():
 
+            # Build path of item
+            full_path = f"{path}.{attr_name}" if path else attr_name
+
             # Handle scalars
-            if isinstance(value, (int, float, str, bool)):
-                ## If it's a boolean, convert to int for NetCDF writing
-                if isinstance(value, (bool)):
-                    value = int(value)
-                group.setncattr(attr_name, value)
-
-            # Handle arrays and lists (convert lists to arrays)
-            elif isinstance(value, np.ndarray) or isinstance(value, list):
-
-                # If it's a list, convert to an array
-                if isinstance(value, list) and len(value) == 0:
-                    # Handle empty list case
-                    group.setncattr(attr_name, "__EMPTY_LIST__")
-                    continue
-                
-                if isinstance(value, list):
-                    value = np.array(value, dtype='S')
-                # Otherwise, check the array type
-                else:
-                    # If it's an object array, convert to a string array (object arrays can't be written to NetCDF)
-                    if value.dtype == object:
-                        value = np.array(value, dtype='S')
-                    # Special handling for 'S1' datatype (these come from NetCDF Char variables when output from MATLAB)
-                    elif value.dtype.kind == 'S':
-                        value = _char_array_to_strings(value)
-                    else:
-                        value = value
-
-                # Handle the dimensions -- define a name from the size. If it doesn't already exist, create it.
-                dim_names = []
-                for i, size in enumerate(value.shape):
-                    dim_name = f"dim_{i}_{size}"
-                    if dim_name not in defined_dimensions:
-                        ds.createDimension(dim_name, size)
-                        defined_dimensions[dim_name] = size
-                    dim_names.append(dim_name)
-
-                # Create variable.
-                # If it's a string array, turn off zlib compression
-                if value.dtype.kind == 'S':
-                    var = group.createVariable(attr_name, value.dtype, dimensions=dim_names, zlib=False)
-                else:
-                    var = group.createVariable(attr_name, value.dtype, dimensions=dim_names, zlib=True)
-
-                ## Add data to variable
-                var[:] = value
-
-            ## Handle nested objects (recursively serialize them)
-            elif isinstance(value, object):
-                # If the value is a class instance, treat it as a group and recurse
-                if hasattr(value, '__getstate__'):
-                    nested_group = group.createGroup(attr_name)
-                    _serialize_object(value, nested_group)
-
-            else:
-                print(f"⚠️ Skipping unsupported field: {attr_name} ({type(value).__name__})")
+            if _serialize_scalars(value, group, attr_name):
                 continue
 
+            # Handle arrays and lists
+            if _serialize_arrays_lists(value, group, attr_name):
+                continue
+
+            # Handle dict / OrderedDict
+            if isinstance(value, collections.abc.Mapping):
+                nested_group = group.createGroup(attr_name)
+
+                for k, v in value.items():
+                    key_name = str(k)
+                    key_path = f"{full_path}.{key_name}"
+
+                    if _serialize_scalars(v, nested_group, key_name):
+                        continue
+
+                    if _serialize_arrays_lists(v, nested_group, key_name):
+                        continue
+
+                    if isinstance(v, collections.abc.Mapping) or hasattr(v, '__getstate__') or hasattr(v, '__dict__'):
+                        sub_group = nested_group.createGroup(key_name)
+                        _serialize_object(v, sub_group, key_path)
+                        continue
+
+                    if v is None:                        
+                        print(f"⚠️ Skipping None field: {key_path}")
+                        continue
+
+                    print(f"⚠️ Skipping unsupported field in Mapping: {key_path} ({type(v).__name__})")
+                continue
+                
+            # Nested objects
+            if hasattr(value, '__getstate__') or hasattr(value, '__dict__'):
+                nested_group = group.createGroup(attr_name)
+                _serialize_object(value, nested_group, full_path)
+                continue
+                
+            # None / unsupported
+            if value is None:
+                print(f"⚠️ Skipping None field: {full_path}")
+                continue
+            
+            print(f"⚠️ Skipping unsupported field: {full_path} ({type(value).__name__})")
+            
     def _get_registered_name(obj):
         classname = obj.__class__
         matching_keys = [k for k, v in model.classes.class_registry.CLASS_REGISTRY.items() if v is classname]
@@ -478,7 +540,7 @@ def save_model(md, path):
                 group.setncattr("classtype", classname)
 
                 ## Serialize the component state
-                _serialize_object(obj, group)
+                _serialize_object(obj, group, path = name)
 
 def _collapse_solution_to_step(solution):
     """
