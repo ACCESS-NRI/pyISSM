@@ -6,11 +6,11 @@ import pyissm
 # Generate observations
 # -----------------------------
 md = pyissm.model.Model()
-md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../Exp/Square.exp', 100000.)
+md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 100000.)
 md = pyissm.model.param.set_mask(md, 'all', None)  # setmask(md,'all','')
-md = pyissm.model.param.parameterize(md, '../Par/SquareShelf.par')
+md = pyissm.model.param.parameterize(md, '../assets/Par/SquareShelf.par')
 md = pyissm.model.param.set_flow_equation(md, SSA='all')
-md.cluster = pyissm.cluster.generic('np', 2)
+md.cluster.np = 2
 
 # -----------------------------
 # Create "true" time series for B
