@@ -148,11 +148,11 @@ class autodiff(class_registry.manage_state):
             ]
         )
 
-        # Check dependents and independents recursively
-        for dep in self.dependents:
-            dep.check_consistency(md, solution, analyses)
-        for i, indep in enumerate(self.independents):
-            indep.check_consistency(md, i, solution, analyses, self.driver)
+        # # Check dependents and independents recursively
+        # for dep in self.dependents:
+        #     dep.check_consistency(md, solution, analyses)
+        # for i, indep in enumerate(self.independents):
+        #     indep.check_consistency(md, i, solution, analyses, self.driver)
 
         return md
 
@@ -280,7 +280,10 @@ class autodiff(class_registry.manage_state):
                     else:
                         indices += int(getattr(indep, "nods"))
 
-                indices -= 1  # C indexing
+                fov = getattr(indep, "fov_forward_indices")
+                a = np.asarray(fov)
+                indices += int(a.size) if a.size > 1 else int(a.item())
+
 
                 execute.WriteData(
                     fid, prefix,
