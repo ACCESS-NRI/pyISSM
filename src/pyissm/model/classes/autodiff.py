@@ -8,7 +8,7 @@ class autodiff(class_registry.manage_state):
     """
     Automatic differentiation parameters class for ISSM.
 
-    This class encapsulates parameters for automatic differentiation (AD) functionality in the ISSM (Ice Sheet System Model) framework.
+    This class contains parameters for automatic differentiation (AD) functionality in the ISSM framework.
     It allows users to configure AD settings including dependent and independent variables, memory buffer sizes, 
     and optimization parameters for sensitivity analysis and gradient-based optimization.
 
@@ -19,33 +19,33 @@ class autodiff(class_registry.manage_state):
 
     Attributes
     ----------
-    isautodiff : float, default=0.0
+    isautodiff : :class:`float`, default=0.0
         Indicates if automatic differentiation is activated.
-    dependents : str, default='List dependents'
+    dependents : :class:`str`, default='List dependents'
         List of dependent variables for AD.
-    independents : str, default='List independents'
+    independents : :class:`str`, default='List independents'
         List of independent variables for AD.
-    driver : str, default='fos_forward'
+    driver : :class:`str`, default='fos_forward'
         ADOLC driver ('fos_forward' or 'fov_forward').
-    obufsize : float, default=524288
+    obufsize : :class:`float`, default=524288
         Number of operations per buffer (== OBUFSIZE in usrparms.h).
-    lbufsize : float, default=524288
+    lbufsize : :class:`float`, default=524288
         Number of locations per buffer (== LBUFSIZE in usrparms.h).
-    cbufsize : float, default=524288
+    cbufsize : :class:`float`, default=524288
         Number of values per buffer (== CBUFSIZE in usrparms.h).
-    tbufsize : float, default=524288
+    tbufsize : :class:`float`, default=524288
         Number of taylors per buffer (<=TBUFSIZE in usrparms.h).
-    gcTriggerMaxSize : float, default=65536
+    gcTriggerMaxSize : :class:`float`, default=65536
         Free location block sorting/consolidation triggered if allocated locations exceed this value.
-    gcTriggerRatio : float, default=2.0
+    gcTriggerRatio : :class:`float`, default=2.0
         Free location block sorting/consolidation triggered if the ratio between allocated and used locations exceeds this value.
-    tapeAlloc : float, default=15000000
+    tapeAlloc : :class:`float`, default=15000000
         Iteration count of a priori memory allocation of the AD tape.
-    outputTapeMemory : float, default=0.0
+    outputTapeMemory : :class:`float`, default=0.0
         Write AD tape memory statistics to file ad_mem.dat.
-    outputTime : float, default=0.0
+    outputTime : :class:`float`, default=0.0
         Write AD recording and evaluation times to file ad_time.dat.
-    enablePreaccumulation : float, default=0.0
+    enablePreaccumulation : :class:`float`, default=0.0
         Enable CoDiPack preaccumulation in augmented places.
 
     Methods
@@ -61,10 +61,12 @@ class autodiff(class_registry.manage_state):
 
     Examples
     --------
-    md.autodiff = pyissm.model.classes.autodiff()
-    md.autodiff.isautodiff = 1
-    md.autodiff.dependents = ['Vel']
-    md.autodiff.independents = ['MaterialsRheologyBbar']
+    .. code-block:: python
+    
+        md.autodiff = pyissm.model.classes.autodiff()
+        md.autodiff.isautodiff = 1
+        md.autodiff.dependents = ['Vel']
+        md.autodiff.independents = ['MaterialsRheologyBbar']
     """
 
     # Initialise with default parameters

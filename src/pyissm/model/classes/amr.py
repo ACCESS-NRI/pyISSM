@@ -69,17 +69,10 @@ class amr(class_registry.manage_state):
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file.
 
-    Returns
-    -------
-    s : :class:`str` (__repr__())
-        A string describing specified parameters.
-    md : ISSM model object (check_consistency())
-        The input model object after consistency checks.
-
     Examples
     -------
     .. code-block:: python
-    
+
         md.amr = pyissm.model.classes.amr()
         md.amr.hmin = 50
         md.amr.fieldname = 'Thickness'
@@ -180,14 +173,15 @@ class amr(class_registry.manage_state):
         """
 
         ## Write header field
-        # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name='md.amr.type', data=1, format='Integer')
+        ## NOTE: data types must match the expected types in the ISSM code.
+        execute.WriteData(fid, prefix, name = 'md.amr.type', data = 1, format = 'Integer')
         
         ## Write double fields
         fieldnames = ['hmin', 'hmax', 'err', 'gradation', 'groundingline_resolution', 'groundingline_distance', 'icefront_resolution',
                       'icefront_distance', 'thicknesserror_resolution', 'thicknesserror_threshold', 'thicknesserror_groupthreshold',
                       'thicknesserror_maximum', 'deviatoricerror_resolution', 'deviatoricerror_threshold', 'deviatoricerror_groupthreshold',
                       'deviatoricerror_maximum']
+        
         for field in fieldnames:
             execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
 
