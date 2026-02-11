@@ -41,11 +41,7 @@ have_codipack = pyissm.tools.wrappers.IssmConfig('_HAVE_CODIPACK_')
 if have_codipack:
     # CoDiPack build: fov_forward not supported in core (as per CreateParametersAutododiff.cpp)
     # Make the test only validate reverse Jacobian exists / is finite, OR skip.
-    field_names = ['Jac Reverse']
-    field_tolerances = [1e-8]
-    field_values = [jac_reverse]
-    # (or raise/skip depending on your harness)
-else:
+
     # ADOL-C build: fov_forward should be supported
     indep = pyissm.model.classes.independent()
     indep.name = 'md.geometry.thickness'
@@ -67,6 +63,12 @@ else:
     field_names = ['Jac Forward', 'Jac Reverse', 'Jac Forward - Reverse']
     field_tolerances = [1e-8, 1e-8, 5e-6]
     field_values = [jac_forward, jac_reverse, jac_forward - jac_reverse]
+else:
+    field_names = ['Jac Reverse']
+    field_tolerances = [1e-8]
+    field_values = [jac_reverse]
+    # (or raise/skip depending on your harness)
+
 
 
 # def debug_isnan_compat(obj, label="obj"):
