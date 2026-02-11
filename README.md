@@ -3,7 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/pyissm)](https://pypi.org/project/pyissm/)
 [![Conda](https://img.shields.io/conda/v/accessnri/pyissm)](https://anaconda.org/accessnri/pyissm)
 [![ISSM-pyISSM Tests](https://img.shields.io/github/actions/workflow/status/access-nri/pyISSM/issm-tests.yml?label=NightlyRun%20Tests)](https://github.com/ACCESS-NRI/pyISSM/actions/workflows/issm-tests.yml)
-[![Docs](https://img.shields.io/github/actions/workflow/status/access-nri/pyISSM/docs.yml?label=docs)](https://access-nri.github.io/pyISSM)
+[![Docs](https://app.readthedocs.org/projects/pyissm/badge/?version=latest)](https://pyissm.readthedocs.io/latest/)
 
 ---
 ## About
@@ -15,7 +15,7 @@
 We welcome any feedback and ideas! Let us know by submitting [issues on GitHub](https://github.com/ACCESS-NRI/pyISSM/issues) or [joining our community](https://forum.access-hive.org.au/c/cryosphere/34).
 
 ## Documentation
-Read the [documentation here](https://access-nri.github.io/pyISSM/)
+Read the [documentation here](https://pyissm.readthedocs.io/latest/)
 
 ## License
 [![License](https://img.shields.io/github/license/ACCESS-NRI/pyissm)](https://github.com/ACCESS-NRI/pyISSM/blob/main/LICENSE)
