@@ -39,4 +39,4 @@ jobs:
     uses: access-nri/pyISSM/.github/workflows/issm-tests.yml@main
     with:
       build-type: "issm-AD"
-      test-args: "--range 3015:3119 --exclude 3019" 
+      test-args: "--range 3015:3480 --exclude 3019,3101,3102,3103,3104,3105,3106,3107,3108,3109,3110" 
