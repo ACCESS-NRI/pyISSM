@@ -25,7 +25,7 @@ dep = pyissm.model.classes.dependent()
 dep.name = 'MaxVel'
 dep.type = 'scalar'
 dep.nods = md.mesh.numberofvertices
-dep.fos_reverse_index = 1
+# dep.fos_reverse_index = 1
 md.autodiff.dependents = [dep]
 
 md.autodiff.driver = 'fos_reverse'
