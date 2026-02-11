@@ -7,7 +7,7 @@ build:
   jobs:
     # We copy some external foders/file needed within the docs folder
     pre_build:
-      - cp -r tutorials docs/source/tutorials
+      - cp -r tutorials docs/source/_static
 
 # Build documentation with Sphinx
 sphinx:
