@@ -78,9 +78,9 @@ class amr(class_registry.manage_state):
 
     Examples
     -------
-    md.amr = pyissm.model.classes.amr()
-    md.amr.hmin = 50
-    md.amr.fieldname = 'Thickness'
+        md.amr = pyissm.model.classes.amr()
+        md.amr.hmin = 50
+        md.amr.fieldname = 'Thickness'
     """ 
     # Initialise with default parameters
     def __init__(self, other=None):
