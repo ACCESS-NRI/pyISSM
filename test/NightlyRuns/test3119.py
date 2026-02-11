@@ -11,17 +11,20 @@ md.cluster.np = 1
 md.autodiff.isautodiff = True
 md.toolkits.DefaultAnalysis = pyissm.tools.config.issm_gsl_solver()
 
-#first run scalar reverse mode:
-md.autodiff.independents = [pyissm.model.classes.independent()]
-md.autodiff.independents.name = md.geometry.thickness
-md.autodiff.independents.type = 'vertex'
-md.autodiff.independents.nods = md.mesh.numberofvertices
-md.autodiff.independents.fos_reverse_index = 1
 
-md.autodiff.dependents = [pyissm.model.classes.dependent()]
-md.autodiff.dependents.name = 'MaxVel'
-md.autodiff.dependents.type = 'scalar'
-md.autodiff.dependents.fos_reverse_index = 1
+#first run scalar reverse mode:
+indep = pyissm.model.classes.independent()
+indep.name = 'md.geometry.thickness'
+indep.type = 'vertex'
+indep.nods = md.mesh.numberofvertices
+indep.fos_reverse_index = 1
+md.autodiff.independents = [indep]
+
+dep = pyissm.model.classes.dependent()
+dep.name = 'MaxVel'
+dep.type = 'scalar'
+dep.fos_reverse_index = 1
+md.autodiff.dependents = [dep]
 md.autodiff.driver = 'fos_reverse'
 
 md = pyissm.model.execute.solve(md, 'Transient')
