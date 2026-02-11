@@ -260,7 +260,7 @@ class autodiff(class_registry.manage_state):
 
                 if fov.size > 0:
                     # treat as explicit list of indices
-                    indices = fov.astype(int) - 1  # convert to 0-based like MATLAB
+                    indices = fov.astype(int)# - 1  # convert to 0-based like MATLAB
                     execute.WriteData(
                         fid, prefix,
                         name="md.autodiff.fov_forward_indices",
