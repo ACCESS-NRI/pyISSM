@@ -12,13 +12,13 @@ md.autodiff.isautodiff = True
 md.toolkits.DefaultAnalysis = pyissm.tools.config.issm_gsl_solver()
 
 #first run scalar reverse mode:
-md.autodiff.independents = pyissm.model.classes.independent()
+md.autodiff.independents = [pyissm.model.classes.independent()]
 md.autodiff.independents.name = md.geometry.thickness
 md.autodiff.independents.type = 'vertex'
 md.autodiff.independents.nods = md.mesh.numberofvertices
 md.autodiff.independents.fos_reverse_index = 1
 
-md.autodiff.dependents = pyissm.model.classes.dependent()
+md.autodiff.dependents = [pyissm.model.classes.dependent()]
 md.autodiff.dependents.name = 'MaxVel'
 md.autodiff.dependents.type = 'scalar'
 md.autodiff.dependents.fos_reverse_index = 1
