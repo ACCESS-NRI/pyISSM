@@ -417,7 +417,7 @@ def save_model(md, path):
         
         # If the object is None, skip it.
         if obj is None:
-            print(f"⚠️ Skipping unsupported field (NoneType): {path})")
+            print(f"⚠️  {path} is NoneType. This will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
             return
 
         # Get state from the object
@@ -428,11 +428,8 @@ def save_model(md, path):
             state = obj.__dict__
 
         ## Is state is still None (failed above conditions), or not a dictionary, skip it
-        if state is None:
-            print(f"⚠️ Skipping unsupported field (no state): {path}")
-            return
-        if not isinstance(state, dict):
-            print(f"⚠️ Skipping unsupported field (state not dict-like): {path}")
+        if state is None or not isinstance(state, dict):
+            print(f"⚠️  {path} cannot be serialized. This will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
             return
 
         ## For each item, write attributes and variables...
@@ -469,10 +466,10 @@ def save_model(md, path):
                         continue
 
                     if v is None:                        
-                        print(f"⚠️ Skipping None field: {key_path}")
+                        print(f"⚠️  {key_path} is NoneType. This will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
                         continue
 
-                    print(f"⚠️ Skipping unsupported field in Mapping: {key_path} ({type(v).__name__})")
+                    print(f"⚠️  Skipping unsupported field in Mapping: {key_path} ({type(v).__name__}). This will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
                 continue
                 
             # Nested objects
@@ -483,10 +480,10 @@ def save_model(md, path):
                 
             # None / unsupported
             if value is None:
-                print(f"⚠️ Skipping None field: {full_path}")
+                print(f"⚠️  {full_path} is NoneType. This will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
                 continue
             
-            print(f"⚠️ Skipping unsupported field: {full_path} ({type(value).__name__})")
+            print(f"⚠️  Skipping unsupported field: {full_path} ({type(value).__name__}). This will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
             
     def _get_registered_name(obj):
         classname = obj.__class__
@@ -511,7 +508,7 @@ def save_model(md, path):
                 ## Loop through each solution type in md.results
                 for solution_name, solution_obj in vars(md.results).items():
                     if solution_obj is None:
-                        print(f"⚠️ Skipping solution type: {solution_name})")
+                        print(f"⚠️  Skipping solution type: {solution_name})")
                         continue
 
                     ## Create subgroup for this solution (e.g., TransientSolution)
