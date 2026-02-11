@@ -248,49 +248,37 @@ class autodiff(class_registry.manage_state):
                 execute.WriteData(fid, prefix, name = 'md.autodiff.fos_reverse_index', data = index, format = 'Integer')
 
 
-            ## 5 - build index for fov_forward driver
-            if isinstance(self.driver, str) and self.driver.lower() == "fov_forward":
-                indices = 0
+                    ## 5 - build index for fov_forward driver
+        # 5 - build index for fov_forward driver
+        if isinstance(self.driver, str) and self.driver.lower() == "fov_forward":
+            indices = 0
 
-                for indep in self.independents:
-                    fos_fwd_idx = getattr(indep, "fos_forward_index", None)
+            for indep in self.independents:
+                # MATLAB run sets fov_forward_indices explicitly (1:N)'
+                fov = getattr(indep, "fov_forward_indices", np.array([]))
+                fov = np.asarray(fov)
 
-                    # "non-empty" / "specified" fos_forward_index
-                    if fos_fwd_idx is not None and fos_fwd_idx != [] and not (isinstance(fos_fwd_idx, float) and np.isnan(fos_fwd_idx)):
-                        fov = getattr(indep, "fov_forward_indices", None)
+                if fov.size > 0:
+                    # treat as explicit list of indices
+                    indices = fov.astype(int) - 1  # convert to 0-based like MATLAB
+                    execute.WriteData(
+                        fid, prefix,
+                        name="md.autodiff.fov_forward_indices",
+                        data=indices,
+                        format="IntMat",
+                        mattype=3
+                    )
+                    break
 
-                        if fov is None:
-                            # fall back to size logic
-                            indices += 1 if str(getattr(indep, "type", "")).lower() == "scalar" else int(getattr(indep, "nods"))
-                        else:
-                            fov_arr = np.asarray(fov)
+                # otherwise fall back to implicit counting
+                indep_type = str(getattr(indep, "type", "")).lower()
+                indices += 1 if indep_type == "scalar" else int(getattr(indep, "nods"))
 
-                            # If a vector of indices was provided, use its length (count)
-                            if fov_arr.ndim > 0 and fov_arr.size > 1:
-                                indices += int(fov_arr.size)
-                            else:
-                                # scalar count / max-index provided
-                                indices += int(fov_arr.item())
-                        break
+            else:
+                # no independents: still write something sensible
+                indices = -1
+                execute.WriteData(fid, prefix, name="md.autodiff.fov_forward_indices", data=indices, format="Integer")
 
-                    # fos_forward_index not specified -> count from type
-                    indep_type = str(getattr(indep, "type", "")).lower()
-                    if indep_type == "scalar":
-                        indices += 1
-                    else:
-                        indices += int(getattr(indep, "nods"))
-
-                fov = getattr(indep, "fov_forward_indices")
-                a = np.asarray(fov)
-                indices += int(a.size) if a.size > 1 else int(a.item())
-
-
-                execute.WriteData(
-                    fid, prefix,
-                    name="md.autodiff.fov_forward_indices",
-                    data=int(indices),
-                    format="Integer"   # <-- scalar is enough; IntMat also works but Integer is cleaner
-    )
 
 
                 # indices -= 1  # get C-indices numbering going
