@@ -41,10 +41,10 @@ indep.name = 'md.geometry.thickness'
 indep.type = 'vertex'
 indep.nods = md.mesh.numberofvertices
 # "not empty" so the MATLAB branch triggers:
-indep.fos_forward_index = 1
 
 # scalar “how many directions” (not the explicit list 1..N):
-indep.fov_forward_indices = int(md.mesh.numberofvertices)
+indep.fov_forward_indices = np.arange(1, md.mesh.numberofvertices + 1, dtype=int)
+
 md.autodiff.independents = [indep]
 
 dep = pyissm.model.classes.dependent()
