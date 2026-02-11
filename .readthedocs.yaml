@@ -4,6 +4,10 @@ build:
   os: ubuntu-24.04
   tools:
     python: "3.13"
+  jobs:
+    # We copy some external foders/file needed within the docs folder
+    pre_build:
+      - cp -r tutorials docs/source/tutorials
 
 # Build documentation with Sphinx
 sphinx:
