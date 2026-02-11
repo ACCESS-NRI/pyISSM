@@ -37,4 +37,4 @@ jobs:
     uses: access-nri/pyISSM/.github/workflows/issm-tests.yml@main
     with:
       build-type: "issm-AD"
-      test-args: "--range 9999:9999"
+      test-args: "--tests 9999:9999"
