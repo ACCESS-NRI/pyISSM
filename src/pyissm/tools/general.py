@@ -810,3 +810,36 @@ def compare_bin_files(
         print(f'Output written to file: {out_file}.')
     else:
         print("\n".join(lines))
+
+def summarize_solution(solution):
+    """
+    Print a summary of field names, types, and sizes for an ISSM solution object.
+    """
+    print(f"{'Field':<35} {'Type':<20} {'Shape / Length'}")
+    print("-" * 75)
+
+    for name, value in vars(solution).items():
+
+        # Skip private attributes
+        if name.startswith('_'):
+            continue
+
+        # NumPy arrays
+        if isinstance(value, np.ndarray):
+            print(f"{name:<35} {'ndarray':<20} {value.shape}")
+
+        # Lists
+        elif isinstance(value, list):
+            print(f"{name:<35} {'list':<20} len={len(value)}")
+
+        # Scalars (int, float, str, etc.)
+        elif np.isscalar(value):
+            print(f"{name:<35} {type(value).__name__:<20} scalar")
+
+        # None
+        elif value is None:
+            print(f"{name:<35} NoneType{'':<14} None")
+
+        # Fallback
+        else:
+            print(f"{name:<35} {type(value).__name__:<20}")
