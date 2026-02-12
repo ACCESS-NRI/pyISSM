@@ -636,7 +636,7 @@ def save_model(md, path, verbose = 0):
                     classname = _get_registered_name(solution_obj)
                     solution_group.setncattr("classtype", classname)
 
-                    _serialize_object(solution_obj, solution_group)
+                    _serialize_object(solution_obj, solution_group, solution_name)
 
             else:
                 ## For regular model components (e.g., mesh, materials, geometry)
@@ -651,7 +651,7 @@ def save_model(md, path, verbose = 0):
                 group.setncattr("classtype", classname)
 
                 ## Serialize the component state
-                _serialize_object(obj, group, path = name)
+                _serialize_object(obj, group, name)
 
 def _collapse_solution_to_step(solution):
     """
