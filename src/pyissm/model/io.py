@@ -88,6 +88,57 @@ def load_model(path):
                 else:
                     state[attr] = val
         return state
+    
+    # Helper function to recursively load nested groups (dicts / nested objects)
+    def _get_subgroups(state, group, group_name):
+        for sub_name, sub_group in group.groups.items():
+
+            # If subgroup represents a serialized class
+            if "classtype" in sub_group.ncattrs():
+
+                # Instantiate the class
+                classtype, obj = _get_class(sub_group)
+                if obj is None:
+                    continue
+                
+                # Build state dictionary from attributes, variables, and subgroups
+                sub_state = {}
+                sub_state = _get_attributes(sub_state, sub_group)
+                sub_state = _get_variables(sub_state, sub_group, f"{group_name}.{sub_name}")
+                sub_state = _get_subgroups(sub_state, sub_group, f"{group_name}.{sub_name}")
+
+                # Normalize NumPy scalar types and NaN values
+                sub_state = _normalize_items(sub_state)
+
+                # Reconstruct object using __setstate__
+                try:
+                    obj.__setstate__(sub_state)
+                except Exception as e:
+                    print(f"⚠️ Failed to set state for '{group_name}.{sub_name}': {e}")
+                    continue
+                
+                # Normalize loaded attributes
+                _normalize_loaded_attributes(obj)
+
+                # Attach reconstructed object to state
+                state[sub_name] = obj
+
+            else:
+                # Otherwise treat subgroup as a dictionary
+
+                # Build state dictionary from attributes, variables, and subgroups
+                sub_state = {}
+                sub_state = _get_attributes(sub_state, sub_group)
+                sub_state = _get_variables(sub_state, sub_group, f"{group_name}.{sub_name}")
+                sub_state = _get_subgroups(sub_state, sub_group, f"{group_name}.{sub_name}")
+
+                # Normalize NumPy scalar types and NaN values
+                sub_state = _normalize_items(sub_state)
+                
+                # Attach reconstructed object to state
+                state[sub_name] = sub_state
+
+        return state
 
     # Helper function to retrieve classtype and create new instance object
     def _get_class(group):
@@ -95,20 +146,61 @@ def load_model(path):
         obj = model.classes.class_registry.create_instance(classtype)
         return classtype, obj
 
-    # Helper function to normalise NaN values (convert all NaN to np.nan)
-    def _normalize_nans(obj):
+    # Helper function to recursively normalise items loaded from NetCDF
+    def _normalize_items(obj):
+        """
+        Recursively normalize deserialized state items loaded from NetCDF.
+
+        This function performs post-load type normalization to ensure consistency
+        between NumPy-derived types and native Python types. It traverses nested
+        containers and applies the following conversions:
+
+        - NumPy scalar types (e.g., ``np.int64``, ``np.float64``, ``np.bool_``)
+        are converted to their native Python equivalents using ``.item()``.
+        - Floating NaN values are normalized to ``np.nan``.
+        - Dictionaries, lists, and tuples are processed recursively.
+        - NumPy arrays are preserved, with floating NaNs normalized in-place.
+
+        Parameters
+        ----------
+        obj : any
+            The object or container to normalize. May be a scalar, NumPy scalar,
+            NumPy array, dictionary, list, tuple, or nested combination thereof.
+
+        Returns
+        -------
+        any
+            The normalized object with consistent Python-native scalar types and
+            recursively processed container elements.
+
+        Notes
+        -----
+        This function is applied to raw state dictionaries prior to calling
+        ``__setstate__`` during model reconstruction. It ensures that NetCDF-
+        derived NumPy scalar types do not propagate into model attributes or
+        nested dictionaries.
+        """
+
         if isinstance(obj, dict):
-            return {k: _normalize_nans(v) for k, v in obj.items()}
+            return {k: _normalize_items(v) for k, v in obj.items()}
+        
         elif isinstance(obj, list):
-            return [_normalize_nans(item) for item in obj]
+            return [_normalize_items(item) for item in obj]
+        
         elif isinstance(obj, tuple):
-            return tuple(_normalize_nans(item) for item in obj)
+            return tuple(_normalize_items(item) for item in obj)
+        
         elif isinstance(obj, np.ndarray):
             if np.issubdtype(obj.dtype, np.floating):
                 obj = np.where(np.isnan(obj), np.nan, obj)
             return obj
+        
         elif isinstance(obj, float) and math.isnan(obj):
             return np.nan
+        
+        elif isinstance(obj, np.generic):
+            return obj.item()
+        
         else:
             return obj
         
@@ -229,8 +321,11 @@ def load_model(path):
                         ## Get variables
                         state = _get_variables(state, sub_grp, sub_grp_name)
 
+                        ## Get nested groups
+                        state = _get_subgroups(state, sub_grp, sub_grp_name)
+
                         ## Convert all NaN values to np.nan
-                        state = _normalize_nans(state)
+                        state = _normalize_items(state)
 
                         ## Set the state for the model class
                         try:
@@ -276,8 +371,11 @@ def load_model(path):
                     ## Get variables
                     state = _get_variables(state, grp, grp_name)
 
+                    ## Get nested groups
+                    state = _get_subgroups(state, grp, grp_name)
+
                     ## Convert all NaN values to np.nan
-                    state = _normalize_nans(state)
+                    state = _normalize_items(state)
 
                     ## Set the state for the model class
                     try:
@@ -355,7 +453,8 @@ def save_model(md, path):
             return np.array(["".join(row.astype(str)) for row in arr], dtype='S')
         else:
             raise ValueError("Input must be a 1D or 2D char array with dtype='S1'")
-        
+    
+    # Helper function to handle serialisation of scalar values
     def _serialize_scalars(value, group, attr_name):
         if isinstance(value, (int, float, str, bool)):
             ## If it's a boolean, convert to int for NetCDF writing
@@ -365,6 +464,7 @@ def save_model(md, path):
             return True
         return False
     
+    # Helper function to handle serialisation of arrays and lists
     def _serialize_arrays_lists(value, group, attr_name):
         # Handle arrays and lists (convert lists to arrays)
         if isinstance(value, np.ndarray) or isinstance(value, list):
