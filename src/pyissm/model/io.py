@@ -397,7 +397,7 @@ def load_model(path):
     return md
 
 
-def save_model(md, path):
+def save_model(md, path, verbose = 0):
     """
     Save an ISSM model to a NetCDF file.
 
@@ -529,7 +529,8 @@ def save_model(md, path):
 
         ## Is state is still None (failed above conditions), or not a dictionary, skip it
         if state is None or not isinstance(state, dict):
-            print(f"⚠️  {path} cannot be serialized. This will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
+            if verbose > 0:
+                print(f"⚠️  {path} is NoneType or not a dictionary. This will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
             return
 
         ## For each item, write attributes and variables...
@@ -565,8 +566,9 @@ def save_model(md, path):
                         _serialize_object(v, sub_group, key_path)
                         continue
 
-                    if v is None:                        
-                        print(f"⚠️  {key_path} is NoneType. This will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
+                    if v is None:        
+                        if verbose > 0:                
+                            print(f"⚠️  {key_path} is NoneType. This will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
                         continue
 
                     print(f"⚠️  Skipping unsupported field in Mapping: {key_path} ({type(v).__name__}). This will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
@@ -580,7 +582,8 @@ def save_model(md, path):
                 
             # None / unsupported
             if value is None:
-                print(f"⚠️  {full_path} is NoneType. This will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
+                if verbose > 0:
+                 print(f"⚠️  {full_path} is NoneType. This will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
                 continue
             
             print(f"⚠️  Skipping unsupported field: {full_path} ({type(value).__name__}). This will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
