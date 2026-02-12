@@ -149,23 +149,23 @@ def load_model(path):
     # Helper function to recursively normalise items loaded from NetCDF
     def _normalize_items(obj):
         """
-        Recursively normalize deserialized state items loaded from NetCDF.
+        Recursively normalize items loaded from a NetCDF-derived state.
 
-        This function performs post-load type normalization to ensure consistency
-        between NumPy-derived types and native Python types. It traverses nested
-        containers and applies the following conversions:
+        This function ensures consistency between NumPy-derived types and native
+        Python types after loading a model from NetCDF. It traverses nested containers
+        and applies the following conversions:
 
-        - NumPy scalar types (e.g., ``np.int64``, ``np.float64``, ``np.bool_``)
-        are converted to their native Python equivalents using ``.item()``.
-        - Floating NaN values are normalized to ``np.nan``.
+        - NumPy scalar types (e.g., ``np.int64``, ``np.float64``, ``np.bool_``) are
+        converted to native Python scalars using ``.item()``.
+        - Floating-point NaN values are normalized to ``np.nan`` for consistency.
         - Dictionaries, lists, and tuples are processed recursively.
-        - NumPy arrays are preserved, with floating NaNs normalized in-place.
+        - NumPy arrays are preserved, with floating-point NaNs normalized in-place.
 
         Parameters
         ----------
         obj : any
-            The object or container to normalize. May be a scalar, NumPy scalar,
-            NumPy array, dictionary, list, tuple, or nested combination thereof.
+            The object or container to normalize. Can be a scalar, NumPy scalar,
+            NumPy array, dictionary, list, tuple, or any nested combination of these.
 
         Returns
         -------
@@ -175,10 +175,12 @@ def load_model(path):
 
         Notes
         -----
-        This function is applied to raw state dictionaries prior to calling
-        ``__setstate__`` during model reconstruction. It ensures that NetCDF-
-        derived NumPy scalar types do not propagate into model attributes or
-        nested dictionaries.
+        - This function is typically applied to raw state dictionaries before calling
+        ``__setstate__`` on model objects.
+        - Ensures that NetCDF-loaded NumPy scalar types do not propagate into model
+        attributes or nested dictionaries, preventing issues with type mismatches.
+        - Floating NaNs are converted in arrays and scalars to maintain consistent
+        representation across platforms and Python versions.
         """
 
         if isinstance(obj, dict):
@@ -401,19 +403,22 @@ def save_model(md, path, verbose = 0):
     """
     Save an ISSM model to a NetCDF file.
 
-    This function serializes an ISSM model and all its components to NetCDF format,
-    including mesh, materials, geometry, boundary conditions, and results. The function
-    handles nested objects and properly serializes the complete model state for later
-    reconstruction.
+    This function serializes an ISSM model and all its components into a
+    NetCDF4 file, preserving the complete model state for later reconstruction.
+    It supports nested objects, dictionaries, arrays, lists, scalars, and
+    NumPy scalar types. Boolean values are converted to integers, and object
+    arrays or string arrays are appropriately converted for NetCDF storage.
 
     Parameters
     ----------
     md : model.Model
-        The ISSM model object to be saved, containing all model components
-        such as mesh, geometry, materials, boundary conditions, and results.
-
+        The ISSM model object to be saved, including components such as mesh,
+        geometry, materials, boundary conditions, and results.
     path : str
-        Path to the output NetCDF file where the model will be saved.
+        Path to the output NetCDF file where the model will be written.
+    verbose : int, optional
+        Verbosity level for warnings (default is 0). If >0, warnings are printed
+        for skipped attributes, None values, or unsupported types.
 
     Raises
     ------
@@ -424,22 +429,25 @@ def save_model(md, path, verbose = 0):
 
     Notes
     -----
-    - The function automatically handles different data types including scalars,
-      arrays, lists, and nested objects
-    - TransientSolution results are automatically collapsed from individual
-      timesteps to a compact format for efficient storage
-    - Boolean values are converted to integers for NetCDF compatibility
-    - Object arrays and string arrays are properly handled with appropriate
-      data type conversions
-    - Compression is enabled for most variables to reduce file size
+    - Handles Python scalar types (``int``, ``float``, ``str``, ``bool``) and NumPy scalar types
+      (``np.int32``, ``np.int64``, ``np.float32``, ``np.float64``, etc.).
+    - Handles 1D and 2D string arrays (including MATLAB-style char arrays) and object arrays.
+    - Empty lists are stored as the special string `"__EMPTY_LIST__"`.
+    - Nested dictionaries and OrderedDicts are serialized recursively into NetCDF groups.
+    - Nested objects with `__getstate__()` or `__dict__` are serialized recursively.
+    - The 'results' attribute is treated specially:
+        - `TransientSolution` objects are collapsed to a single step for storage.
+        - Other solution types with scalar steps or simple attributes are written as-is.
+    - Compression (`zlib=True`) is enabled for numeric variables; string arrays are uncompressed.
+    - Any attribute that cannot be serialized is skipped, with a warning printed if `verbose > 0`.
 
     See Also
     --------
-    load_model : Load an ISSM model from NetCDF format
+    load_model : Load an ISSM model from NetCDF format.
 
     Examples
     --------
-    >>> save_model(md, 'my_model.nc')
+    >>> save_model(md, "my_model.nc", verbose=1)
     """
 
     # Helper function to convert character array to string for NetCDF writing
