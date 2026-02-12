@@ -621,6 +621,10 @@ def save_model(md, path, verbose = 0):
                     if isinstance(solution_obj, model.classes.results.solution) and solution_name == "TransientSolution":
                         solution_obj = _collapse_solution_to_step(solution_obj)
 
+                    ## If step exists and is an empty dict, replace with scalar 0
+                    if hasattr(solution_obj, "step") and solution_obj.step == {}:
+                        solution_obj.step = 0
+
                     ## Attach class type metadata
                     classname = _get_registered_name(solution_obj)
                     solution_group.setncattr("classtype", classname)
