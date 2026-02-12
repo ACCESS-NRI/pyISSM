@@ -622,8 +622,9 @@ def save_model(md, path, verbose = 0):
                         solution_obj = _collapse_solution_to_step(solution_obj)
 
                     ## If step exists and is an empty dict, replace with scalar 0
-                    if hasattr(solution_obj, "step") and solution_obj.step == {}:
-                        solution_obj.step = 0
+                    if hasattr(solution_obj, "step"):
+                        if isinstance(solution_obj.step, dict) and len(solution_obj.step) == 0:
+                            solution_obj.step = 0
 
                     ## Attach class type metadata
                     classname = _get_registered_name(solution_obj)
