@@ -456,10 +456,13 @@ def save_model(md, path, verbose = 0):
     
     # Helper function to handle serialisation of scalar values
     def _serialize_scalars(value, group, attr_name):
-        if isinstance(value, (int, float, str, bool)):
+        if isinstance(value, (int, float, str, bool)) or np.isscalar(value):
             ## If it's a boolean, convert to int for NetCDF writing
             if isinstance(value, (bool)):
                 value = int(value)
+            ## Convert NumPy scalars to native Python types
+            elif isinstance(value, np.generic):
+                value = value.item()
             group.setncattr(attr_name, value)
             return True
         return False
@@ -620,11 +623,6 @@ def save_model(md, path, verbose = 0):
                     ## If it's a TransientSolution, collapse solution to a single step for writing
                     if isinstance(solution_obj, model.classes.results.solution) and solution_name == "TransientSolution":
                         solution_obj = _collapse_solution_to_step(solution_obj)
-
-                    ## If step exists and is an empty dict, replace with scalar 0
-                    if hasattr(solution_obj, "step"):
-                        if isinstance(solution_obj.step, dict) and len(solution_obj.step) == 0:
-                            solution_obj.step = 0
 
                     ## Attach class type metadata
                     classname = _get_registered_name(solution_obj)
