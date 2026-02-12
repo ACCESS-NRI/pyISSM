@@ -86,7 +86,7 @@ class earth(class_registry.manage_state):
     # Initialise with default parameters
     def __init__(self, other = None):
         self.settings          = settings()
-        self.external          = None
+        self.external          = []
         self.lovenumbers       = lovenumbers()
         self.rotational        = rotational()
         self.planetradius      = tools.general.planetradius('earth')
