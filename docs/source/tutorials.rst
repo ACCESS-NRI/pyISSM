@@ -34,9 +34,9 @@ If downloading these notebooks to execute locally, you must also
        :download:`Download <tutorials/ex1_SquareIceShelf.ipynb>`
 
 Download Tutorial Resources
-------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-:download:`⬇ Download required resources for tutorial notebooks (.zip) <tutorials/assets.zip>`
+:download:`Download required resources for tutorial notebooks (.zip) <tutorials/assets.zip>`
 
 Learning Modules
 ----------------
