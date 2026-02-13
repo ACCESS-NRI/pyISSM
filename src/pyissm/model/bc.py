@@ -35,7 +35,7 @@ def get_ice_front_nodes(md, ice_front_exp):
     
     return node_on_ice_front
 
-def set_neumann_bc(md, node_on_ice_front):
+def _set_neumann_bc(md, node_on_ice_front):
     """Set Neumann boundary conditions for the ice front."""
 
     # Find indices of nodes on the ice front
@@ -130,7 +130,7 @@ def set_ice_shelf_bc(md,
         node_on_ice_front = np.zeros((md.mesh.numberofvertices), bool)
 
     # Set neumann BC on ice front
-    set_neumann_bc(md, node_on_ice_front)
+    _set_neumann_bc(md, node_on_ice_front)
 
     # Set dirichlet BC on boundary (excluding ice front)
     _set_sb_dirichlet_bc(md)
