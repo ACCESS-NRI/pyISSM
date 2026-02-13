@@ -5,10 +5,14 @@ Tutorials
 
 The following Jupyter notebooks provide hands-on tutorials demonstrating common pyISSM workflows:
 
-.. toctree::
-   :maxdepth: 1
+.. list-table::
+   :header-rows: 1
 
-   tutorials/1_pyISSM_intro.ipynb
-   tutorials/ex1_SquareIceShelf.ipynb
-
-Notebooks can be downloaded using the "Download Notebook" button at the bottom of each notebook.
+   * - Tutorial
+     - Actions
+   * - pyISSM Introduction
+     - :doc:`View <tutorials/1_pyISSM_intro>` | 
+       :download:`Download <tutorials/1_pyISSM_intro.ipynb>`
+   * - Example 1 – Square Ice Shelf
+     - :doc:`View <tutorials/ex1_SquareIceShelf>` | 
+       :download:`Download <tutorials/ex1_SquareIceShelf.ipynb>`
