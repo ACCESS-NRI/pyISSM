@@ -1,7 +1,10 @@
 .. _tutorials:
 
+Tutorials
+=========
+
 pyISSM introduction
-===================
+-------------------
 
 The following Jupyter notebooks provide a high-level introduction to pyISSM, focusing on the package structure and syntax.
 
@@ -14,8 +17,8 @@ The following Jupyter notebooks provide a high-level introduction to pyISSM, foc
      - :doc:`View <tutorials/1_pyISSM_intro>` | 
        :download:`Download <tutorials/1_pyISSM_intro.ipynb>`
 
-Tutorials
-=========
+Hands-on Tutorials
+------------------
 
 The following Jupyter notebooks provide hands-on tutorials demonstrating common pyISSM workflows.
 If downloading these notebooks to execute locally, you must also 
@@ -36,7 +39,7 @@ Download Tutorial Resources
 :download:`⬇ Download required resources for tutorial notebooks (.zip) <tutorials/assets.zip>`
 
 Learning Modules
-================
+----------------
 
 **Coming Soon!**
 
