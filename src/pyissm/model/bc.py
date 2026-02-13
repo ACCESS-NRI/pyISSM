@@ -44,7 +44,7 @@ def set_neumann_bc(md, node_on_ice_front):
     # Mark ice front position in the level set
     md.mask.ice_levelset[ice_front_nodes] = 0
 
-def set_sb_dirichlet_bc(md):
+def _set_sb_dirichlet_bc(md):
     """Set Dirichlet boundary conditions on boundary (excluding ice front)."""
 
     # Set empty spc arrays
@@ -92,14 +92,14 @@ def set_sb_dirichlet_bc(md):
         if md.inversion.vy_obs.ndim == 1:
             md.inversion.vy_obs = md.inversion.vy_obs.reshape(-1, )
 
-        warnings.warn('pyissm.model.bc.set_sb_dirichlet_bc: Using observed velocities for vx and vy stressbalance model boundary conditions. vz boundary conditions are set to 0.')
+        warnings.warn('pyissm.model.bc._set_sb_dirichlet_bc: Using observed velocities for vx and vy stressbalance model boundary conditions. vz boundary conditions are set to 0.')
         md.stressbalance.spcvx[boundary_node_indices] = md.inversion.vx_obs[boundary_node_indices]
         md.stressbalance.spcvy[boundary_node_indices] = md.inversion.vy_obs[boundary_node_indices]
         md.stressbalance.spcvz[boundary_node_indices] = 0
     
     ## If observed velocities are not available, set Dirichlet values to zero
     else:
-        warnings.warn('pyissm.model.bc.set_sb_dirichlet_bc: No observed velocities found. Setting stressbalance model boundary conditions as 0.')
+        warnings.warn('pyissm.model.bc._set_sb_dirichlet_bc: No observed velocities found. Setting stressbalance model boundary conditions as 0.')
         md.stressbalance.spcvx[boundary_node_indices] = 0
         md.stressbalance.spcvy[boundary_node_indices] = 0
         md.stressbalance.spcvz[boundary_node_indices] = 0
@@ -133,7 +133,7 @@ def set_ice_shelf_bc(md,
     set_neumann_bc(md, node_on_ice_front)
 
     # Set dirichlet BC on boundary (excluding ice front)
-    set_sb_dirichlet_bc(md)
+    _set_sb_dirichlet_bc(md)
 
     # Define other boundary conditions
     ## Initialize smb and basalforcings
@@ -201,7 +201,7 @@ def set_ice_sheet_bc(md):
     """
 
     # Set dirichlet BC on boundary (excluding ice front)
-    set_sb_dirichlet_bc(md)
+    _set_sb_dirichlet_bc(md)
 
     # Initialise surface and basal forcings
     md.smb.initialise(md)
@@ -281,7 +281,7 @@ def set_marine_ice_sheet_bc(md,
     md.mask.ice_levelset[pos] = 0
     
     # Set Dirichlet BCs
-    set_sb_dirichlet_bc(md)
+    _set_sb_dirichlet_bc(md)
 
     # Define other boundary conditions
     ## Initialize smb and basalforcings
