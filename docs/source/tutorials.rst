@@ -3,17 +3,23 @@
 pyISSM introduction
 ===================
 
-The following Jupyter notebook provides a high-level introduction to pyISSM, focusing on the package structure and syntax.
+The following Jupyter notebooks provide a high-level introduction to pyISSM, focusing on the package structure and syntax.
 
-- **pyISSM Introduction**  
-  :doc:`View <tutorials/1_pyISSM_intro>` | :download:`Download <tutorials/1_pyISSM_intro.ipynb>`
+.. list-table::
+   :header-rows: 1
+
+   * - Notebook
+     - Actions
+   * - pyISSM Introduction
+     - :doc:`View <tutorials/1_pyISSM_intro>` | 
+       :download:`Download <tutorials/1_pyISSM_intro.ipynb>`
 
 Tutorials
 =========
 
 The following Jupyter notebooks provide hands-on tutorials demonstrating common pyISSM workflows.
 If downloading these notebooks to execute locally, you must also 
-:ref:`download the Tutorial resources <download-tutorial-resources>`.
+:download:`download the Tutorial resources <tutorials/assets.zip>`.
 
 .. list-table::
    :header-rows: 1
@@ -26,6 +32,12 @@ If downloading these notebooks to execute locally, you must also
 
 Download Tutorial Resources
 ------------------
-.. _download-tutorial-resources:
 
 :download:`⬇ Download required resources for tutorial notebooks (.zip) <tutorials/assets.zip>`
+
+Learning Modules
+================
+
+**Coming Soon!**
+
+Check back soon for more in-depth modules on different components of pyISSM.
