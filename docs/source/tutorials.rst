@@ -32,6 +32,10 @@ If downloading these notebooks to execute locally, you must also
    * - Example 1 – Square Ice Shelf
      - :doc:`View <tutorials/ex1_SquareIceShelf>` | 
        :download:`Download <tutorials/ex1_SquareIceShelf.ipynb>`
+   * - Example 2 – Pine Island Glacier
+     - :doc:`View <tutorials/ex2_PineIslandGlacier>` | 
+       :download:`Download <tutorials/ex2_PineIslandGlacier.ipynb>`
+
 
 Download Tutorial Resources
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
