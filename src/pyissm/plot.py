@@ -708,14 +708,20 @@ def plot_model_bc(md,
         fig = ax.get_figure()
 
     ## Initiate plot with Neumann BCs (ice-front)
-    ax = plot_model_elements(md,
-                             md.mask.ice_levelset,
-                             md.mask.ocean_levelset,
-                             ax = ax,
-                             type = 'ice_front_elements',
-                             show_mesh = show_mesh,
-                             show_legend = False,
-                             mesh_kwargs = default_mesh_kwargs)
+    try:
+        ax = plot_model_elements(md,
+                                md.mask.ice_levelset,
+                                md.mask.ocean_levelset,
+                                ax = ax,
+                                type = 'ice_front_elements',
+                                show_mesh = show_mesh,
+                                show_legend = False,
+                                mesh_kwargs = default_mesh_kwargs)
+        neumann_legend = True
+    except ValueError:
+        print('No ice-front (Neumann) elements found to plot.')
+        ax = plot_mesh2d(md, ax = ax, **default_mesh_kwargs)
+        neumann_legend = False
 
     ## Add Dirichlet BCs
     for key, spc in spc_dict.items():
@@ -739,10 +745,17 @@ def plot_model_bc(md,
                        s = spc['size'],
                        label = spc['label'])
 
-    ## Add optional legend (including manual entry for Neumann ice-front)
+    ## Add optional legend
     if show_legend:
-        ice_front = matplotlib.patches.Patch(color = 'blue', label ='Neumann (ice-front)')
-        ax.legend(handles=[ice_front] + ax.get_legend_handles_labels()[0], **default_legend_kwargs)
+        handles, labels = ax.get_legend_handles_labels()
+
+        # Add Neumann entry only if it exists
+        if neumann_legend:
+            ice_front = matplotlib.patches.Patch(color = 'blue',
+                                                 label ='Neumann (ice-front)')
+            handles = [ice_front] + handles
+        
+        ax.legend(handles = handles, **default_legend_kwargs)
 
     ## Add axis labels
     ax.set_xlabel(xlabel)
