@@ -16,3 +16,8 @@ The following Jupyter notebooks provide hands-on tutorials demonstrating common 
    * - Example 1 – Square Ice Shelf
      - :doc:`View <tutorials/ex1_SquareIceShelf>` | 
        :download:`Download <tutorials/ex1_SquareIceShelf.ipynb>`
+
+Download Resources
+------------------
+
+:download:`⬇ Download resources for example notebooks (.zip) <tutorials/assets.zip>`
