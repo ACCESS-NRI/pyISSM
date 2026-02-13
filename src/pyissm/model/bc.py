@@ -7,7 +7,7 @@ import numpy as np
 import os
 from pyissm import tools
 
-def get_ice_front_nodes(md, ice_front_exp):
+def _get_ice_front_nodes(md, ice_front_exp):
     """Identify nodes on the ice front from the provided contour file."""
 
     # Error checks
@@ -29,7 +29,7 @@ def get_ice_front_nodes(md, ice_front_exp):
 
     else:
         ## If Python wrappers are not installed, issue a warning and return all False (No ice front)
-        warnings.warn('pyissm.model.bc.get_ice_front_nodes: Python wrappers not installed. Cannot identify ice front nodes.\n'
+        warnings.warn('pyissm.model.bc._get_ice_front_nodes: Python wrappers not installed. Cannot identify ice front nodes.\n'
                       'Returning all False array (no ice front).')
         node_on_ice_front = np.zeros((md.mesh.numberofvertices), bool)
     
@@ -123,7 +123,7 @@ def set_ice_shelf_bc(md,
     # Identify ice front 
     if not ice_front_exp is None:
         ## If an ice front file is provided, identify nodes on the ice front
-        node_on_ice_front = get_ice_front_nodes(md, ice_front_exp)
+        node_on_ice_front = _get_ice_front_nodes(md, ice_front_exp)
     else: 
         ## If no ice front file is provided, assume no ice front
         warnings.warn('pyissm.model.bc.set_ice_shelf_bc: No ice front file provided. Assuming no ice front.')
@@ -256,7 +256,7 @@ def set_marine_ice_sheet_bc(md,
     # Identify ice front 
     if not ice_front_exp is None:
         ## If an ice front file is provided, identify nodes on the ice front
-        node_on_ice_front = get_ice_front_nodes(md, ice_front_exp)
+        node_on_ice_front = _get_ice_front_nodes(md, ice_front_exp)
         vertex_on_ice_front = md.mesh.vertexonboundary & np.asarray(node_on_ice_front, dtype=bool).ravel()
     else: 
         # Guess where the ice front is
