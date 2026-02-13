@@ -11,7 +11,7 @@ import warnings
 ## ------------------------------------------------------------------------------------
 ## MESH PLOTTING
 ## ------------------------------------------------------------------------------------
-def plot_mesh2d(mesh,
+def plot_mesh2d(md,
                 ax = None,
                 color = 'k',
                 linewidth = 0.1,
@@ -27,9 +27,8 @@ def plot_mesh2d(mesh,
 
     Parameters
     ----------
-    mesh : matplotlib.tri.Triangulation or similar
-        A 2D mesh object containing 'x', 'y', and triangle connectivity information.
-        Can be created for ISSM models with get_mesh() or process_mesh().
+    md : ISSM Model object
+        ISSM Model object containing mesh. Must be compatible with process_mesh().
     ax : matplotlib.axes.Axes, optional
         An existing matplotlib axes object to plot on. If None, a new figure and axes are created.
     color : str, optional
@@ -60,11 +59,11 @@ def plot_mesh2d(mesh,
 
     Example
     -------
-    fig, ax = plot_mesh2d(mesh)
-    fig, ax = plot_mesh2d(mesh, color = 'blue', linewidth = 0.5)
+    fig, ax = plot_mesh2d(md)
+    fig, ax = plot_mesh2d(md, color = 'blue', linewidth = 0.5)
     fig, (ax1, ax2) = plt.subplots(1, 2)
-    ax1 = plot_mesh2d(mesh, ax = ax1)
-    ax2 = plot_mesh2d(mesh, ax = ax2, show_nodes = True, node_kwargs = {'color': 'red'})
+    ax1 = plot_mesh2d(md, ax = ax1)
+    ax2 = plot_mesh2d(md, ax = ax2, show_nodes = True, node_kwargs = {'color': 'red'})
     """
 
     ## Is an ax passed?
@@ -84,6 +83,9 @@ def plot_mesh2d(mesh,
         fig, ax = plt.subplots(figsize = figsize, constrained_layout = constrained_layout)
     else:
         fig = ax.get_figure()
+
+    ## Process mesh for plotting
+    mesh, mesh_x, mesh_y, mesh_elements, is3d = model.mesh.process_mesh(md)
 
     ## Make plot
     ax.triplot(mesh,
@@ -217,7 +219,7 @@ def plot_model_nodes(md,
 
     ## Add mesh (optional) with specific arguments
     if show_mesh:
-        plot_mesh2d(mesh,
+        plot_mesh2d(md,
                     ax=ax,
                     **default_mesh_kwargs)
 
@@ -356,7 +358,7 @@ def plot_model_elements(md,
 
     ## Add mesh (optional) with specific arguments
     if show_mesh:
-        plot_mesh2d(mesh, ax = ax, **default_mesh_kwargs)
+        plot_mesh2d(md, ax = ax, **default_mesh_kwargs)
 
     ## Add legend
     if show_legend:
@@ -527,7 +529,7 @@ def plot_model_field(md,
 
     ## Add optional mesh
     if show_mesh:
-        plot_mesh2d(mesh, ax = ax, **mesh_kwargs)
+        plot_mesh2d(md, ax = ax, **mesh_kwargs)
 
     ## Add optional colorbar
     if show_cbar:
@@ -706,14 +708,20 @@ def plot_model_bc(md,
         fig = ax.get_figure()
 
     ## Initiate plot with Neumann BCs (ice-front)
-    ax = plot_model_elements(md,
-                             md.mask.ice_levelset,
-                             md.mask.ocean_levelset,
-                             ax = ax,
-                             type = 'ice_front_elements',
-                             show_mesh = show_mesh,
-                             show_legend = False,
-                             mesh_kwargs = default_mesh_kwargs)
+    try:
+        ax = plot_model_elements(md,
+                                md.mask.ice_levelset,
+                                md.mask.ocean_levelset,
+                                ax = ax,
+                                type = 'ice_front_elements',
+                                show_mesh = show_mesh,
+                                show_legend = False,
+                                mesh_kwargs = default_mesh_kwargs)
+        neumann_legend = True
+    except ValueError:
+        print('No ice-front (Neumann) elements found to plot.')
+        ax = plot_mesh2d(md, ax = ax, **default_mesh_kwargs)
+        neumann_legend = False
 
     ## Add Dirichlet BCs
     for key, spc in spc_dict.items():
@@ -737,10 +745,17 @@ def plot_model_bc(md,
                        s = spc['size'],
                        label = spc['label'])
 
-    ## Add optional legend (including manual entry for Neumann ice-front)
+    ## Add optional legend
     if show_legend:
-        ice_front = matplotlib.patches.Patch(color = 'blue', label ='Neumann (ice-front)')
-        ax.legend(handles=[ice_front] + ax.get_legend_handles_labels()[0], **default_legend_kwargs)
+        handles, labels = ax.get_legend_handles_labels()
+
+        # Add Neumann entry only if it exists
+        if neumann_legend:
+            ice_front = matplotlib.patches.Patch(color = 'blue',
+                                                 label ='Neumann (ice-front)')
+            handles = [ice_front] + handles
+        
+        ax.legend(handles = handles, **default_legend_kwargs)
 
     ## Add axis labels
     ax.set_xlabel(xlabel)
