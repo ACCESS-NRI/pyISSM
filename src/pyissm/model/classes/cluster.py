@@ -1,3 +1,4 @@
+import os
 import yaml
 import subprocess
 import numpy as np
@@ -150,6 +151,10 @@ class generic(class_registry.manage_state):
     def check_consistency(self, md, solution, analyses):
         if self.np < 1 or np.isnan(self.np):
             md.check_message('cluster.generic.check_consistency: np must be >= 1')
+
+        pwd = os.getcwd()
+        if self.executionpath == pwd:
+            md.check_message('cluster.generic.check_consistency: md.cluster.executionpath must be different from the current working directory.')
 
         return md
 
@@ -672,6 +677,11 @@ class gadi(class_registry.manage_state):
 
         if len(self.moduleload) != len(self.moduleuse):
             md.check_message('pyissm.model.classes.cluster.gadi: moduleload and moduleuse must have the same length')
+
+        pwd = os.getcwd()
+        if self.executionpath == pwd:
+            md.check_message('cluster.generic.check_consistency: md.cluster.executionpath must be different from the current working directory.')
+
 
         return md
 

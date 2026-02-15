@@ -13,6 +13,7 @@ import subprocess
 import warnings
 import sys
 import shutil
+import collections
 
 from pyissm import analysis, model, tools
 
@@ -87,6 +88,57 @@ def load_model(path):
                 else:
                     state[attr] = val
         return state
+    
+    # Helper function to recursively load nested groups (dicts / nested objects)
+    def _get_subgroups(state, group, group_name):
+        for sub_name, sub_group in group.groups.items():
+
+            # If subgroup represents a serialized class
+            if "classtype" in sub_group.ncattrs():
+
+                # Instantiate the class
+                classtype, obj = _get_class(sub_group)
+                if obj is None:
+                    continue
+                
+                # Build state dictionary from attributes, variables, and subgroups
+                sub_state = {}
+                sub_state = _get_attributes(sub_state, sub_group)
+                sub_state = _get_variables(sub_state, sub_group, f"{group_name}.{sub_name}")
+                sub_state = _get_subgroups(sub_state, sub_group, f"{group_name}.{sub_name}")
+
+                # Normalize NumPy scalar types and NaN values
+                sub_state = _normalize_items(sub_state)
+
+                # Reconstruct object using __setstate__
+                try:
+                    obj.__setstate__(sub_state)
+                except Exception as e:
+                    print(f"⚠️ Failed to set state for '{group_name}.{sub_name}': {e}")
+                    continue
+                
+                # Normalize loaded attributes
+                _normalize_loaded_attributes(obj)
+
+                # Attach reconstructed object to state
+                state[sub_name] = obj
+
+            else:
+                # Otherwise treat subgroup as a dictionary
+
+                # Build state dictionary from attributes, variables, and subgroups
+                sub_state = {}
+                sub_state = _get_attributes(sub_state, sub_group)
+                sub_state = _get_variables(sub_state, sub_group, f"{group_name}.{sub_name}")
+                sub_state = _get_subgroups(sub_state, sub_group, f"{group_name}.{sub_name}")
+
+                # Normalize NumPy scalar types and NaN values
+                sub_state = _normalize_items(sub_state)
+                
+                # Attach reconstructed object to state
+                state[sub_name] = sub_state
+
+        return state
 
     # Helper function to retrieve classtype and create new instance object
     def _get_class(group):
@@ -94,20 +146,63 @@ def load_model(path):
         obj = model.classes.class_registry.create_instance(classtype)
         return classtype, obj
 
-    # Helper function to normalise NaN values (convert all NaN to np.nan)
-    def _normalize_nans(obj):
+    # Helper function to recursively normalise items loaded from NetCDF
+    def _normalize_items(obj):
+        """
+        Recursively normalize items loaded from a NetCDF-derived state.
+
+        This function ensures consistency between NumPy-derived types and native
+        Python types after loading a model from NetCDF. It traverses nested containers
+        and applies the following conversions:
+
+        - NumPy scalar types (e.g., ``np.int64``, ``np.float64``, ``np.bool_``) are
+        converted to native Python scalars using ``.item()``.
+        - Floating-point NaN values are normalized to ``np.nan`` for consistency.
+        - Dictionaries, lists, and tuples are processed recursively.
+        - NumPy arrays are preserved, with floating-point NaNs normalized in-place.
+
+        Parameters
+        ----------
+        obj : any
+            The object or container to normalize. Can be a scalar, NumPy scalar,
+            NumPy array, dictionary, list, tuple, or any nested combination of these.
+
+        Returns
+        -------
+        any
+            The normalized object with consistent Python-native scalar types and
+            recursively processed container elements.
+
+        Notes
+        -----
+        - This function is typically applied to raw state dictionaries before calling
+        ``__setstate__`` on model objects.
+        - Ensures that NetCDF-loaded NumPy scalar types do not propagate into model
+        attributes or nested dictionaries, preventing issues with type mismatches.
+        - Floating NaNs are converted in arrays and scalars to maintain consistent
+        representation across platforms and Python versions.
+        """
+
         if isinstance(obj, dict):
-            return {k: _normalize_nans(v) for k, v in obj.items()}
+            return {k: _normalize_items(v) for k, v in obj.items()}
+        
         elif isinstance(obj, list):
-            return [_normalize_nans(item) for item in obj]
+            return [_normalize_items(item) for item in obj]
+        
         elif isinstance(obj, tuple):
-            return tuple(_normalize_nans(item) for item in obj)
+            return tuple(_normalize_items(item) for item in obj)
+        
         elif isinstance(obj, np.ndarray):
             if np.issubdtype(obj.dtype, np.floating):
                 obj = np.where(np.isnan(obj), np.nan, obj)
             return obj
+        
         elif isinstance(obj, float) and math.isnan(obj):
             return np.nan
+        
+        elif isinstance(obj, np.generic):
+            return obj.item()
+        
         else:
             return obj
         
@@ -228,8 +323,11 @@ def load_model(path):
                         ## Get variables
                         state = _get_variables(state, sub_grp, sub_grp_name)
 
+                        ## Get nested groups
+                        state = _get_subgroups(state, sub_grp, sub_grp_name)
+
                         ## Convert all NaN values to np.nan
-                        state = _normalize_nans(state)
+                        state = _normalize_items(state)
 
                         ## Set the state for the model class
                         try:
@@ -275,8 +373,11 @@ def load_model(path):
                     ## Get variables
                     state = _get_variables(state, grp, grp_name)
 
+                    ## Get nested groups
+                    state = _get_subgroups(state, grp, grp_name)
+
                     ## Convert all NaN values to np.nan
-                    state = _normalize_nans(state)
+                    state = _normalize_items(state)
 
                     ## Set the state for the model class
                     try:
@@ -298,23 +399,26 @@ def load_model(path):
     return md
 
 
-def save_model(md, path):
+def save_model(md, path, verbose = 0):
     """
     Save an ISSM model to a NetCDF file.
 
-    This function serializes an ISSM model and all its components to NetCDF format,
-    including mesh, materials, geometry, boundary conditions, and results. The function
-    handles nested objects and properly serializes the complete model state for later
-    reconstruction.
+    This function serializes an ISSM model and all its components into a
+    NetCDF4 file, preserving the complete model state for later reconstruction.
+    It supports nested objects, dictionaries, arrays, lists, scalars, and
+    NumPy scalar types. Boolean values are converted to integers, and object
+    arrays or string arrays are appropriately converted for NetCDF storage.
 
     Parameters
     ----------
     md : model.Model
-        The ISSM model object to be saved, containing all model components
-        such as mesh, geometry, materials, boundary conditions, and results.
-
+        The ISSM model object to be saved, including components such as mesh,
+        geometry, materials, boundary conditions, and results.
     path : str
-        Path to the output NetCDF file where the model will be saved.
+        Path to the output NetCDF file where the model will be written.
+    verbose : int, optional
+        Verbosity level for warnings (default is 0). If >0, warnings are printed
+        for skipped attributes, None values, or unsupported types.
 
     Raises
     ------
@@ -325,22 +429,25 @@ def save_model(md, path):
 
     Notes
     -----
-    - The function automatically handles different data types including scalars,
-      arrays, lists, and nested objects
-    - TransientSolution results are automatically collapsed from individual
-      timesteps to a compact format for efficient storage
-    - Boolean values are converted to integers for NetCDF compatibility
-    - Object arrays and string arrays are properly handled with appropriate
-      data type conversions
-    - Compression is enabled for most variables to reduce file size
+    - Handles Python scalar types (``int``, ``float``, ``str``, ``bool``) and NumPy scalar types
+      (``np.int32``, ``np.int64``, ``np.float32``, ``np.float64``, etc.).
+    - Handles 1D and 2D string arrays (including MATLAB-style char arrays) and object arrays.
+    - Empty lists are stored as the special string `"__EMPTY_LIST__"`.
+    - Nested dictionaries and OrderedDicts are serialized recursively into NetCDF groups.
+    - Nested objects with `__getstate__()` or `__dict__` are serialized recursively.
+    - The 'results' attribute is treated specially:
+        - `TransientSolution` objects are collapsed to a single step for storage.
+        - Other solution types with scalar steps or simple attributes are written as-is.
+    - Compression (`zlib=True`) is enabled for numeric variables; string arrays are uncompressed.
+    - Any attribute that cannot be serialized is skipped, with a warning printed if `verbose > 0`.
 
     See Also
     --------
-    load_model : Load an ISSM model from NetCDF format
+    load_model : Load an ISSM model from NetCDF format.
 
     Examples
     --------
-    >>> save_model(md, 'my_model.nc')
+    >>> save_model(md, "my_model.nc", verbose=1)
     """
 
     # Helper function to convert character array to string for NetCDF writing
@@ -354,78 +461,144 @@ def save_model(md, path):
             return np.array(["".join(row.astype(str)) for row in arr], dtype='S')
         else:
             raise ValueError("Input must be a 1D or 2D char array with dtype='S1'")
+    
+    # Helper function to handle serialisation of scalar values
+    def _serialize_scalars(value, group, attr_name):
+        if isinstance(value, (int, float, str, bool)) or np.isscalar(value):
+            ## If it's a boolean, convert to int for NetCDF writing
+            if isinstance(value, (bool)):
+                value = int(value)
+            ## Convert NumPy scalars to native Python types
+            elif isinstance(value, np.generic):
+                value = value.item()
+            group.setncattr(attr_name, value)
+            return True
+        return False
+    
+    # Helper function to handle serialisation of arrays and lists
+    def _serialize_arrays_lists(value, group, attr_name):
+        # Handle arrays and lists (convert lists to arrays)
+        if isinstance(value, np.ndarray) or isinstance(value, list):
 
+            # If it's a list, convert to an array
+            if isinstance(value, list) and len(value) == 0:
+                # Handle empty list case
+                group.setncattr(attr_name, "__EMPTY_LIST__")
+                    
+            if isinstance(value, list):
+                value = np.array(value, dtype='S')
+            # Otherwise, check the array type
+            else:
+                # If it's an object array, convert to a string array (object arrays can't be written to NetCDF)
+                if value.dtype == object:
+                    value = np.array(value, dtype='S')
+                # Special handling for 'S1' datatype (these come from NetCDF Char variables when output from MATLAB)
+                elif value.dtype.kind == 'S':
+                    value = _char_array_to_strings(value)
+                else:
+                    value = value
+
+            # Handle the dimensions -- define a name from the size. If it doesn't already exist, create it.
+            dim_names = []
+            for i, size in enumerate(value.shape):
+                dim_name = f"dim_{i}_{size}"
+                if dim_name not in defined_dimensions:
+                    ds.createDimension(dim_name, size)
+                    defined_dimensions[dim_name] = size
+                dim_names.append(dim_name)
+
+            # Create variable.
+            # If it's a string array, turn off zlib compression
+            if value.dtype.kind == 'S':
+                var = group.createVariable(attr_name, value.dtype, dimensions=dim_names, zlib=False)
+            else:
+                var = group.createVariable(attr_name, value.dtype, dimensions=dim_names, zlib=True)
+
+            ## Add data to variable
+            var[:] = value
+
+            return True
+        return False
+    
     # Helper function to serialize an object's state
-    def _serialize_object(obj, group):
+    def _serialize_object(obj, group, path = ''):
         """
         Serializes an object's state, including nested objects.
         """
+        
+        # If the object is None, skip it.
+        if obj is None:
+            print(f"⚠️  {path} is NoneType. This will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
+            return
 
-        ## Get state from the object
-        state = obj.__getstate__()
+        # Get state from the object
+        state = None
+        if hasattr(obj, '__getstate__'):
+            state = obj.__getstate__()
+        elif hasattr(obj, '__dict__'):
+            state = obj.__dict__
+
+        ## Is state is still None (failed above conditions), or not a dictionary, skip it
+        if state is None or not isinstance(state, dict):
+            if verbose > 0:
+                print(f"⚠️  {path} is NoneType or not a dictionary. This will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
+            return
 
         ## For each item, write attributes and variables...
         for attr_name, value in state.items():
 
+            # Build path of item
+            full_path = f"{path}.{attr_name}" if path else attr_name
+
             # Handle scalars
-            if isinstance(value, (int, float, str, bool)):
-                ## If it's a boolean, convert to int for NetCDF writing
-                if isinstance(value, (bool)):
-                    value = int(value)
-                group.setncattr(attr_name, value)
-
-            # Handle arrays and lists (convert lists to arrays)
-            elif isinstance(value, np.ndarray) or isinstance(value, list):
-
-                # If it's a list, convert to an array
-                if isinstance(value, list) and len(value) == 0:
-                    # Handle empty list case
-                    group.setncattr(attr_name, "__EMPTY_LIST__")
-                    continue
-                
-                if isinstance(value, list):
-                    value = np.array(value, dtype='S')
-                # Otherwise, check the array type
-                else:
-                    # If it's an object array, convert to a string array (object arrays can't be written to NetCDF)
-                    if value.dtype == object:
-                        value = np.array(value, dtype='S')
-                    # Special handling for 'S1' datatype (these come from NetCDF Char variables when output from MATLAB)
-                    elif value.dtype.kind == 'S':
-                        value = _char_array_to_strings(value)
-                    else:
-                        value = value
-
-                # Handle the dimensions -- define a name from the size. If it doesn't already exist, create it.
-                dim_names = []
-                for i, size in enumerate(value.shape):
-                    dim_name = f"dim_{i}_{size}"
-                    if dim_name not in defined_dimensions:
-                        ds.createDimension(dim_name, size)
-                        defined_dimensions[dim_name] = size
-                    dim_names.append(dim_name)
-
-                # Create variable.
-                # If it's a string array, turn off zlib compression
-                if value.dtype.kind == 'S':
-                    var = group.createVariable(attr_name, value.dtype, dimensions=dim_names, zlib=False)
-                else:
-                    var = group.createVariable(attr_name, value.dtype, dimensions=dim_names, zlib=True)
-
-                ## Add data to variable
-                var[:] = value
-
-            ## Handle nested objects (recursively serialize them)
-            elif isinstance(value, object):
-                # If the value is a class instance, treat it as a group and recurse
-                if hasattr(value, '__getstate__'):
-                    nested_group = group.createGroup(attr_name)
-                    _serialize_object(value, nested_group)
-
-            else:
-                print(f"⚠️ Skipping unsupported field: {attr_name} ({type(value).__name__})")
+            if _serialize_scalars(value, group, attr_name):
                 continue
 
+            # Handle arrays and lists
+            if _serialize_arrays_lists(value, group, attr_name):
+                continue
+
+            # Handle dict / OrderedDict
+            if isinstance(value, collections.abc.Mapping):
+                nested_group = group.createGroup(attr_name)
+
+                for k, v in value.items():
+                    key_name = str(k)
+                    key_path = f"{full_path}.{key_name}"
+
+                    if _serialize_scalars(v, nested_group, key_name):
+                        continue
+
+                    if _serialize_arrays_lists(v, nested_group, key_name):
+                        continue
+
+                    if isinstance(v, collections.abc.Mapping) or hasattr(v, '__getstate__') or hasattr(v, '__dict__'):
+                        sub_group = nested_group.createGroup(key_name)
+                        _serialize_object(v, sub_group, key_path)
+                        continue
+
+                    if v is None:        
+                        if verbose > 0:                
+                            print(f"⚠️  {key_path} is NoneType. This will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
+                        continue
+
+                    print(f"⚠️  Skipping unsupported field in Mapping: {key_path} ({type(v).__name__}). This will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
+                continue
+                
+            # Nested objects
+            if hasattr(value, '__getstate__') or hasattr(value, '__dict__'):
+                nested_group = group.createGroup(attr_name)
+                _serialize_object(value, nested_group, full_path)
+                continue
+                
+            # None / unsupported
+            if value is None:
+                if verbose > 0:
+                 print(f"⚠️  {full_path} is NoneType. This will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
+                continue
+            
+            print(f"⚠️  Skipping unsupported field: {full_path} ({type(value).__name__}). This will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
+            
     def _get_registered_name(obj):
         classname = obj.__class__
         matching_keys = [k for k, v in model.classes.class_registry.CLASS_REGISTRY.items() if v is classname]
@@ -449,7 +622,7 @@ def save_model(md, path):
                 ## Loop through each solution type in md.results
                 for solution_name, solution_obj in vars(md.results).items():
                     if solution_obj is None:
-                        print(f"⚠️ Skipping solution type: {solution_name})")
+                        print(f"⚠️  Skipping solution type: {solution_name})")
                         continue
 
                     ## Create subgroup for this solution (e.g., TransientSolution)
@@ -463,7 +636,7 @@ def save_model(md, path):
                     classname = _get_registered_name(solution_obj)
                     solution_group.setncattr("classtype", classname)
 
-                    _serialize_object(solution_obj, solution_group)
+                    _serialize_object(solution_obj, solution_group, solution_name)
 
             else:
                 ## For regular model components (e.g., mesh, materials, geometry)
@@ -478,7 +651,7 @@ def save_model(md, path):
                 group.setncattr("classtype", classname)
 
                 ## Serialize the component state
-                _serialize_object(obj, group)
+                _serialize_object(obj, group, name)
 
 def _collapse_solution_to_step(solution):
     """

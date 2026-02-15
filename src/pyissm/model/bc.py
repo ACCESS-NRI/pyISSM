@@ -7,7 +7,7 @@ import numpy as np
 import os
 from pyissm import tools
 
-def get_ice_front_nodes(md, ice_front_exp):
+def _get_ice_front_nodes(md, ice_front_exp):
     """Identify nodes on the ice front from the provided contour file."""
 
     # Error checks
@@ -29,13 +29,13 @@ def get_ice_front_nodes(md, ice_front_exp):
 
     else:
         ## If Python wrappers are not installed, issue a warning and return all False (No ice front)
-        warnings.warn('pyissm.model.bc.get_ice_front_nodes: Python wrappers not installed. Cannot identify ice front nodes.\n'
+        warnings.warn('pyissm.model.bc._get_ice_front_nodes: Python wrappers not installed. Cannot identify ice front nodes.\n'
                       'Returning all False array (no ice front).')
         node_on_ice_front = np.zeros((md.mesh.numberofvertices), bool)
     
     return node_on_ice_front
 
-def set_neumann_bc(md, node_on_ice_front):
+def _set_neumann_bc(md, node_on_ice_front):
     """Set Neumann boundary conditions for the ice front."""
 
     # Find indices of nodes on the ice front
@@ -44,7 +44,7 @@ def set_neumann_bc(md, node_on_ice_front):
     # Mark ice front position in the level set
     md.mask.ice_levelset[ice_front_nodes] = 0
 
-def set_sb_dirichlet_bc(md):
+def _set_sb_dirichlet_bc(md):
     """Set Dirichlet boundary conditions on boundary (excluding ice front)."""
 
     # Set empty spc arrays
@@ -92,14 +92,14 @@ def set_sb_dirichlet_bc(md):
         if md.inversion.vy_obs.ndim == 1:
             md.inversion.vy_obs = md.inversion.vy_obs.reshape(-1, )
 
-        warnings.warn('pyissm.model.bc.set_sb_dirichlet_bc: Using observed velocities for vx and vy stressbalance model boundary conditions. vz boundary conditions are set to 0.')
+        warnings.warn('pyissm.model.bc._set_sb_dirichlet_bc: Using observed velocities for vx and vy stressbalance model boundary conditions. vz boundary conditions are set to 0.')
         md.stressbalance.spcvx[boundary_node_indices] = md.inversion.vx_obs[boundary_node_indices]
         md.stressbalance.spcvy[boundary_node_indices] = md.inversion.vy_obs[boundary_node_indices]
         md.stressbalance.spcvz[boundary_node_indices] = 0
     
     ## If observed velocities are not available, set Dirichlet values to zero
     else:
-        warnings.warn('pyissm.model.bc.set_sb_dirichlet_bc: No observed velocities found. Setting stressbalance model boundary conditions as 0.')
+        warnings.warn('pyissm.model.bc._set_sb_dirichlet_bc: No observed velocities found. Setting stressbalance model boundary conditions as 0.')
         md.stressbalance.spcvx[boundary_node_indices] = 0
         md.stressbalance.spcvy[boundary_node_indices] = 0
         md.stressbalance.spcvz[boundary_node_indices] = 0
@@ -123,17 +123,17 @@ def set_ice_shelf_bc(md,
     # Identify ice front 
     if not ice_front_exp is None:
         ## If an ice front file is provided, identify nodes on the ice front
-        node_on_ice_front = get_ice_front_nodes(md, ice_front_exp)
+        node_on_ice_front = _get_ice_front_nodes(md, ice_front_exp)
     else: 
         ## If no ice front file is provided, assume no ice front
         warnings.warn('pyissm.model.bc.set_ice_shelf_bc: No ice front file provided. Assuming no ice front.')
         node_on_ice_front = np.zeros((md.mesh.numberofvertices), bool)
 
     # Set neumann BC on ice front
-    set_neumann_bc(md, node_on_ice_front)
+    _set_neumann_bc(md, node_on_ice_front)
 
     # Set dirichlet BC on boundary (excluding ice front)
-    set_sb_dirichlet_bc(md)
+    _set_sb_dirichlet_bc(md)
 
     # Define other boundary conditions
     ## Initialize smb and basalforcings
@@ -201,7 +201,7 @@ def set_ice_sheet_bc(md):
     """
 
     # Set dirichlet BC on boundary (excluding ice front)
-    set_sb_dirichlet_bc(md)
+    _set_sb_dirichlet_bc(md)
 
     # Initialise surface and basal forcings
     md.smb.initialise(md)
@@ -256,7 +256,7 @@ def set_marine_ice_sheet_bc(md,
     # Identify ice front 
     if not ice_front_exp is None:
         ## If an ice front file is provided, identify nodes on the ice front
-        node_on_ice_front = get_ice_front_nodes(md, ice_front_exp)
+        node_on_ice_front = _get_ice_front_nodes(md, ice_front_exp)
         vertex_on_ice_front = md.mesh.vertexonboundary & np.asarray(node_on_ice_front, dtype=bool).ravel()
     else: 
         # Guess where the ice front is
@@ -281,7 +281,7 @@ def set_marine_ice_sheet_bc(md,
     md.mask.ice_levelset[pos] = 0
     
     # Set Dirichlet BCs
-    set_sb_dirichlet_bc(md)
+    _set_sb_dirichlet_bc(md)
 
     # Define other boundary conditions
     ## Initialize smb and basalforcings
