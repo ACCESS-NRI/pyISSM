@@ -62,7 +62,7 @@ class autodiff(class_registry.manage_state):
     Examples
     --------
     .. code-block:: python
-    
+
         md.autodiff = pyissm.model.classes.autodiff()
         md.autodiff.isautodiff = 1
         md.autodiff.dependents = ['Vel']
@@ -167,7 +167,7 @@ class autodiff(class_registry.manage_state):
         ----------
         fid : file object
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
         md : ISSM model object, optional.
             ISSM model object needed in some cases.

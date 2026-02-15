@@ -8,7 +8,7 @@ class balancethickness(class_registry.manage_state):
     """
     Balance thickness solution parameters class for ISSM.
 
-    This class encapsulates parameters for the balance thickness solution in the ISSM (Ice Sheet System Model) framework.
+    This class contains parameters for the balance thickness solution in the ISSM framework.
     It allows users to configure thickness constraints, thickening rates, and stabilization parameters for 
     solving the balance thickness equation.
 
@@ -19,17 +19,17 @@ class balancethickness(class_registry.manage_state):
 
     Attributes
     ----------
-    spcthickness : float, default=nan
+    spcthickness : :class:`float`, default=nan
         Thickness constraints (NaN means no constraint) [m].
-    thickening_rate : float, default=nan
+    thickening_rate : :class:`float`, default=nan
         Ice thickening rate used in the mass conservation (dh/dt) [m/yr].
-    stabilization : int, default=1
+    stabilization : :class:`int`, default=1
         Stabilization method: 0=None, 1=SU, 2=SSA's artificial diffusivity, 3=DG.
-    omega : float, default=nan
+    omega : :class:`float`, default=nan
         Stabilization parameter.
-    slopex : float, default=nan
+    slopex : :class:`float`, default=nan
         Surface slope in x-direction for stabilization.
-    slopey : float, default=nan
+    slopey : :class:`float`, default=nan
         Surface slope in y-direction for stabilization.
 
     Methods
@@ -45,9 +45,11 @@ class balancethickness(class_registry.manage_state):
 
     Examples
     --------
-    md.balancethickness = pyissm.model.classes.balancethickness()
-    md.balancethickness.spcthickness = 100.0
-    md.balancethickness.thickening_rate = 0.1
+    .. code-block:: python
+
+        md.balancethickness = pyissm.model.classes.balancethickness()
+        md.balancethickness.spcthickness = 100.0
+        md.balancethickness.thickening_rate = 0.1
     """
 
     # Initialise with default parameters
@@ -98,7 +100,7 @@ class balancethickness(class_registry.manage_state):
         ----------
         fid : file object
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
         md : ISSM model object, optional.
             ISSM model object needed in some cases.

@@ -12,7 +12,7 @@ class default(class_registry.manage_state):
     """
     Default basal forcings parameters class for ISSM.
 
-    This class encapsulates the default parameters for basal forcings in the ISSM (Ice Sheet System Model) framework.
+    This class contains the default parameters for basal forcings in the ISSM framework.
     It defines the melting rates for grounded and floating ice, perturbation melting rate, and geothermal heat flux.
     
     Parameters
@@ -28,7 +28,7 @@ class default(class_registry.manage_state):
         Basal melting rate for floating ice (positive if melting) [m/yr].
     perturbation_melting_rate : ndarray, default=np.nan
         Optional perturbation in basal melting rate under floating ice (positive if melting) [m/yr].
-    geothermalflux : float, default=np.nan
+    geothermalflux : :class:`float`, default=np.nan
         Geothermal heat flux [W/m^2].
 
     Methods
@@ -44,9 +44,11 @@ class default(class_registry.manage_state):
 
     Examples
     --------
-    md.basalforcings = pyissm.model.classes.basalforcings.default()
-    md.basalforcings.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices,))
-    md.basalforcings.floatingice_melting_rate = np.ones((md.mesh.numberofvertices,)) * 2
+    .. code-block:: python
+
+        md.basalforcings = pyissm.model.classes.basalforcings.default()
+        md.basalforcings.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices,))
+        md.basalforcings.floatingice_melting_rate = np.ones((md.mesh.numberofvertices,)) * 2
     """
 
     # Initialise with default parameters
@@ -78,6 +80,16 @@ class default(class_registry.manage_state):
     def extrude(self, md):
         """
         Extrude basalforcings.default fields to 3D
+
+        Parameters
+        ----------
+        md : ISSM model object
+            The ISSM model object containing the mesh and other relevant information for extrusion.
+
+        Returns
+        -------
+        self : basalforcings.default object
+            The basalforcings.default object with extruded fields.
         """
         self.groundedice_melting_rate = mesh.project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
         self.perturbation_melting_rate = mesh.project_3d(md, vector = self.perturbation_melting_rate, type = 'node', layer = 1)
