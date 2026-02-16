@@ -47,6 +47,7 @@ md.basalforcings.geothermalflux = np.zeros(nv)
 md.thermal.spctemperature = np.full(nv, np.nan)
 
 # Solve once to generate the synthetic observations
+print('toolkits:'md.toolkits)
 md = pyissm.model.execute.solve(md, "tr")
 
 # -----------------------------
@@ -182,11 +183,9 @@ md.autodiff.independents = [
 # 5) Inversion / AD settings and solve
 # -----------------------------
 # MATLAB: md.inversion=adm1qn3inversion(md.inversion);
-try:
-    md.inversion = pyissm.model.inversion.adm1qn3inversion(md.inversion)
-except Exception:
-    # common alternative location
-    md.inversion = pyissm.inversion.adm1qn3inversion(md.inversion)
+
+md.inversion = pyissm.model.classes.inversion.adm1qn3inversion(md.inversion)
+
 
 md.inversion.iscontrol = 1
 md.inversion.maxiter = 3
@@ -198,7 +197,7 @@ md.autodiff.driver = "fos_reverse"
 
 md.verbose = pyissm.verbose.verbose(0)
 
-md = pyissm.execute.solve(md, "tr")
+md = pyissm.model.execute.solve(md, "tr")
 
 # -----------------------------
 # 6) Fields and tolerances to track changes (like the MATLAB test harness)
