@@ -17,7 +17,9 @@ def xr_to_mesh(data,
                y_var = 'y',
                default_value = np.nan,
                interpolation_type = 'bilinear',
-               issm_wrapper = True):
+               issm_wrapper = True,
+               crop_to_mesh = True,
+               crop_buffer = 5000):
     
     """
     Interpolate a variable from an xarray dataset onto mesh nodes.
@@ -47,6 +49,12 @@ def xr_to_mesh(data,
     issm_wrapper : bool, optional
         If True, use ISSM wrapper functions for interpolation. If False, use scipy.
         Default is True.
+    crop_to_mesh: bool, optional
+        If True, the xarraxy Dataset is cropped to the extent of the mesh prior to
+        interpolation. Default is True.
+    crop_buffer: float or int, optional
+        Buffer distance (m) applied to mesh bounding box to prevent edge effects.
+        Default is 5000 m
     
     Returns
     -------
@@ -71,6 +79,31 @@ def xr_to_mesh(data,
         close = False
     else:
         raise TypeError("pyissm.data.interp.xr_to_mesh: data must be a file path or an xarray Dataset")
+
+    # Crop data to mesh extent
+    if crop_to_mesh:
+
+        ## Compute mesh bounding box, including buffer distance
+        x_min = np.min(mesh_x) - crop_buffer
+        x_max = np.max(mesh_x) + crop_buffer
+        y_min = np.min(mesh_y) - crop_buffer
+        y_max = np.max(mesh_y) + crop_buffer   
+
+        ## Get coordinate arrays
+        x = data[x_var]
+        y = data[y_var]    
+
+        ## Determine coordinate ordering
+        x_ascending = (x[1] - x[0]) > 0
+        y_ascending = (y[1] - y[0]) > 0
+
+        ## Build slices based on coordinate ordering
+        x_slice = slice(x_min, x_max) if x_ascending else slice(x_max, x_min)
+        y_slice = slice(y_min, y_max) if y_ascending else slice(y_max, y_min)
+
+        ## Crop data
+        data = data.sel({x_var: x_slice,
+                         y_var: y_slice})
 
     # Extract and squeeze arrays
     x = np.asarray(data[x_var].values).squeeze()
