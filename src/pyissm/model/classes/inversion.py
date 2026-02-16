@@ -805,3 +805,198 @@ class tao(class_registry.manage_state):
             execute.WriteData(fid, prefix, name = 'md.inversion.num_control_parameters', data = len(self.control_parameters), format = 'Integer')
             execute.WriteData(fid, prefix, name = 'md.inversion.cost_functions', data = class_utils.marshall_inversion_cost_functions(self.cost_functions), format = 'StringArray')
             execute.WriteData(fid, prefix, name = 'md.inversion.num_cost_functions', data = np.size(self.cost_functions), format = 'Integer')
+
+from typing import Any, Optional
+
+@class_registry.register_class
+class adm1qn3inversion:
+    """
+    Python equivalent of ISSM's MATLAB adm1qn3inversion class.
+
+    Fields match the MATLAB class:
+      iscontrol
+      maxsteps
+      maxiter
+      dxmin
+      dfmin_frac
+      gttol
+    """
+
+    iscontrol: int = 0
+    maxsteps: int = 0
+    maxiter: int = 0
+    dxmin: float = 0.0
+    dfmin_frac: float = 0.0
+    gttol: float = 0.0
+
+    def __init__(self, d: Optional[dict[str, Any]] = None):
+        # MATLAB constructor behavior:
+        #  - nargin==0: setdefaultparameters
+        #  - nargin==1: structtoobj(adm1qn3inversion(), varargin{1})
+        self.setdefaultparameters()
+        if d is not None:
+            self._structtoobj(d)
+
+    def _structtoobj(self, d: dict[str, Any]) -> None:
+        """Loose 'structtoobj' equivalent: assign known keys if present."""
+        for k, v in d.items():
+            if hasattr(self, k):
+                setattr(self, k, v)
+
+    def extrude(self, md) -> None:
+        """No-op, same as MATLAB version."""
+        return
+
+    def setdefaultparameters(self) -> None:
+        # Defaults from MATLAB:
+        self.maxsteps = 20
+        self.maxiter = 40
+
+        self.dxmin = 0.1
+        self.dfmin_frac = 1.0
+        self.gttol = 1e-4
+
+        # MATLAB notes (not stored there either):
+        # control_parameters = {'FrictionCoefficient'}
+
+    def checkconsistency(self, md, solution=None, analyses=None):
+        """
+        Match MATLAB logic:
+          - early return if not iscontrol
+          - error/message if M1QN3 not installed
+          - checkfield constraints
+        """
+        if not self.iscontrol:
+            return md
+
+        # These helpers exist in ISSM/pyISSM environments.
+        # Keep the calls similar to MATLAB.
+        from pyissm.tools.issmconfig import IssmConfig  # may differ in your tree
+
+
+        if not IssmConfig("_HAVE_M1QN3_"):
+            md = class_utils.check_message(
+                md,
+                "M1QN3 has not been installed, ISSM needs to be reconfigured and "
+                "recompiled with M1QN3",
+            )
+
+        md = class_utils.check_field(md, "fieldname", "inversion.iscontrol", "values", [0, 1])
+        md = class_utils.check_field(md, "fieldname", "inversion.maxsteps", "numel", 1, ">=", 0)
+        md = class_utils.check_field(md, "fieldname", "inversion.maxiter", "numel", 1, ">=", 0)
+        md = class_utils.check_field(md, "fieldname", "inversion.dxmin", "numel", 1, ">", 0)
+        md = class_utils.check_field(
+            md,
+            "fieldname",
+            "inversion.dfmin_frac",
+            "numel",
+            1,
+            ">=",
+            0.0,
+            "<=",
+            1.0,
+        )
+        md = class_utils.check_field(md, "fieldname", "inversion.gttol", "numel", 1, ">", 0)
+        return md
+
+    def marshall(self, prefix: str, md, fid) -> None:
+        """
+        Mirrors MATLAB marshall():
+          WriteData(... iscontrol ...)
+          WriteData(... md.inversion.type = 4 ...)
+          if ~iscontrol return
+          WriteData for maxsteps, maxiter, dxmin, dfmin_frac, gttol
+        """
+        # yts is read in MATLAB but not used; keep parity if you want:
+        _yts = getattr(md.constants, "yts", None)
+
+        execute.WriteData(
+            fid,
+            prefix,
+            "object",
+            self,
+            "class",
+            "inversion",
+            "fieldname",
+            "iscontrol",
+            "format",
+            "Boolean",
+        )
+        execute.WriteData(fid, prefix, "name", "md.inversion.type", "data", 4, "format", "Integer")
+
+        if not self.iscontrol:
+            return
+
+        execute.WriteData(
+            fid,
+            prefix,
+            "object",
+            self,
+            "class",
+            "inversion",
+            "fieldname",
+            "maxsteps",
+            "format",
+            "Integer",
+        )
+        execute.WriteData(
+            fid,
+            prefix,
+            "object",
+            self,
+            "class",
+            "inversion",
+            "fieldname",
+            "maxiter",
+            "format",
+            "Integer",
+        )
+        execute.WriteData(
+            fid,
+            prefix,
+            "object",
+            self,
+            "class",
+            "inversion",
+            "fieldname",
+            "dxmin",
+            "format",
+            "Double",
+        )
+        execute.WriteData(
+            fid,
+            prefix,
+            "object",
+            self,
+            "class",
+            "inversion",
+            "fieldname",
+            "dfmin_frac",
+            "format",
+            "Double",
+        )
+        execute.WriteData(
+            fid,
+            prefix,
+            "object",
+            self,
+            "class",
+            "inversion",
+            "fieldname",
+            "gttol",
+            "format",
+            "Double",
+        )
+
+    def __repr__(self) -> str:
+        # Similar intent to MATLAB disp()
+        return (
+            "adm1qn3inversion(\n"
+            f"  iscontrol={self.iscontrol},\n"
+            f"  maxsteps={self.maxsteps},\n"
+            f"  maxiter={self.maxiter},\n"
+            f"  dxmin={self.dxmin},\n"
+            f"  dfmin_frac={self.dfmin_frac},\n"
+            f"  gttol={self.gttol},\n"
+            ")"
+        )
