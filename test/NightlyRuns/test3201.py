@@ -47,7 +47,7 @@ md.basalforcings.geothermalflux = np.zeros(nv)
 md.thermal.spctemperature = np.full(nv, np.nan)
 
 # Solve once to generate the synthetic observations
-print('toolkits:'md.toolkits)
+print('toolkits:', md.toolkits)
 md = pyissm.model.execute.solve(md, "tr")
 
 # -----------------------------
