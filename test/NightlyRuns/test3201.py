@@ -47,7 +47,7 @@ md.basalforcings.geothermalflux = np.zeros(nv)
 md.thermal.spctemperature = np.full(nv, np.nan)
 
 # Solve once to generate the synthetic observations
-md = pyissm.execute.solve(md, "tr")
+md = pyissm.model.execute.solve(md, "tr")
 
 # -----------------------------
 # 2) Modify rheology: now constant
