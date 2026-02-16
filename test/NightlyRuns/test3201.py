@@ -55,7 +55,7 @@ md.basalforcings.geothermalflux = np.zeros((nv,))
 md.thermal.spctemperature = np.full((nv,), np.nan)
 
 # solve forward transient to create observations
-md = pyissm.execute.solve(md, 'tr')
+md = pyissm.model.execute.solve(md, 'tr')
 
 # -----------------------------
 # Modify rheology, now constant
