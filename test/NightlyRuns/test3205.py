@@ -10,7 +10,7 @@ import pyissm
 md = pyissm.model.Model()
 md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 100000.)
 md = pyissm.model.param.set_mask(md, 'all', None)
-md = pyissm.model.param.parameterize(md, '../assets/Par/SquareShelf.par')
+md = pyissm.model.param.parameterize(md, '../assets/Par/SquareShelf.py')
 md = pyissm.model.param.set_flow_equation(md, SSA='all')
 md.cluster.np = 2
 

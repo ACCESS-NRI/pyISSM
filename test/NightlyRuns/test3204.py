@@ -45,9 +45,9 @@ def _element_centroids(md):
 # Generate observations run
 # -------------------------
 md = pyissm.model.Model()
-md = pyissm.model.mesh.triangle(md, "../Exp/Square.exp", 100000.0)
+md = pyissm.model.mesh.triangle(md, "../assets/Exp/Square.exp", 100000.0)
 md = pyissm.param.parameterize.set_mask(md, "all", None)
-md = pyissm.model.param.parameterize(md, "../Par/SquareShelf.par")
+md = pyissm.model.param.parameterize(md, "../assets/Par/SquareShelf.py")
 md = pyissm.model.param.set_flow_equation(md, SSA="all")
 md.cluster.np = 2
 
@@ -80,7 +80,7 @@ md.basalforcings.geothermalflux = np.zeros((nv, 1))
 md.thermal.spctemperature = np.full((nv, 1), np.nan)
 
 # Solve transient to generate "observations"
-md = solve(md, "tr")
+md = pyissm.model.execute.solve(md, "tr")
 
 # -------------------------
 # Inversion setup run
