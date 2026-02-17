@@ -82,12 +82,12 @@ if getattr(md.outputdefinition, "definitions", None) is None:
 if getattr(md.autodiff, "dependents", None) is None:
     md.autodiff.dependents = []
 
-count = 1
-for sol in md.results.TransientSolution:
-    vx_obs = sol.Vx
-    vy_obs = sol.Vy
-    z_obs  = sol.Surface
-    t_obs  = sol.time
+count = 0
+for i in range(1, len(md.results.TransientSolution.steps)):
+    vx_obs = md.results.TransientSolution[i].Vx
+    vy_obs = md.results.TransientSolution[i].Vy
+    z_obs  = md.results.TransientSolution[i].Surface
+    t_obs  = md.results.TransientSolution[i].time
 
     weights = np.ones(nv)
 
