@@ -392,3 +392,262 @@ class cfsurfacesquaretransient(class_registry.manage_state):
             timeserieslength=nv + 1,
             yts=yts,
         )
+
+@class_registry.register_class
+class cfsurfacelogvel(class_registry.manage_state):
+    """
+    Surface log-velocity misfit response definition.
+
+    Python/pyISSM equivalent of ISSM MATLAB's ``cfsurfacelogvel`` class.
+
+    This response is typically used in transient inversions/calibration workflows
+    where the misfit compares the *logarithm of surface speed* implied by modeled
+    surface velocities against observed surface velocities, with optional
+    per-vertex weights and an associated observation time.
+
+    The class stores:
+      - observed Vx and Vy (often in ISSM time-series format)
+      - optional strings identifying those observations
+      - per-vertex weights (also often a time series)
+      - a ``datatime`` (years from start) telling ISSM which time the data
+        corresponds to
+
+    Parameters
+    ----------
+    other : object, optional
+        Any object with matching attribute names. If provided, its values overwrite
+        the defaults (pyISSM convention).
+
+    Attributes
+    ----------
+    name : str
+        Identifier for this response definition.
+    definitionstring : str
+        Unique output definition identifier, typically ``"OutputdefinitionN"``.
+        MATLAB allows ``Outputdefinition1``..``Outputdefinition2000``.
+    vxobs : array_like or float
+        Observed x-velocity component. MATLAB marshals this as a DoubleMat time
+        series with ``timeserieslength = nv + 1`` and applies a scale of
+        ``1 / yts``.
+        Default is NaN (unset).
+    vxobs_string : str
+        Identifier/name for the observed x-velocity dataset.
+    vyobs : array_like or float
+        Observed y-velocity component. Same marshalling conventions as ``vxobs``.
+        Default is NaN (unset).
+    vyobs_string : str
+        Identifier/name for the observed y-velocity dataset.
+    weights : array_like or float
+        Weight coefficients (typically per-vertex, often time-series formatted).
+        Default is NaN (unset).
+    weights_string : str
+        Identifier/name for the weights dataset.
+    datatime : float
+        Time in years from start associated with the data. MATLAB writes this as
+        ``round(datatime * yts)`` to the binary file.
+
+    Methods
+    -------
+    extrude(md)
+        Project node-based fields to 3D (no-op if unset).
+    check_consistency(md, solution=None, analyses=None)
+        Validate field types and ranges.
+    marshall_class(fid, prefix, md=None)
+        Write this definition to ISSM binary format via ``execute.WriteData``.
+
+    Notes
+    -----
+    - The MATLAB implementation only explicitly projects ``vxobs`` (not ``vyobs``)
+      during extrusion. For strict parity, we replicate that behavior here.
+      If you prefer symmetry, you can project both ``vxobs`` and ``vyobs``.
+    - ``vxobs`` and ``vyobs`` are written with a ``scale = 1/yts`` in MATLAB,
+      matching ISSM’s internal unit conventions (m/s vs m/yr).
+    """
+
+    def __init__(self, other=None):
+        # Defaults (MATLAB parity)
+        self.name = ""
+        self.definitionstring = ""
+        self.vxobs = np.nan
+        self.vxobs_string = ""
+        self.vyobs = np.nan
+        self.vyobs_string = ""
+        self.weights = np.nan
+        self.weights_string = ""
+        self.datatime = 0.0
+
+        super().__init__(other)
+
+    def __repr__(self):
+        s = "   cfsurfacelogvel:\n"
+        s += f"{class_utils.fielddisplay(self, 'name', 'identifier for this cfsurfacelogvel response')}\n"
+        s += f"{class_utils.fielddisplay(self, 'definitionstring', 'unique output definition string (e.g. Outputdefinition1)')}\n"
+        s += f"{class_utils.fielddisplay(self, 'vxobs', 'observed Vx used for misfit')}\n"
+        s += f"{class_utils.fielddisplay(self, 'vxobs_string', 'identifier for observed Vx')}\n"
+        s += f"{class_utils.fielddisplay(self, 'vyobs', 'observed Vy used for misfit')}\n"
+        s += f"{class_utils.fielddisplay(self, 'vyobs_string', 'identifier for observed Vy')}\n"
+        s += f"{class_utils.fielddisplay(self, 'weights', 'weights applied to the misfit')}\n"
+        s += f"{class_utils.fielddisplay(self, 'weights_string', 'identifier for weights')}\n"
+        s += f"{class_utils.fielddisplay(self, 'datatime', 'time (years from start) for data-model comparison')}\n"
+        return s
+
+    def __str__(self):
+        return "ISSM - cfsurfacelogvel Class"
+
+    def extrude(self, md):
+        """
+        Extrude node-based fields to 3D.
+
+        Mirrors MATLAB behavior:
+          - project ``weights`` if set
+          - project ``vxobs`` if set
+          - (do NOT project ``vyobs`` for strict MATLAB parity)
+        """
+        # weights
+        if np.size(self.weights) > 1:
+            if not np.all(np.isnan(self.weights)):
+                self.weights = mesh.project_3d(md, vector=self.weights, type="node")
+        else:
+            if not np.isnan(self.weights):
+                self.weights = mesh.project_3d(md, vector=self.weights, type="node")
+
+        # vxobs (MATLAB projects only vxobs)
+        if np.size(self.vxobs) > 1:
+            if not np.all(np.isnan(self.vxobs)):
+                self.vxobs = mesh.project_3d(md, vector=self.vxobs, type="node")
+        else:
+            if not np.isnan(self.vxobs):
+                self.vxobs = mesh.project_3d(md, vector=self.vxobs, type="node")
+
+        return self
+
+    def check_consistency(self, md, solution=None, analyses=None):
+        """
+        Check field validity for this response definition.
+        """
+        if not isinstance(self.name, str):
+            raise TypeError("cfsurfacelogvel: 'name' must be a string")
+
+        # MATLAB allowed Outputdefinition1..2000
+        outputdef_allowed = [f"Outputdefinition{i}" for i in range(1, 2001)]
+
+        class_utils.check_field(
+            md,
+            fieldname="cfsurfacelogvel.definitionstring",
+            field=self.definitionstring,
+            values=outputdef_allowed,
+        )
+
+        # MATLAB checks only vxobs, weights, datatime (vyobs is not checked there).
+        # We keep parity, but you can add vyobs similarly if desired.
+        class_utils.check_field(
+            md,
+            fieldname="cfsurfacelogvel.vxobs",
+            field=self.vxobs,
+            timeseries=True,
+            allow_nan=True,
+            allow_inf=True,
+        )
+        class_utils.check_field(
+            md,
+            fieldname="cfsurfacelogvel.weights",
+            field=self.weights,
+            timeseries=True,
+            allow_nan=True,
+            allow_inf=True,
+        )
+        class_utils.check_field(
+            md,
+            fieldname="cfsurfacelogvel.datatime",
+            field=self.datatime,
+            le=md.timestepping.final_time,
+        )
+
+        return md
+
+    def marshall_class(self, fid, prefix, md=None):
+        """
+        Marshall this response definition to ISSM binary input.
+
+        Mirrors MATLAB marshalling exactly:
+          - vxobs/vyobs written as DoubleMat time series with:
+              mattype=1, timeserieslength=nv+1, yts conversion, and scale=1/yts
+          - weights written as DoubleMat time series with:
+              mattype=1, timeserieslength=nv+1, yts conversion
+          - datatime written as ``round(datatime * yts)`` (seconds) as Double
+        """
+        nv = md.mesh.numberofvertices
+        yts = md.constants.yts
+
+        execute.WriteData(fid, prefix, data=self.name, name="md.cfsurfacelogvel.name", format="String")
+        execute.WriteData(
+            fid,
+            prefix,
+            data=self.definitionstring,
+            name="md.cfsurfacelogvel.definitionstring",
+            format="String",
+        )
+
+        execute.WriteData(
+            fid,
+            prefix,
+            data=self.vxobs,
+            name="md.cfsurfacelogvel.vxobs",
+            format="DoubleMat",
+            mattype=1,
+            timeserieslength=nv + 1,
+            yts=yts,
+            scale=1.0 / yts,
+        )
+        execute.WriteData(
+            fid,
+            prefix,
+            data=self.vxobs_string,
+            name="md.cfsurfacelogvel.vxobs_string",
+            format="String",
+        )
+
+        execute.WriteData(
+            fid,
+            prefix,
+            data=self.vyobs,
+            name="md.cfsurfacelogvel.vyobs",
+            format="DoubleMat",
+            mattype=1,
+            timeserieslength=nv + 1,
+            yts=yts,
+            scale=1.0 / yts,
+        )
+        execute.WriteData(
+            fid,
+            prefix,
+            data=self.vyobs_string,
+            name="md.cfsurfacelogvel.vyobs_string",
+            format="String",
+        )
+
+        execute.WriteData(
+            fid,
+            prefix,
+            data=self.weights,
+            name="md.cfsurfacelogvel.weights",
+            format="DoubleMat",
+            mattype=1,
+            timeserieslength=nv + 1,
+            yts=yts,
+        )
+        execute.WriteData(
+            fid,
+            prefix,
+            data=self.weights_string,
+            name="md.cfsurfacelogvel.weights_string",
+            format="String",
+        )
+
+        execute.WriteData(
+            fid,
+            prefix,
+            data=float(np.round(self.datatime * yts)),
+            name="md.cfsurfacelogvel.datatime",
+            format="Double",
+        )
