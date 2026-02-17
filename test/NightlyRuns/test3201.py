@@ -105,7 +105,7 @@ for i in range(1, len(md.results.TransientSolution.steps)):
     md.outputdefinition.definitions.append(cf)
 
     dep = dependent()
-    set_if(dep, name=f"Outputdefinition{count}", type="scalar", fos_reverse_index=1)
+    set_if(dep, name=f"Outputdefinition{count}", type="scalar", fos_reverse_index=1, nods=md.mesh.numberofvertices)
     md.autodiff.dependents.append(dep)
     count += 1
 
@@ -124,7 +124,7 @@ for i in range(1, len(md.results.TransientSolution.steps)):
     md.outputdefinition.definitions.append(cf)
 
     dep = dependent()
-    set_if(dep, name=f"Outputdefinition{count}", type="scalar", fos_reverse_index=1)
+    set_if(dep, name=f"Outputdefinition{count}", type="scalar", fos_reverse_index=1,         nods = md.mesh.numberofvertices,)
     md.autodiff.dependents.append(dep)
     count += 1
 
@@ -143,7 +143,7 @@ for i in range(1, len(md.results.TransientSolution.steps)):
     md.outputdefinition.definitions.append(cf)
 
     dep = dependent()
-    set_if(dep, name=f"Outputdefinition{count}", type="scalar", fos_reverse_index=1)
+    set_if(dep, name=f"Outputdefinition{count}", type="scalar", fos_reverse_index=1, nods=md.mesh.numberofvertices)
     md.autodiff.dependents.append(dep)
     count += 1
 
@@ -157,12 +157,12 @@ for i in range(1, len(md.results.TransientSolution.steps)):
         observation=z_obs,
         weights=(1.0 / md.constants.yts) * weights,
         weights_string="WeightsSurfaceObservation",
-        datatime=t_obs,
+        datatime=t_obs,  # test that this optional argument is accepted by the wrapper
     )
     md.outputdefinition.definitions.append(cf)
 
     dep = dependent()
-    set_if(dep, name=f"Outputdefinition{count}", type="scalar", fos_reverse_index=1)
+    set_if(dep, name=f"Outputdefinition{count}", type="scalar", fos_reverse_index=1,nods = md.mesh.numberofvertices)
     md.autodiff.dependents.append(dep)
     count += 1
 
