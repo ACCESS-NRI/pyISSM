@@ -46,6 +46,7 @@ md.initialization.temperature = np.zeros(nv)
 md.basalforcings.geothermalflux = np.zeros(nv)
 md.thermal.spctemperature = np.full(nv, np.nan)
 
+md.toolkits.DefaultAnalysis = {"toolkit": "issm"}
 
 # Solve once to generate the synthetic observations
 print('toolkits:', md.toolkits.DefaultAnalysis, flush=True)
