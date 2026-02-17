@@ -47,6 +47,12 @@ md.basalforcings.geothermalflux = np.zeros(nv)
 md.thermal.spctemperature = np.full(nv, np.nan)
 
 # md.toolkits.DefaultAnalysis = {"toolkit": "issm"}
+md.toolkits.DefaultAnalysis = {
+    "toolkit": "issm",
+    "mat_type": "mpisparse",
+    "vec_type": "mpi",
+    "solver_type": "mumps"
+}
 
 # Solve once to generate the synthetic observations
 print('toolkits:', md.toolkits.DefaultAnalysis, flush=True)
