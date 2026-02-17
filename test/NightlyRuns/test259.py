@@ -80,7 +80,7 @@ md.timestepping.interp_forcing = 0.
 md = pyissm.model.execute.solve(md, 'Transient')
 
 nlayers = md.results.TransientSolution[0].SmbT.shape[1]
-for i in range(1, len(md.results.TransientSolution)):
+for i in range(1, len(md.results.TransientSolution.steps)):
     nlayers=np.minimum(md.results.TransientSolution[i].SmbT.shape[1], nlayers)
 
 # Fields and tolerances to track changes
