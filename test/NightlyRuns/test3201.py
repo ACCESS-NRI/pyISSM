@@ -46,6 +46,14 @@ md.initialization.temperature = np.zeros(nv)
 md.basalforcings.geothermalflux = np.zeros(nv)
 md.thermal.spctemperature = np.full(nv, np.nan)
 
+# Make toolkits consistent: PETSc + MUMPS
+md.toolkits.DefaultAnalysis = {
+    "toolkit": "petsc",
+    "mat_type": "mpiaij",   # common PETSc sparse matrix type
+    "vec_type": "mpi",
+    "solver_type": "mumps",
+}
+
 # Solve once to generate the synthetic observations
 print('toolkits:', md.toolkits.DefaultAnalysis, flush=True)
 md = pyissm.model.execute.solve(md, "tr")
