@@ -18,7 +18,7 @@ md.timestepping.interp_forcing = 0
 md.timestepping.final_time = 2.0 * md.timestepping.time_step
 
 ne = md.mesh.numberofelements
-
+md.autodiff.isautodiff = False
 # element-center coords for the "xbar < ybar" region
 # MATLAB: mean(md.mesh.x(md.mesh.elements),2) < mean(md.mesh.y(md.mesh.elements),2)
 elem = md.mesh.elements.astype(int) - 1  # ISSM elements are usually 1-based in MATLAB
@@ -46,13 +46,6 @@ md.initialization.temperature = np.zeros(nv)
 md.basalforcings.geothermalflux = np.zeros(nv)
 md.thermal.spctemperature = np.full(nv, np.nan)
 
-# Make toolkits consistent: PETSc + MUMPS
-md.toolkits.DefaultAnalysis = {
-    "toolkit": "petsc",
-    "mat_type": "mpiaij",   # common PETSc sparse matrix type
-    "vec_type": "mpi",
-    "solver_type": "mumps",
-}
 
 # Solve once to generate the synthetic observations
 print('toolkits:', md.toolkits.DefaultAnalysis, flush=True)
