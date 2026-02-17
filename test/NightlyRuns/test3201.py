@@ -66,15 +66,15 @@ md.materials.rheology_B[:-1, :] = 1.8e8
 # -----------------------------
 # 3) Set cost functions (one set per transient time)
 # -----------------------------
-# NOTE: In pyissm, the cost-function classes typically mirror MATLAB names,
-# but the import path can vary by build. These are the common ones:
 from pyissm.model.classes.dependent import dependent
 from pyissm.model.classes.independent import independent
-
-# These class paths may differ on your install; if an ImportError happens,
-# search under pyissm.model.classes for "cfsurfacesquare" / "cfsurfacelogvel".
 from pyissm.model.classes.cfsurface import cfsurfacelogvel, cfsurfacesquare
 
+def set_if(obj, **kvs):
+    """Set attributes if they exist on this build's wrapper."""
+    for k, v in kvs.items():
+        if hasattr(obj, k):
+            setattr(obj, k, v)
 
 # Ensure containers exist
 if getattr(md.outputdefinition, "definitions", None) is None:
@@ -91,81 +91,85 @@ for sol in md.results.TransientSolution:
 
     weights = np.ones(nv)
 
-    # LogVel misfit
-    md.outputdefinition.definitions.append(
-        cfsurfacelogvel(
-            name=f"LogVelMis{count}",
-            definitionstring=f"Outputdefinition{count}",
-            vxobs_string="VxObs", vxobs=vx_obs,
-            vyobs_string="VyObs", vyobs=vy_obs,
-            weights=weights, weights_string="WeightsSurfaceObservation",
-            datatime=t_obs,
-        )
+    # ---- LogVel misfit ----
+    cf = cfsurfacelogvel()
+    set_if(cf,
+        name=f"LogVelMis{count}",
+        definitionstring=f"Outputdefinition{count}",
+        vxobs_string="VxObs", vxobs=vx_obs,
+        vyobs_string="VyObs", vyobs=vy_obs,
+        weights=weights,
+        weights_string="WeightsSurfaceObservation",
+        datatime=t_obs,
     )
-    md.autodiff.dependents.append(
-        dependent(name=f"Outputdefinition{count}", type="scalar", fos_reverse_index=1)
-    )
+    md.outputdefinition.definitions.append(cf)
+
+    dep = dependent()
+    set_if(dep, name=f"Outputdefinition{count}", type="scalar", fos_reverse_index=1)
+    md.autodiff.dependents.append(dep)
     count += 1
 
-    # Vy square misfit
-    md.outputdefinition.definitions.append(
-        cfsurfacesquare(
-            name=f"VyMisfit{count}",
-            definitionstring=f"Outputdefinition{count}",
-            model_string="Vy",
-            observation_string="VyObs",
-            observation=vy_obs / md.constants.yts,
-            weights=weights, weights_string="WeightsSurfaceObservation",
-            datatime=t_obs,
-        )
+    # ---- Vy square misfit ----
+    cf = cfsurfacesquare()
+    set_if(cf,
+        name=f"VyMisfit{count}",
+        definitionstring=f"Outputdefinition{count}",
+        model_string="Vy",
+        observation_string="VyObs",
+        observation=vy_obs / md.constants.yts,
+        weights=weights,
+        weights_string="WeightsSurfaceObservation",
+        datatime=t_obs,
     )
-    md.autodiff.dependents.append(
-        dependent(name=f"Outputdefinition{count}", type="scalar", fos_reverse_index=1)
-    )
+    md.outputdefinition.definitions.append(cf)
+
+    dep = dependent()
+    set_if(dep, name=f"Outputdefinition{count}", type="scalar", fos_reverse_index=1)
+    md.autodiff.dependents.append(dep)
     count += 1
 
-    # Vx square misfit (500*weights)
-    md.outputdefinition.definitions.append(
-        cfsurfacesquare(
-            name=f"VxMisfit{count}",
-            definitionstring=f"Outputdefinition{count}",
-            model_string="Vx",
-            observation_string="VxObs",
-            observation=vx_obs / md.constants.yts,
-            weights=500.0 * weights, weights_string="WeightsSurfaceObservation",
-            datatime=t_obs,
-        )
+    # ---- Vx square misfit (500*weights) ----
+    cf = cfsurfacesquare()
+    set_if(cf,
+        name=f"VxMisfit{count}",
+        definitionstring=f"Outputdefinition{count}",
+        model_string="Vx",
+        observation_string="VxObs",
+        observation=vx_obs / md.constants.yts,
+        weights=500.0 * weights,
+        weights_string="WeightsSurfaceObservation",
+        datatime=t_obs,
     )
-    md.autodiff.dependents.append(
-        dependent(name=f"Outputdefinition{count}", type="scalar", fos_reverse_index=1)
-    )
+    md.outputdefinition.definitions.append(cf)
+
+    dep = dependent()
+    set_if(dep, name=f"Outputdefinition{count}", type="scalar", fos_reverse_index=1)
+    md.autodiff.dependents.append(dep)
     count += 1
 
-    # DEM / Surface misfit (1/yts * weights)
-    md.outputdefinition.definitions.append(
-        cfsurfacesquare(
-            name=f"DEMMisfit{count}",
-            definitionstring=f"Outputdefinition{count}",
-            model_string="Surface",
-            observation_string="SurfaceObservation",
-            observation=z_obs,
-            weights=(1.0 / md.constants.yts) * weights,
-            weights_string="WeightsSurfaceObservation",
-            datatime=t_obs,
-        )
+    # ---- DEM / Surface misfit (1/yts * weights) ----
+    cf = cfsurfacesquare()
+    set_if(cf,
+        name=f"DEMMisfit{count}",
+        definitionstring=f"Outputdefinition{count}",
+        model_string="Surface",
+        observation_string="SurfaceObservation",
+        observation=z_obs,
+        weights=(1.0 / md.constants.yts) * weights,
+        weights_string="WeightsSurfaceObservation",
+        datatime=t_obs,
     )
-    md.autodiff.dependents.append(
-        dependent(name=f"Outputdefinition{count}", type="scalar", fos_reverse_index=1)
-    )
+    md.outputdefinition.definitions.append(cf)
+
+    dep = dependent()
+    set_if(dep, name=f"Outputdefinition{count}", type="scalar", fos_reverse_index=1)
+    md.autodiff.dependents.append(dep)
     count += 1
+
 
 # -----------------------------
 # 4) Independent: MaterialsRheologyBbar
 # -----------------------------
-# MATLAB:
-# min_params = md.materials.rheology_B; min_params(1:end-1,:) = cuffey(273);
-# max_params = md.materials.rheology_B; max_params(1:end-1,:) = cuffey(200);
-
 from pyissm.tools.materials import cuffey
 
 min_params = md.materials.rheology_B.copy()
@@ -173,19 +177,18 @@ max_params = md.materials.rheology_B.copy()
 min_params[:-1, :] = cuffey(273)
 max_params[:-1, :] = cuffey(200)
 
-
 md.autodiff.independents = []
 
-md.autodiff.independents = [
-    independent(
-        name="MaterialsRheologyBbar",
-        control_size=md.materials.rheology_B.shape[1],
-        type="vertex",  # kept as in MATLAB comment; if your run complains, try type="element"
-        min_parameters=min_params,
-        max_parameters=max_params,
-        control_scaling_factor=1e8,
-    )
-]
+ind = independent()
+set_if(ind,
+    name="MaterialsRheologyBbar",
+    control_size=md.materials.rheology_B.shape[1],
+    type="vertex",  # if your build wants element-based control, switch to "element"
+    min_parameters=min_params,
+    max_parameters=max_params,
+    control_scaling_factor=1e8,
+)
+md.autodiff.independents = [ind]
 
 # -----------------------------
 # 5) Inversion / AD settings and solve
