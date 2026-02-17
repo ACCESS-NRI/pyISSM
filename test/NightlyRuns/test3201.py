@@ -73,8 +73,8 @@ from pyissm.model.classes.independent import independent
 
 # These class paths may differ on your install; if an ImportError happens,
 # search under pyissm.model.classes for "cfsurfacesquare" / "cfsurfacelogvel".
-from pyissm.model.classes.cfsurfacelogvel import cfsurfacelogvel
-from pyissm.model.classes.cfsurfacesquare import cfsurfacesquare
+from pyissm.model.classes.cfsurface import cfsurfacelogvel, cfsurfacesquare
+
 
 # Ensure containers exist
 if getattr(md.outputdefinition, "definitions", None) is None:
