@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyissm"
-version = "0.0.1.dev_190126"
+version = "0.0.1.dev_170226"
 description = "Python API for the Ice-sheet and Sea-level System Model (ISSM), managed by ACCESS-NRI"
 readme = "README.md"
 requires-python = ">=3.9"
