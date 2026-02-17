@@ -4,8 +4,9 @@ from typing import Any
 import numpy as np
 
 from pyissm.model.mesh import project_3d
-from pyissm.model.classes.param_utils import check_field
-from pyissm.model.io import WriteData
+from pyissm.model.classes.class_utils import check_field
+from pyissm.model.classes.class_utils import check_field
+from pyissm.model.execute import WriteData
 
 
 def _is_unset(x: Any) -> bool:
