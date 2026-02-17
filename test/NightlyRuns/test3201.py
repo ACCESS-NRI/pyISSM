@@ -192,7 +192,7 @@ md.autodiff.independents = [
 # -----------------------------
 # MATLAB: md.inversion=adm1qn3inversion(md.inversion);
 
-md.inversion = pyissm.model.classes.inversion.adm1qn3inversion(md.inversion)
+md.inversion = pyissm.model.classes.inversion.adm1qn3(md.inversion)
 
 
 md.inversion.iscontrol = 1
