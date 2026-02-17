@@ -1426,8 +1426,8 @@ class gemb(class_registry.manage_state):
 
         s += '{}\n'.format(class_utils.fielddisplay(self,'mappedforcingpoint','Mapping of which forcing point will map to each mesh element for ismappedforcing option (integer). Size number of elements.'))
         s += '{}\n'.format(class_utils.fielddisplay(self,'mappedforcingelevation','The elevation of each mapped forcing location (m above sea level) for ismappedforcing option. Size number of forcing points.'))
-        s += '{}\n'.format(class_utils.fielddisplay(self,'lapseTaValue','Temperature lapse rate if forcing has different grid and should be remapped for ismappedforcing option. (Default value is -0.006 K m-1.)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self,'lapsedlwrfValue','Longwave down lapse rate if forcing has different grid and should be remapped for ismappedforcing option. (Default value is -0.032 W m-2 m-1.)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self,'lapseTaValue','Temperature lapse rate of each mapped forcing location, if forcing has different grid and should be remapped for ismappedforcing option. (Default value is -0.006 K m-1., vector of mapping points)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self,'lapsedlwrfValue','Longwave down lapse rate of each mapped forcing location, if forcing has different grid and should be remapped for ismappedforcing option. (Default value is -0.032 W m-2 m-1., vector of mapping points)'))
 
         # Snow properties init
         s += '{}\n'.format(class_utils.fielddisplay(self, 'Dzini', 'Initial cell depth when restart [m]'))
@@ -1583,8 +1583,12 @@ class gemb(class_registry.manage_state):
         if self.ismappedforcing:
             class_utils.check_field(md, fieldname = 'smb.mappedforcingpoint', size = (md.mesh.numberofelements, ), gt = 0, le = (sizeta[0]-1, ), allow_nan = False, allow_inf = False)
             class_utils.check_field(md, fieldname = 'smb.mappedforcingelevation', size = (sizeta[0]-1, ), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.lapseTaValue', allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.lapsedlwrfValue', allow_nan = False, allow_inf = False)
+            if np.prod(np.shape(self.lapseTaValue)) == 1:
+                warnings.warn('pyissm.model.classes.smb.gemb: smb.lapseTaValue is now a vector of mapped elements. Set to md.smb.lapseTaValue * np.ones(np.shape(md.smb.mappedforcingelevation))')
+            if np.prod(np.shape(self.lapsedlwrfValue)) == 1:
+                warnings.warn('pyissm.model.classes.smb.gemb: smb.lapsedlwrfValue is now a vector of mapped elements. Set to md.smb.lapsedlwrfValue * np.ones(np.shape(md.smb.mappedforcingelevation))')
+            class_utils.check_field(md, fieldname = 'smb.lapseTaValue', size = (sizeta[0]-1, ), allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'smb.lapsedlwrfValue', size = (sizeta[0]-1, ), allow_nan = False, allow_inf = False)
 
         class_utils.check_field(md, fieldname = 'smb.aIdx', values = [0, 1, 2, 3, 4], allow_nan = False, allow_inf = False)
         class_utils.check_field(md, fieldname = 'smb.eIdx', values = [0, 1, 2], allow_nan = False, allow_inf = False)
@@ -1758,8 +1762,8 @@ class gemb(class_registry.manage_state):
         if self.ismappedforcing:
             execute.WriteData(fid, prefix, obj = self, fieldname = 'mappedforcingpoint', format ='IntMat', mattype = 2)
             execute.WriteData(fid, prefix, obj = self, fieldname = 'mappedforcingelevation', format ='DoubleMat', mattype = 3)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'lapseTaValue', format ='Double')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'lapsedlwrfValue', format ='Double')
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'lapseTaValue', format ='DoubleMat', mattype = 3)
+            execute.WriteData(fid, prefix, obj = self, fieldname = 'lapsedlwrfValue', format ='DoubleMat', mattype = 3)
 
         ## Calculate dt from forcings
         ## NOTE: Taken from $ISSM_DIR/src/m/classes/SMBgemb.py
