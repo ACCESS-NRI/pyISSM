@@ -206,7 +206,6 @@ md.inversion.dxmin = 1e-5
 md.autodiff.isautodiff = True
 md.autodiff.driver = "fos_reverse"
 
-md.verbose = pyissm.verbose.verbose(0)
 
 md = pyissm.model.execute.solve(md, "tr")
 
