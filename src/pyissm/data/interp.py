@@ -19,7 +19,9 @@ def xr_to_mesh(data,
                interpolation_type = 'bilinear',
                issm_wrapper = True,
                crop_to_mesh = True,
-               crop_buffer = 5000):
+               crop_buffer = 5000,
+               fill_nan = False,
+               fill_nan_interpolation_type = 'nearest'):
     
     """
     Interpolate a variable from an xarray dataset onto mesh nodes.
@@ -55,6 +57,12 @@ def xr_to_mesh(data,
     crop_buffer: float or int, optional
         Buffer distance (m) applied to mesh bounding box to prevent edge effects.
         Default is 5000 m
+    fill_nan: bool, optional
+        If True, any remaining NaN values (after the initial interpolation) are filled
+        using the ``fill_nan_interpolation_type`` interpolation method. Default is False.
+    fill_nan_interpolation_type: str, optional
+        Interpolation type used to fill NaN vaules when ``fill_nan`` is True. Default
+        is 'nearest'.
     
     Returns
     -------
@@ -201,6 +209,25 @@ def xr_to_mesh(data,
 
         # Extract variable on mesh
         var_on_mesh = interp(mesh_points)
+
+    # If fill_nan is True, fill NaN values
+    if fill_nan:
+
+        # Identiy points that are non-nan
+        valid_mask = np.isfinite(var_on_mesh)
+
+        # Fill nan values using fill_nan_interpolation_type interpolation
+        filled_points = points_to_mesh(
+            data_x = mesh_x[valid_mask],
+            data_y = mesh_y[valid_mask],
+            data_values = var_on_mesh[valid_mask],
+            mesh_x = mesh_x,
+            mesh_y = mesh_y,
+            interpolation_type = fill_nan_interpolation_type
+        )
+
+        # Replace nan values
+        var_on_mesh[~valid_mask] = filled_points[~valid_mask]
 
     return var_on_mesh
 
