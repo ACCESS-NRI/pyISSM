@@ -154,6 +154,15 @@ md.autodiff.driver = "fos_reverse"
 # --- Go solve (control run) ---
 md = pyissm.model.execute.solve(md, "tr")
 
+g = md.results.TransientSolution[0].Gradient1
+if g.shape == (2, md.mesh.numberofvertices):
+    g = g[0, :].reshape((-1, 1))      # take control 1
+
+Bbar = md.results.TransientSolution[0].MaterialsRheologyBbar
+if Bbar.shape == (2, md.mesh.numberofvertices):
+    Bbar = Bbar[0, :].reshape((-1, 1))
+
+
 # --- Fields and tolerances to track changes ---
 field_names = ["Gradient", "Misfit", "Rheology"]
 field_tolerances = [1e-12, 1e-12, 1e-12]
