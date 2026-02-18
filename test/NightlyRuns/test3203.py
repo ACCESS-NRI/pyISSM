@@ -99,15 +99,12 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     md.outputdefinition.definitions.append(cf)
 
     
-
-    md.autodiff.dependents.append(
-        pyissm.model.classes.dependent(
-            name=f"Outputdefinition{count}",
-            type="scalar",
-            fos_reverse_index=1,
-            nods=md.mesh.numberofvertices
-        )
-    )
+    dep = pyissm.model.classes.dependent()
+    dep.name = f"Outputdefinition{count}"
+    dep.type = "scalar"
+    dep.fos_reverse_index = 1
+    dep.nods = md.mesh.numberofvertices
+    md.autodiff.dependents.append(dep)
 
     count += 1
 
@@ -126,16 +123,16 @@ max_params[:-1, :] = pyissm.tools.materials.cuffey(200)
 if md.autodiff.independents is None:
     md.autodiff.independents = []
 
-md.autodiff.independents.append(
-    pyissm.model.classes.independent(
-        name="MaterialsRheologyBbar",
-        control_size=md.materials.rheology_B.shape[1],
-        type="vertex",  # matches your MATLAB comment; keep if your driver expects it
-        min_parameters=min_params,
-        max_parameters=max_params,
-        control_scaling_factor=1e8,
-    )
-)
+# --- Add independent (control) ---
+ind = pyissm.model.classes.independent()
+ind.name = "MaterialsRheologyBbar"
+ind.control_size = md.materials.rheology_B.shape[1]
+ind.type = "vertex"  # matches your MATLAB comment; keep if your driver expects it
+ind.min_parameters = min_params
+ind.max_parameters = max_params
+ind.control_scaling_factor = 1e8
+
+md.autodiff.independents = [ind]
 
 # --- Inversion / autodiff settings ---
 md.inversion = pyissm.model.classes.inversion.adm1qn3(md.inversion)
