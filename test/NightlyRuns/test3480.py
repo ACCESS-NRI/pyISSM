@@ -6,7 +6,7 @@ import pyissm
 md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 100000.)
 md = pyissm.model.param.set_mask(md, '../assets/Exp/SquareShelf.exp', None)   # same intent as setmask(exp,'')
 
-md = pyissm.model.param.parameterize(md, '../assets/Par/SquareSheetShelf.par')
+md = pyissm.model.param.parameterize(md, '../assets/Par/SquareSheetShelf.py')
 
 # --- initialization ---
 md.initialization.vx[:] = 1.0

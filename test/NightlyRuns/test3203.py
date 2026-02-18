@@ -5,8 +5,8 @@ import pyissm
 # --- Mesh / param / flow eqn / cluster ---
 md = pyissm.model.Model()
 md = pyissm.model.mesh.triangle(pyissm.model.Model(), "../assets/Exp/Square.exp", 50000.0)
-md = pyissm.param.parameterize.set_mask(md, "all", None)
-md = pyissm.model.param.parameterize(md, "../assets/Par/SquareShelf.par")
+md = pyissm.model.param.set_mask(md, "all", None)
+md = pyissm.model.param.parameterize(md, "../assets/Par/SquareShelf.py")
 md = pyissm.model.param.set_flow_equation(md, SSA="all")
 
 # MATLAB: md.cluster=generic('name',oshostname(),'np',3);
