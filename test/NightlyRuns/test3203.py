@@ -85,18 +85,20 @@ for i in range(0, len(md.results.TransientSolution.steps)):
 
     obs = _reinit_levelset(md, sol.MaskIceLevelset)
 
-    md.outputdefinition.definitions.append(
-        pyissm.model.classes.cflevelsetmisfit(
-            name=f"LevelsetMisfit{count}",
-            definitionstring=f"Outputdefinition{count}",
-            model_string="MaskIceLevelset",
-            observation_string="LevelsetObservation",
-            observation=obs,
-            weights=weights,
-            weights_string="WeightsLevelsetObservation",
-            datatime=time,
-        )
-    )
+    cf = pyissm.model.classes.cflevelsetmisfit()
+
+    cf.name = f"LevelsetMisfit{count}"
+    cf.definitionstring = f"Outputdefinition{count}"
+    cf.model_string = "MaskIceLevelset"
+    cf.observation_string = "LevelsetObservation"
+    cf.observation = obs
+    cf.weights = weights
+    cf.weights_string = "WeightsLevelsetObservation"
+    cf.datatime = time
+
+    md.outputdefinition.definitions.append(cf)
+
+    
 
     md.autodiff.dependents.append(
         pyissm.model.classes.dependent(
