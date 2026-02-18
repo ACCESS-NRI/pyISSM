@@ -82,6 +82,7 @@ if getattr(md.outputdefinition, "definitions", None) is None:
 if getattr(md.autodiff, "dependents", None) is None:
     md.autodiff.dependents = []
 
+count = 0
 for i in range(0, len(md.results.TransientSolution.steps)):
     vx_obs = md.results.TransientSolution[i].Vx
     vy_obs = md.results.TransientSolution[i].Vy
@@ -93,8 +94,8 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     # ---- LogVel misfit ----
     cf = cfsurfacelogvel()
     set_if(cf,
-        name=f"LogVelMis{i}",
-        definitionstring=f"Outputdefinition{i}",
+        name=f"LogVelMis{count}",
+        definitionstring=f"Outputdefinition{count}",
         vxobs_string="VxObs", vxobs=vx_obs,
         vyobs_string="VyObs", vyobs=vy_obs,
         weights=weights,
@@ -104,15 +105,15 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     md.outputdefinition.definitions.append(cf)
 
     dep = dependent()
-    set_if(dep, name=f"Outputdefinition{i}", type="scalar", fos_reverse_index=1, nods=md.mesh.numberofvertices)
+    set_if(dep, name=f"Outputdefinition{count}", type="scalar", fos_reverse_index=1, nods=md.mesh.numberofvertices)
     md.autodiff.dependents.append(dep)
-    i += 1
+    count += 1
 
     # ---- Vy square misfit ----
     cf = cfsurfacesquare()
     set_if(cf,
-        name=f"VyMisfit{i}",
-        definitionstring=f"Outputdefinition{i}",
+        name=f"VyMisfit{count}",
+        definitionstring=f"Outputdefinition{count}",
         model_string="Vy",
         observation_string="VyObs",
         observation=vy_obs / md.constants.yts,
@@ -123,15 +124,15 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     md.outputdefinition.definitions.append(cf)
 
     dep = dependent()
-    set_if(dep, name=f"Outputdefinition{i}", type="scalar", fos_reverse_index=1,         nods = md.mesh.numberofvertices,)
+    set_if(dep, name=f"Outputdefinition{count}", type="scalar", fos_reverse_index=1,         nods = md.mesh.numberofvertices,)
     md.autodiff.dependents.append(dep)
-    i += 1
+    count += 1
 
     # ---- Vx square misfit (500*weights) ----
     cf = cfsurfacesquare()
     set_if(cf,
-        name=f"VxMisfit{i}",
-        definitionstring=f"Outputdefinition{i}",
+        name=f"VxMisfit{count}",
+        definitionstring=f"Outputdefinition{count}",
         model_string="Vx",
         observation_string="VxObs",
         observation=vx_obs / md.constants.yts,
@@ -142,15 +143,15 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     md.outputdefinition.definitions.append(cf)
 
     dep = dependent()
-    set_if(dep, name=f"Outputdefinition{i}", type="scalar", fos_reverse_index=1, nods=md.mesh.numberofvertices)
+    set_if(dep, name=f"Outputdefinition{count}", type="scalar", fos_reverse_index=1, nods=md.mesh.numberofvertices)
     md.autodiff.dependents.append(dep)
-    i += 1
+    count += 1
 
     # ---- DEM / Surface misfit (1/yts * weights) ----
     cf = cfsurfacesquare()
     set_if(cf,
-        name=f"DEMMisfit{i}",
-        definitionstring=f"Outputdefinition{i}",
+        name=f"DEMMisfit{count}",
+        definitionstring=f"Outputdefinition{count}",
         model_string="Surface",
         observation_string="SurfaceObservation",
         observation=z_obs,
@@ -161,9 +162,9 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     md.outputdefinition.definitions.append(cf)
 
     dep = dependent()
-    set_if(dep, name=f"Outputdefinition{i}", type="scalar", fos_reverse_index=1,nods = md.mesh.numberofvertices)
+    set_if(dep, name=f"Outputdefinition{count}", type="scalar", fos_reverse_index=1,nods = md.mesh.numberofvertices)
     md.autodiff.dependents.append(dep)
-    i += 1
+    count += 1
 
 
 # -----------------------------
