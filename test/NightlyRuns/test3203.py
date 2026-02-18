@@ -27,9 +27,7 @@ alpha = 2.0 / 3.0
 # -> +1 on one side, -1 on the other, 0 exactly on the interface
 phi = x - alpha * Lx
 md.mask.ice_levelset = (phi > 0).astype(float) - (phi < 0).astype(float)
-md.materials.rheology_B = 1.8e8 * np.ones((md.mesh.numberofvertices, 2))
-md.materials.rheology_B[md.mesh.x < md.mesh.y, 1] = 1.4e8
-md.materials.rheology_B = np.vstack([md.materials.rheology_B, [0.01, 2*md.timestepping.time_step]])
+
 
 # --- Time stepping ---
 md.timestepping.time_step = 10.0
@@ -51,6 +49,11 @@ md.frontalforcings.meltingrate = np.zeros(md.mesh.numberofvertices)
 
 md.levelset.spclevelset = np.full(md.mesh.numberofvertices, np.nan)
 md.levelset.migration_max = 1e8
+
+# rheology B (vertex-based)
+md.materials.rheology_B = 1.8e8 * np.ones((md.mesh.numberofvertices, 2))
+md.materials.rheology_B[md.mesh.x < md.mesh.y, 1] = 1.4e8
+md.materials.rheology_B = np.vstack([md.materials.rheology_B, [0.01, 2*md.timestepping.time_step]])
 
 # --- Forward transient solve (truth run) ---
 md = pyissm.model.execute.solve(md, "tr")
@@ -86,7 +89,7 @@ def _reinit_levelset(md, ls):
     # fallback: use as-is (still lets you build the test)
     return ls
 
-count = 1
+count = 0
 for i in range(0, len(md.results.TransientSolution.steps)):
     sol = md.results.TransientSolution[i]
     time = sol.time
@@ -154,20 +157,13 @@ md.autodiff.driver = "fos_reverse"
 # --- Go solve (control run) ---
 md = pyissm.model.execute.solve(md, "tr")
 
-g = md.results.TransientSolution[0].Gradient1
-if g.shape == (2, md.mesh.numberofvertices):
-    g = g[0, :].reshape((-1, 1))      # take control 1
-
-Bbar = md.results.TransientSolution[0].MaterialsRheologyBbar
-if Bbar.shape == (2, md.mesh.numberofvertices):
-    Bbar = Bbar[0, :].reshape((-1, 1))
 
 
 # --- Fields and tolerances to track changes ---
 field_names = ["Gradient", "Misfit", "Rheology"]
 field_tolerances = [1e-12, 1e-12, 1e-12]
 field_values = [
-    g,
+    md.results.TransientSolution[0].Gradient1,
     md.results.TransientSolution[0].J,
-    Bbar,
+    md.results.TransientSolution[0].MaterialsRheologyBbar,
 ]

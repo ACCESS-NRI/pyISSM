@@ -5,7 +5,6 @@ import numpy as np
 import pyissm
 
 # These imports may vary slightly depending on your tree layout
-from pyissm.model import solve, mesh
 from pyissm.model.param import set_mask, parameterize, set_flow_equation
 from pyissm.model.classes.autodiff import dependent, independent
 from pyissm.model.classes.outputdefinition import outputdefinition
@@ -105,7 +104,7 @@ if not hasattr(md.autodiff, "independents") or md.autodiff.independents is None:
 count = 1
 
 # Loop over transient results and add cost functions + dependents
-for i in range(0, len(md.results.TransientSolution)):
+for i in range(0, len(md.results.TransientSolution.steps)):
     sol = md.results.TransientSolution[i]
     vx_obs = sol.Vx
     vy_obs = sol.Vy
