@@ -20,12 +20,9 @@ md.timestepping.interp_forcing = 0
 md.timestepping.final_time = 2.0 * md.timestepping.time_step
 
 nv = md.mesh.numberofvertices
-B = 1.8e8 * np.ones((nv, 2))
-B[np.where(md.mesh.x < md.mesh.y)[0], 1] = 1.4e8
-dt = md.timestepping.time_step
-B = np.vstack([B, np.array([0.01, 2.0 * dt])])  # time row
-md.materials.rheology_B = B
-
+md.materials.rheology_B = 1.8e8 * np.ones((md.mesh.numberofvertices, 2))
+md.materials.rheology_B[md.mesh.x < md.mesh.y, 1] = 1.4e8
+md.materials.rheology_B = np.vstack([md.materials.rheology_B, [0.01, 2*md.timestepping.time_step]])
 # -----------------------------
 # Initial values
 # -----------------------------
@@ -105,7 +102,7 @@ surf_obs_tr = np.vstack([surf_stack, times])
 weights_tr = np.vstack([np.ones((nv, 1)), np.array([[0.0]])])  # last row weight for time row = 0
 
 # Vx transient square misfit
-od_vx = pyissm.model.classes.cfsurfacesquaretransient()
+od_vx = pyissm.model.classes.cfsurface.cfsurfacesquaretransient()
 od_vx.name = 'VxMisfit_Transient'
 od_vx.definitionstring = f'Outputdefinition{count}'
 od_vx.model_string = 'Vx'
