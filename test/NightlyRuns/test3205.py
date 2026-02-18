@@ -53,7 +53,7 @@ md.outputdefinition.definitions = []
 md.autodiff.dependents = []
 
 count = 1
-for i in range(0, len(md.results.TransientSolution)):
+for i in range(0, len(md.results.TransientSolution.steps)):
     sol = md.results.TransientSolution[i]
     vx_obs = sol.Vx
     vy_obs = sol.Vy

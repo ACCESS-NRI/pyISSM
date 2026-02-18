@@ -89,7 +89,7 @@ def _reinit_levelset(md, ls):
     # fallback: use as-is (still lets you build the test)
     return ls
 
-count = 0
+count = 1
 for i in range(0, len(md.results.TransientSolution.steps)):
     sol = md.results.TransientSolution[i]
     time = sol.time
