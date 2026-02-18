@@ -190,9 +190,9 @@ class ice(class_registry.manage_state):
             )
             or (
                 self.rheology_B.ndim == 2
-                and self.rheology_B.shape[0] == md.mesh.numberofelements
+                and self.rheology_B.shape[0] in (md.mesh.numberofvertices, md.mesh.numberofvertices + 1)
                 and self.rheology_B.shape[1] > 1
-            )
+                )
         ):
             mattype = 1
             tsl = md.mesh.numberofvertices
