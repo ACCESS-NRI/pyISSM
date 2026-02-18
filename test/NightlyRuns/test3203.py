@@ -135,7 +135,7 @@ if md.autodiff.independents is None:
 ind = pyissm.model.classes.independent()
 ind.name = "MaterialsRheologyBbar"
 ind.control_size = md.materials.rheology_B.shape[1]
-ind.type = "vertex"  # matches your MATLAB comment; keep if your driver expects it
+ind.type = "vertex"  
 ind.min_parameters = min_params
 ind.max_parameters = max_params
 ind.control_scaling_factor = 1e8
@@ -149,7 +149,7 @@ md.inversion.maxiter = 4
 md.inversion.maxsteps = md.inversion.maxiter
 md.inversion.dxmin = 1e-5
 
-md.autodiff.isautodiff = 1
+md.autodiff.isautodiff = True
 md.autodiff.driver = "fos_reverse"
 
 # --- Go solve (control run) ---
