@@ -4,24 +4,6 @@
 import numpy as np
 import pyissm
 
-# These imports may vary slightly depending on your tree layout
-from pyissm.model.param import set_mask, parameterize, set_flow_equation
-from pyissm.model.classes.autodiff import dependent, independent
-from pyissm.model.classes.outputdefinition import outputdefinition
-from pyissm.model.classes.verbose import verbose
-
-# Cost-function definition classes (assumed in your tree)
-from pyissm.model.classes.cfsurfacelogvel import cfsurfacelogvel
-from pyissm.model.classes.cfsurfacesquare import cfsurfacesquare
-
-# Inversion driver (your cleaned pyISSM-style class)
-from pyissm.model.classes.inversion import adm1qn3
-
-# Temperature-to-B bounds helper (name/location may differ in your tree)
-# If this import fails in your repo, replace with the correct path to cuffey().
-from pyissm.model.materials import cuffey
-
-
 def _element_centroids(md):
     """
     Return element centroid x,y arrays.
@@ -88,18 +70,6 @@ md = pyissm.model.execute.solve(md, "tr")
 # Modify rheology, now constant (keep the final appended time row)
 md.materials.rheology_B[:-1, :] = 1.8e8
 
-# Make sure outputdefinition/autodiff containers exist
-if not hasattr(md, "outputdefinition") or md.outputdefinition is None:
-    md.outputdefinition = outputdefinition()
-if not hasattr(md.outputdefinition, "definitions") or md.outputdefinition.definitions is None:
-    md.outputdefinition.definitions = []
-
-if not hasattr(md, "autodiff") or md.autodiff is None:
-    md.autodiff = pyissm.model.classes.autodiff.autodiff()
-if not hasattr(md.autodiff, "dependents") or md.autodiff.dependents is None:
-    md.autodiff.dependents = []
-if not hasattr(md.autodiff, "independents") or md.autodiff.independents is None:
-    md.autodiff.independents = []
 
 count = 1
 
@@ -114,7 +84,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     weights = np.ones((nv, 1))
 
     # 1) Log velocity misfit
-    cf = cfsurfacelogvel()
+    cf = pyissm.model.classes.cfsurface.cfsurfacelogvel()
     cf.name = f"LogVelMis{count+1}"
     cf.definitionstring = f"Outputdefinition{count+1}"
     cf.vxobs_string = "VxObs"
@@ -126,7 +96,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     cf.datatime = t_obs
     md.outputdefinition.definitions.append(cf)
 
-    dep = dependent()
+    dep = pyissm.model.classes.dependent()
     dep.name = cf.definitionstring
     dep.type = "scalar"
     dep.fos_reverse_index = 1
@@ -134,7 +104,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     count += 1
 
     # 2) Vy square misfit (note MATLAB divides by yts for Vx/Vy observations)
-    cf = cfsurfacesquare()
+    cf = pyissm.model.classes.cfsurface.cfsurfacesquare()
     cf.name = f"VyMisfit{count+1}"
     cf.definitionstring = f"Outputdefinition{count+1}"
     cf.model_string = "Vy"
@@ -145,7 +115,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     cf.datatime = t_obs
     md.outputdefinition.definitions.append(cf)
 
-    dep = dependent()
+    dep = pyissm.model.classes.dependent()
     dep.name = cf.definitionstring
     dep.type = "scalar"
     dep.fos_reverse_index = 1
@@ -153,7 +123,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     count += 1
 
     # 3) Vx square misfit (MATLAB uses 500*weights here)
-    cf = cfsurfacesquare()
+    cf = pyissm.model.classes.cfsurface.cfsurfacesquare()
     cf.name = f"VxMisfit{count+1}"
     cf.definitionstring = f"Outputdefinition{count+1}"
     cf.model_string = "Vx"
@@ -164,7 +134,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     cf.datatime = t_obs
     md.outputdefinition.definitions.append(cf)
 
-    dep = dependent()
+    dep = pyissm.model.classes.dependent()
     dep.name = cf.definitionstring
     dep.type = "scalar"
     dep.fos_reverse_index = 1
@@ -172,7 +142,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     count += 1
 
     # 4) DEM / surface square misfit (MATLAB uses (1/yts)*weights)
-    cf = cfsurfacesquare()
+    cf = pyissm.model.classes.cfsurface.cfsurfacesquare()
     cf.name = f"DEMMisfit{count+1}"
     cf.definitionstring = f"Outputdefinition{count+1}"
     cf.model_string = "Surface"
@@ -183,7 +153,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     cf.datatime = t_obs
     md.outputdefinition.definitions.append(cf)
 
-    dep = dependent()
+    dep = pyissm.model.classes.dependent()
     dep.name = cf.definitionstring
     dep.type = "scalar"
     dep.fos_reverse_index = 1
@@ -195,10 +165,10 @@ min_params = md.materials.rheology_B.copy()
 max_params = md.materials.rheology_B.copy()
 
 # MATLAB: min_params(1:end-1,:) = cuffey(273); max_params(1:end-1,:) = cuffey(200);
-min_params[:-1, :] = cuffey(273.0)
-max_params[:-1, :] = cuffey(200.0)
+min_params[:-1, :] = pyissm.tools.materials.cuffey(273.0)
+max_params[:-1, :] = pyissm.tools.materials.cuffey(200.0)
 
-ind = independent()
+ind = pyissm.model.classes.independent()
 ind.name = "MaterialsRheologyBbar"
 ind.control_size = md.materials.rheology_B.shape[1]
 ind.type = "vertex"  # MATLAB comment says “Really needed??” — keep parity
@@ -213,7 +183,7 @@ else:
     md.autodiff.independents[0] = ind
 
 # Inversion driver: ADM1QN3
-md.inversion = adm1qn3(other=md.inversion)
+md.inversion = pyissm.model.classes.inversion.adm1qn3(other=md.inversion)
 md.inversion.iscontrol = 1
 md.inversion.maxiter = 3
 md.inversion.maxsteps = md.inversion.maxiter
