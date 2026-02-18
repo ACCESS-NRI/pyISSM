@@ -16,7 +16,7 @@ md.cluster.np = 2
 # -----------------------------
 # Create real time series for B (element-based)
 # -----------------------------
-
+nv = md.mesh.numberofvertices
 md.timestepping.interp_forcing = 0
 md.timestepping.final_time = 2.0 * md.timestepping.time_step
 
