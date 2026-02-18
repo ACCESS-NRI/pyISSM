@@ -27,6 +27,8 @@ alpha = 2.0 / 3.0
 # -> +1 on one side, -1 on the other, 0 exactly on the interface
 phi = x - alpha * Lx
 md.mask.ice_levelset = (phi > 0).astype(float) - (phi < 0).astype(float)
+md.materials.rheology_B[md.mesh.x < md.mesh.y, 1] = 1.4e8
+md.materials.rheology_B = np.vstack([md.materials.rheology_B, [0.01, 2*md.timestepping.time_step]])
 
 # --- Time stepping ---
 md.timestepping.time_step = 10.0
@@ -53,9 +55,6 @@ md.levelset.migration_max = 1e8
 md = pyissm.model.execute.solve(md, "tr")
 
 # --- Modify rheology, now constant ---
-# Create 2D time series format: (numberofvertices+1) x 2 
-md.materials.rheology_B = 1.8e8 * np.ones((md.mesh.numberofvertices, 2))
-md.materials.rheology_B = np.vstack([md.materials.rheology_B, [0.01, 2*md.timestepping.time_step]])
 # Now modify all rows except the last (time) row
 md.materials.rheology_B[:-1, :] = 1.8e8
 
