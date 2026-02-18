@@ -390,6 +390,7 @@ def plot_model_field(md,
                      field,
                      layer = None,
                      ax = None,
+                     depth_average = False,
                      plot_data_on = 'points',
                      xlabel = 'X (m)',
                      ylabel = 'Y (m)',
@@ -421,6 +422,8 @@ def plot_model_field(md,
         If not provided, the surface layer is used by default for vertex- and element-based 3D fields.
     ax : matplotlib.axes.Axes, optional
         An existing matplotlib Axes object to plot on. If `None`, a new figure and axes are created.
+    depth_average : bool, optional
+        If True and the model is 3D, the field is depth-averaged before plotting. Cannot be True if `layer` is specified. Default is False.
     plot_data_on: str, optional
         Should data be plotted on points or elements? Default is 'points'. These options are converted to 'shading' used by plt.tripcolor(), as follows:
         plot_data_on = 'points': shading = 'gouraud' / plot_data_on = 'elements': shading = 'flat'. When data are defined on elements, plot_data_on = 'elements'
@@ -475,12 +478,20 @@ def plot_model_field(md,
     ## Process mesh
     mesh, mesh_x, mesh_y, mesh_elements, is3d = model.mesh.process_mesh(md)
 
+    ## Error check
+    if layer is not None and depth_average:
+        raise ValueError('plot_model_field: Cannot specify both a layer and depth_average = True. Please choose one or the other.')
+
     ## Dimension checks
     if is3d:
         # If a 3D model is provided, extract the layer (if provided), or continue to default extraction of surface layer
         if layer is not None:
             # Extract the specified layer
-            field, _ = tools.general.extract_field_layer(md, field, layer)
+            field = model.mesh.project_2d(md, field, layer)
+
+        elif depth_average:
+            field = model.mesh.depth_average(md, field)
+
         else:
             # Default behaviour for 3D model with no layer specified
             if field.shape[0] == md.mesh.numberofvertices:
