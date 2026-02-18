@@ -65,7 +65,7 @@ md.materials.rheology_B[:-1, :] = 1.8e8
 
 
 # --- Cost function setup over all transient times ---
-weights = np.ones(md.mesh.numberofvertices, 1)
+weights = np.ones(md.mesh.numberofvertices,)
 
 # Make sure containers exist
 if md.outputdefinition.definitions is None:
