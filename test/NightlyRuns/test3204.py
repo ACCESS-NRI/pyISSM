@@ -102,10 +102,11 @@ if not hasattr(md.autodiff, "dependents") or md.autodiff.dependents is None:
 if not hasattr(md.autodiff, "independents") or md.autodiff.independents is None:
     md.autodiff.independents = []
 
-count = 0
+count = 1
 
 # Loop over transient results and add cost functions + dependents
-for sol in md.results.TransientSolution:
+for i in range(0, len(md.results.TransientSolution)):
+    sol = md.results.TransientSolution[i]
     vx_obs = sol.Vx
     vy_obs = sol.Vy
     z_obs = sol.Surface

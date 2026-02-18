@@ -38,7 +38,7 @@ md.basalforcings.geothermalflux = np.zeros((nv,))
 md.thermal.spctemperature = np.full((nv,), np.nan)
 
 # Forward solve to generate "observations"
-md = pyissm.execute.solve(md, 'tr')
+md = pyissm.model.execute.solve(md, 'tr')
 
 # -----------------------------
 # Modify rheology, now constant
@@ -52,7 +52,7 @@ md.outputdefinition.definitions = []
 md.autodiff.dependents = []
 
 count = 1
-for i in range(1, len(md.results.TransientSolution)):
+for i in range(0, len(md.results.TransientSolution)):
     sol = md.results.TransientSolution[i]
     vx_obs = sol.Vx
     vy_obs = sol.Vy
@@ -77,6 +77,7 @@ for i in range(1, len(md.results.TransientSolution)):
     dep1.name = f'Outputdefinition{count}'
     dep1.type = 'scalar'
     dep1.fos_reverse_index = 1
+    dep1.nods = md.mesh.numberofvertices
     md.autodiff.dependents.append(dep1)
     count += 1
 
@@ -96,6 +97,7 @@ for i in range(1, len(md.results.TransientSolution)):
     dep2.name = f'Outputdefinition{count}'
     dep2.type = 'scalar'
     dep2.fos_reverse_index = 1
+    dep2.nods = md.mesh.numberofvertices
     md.autodiff.dependents.append(dep2)
     count += 1
 
@@ -115,6 +117,7 @@ for i in range(1, len(md.results.TransientSolution)):
     dep3.name = f'Outputdefinition{count}'
     dep3.type = 'scalar'
     dep3.fos_reverse_index = 1
+    dep3.nods = md.mesh.numberofvertices
     md.autodiff.dependents.append(dep3)
     count += 1
 
@@ -134,6 +137,7 @@ for i in range(1, len(md.results.TransientSolution)):
     dep4.name = f'Outputdefinition{count}'
     dep4.type = 'scalar'
     dep4.fos_reverse_index = 1
+    dep4.nods = md.mesh.numberofvertices
     md.autodiff.dependents.append(dep4)
     count += 1
 
@@ -160,7 +164,7 @@ md.autodiff.independents = [indep]
 # -----------------------------
 # Inversion + autodiff settings
 # -----------------------------
-md.inversion = pyissm.model.classes.adm1qn3inversion(md.inversion)
+md.inversion = pyissm.model.classes.inversion.adm1qn3(md.inversion)
 md.inversion.iscontrol = 1
 md.inversion.maxiter = 4
 md.inversion.maxsteps = md.inversion.maxiter
@@ -170,7 +174,7 @@ md.autodiff.isautodiff = True
 md.autodiff.driver = 'fos_reverse'
 
 # Go solve!
-md = pyissm.execute.solve(md, 'tr')
+md = pyissm.model.execute.solve(md, 'tr')
 
 # -----------------------------
 # Fields and tolerances to track changes

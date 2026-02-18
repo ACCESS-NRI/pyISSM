@@ -11,7 +11,7 @@ md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp'
 md = pyissm.model.param.set_mask(md, 'all', '')
 md = pyissm.model.param.parameterize(md, '../assets/Par/SquareShelf.py')
 md = pyissm.model.param.set_flow_equation(md, SSA='all')
-md.cluster = pyissm.cluster.generic('np', 2)
+md.cluster.np = 2
 
 # -----------------------------
 # Create real time series for B (vertex-based)
@@ -39,7 +39,7 @@ md.thermal.spctemperature = np.full((nv,), np.nan)
 # -----------------------------
 # Param: linear basal forcings
 # -----------------------------
-md.basalforcings = pyissm.model.classes.linearbasalforcings()
+md.basalforcings = pyissm.model.classes.basalforcings.linear()
 md.basalforcings.deepwater_melting_rate = 50.0              # m/yr ice equivalent
 md.basalforcings.deepwater_elevation = -500.0
 md.basalforcings.upperwater_melting_rate = 0.0              # no melting for zb>=0
@@ -49,7 +49,7 @@ md.basalforcings.perturbation_melting_rate[:] = 0.0
 md.transient.isthermal = 0
 
 # Forward solve to create observations
-md = pyissm.execute.solve(md, 'tr')
+md = pyissm.model.execute.solve(md, 'tr')
 
 # -----------------------------
 # Set cost function: per-time LogVel misfits
@@ -58,7 +58,8 @@ md.outputdefinition.definitions = []
 md.autodiff.dependents = []
 
 count = 1
-for sol in md.results.TransientSolution:
+for i in range(0, len(md.results.TransientSolution)):
+    sol = md.results.TransientSolution[i]
     vx_obs = sol.Vx
     vy_obs = sol.Vy
     time = sol.time
@@ -80,6 +81,7 @@ for sol in md.results.TransientSolution:
     dep.name = f'Outputdefinition{count}'
     dep.type = 'scalar'
     dep.fos_reverse_index = 1
+    dep.nods = md.mesh.numberofvertices
     md.autodiff.dependents.append(dep)
 
     count += 1
@@ -117,11 +119,12 @@ dep_vx = pyissm.model.classes.dependent()
 dep_vx.name = f'Outputdefinition{count}'
 dep_vx.type = 'scalar'
 dep_vx.fos_reverse_index = 1
+dep_vx.nods = md.mesh.numberofvertices
 md.autodiff.dependents.append(dep_vx)
 count += 1
 
 # Vy transient square misfit
-od_vy = pyissm.model.classes.cfsurfacesquaretransient()
+od_vy = pyissm.model.classes.cfsurface.cfsurfacesquaretransient()
 od_vy.name = 'VyMisfit_Transient'
 od_vy.definitionstring = f'Outputdefinition{count}'
 od_vy.model_string = 'Vy'
@@ -135,11 +138,12 @@ dep_vy = pyissm.model.classes.dependent()
 dep_vy.name = f'Outputdefinition{count}'
 dep_vy.type = 'scalar'
 dep_vy.fos_reverse_index = 1
+dep_vy.nods = md.mesh.numberofvertices
 md.autodiff.dependents.append(dep_vy)
 count += 1
 
 # Surface transient square misfit
-od_surf = pyissm.model.classes.cfsurfacesquare.cfsurfacesquaretransient()
+od_surf = pyissm.model.classes.cfsurface.cfsurfacesquaretransient()
 od_surf.name = 'SurfMisfit_Transient'
 od_surf.definitionstring = f'Outputdefinition{count}'
 od_surf.model_string = 'Surface'
@@ -153,6 +157,7 @@ dep_surf = pyissm.model.classes.dependent()
 dep_surf.name = f'Outputdefinition{count}'
 dep_surf.type = 'scalar'
 dep_surf.fos_reverse_index = 1
+dep_surf.nods = md.mesh.numberofvertices
 md.autodiff.dependents.append(dep_surf)
 count += 1
 
@@ -208,7 +213,7 @@ md.autodiff.driver = 'fos_reverse'
 md.settings.checkpoint_frequency = 2
 
 # Go solve!
-md = pyissm.execute.solve(md, 'tr')
+md = pyissm.model.execute.solve(md, 'tr')
 
 # -----------------------------
 # Fields and tolerances to track changes
@@ -255,7 +260,7 @@ def validate_gradient_fd(md_in, index=2, delta=0.001):
     # forward at B0
     mdA = md2
     mdA.materials.rheology_B[index] = B0
-    mdA = pyissm.execute.solve(mdA, 'tr')
+    mdA = pyissm.model.execute.solve(mdA, 'tr')
     J0 = 0.0
     last = mdA.results.TransientSolution[-1]
     for nm in out_list:
@@ -264,7 +269,7 @@ def validate_gradient_fd(md_in, index=2, delta=0.001):
     # forward at B2
     mdB_ = md2
     mdB_.materials.rheology_B[index] = B2
-    mdB_ = pyissm.execute.solve(mdB_, 'tr')
+    mdB_ = pyissm.model.execute.solve(mdB_, 'tr')
     J2 = 0.0
     last = mdB_.results.TransientSolution[-1]
     for nm in out_list:

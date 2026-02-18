@@ -4,9 +4,9 @@ import pyissm
 
 # --- Mesh / param / flow eqn / cluster ---
 md = pyissm.model.Model()
-md = pyissm.model.mesh.triangle(pyissm.model.Model(), "../Exp/Square.exp", 50000.0)
-md = pyissm.model.param.set_mask(md, "all", None)
-md = pyissm.model.param.parameterize(md, "../Par/SquareShelf.par")
+md = pyissm.model.mesh.triangle(pyissm.model.Model(), "../assets/Exp/Square.exp", 50000.0)
+md = pyissm.param.parameterize.set_mask(md, "all", None)
+md = pyissm.model.param.parameterize(md, "../assets/Par/SquareShelf.par")
 md = pyissm.model.param.set_flow_equation(md, SSA="all")
 
 # MATLAB: md.cluster=generic('name',oshostname(),'np',3);
@@ -41,7 +41,7 @@ md.transient.isgroundingline = 0
 md.transient.ismovingfront = 1
 
 # --- Calving / frontal forcings / levelset constraints ---
-md.calving = pyissm.model.classes.calvinglevermann()
+md.calving = pyissm.model.classes.calving.levermann()
 md.calving.coeff = 4.89e13 * np.ones(md.mesh.numberofvertices)
 
 md.frontalforcings.meltingrate = np.zeros(md.mesh.numberofvertices)
@@ -50,7 +50,7 @@ md.levelset.spclevelset = np.full(md.mesh.numberofvertices, np.nan)
 md.levelset.migration_max = 1e8
 
 # --- Forward transient solve (truth run) ---
-md = pyissm.solve(md, "tr")
+md = pyissm.model.execute.solve(md, "tr")
 
 # --- Modify rheology, now constant ---
 md.materials.rheology_B[:-1, :] = 1.8e8
@@ -78,7 +78,8 @@ def _reinit_levelset(md, ls):
     return ls
 
 count = 1
-for sol in md.results.TransientSolution:
+for i in range(0, len(md.results.TransientSolution)):
+    sol = md.results.TransientSolution[i]
     time = sol.time
 
     obs = _reinit_levelset(md, sol.MaskIceLevelset)
@@ -101,6 +102,7 @@ for sol in md.results.TransientSolution:
             name=f"Outputdefinition{count}",
             type="scalar",
             fos_reverse_index=1,
+            nods=md.mesh.numberofvertices
         )
     )
 
@@ -133,7 +135,7 @@ md.autodiff.independents.append(
 )
 
 # --- Inversion / autodiff settings ---
-md.inversion = pyissm.model.classes.adm1qn3inversion(md.inversion)
+md.inversion = pyissm.model.classes.inversion.adm1qn3(md.inversion)
 md.inversion.iscontrol = 1
 md.inversion.maxiter = 4
 md.inversion.maxsteps = md.inversion.maxiter
@@ -143,8 +145,7 @@ md.autodiff.isautodiff = 1
 md.autodiff.driver = "fos_reverse"
 
 # --- Go solve (control run) ---
-md.verbose = pyissm.model.classes.verbose(0)
-md = pyissm.solve(md, "tr")
+md = pyissm.model.execute.solve(md, "tr")
 
 # --- Fields and tolerances to track changes ---
 field_names = ["Gradient", "Misfit", "Rheology"]
