@@ -82,8 +82,7 @@ if getattr(md.outputdefinition, "definitions", None) is None:
 if getattr(md.autodiff, "dependents", None) is None:
     md.autodiff.dependents = []
 
-count = 1
-for i in range(1, len(md.results.TransientSolution.steps)):
+for i in range(0, len(md.results.TransientSolution.steps)):
     vx_obs = md.results.TransientSolution[i].Vx
     vy_obs = md.results.TransientSolution[i].Vy
     z_obs  = md.results.TransientSolution[i].Surface
