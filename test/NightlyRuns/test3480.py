@@ -3,10 +3,10 @@ import numpy as np
 import pyissm
 
 # --- mesh + mask + params ---
-md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../Exp/Square.exp', 100000.)
-md = pyissm.model.param.set_mask(md, '../Exp/SquareShelf.exp', '')   # same intent as setmask(exp,'')
+md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 100000.)
+md = pyissm.model.param.set_mask(md, '../assets/Exp/SquareShelf.exp', None)   # same intent as setmask(exp,'')
 
-md = pyissm.model.param.parameterize(md, '../Par/SquareSheetShelf.par')
+md = pyissm.model.param.parameterize(md, '../assets/Par/SquareSheetShelf.par')
 
 # --- initialization ---
 md.initialization.vx[:] = 1.0
@@ -35,7 +35,7 @@ md.geometry.surface[:] = md.geometry.base + md.geometry.thickness
 md = pyissm.model.param.set_flow_equation(md, SSA='all')
 
 # --- control parameters / inversion / autodiff ---
-md.inversion = pyissm.model.classes.adm1qn3inversion(md.inversion)
+md.inversion = pyissm.model.classes.inversion.adm1qn3(md.inversion)
 md.inversion.iscontrol = 1
 
 md.autodiff.isautodiff = True
@@ -100,10 +100,10 @@ md.autodiff.dependents = [dep]
 md.inversion.maxiter = 2
 
 # cluster
-md.cluster = pyissm.cluster.generic('name', pyissm.tools.oshostname(), 'np', 3)
+md.cluster.np = 3
 
 # --- solve ---
-md = pyissm.execute.solve(md, 'transient')
+md = pyissm.model.execute.solve(md, 'transient')
 
 # --- Fields and tolerances to track changes ---
 field_names = [
