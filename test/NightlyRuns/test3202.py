@@ -16,22 +16,19 @@ md.cluster.np = 2
 # -----------------------------
 # Create real time series for B (element-based)
 # -----------------------------
-nv = md.mesh.numberofvertices
 md.timestepping.interp_forcing = 0
 md.timestepping.final_time = 2.0 * md.timestepping.time_step
-
-ne = md.mesh.numberofelements
-B = 1.8e8 * np.ones((ne, 2))
-
-# element centroids (match MATLAB: mean over element nodes)
-ex = md.mesh.x[md.mesh.elements].mean(axis=1)
-ey = md.mesh.y[md.mesh.elements].mean(axis=1)
-
-B[np.where(ex < ey)[0], 1] = 1.4e8
-
+nv = md.mesh.numberofvertices
 dt = md.timestepping.time_step
-B = np.vstack([B, np.array([0.01, 2.0 * dt])])  # last row = times
-md.materials.rheology_B = B
+
+B = np.full((nv, 2), 1.8e8, dtype=np.float64, order="F")
+B[md.mesh.x < md.mesh.y, 1] = 1.4e8
+
+times = np.array([[0.01, 2.0 * dt]], dtype=np.float64)   # shape (1,2)
+B_ts = np.asfortranarray(np.vstack([B, times]))          # shape (nv+1,2), Fortran order
+
+md.materials.rheology_B = B_ts
+
 
 
 # -----------------------------
@@ -161,7 +158,7 @@ max_params[:-1, :] = pyissm.tools.materials.cuffey(200)
 indep = pyissm.model.classes.independent()
 indep.name = 'MaterialsRheologyBbar'
 indep.control_size = md.materials.rheology_B.shape[1]
-indep.type = 'element'  # matches MATLAB comment (even if odd)
+indep.type = 'vertex'  # matches MATLAB comment (even if odd)
 indep.min_parameters = min_params
 indep.max_parameters = max_params
 indep.control_scaling_factor = 1e8
