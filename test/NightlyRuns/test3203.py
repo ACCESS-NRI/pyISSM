@@ -53,7 +53,10 @@ md.levelset.migration_max = 1e8
 md = pyissm.model.execute.solve(md, "tr")
 
 # --- Modify rheology, now constant ---
-
+# Create 2D time series format: (numberofvertices+1) x 2 
+md.materials.rheology_B = 1.8e8 * np.ones((md.mesh.numberofvertices, 2))
+md.materials.rheology_B = np.vstack([md.materials.rheology_B, [0.01, 2*md.timestepping.time_step]])
+# Now modify all rows except the last (time) row
 md.materials.rheology_B[:-1, :] = 1.8e8
 
 
