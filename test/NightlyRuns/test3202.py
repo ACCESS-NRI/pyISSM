@@ -180,7 +180,7 @@ md = pyissm.model.execute.solve(md, 'tr')
 field_names = ['Gradient', 'Misfit', 'Rheology']
 field_tolerances = [2e-12, 1e-12, 1e-12]
 
-ts1 = md.results.TransientSolution[0]  # MATLAB (1)
+ts1 = md.results.TransientSolution[1]  # MATLAB (1)
 field_values = [
     ts1.Gradient1,
     ts1.J,
