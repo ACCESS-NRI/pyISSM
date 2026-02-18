@@ -56,7 +56,7 @@ for i in range(0, len(md.results.TransientSolution)):
     vy_obs = sol.Vy
     z_obs  = sol.Surface
     time   = sol.time
-    weights = np.ones((nv,))
+    weights = np.ones(nv)
 
     # 1) LogVel misfit
     od1 = pyissm.model.classes.cfsurface.cfsurfacelogvel()
@@ -180,7 +180,7 @@ md = pyissm.model.execute.solve(md, 'tr')
 field_names = ['Gradient', 'Misfit', 'Rheology']
 field_tolerances = [2e-12, 1e-12, 1e-12]
 
-ts1 = md.results.TransientSolution[1]  # MATLAB (1)
+ts1 = md.results.TransientSolution[0]  # MATLAB (1)
 field_values = [
     ts1.Gradient1,
     ts1.J,
