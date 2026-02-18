@@ -16,18 +16,12 @@ md.cluster.np = 2
 # -----------------------------
 # Create real time series for B (element-based)
 # -----------------------------
-md.timestepping.interp_forcing = 0
-md.timestepping.final_time = 2.0 * md.timestepping.time_step
 nv = md.mesh.numberofvertices
-dt = md.timestepping.time_step
-
-B = np.full((nv, 2), 1.8e8, dtype=np.float64, order="F")
-B[md.mesh.x < md.mesh.y, 1] = 1.4e8
-
-times = np.array([[0.01, 2.0 * dt]], dtype=np.float64)   # shape (1,2)
-B_ts = np.asfortranarray(np.vstack([B, times]))          # shape (nv+1,2), Fortran order
-
-md.materials.rheology_B = B_ts
+md.timestepping.interp_forcing = 0
+md.timestepping.final_time = 2 * md.timestepping.time_step
+md.materials.rheology_B = 1.8e8 * np.ones((md.mesh.numberofvertices, 2))
+md.materials.rheology_B[md.mesh.x < md.mesh.y, 1] = 1.4e8
+md.materials.rheology_B = np.vstack([md.materials.rheology_B, [0.01, 2*md.timestepping.time_step]])
 
 
 
