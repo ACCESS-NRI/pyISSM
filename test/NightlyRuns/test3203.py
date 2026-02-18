@@ -27,6 +27,7 @@ alpha = 2.0 / 3.0
 # -> +1 on one side, -1 on the other, 0 exactly on the interface
 phi = x - alpha * Lx
 md.mask.ice_levelset = (phi > 0).astype(float) - (phi < 0).astype(float)
+md.materials.rheology_B = 1.8e8 * np.ones((md.mesh.numberofvertices, 2))
 md.materials.rheology_B[md.mesh.x < md.mesh.y, 1] = 1.4e8
 md.materials.rheology_B = np.vstack([md.materials.rheology_B, [0.01, 2*md.timestepping.time_step]])
 
