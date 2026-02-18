@@ -167,7 +167,7 @@ if Bbar.shape == (2, md.mesh.numberofvertices):
 field_names = ["Gradient", "Misfit", "Rheology"]
 field_tolerances = [1e-12, 1e-12, 1e-12]
 field_values = [
-    md.results.TransientSolution[0].Gradient1,
+    g,
     md.results.TransientSolution[0].J,
-    md.results.TransientSolution[0].MaterialsRheologyBbar,
+    Bbar,
 ]
