@@ -53,7 +53,7 @@ md.levelset.migration_max = 1e8
 md = pyissm.model.execute.solve(md, "tr")
 
 # --- Modify rheology, now constant ---
-md.materials.rheology_B = 1.8e8 * np.ones((md.mesh.numberofvertices + 1, 2))  # keep the final time row
+md.materials.rheology_B = 1.8e8 * np.ones((md.mesh.numberofvertices + 1, 1))  # keep the final time row
 
 
 # --- Cost function setup over all transient times ---
