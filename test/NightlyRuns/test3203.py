@@ -105,7 +105,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     cf.datatime = time
 
     md.outputdefinition.definitions.append(cf)
-
+    count += 1
     
     dep = pyissm.model.classes.dependent()
     dep.name = f"Outputdefinition{count}"
