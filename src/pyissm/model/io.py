@@ -80,13 +80,18 @@ def load_model(path):
     # Helper function to load attributes
     def _get_attributes(state, group):
         for attr in group.ncattrs():
-            if attr != "classtype":
-                val = group.getncattr(attr)
-                if isinstance(val, str) and val == "__EMPTY_LIST__":
-                    state[attr] = []
-                    continue
-                else:
-                    state[attr] = val
+            
+            ## Skip special attributes used for metadata (e.g., classtype, __IS_DICT__)
+            if attr in ("classtype", "__IS_DICT__"):
+                continue
+            val = group.getncattr(attr)
+            
+            ## Convert "__EMPTY_LIST" back to an empty list
+            if isinstance(val, str) and val == "__EMPTY_LIST__":
+                val = []
+
+            state[attr] = val
+
         return state
     
     # Helper function to recursively load nested groups (dicts / nested objects)
@@ -123,8 +128,7 @@ def load_model(path):
                 # Attach reconstructed object to state
                 state[sub_name] = obj
 
-            else:
-                # Otherwise treat subgroup as a dictionary
+            elif "__IS_DICT__" in sub_group.ncattrs(): # If subgroup is a dictionary (marked by special attribute)
 
                 # Build state dictionary from attributes, variables, and subgroups
                 sub_state = {}
@@ -137,6 +141,9 @@ def load_model(path):
                 
                 # Attach reconstructed object to state
                 state[sub_name] = sub_state
+            
+            else:
+                print(f"⚠️ No classtype or __IS_DICT__ attribute found for {group_name}.{sub_name}. Unexpected group type. This subgroup will be skipped.")
 
         return state
 
@@ -480,11 +487,13 @@ def save_model(md, path, verbose = 0):
         # Handle arrays and lists (convert lists to arrays)
         if isinstance(value, np.ndarray) or isinstance(value, list):
 
-            # If it's a list, convert to an array
+            # Handle empty lists by writing a special string (since NetCDF can't store empty arrays)
             if isinstance(value, list) and len(value) == 0:
                 # Handle empty list case
                 group.setncattr(attr_name, "__EMPTY_LIST__")
-                    
+                return True
+            
+            # If it's a list, convert to an array                    
             if isinstance(value, list):
                 value = np.array(value, dtype='S')
             # Otherwise, check the array type
@@ -520,6 +529,40 @@ def save_model(md, path, verbose = 0):
             return True
         return False
     
+    # Helper function to handle serialisation of dictionaries (including OrderedDicts)
+    def _serialize_dict(dict, group, attr_name):
+        group.setncattr("__IS_DICT__", 1) # Mark this group as a dictionary for correct deserialization later
+
+        for key, value in dict.items():
+            key_name = str(key)
+
+            ## Handle scalars
+            if _serialize_scalars(value, group, key_name):
+                continue
+            
+            ## Handle arrays and lists
+            if _serialize_arrays_lists(value, group, key_name):
+                continue
+            
+            ## Handle nested dicts / OrderedDicts
+            if isinstance(value, collections.abc.Mapping):
+                sub_group = group.createGroup(key_name)
+                _serialize_dict(value, sub_group, key_name)
+                continue
+
+            ## Handle nested objects
+            if hasattr(value, '__getstate__') or hasattr(value, '__dict__'):
+                sub_group = group.createGroup(key_name)
+                _serialize_object(value, sub_group, key_name)
+                continue
+
+            if value is None:
+                if verbose > 0:
+                    print(f"⚠️  {attr_name}.{key_name} is NoneType. This will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
+                continue
+
+            print(f"⚠️  Skipping unsupported field in dictionary: {attr_name}.{key_name} ({type(value).__name__}). This will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
+    
     # Helper function to serialize an object's state
     def _serialize_object(obj, group, path = ''):
         """
@@ -530,6 +573,15 @@ def save_model(md, path, verbose = 0):
         if obj is None:
             print(f"⚠️  {path} is NoneType. This will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
             return
+        
+        ## Attach class type metadata on the group (but only if it's not a Mapping, since we want to treat those as dicts, not classes, even if they have a classtype)
+        if not isinstance(obj, collections.abc.Mapping):
+            try:
+                class_name = _get_registered_name(obj)
+                group.setncattr("classtype", class_name)
+            except Exception:
+                    if verbose > 0:
+                        print(f"⚠️  Failed to get registered class name for {path}. This object will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
 
         # Get state from the object
         state = None
@@ -558,34 +610,13 @@ def save_model(md, path, verbose = 0):
             if _serialize_arrays_lists(value, group, attr_name):
                 continue
 
-            # Handle dict / OrderedDict
+            # Handle nested dict / OrderedDict
             if isinstance(value, collections.abc.Mapping):
                 nested_group = group.createGroup(attr_name)
-
-                for k, v in value.items():
-                    key_name = str(k)
-                    key_path = f"{full_path}.{key_name}"
-
-                    if _serialize_scalars(v, nested_group, key_name):
-                        continue
-
-                    if _serialize_arrays_lists(v, nested_group, key_name):
-                        continue
-
-                    if isinstance(v, collections.abc.Mapping) or hasattr(v, '__getstate__') or hasattr(v, '__dict__'):
-                        sub_group = nested_group.createGroup(key_name)
-                        _serialize_object(v, sub_group, key_path)
-                        continue
-
-                    if v is None:        
-                        if verbose > 0:                
-                            print(f"⚠️  {key_path} is NoneType. This will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
-                        continue
-
-                    print(f"⚠️  Skipping unsupported field in Mapping: {key_path} ({type(v).__name__}). This will be skipped from saving and re-initialised (default) when re-loading the NetCDF file.")
+                _serialize_dict(value, nested_group, attr_name)
                 continue
-                
-            # Nested objects
+
+            # Handle nested objects
             if hasattr(value, '__getstate__') or hasattr(value, '__dict__'):
                 nested_group = group.createGroup(attr_name)
                 _serialize_object(value, nested_group, full_path)
@@ -632,10 +663,6 @@ def save_model(md, path, verbose = 0):
                     if isinstance(solution_obj, model.classes.results.solution) and solution_name == "TransientSolution":
                         solution_obj = _collapse_solution_to_step(solution_obj)
 
-                    ## Attach class type metadata
-                    classname = _get_registered_name(solution_obj)
-                    solution_group.setncattr("classtype", classname)
-
                     _serialize_object(solution_obj, solution_group, solution_name)
 
             else:
@@ -645,10 +672,6 @@ def save_model(md, path, verbose = 0):
 
                 ## Create group for the model component
                 group = ds.createGroup(name)
-
-                ## Attach class type metadata
-                classname = _get_registered_name(obj)
-                group.setncattr("classtype", classname)
 
                 ## Serialize the component state
                 _serialize_object(obj, group, name)
