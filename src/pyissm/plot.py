@@ -390,6 +390,7 @@ def plot_model_field(md,
                      field,
                      layer = None,
                      ax = None,
+                     depth_average = False,
                      plot_data_on = 'points',
                      xlabel = 'X (m)',
                      ylabel = 'Y (m)',
@@ -421,6 +422,8 @@ def plot_model_field(md,
         If not provided, the surface layer is used by default for vertex- and element-based 3D fields.
     ax : matplotlib.axes.Axes, optional
         An existing matplotlib Axes object to plot on. If `None`, a new figure and axes are created.
+    depth_average : bool, optional
+        If True and the model is 3D, the field is depth-averaged before plotting. Cannot be True if `layer` is specified. Default is False.
     plot_data_on: str, optional
         Should data be plotted on points or elements? Default is 'points'. These options are converted to 'shading' used by plt.tripcolor(), as follows:
         plot_data_on = 'points': shading = 'gouraud' / plot_data_on = 'elements': shading = 'flat'. When data are defined on elements, plot_data_on = 'elements'
@@ -475,12 +478,20 @@ def plot_model_field(md,
     ## Process mesh
     mesh, mesh_x, mesh_y, mesh_elements, is3d = model.mesh.process_mesh(md)
 
+    ## Error check
+    if layer is not None and depth_average:
+        raise ValueError('plot_model_field: Cannot specify both a layer and depth_average = True. Please choose one or the other.')
+
     ## Dimension checks
     if is3d:
         # If a 3D model is provided, extract the layer (if provided), or continue to default extraction of surface layer
         if layer is not None:
             # Extract the specified layer
-            field, _ = tools.general.extract_field_layer(md, field, layer)
+            field = model.mesh.project_2d(md, field, layer)
+
+        elif depth_average:
+            field = model.mesh.depth_average(md, field)
+
         else:
             # Default behaviour for 3D model with no layer specified
             if field.shape[0] == md.mesh.numberofvertices:
@@ -548,6 +559,7 @@ def plot_model_field(md,
 def plot_model_bc(md,
                   type = 'stressbalance',
                   ax = None,
+                  layer = None,
                   scale = 10,
                   xlabel = 'X (m)',
                   ylabel = 'Y (m)',
@@ -577,6 +589,9 @@ def plot_model_bc(md,
     ax : matplotlib.axes.Axes, optional
         Existing matplotlib Axes object. If not provided, a new figure and
         axes are created.
+    layer : int, optional
+        Index of the horizontal layer to extract for 3D models (1-based indexing). Ignored for 2D models.
+        If not provided, the surface layer is used by default.
     scale : float, optional
         Scaling factor for Dirichlet marker sizes. Default is 10.
     figsize : tuple of float, optional
@@ -635,6 +650,11 @@ def plot_model_bc(md,
 
     ## Get SPC boundaries
     ## -------------------------------------
+    
+    # Initialize empty dict (used to check supported BCs are present)
+    spc_dict = {}
+
+    ## STESSBALANCE
     if type == 'stressbalance':
         spc_dict = {'spcvx': {'data': md.stressbalance.spcvx,
                               'label': 'vx Dirichlet',
@@ -653,6 +673,7 @@ def plot_model_bc(md,
                               'size': 2 * scale}
                     }
 
+    ## MASSTRANSPORT
     if type == 'masstransport':
         spc_dict = {'spcthickness': {'data': md.masstransport.spcthickness,
                                      'label': 'Thickness Dirichlet',
@@ -661,6 +682,7 @@ def plot_model_bc(md,
                                      'size': 5 * scale}
                     }
 
+    ## THERMAL
     if type == 'thermal':
         spc_dict = {'spctemperature': {'data': md.thermal.spctemperature,
                                        'label': 'Temperature Dirichlet',
@@ -669,6 +691,7 @@ def plot_model_bc(md,
                                        'size': 5 * scale}
                     }
 
+    ## BALANCE THICKNESS
     if type == 'balancethickness':
         spc_dict = {'spcthickness': {'data': md.balancethickness.spcthickness,
                                      'label': 'Thickness Dirichlet',
@@ -676,15 +699,51 @@ def plot_model_bc(md,
                                      'marker': 'o',
                                      'size': 5 * scale}
                     }
-
+    
+    ## HYDROLOGY
     if type == 'hydrology':
-        spc_dict = {'spcwatercolumn': {'data': md.hydrology.spcwatercolumn,
-                                     'label': 'Water column Dirichlet',
-                                     'col': 'red',
-                                     'marker': 'o',
-                                     'size': 5 * scale}
-                    }
 
+        if isinstance(md.hydrology, model.classes.hydrology.dc):
+            spc_dict = {'spcsediment_head': {'data': md.hydrology.spcsediment_head,
+                                             'label': 'Sediment water head Dirichlet',
+                                             'col': 'red',
+                                             'marker': 'o',
+                                             'size': 10 * scale},
+                             'spcepl_head': {'data': md.hydrology.spcepl_head,
+                                             'label': 'EPL water head Dirichlet',
+                                             'col': 'blue',
+                                             'marker': 'o',
+                                             'size': 6 * scale}
+                        }
+        
+        if isinstance(md.hydrology, model.classes.hydrology.glads):
+            spc_dict = {'spcphi': {'data': md.hydrology.spcphi,
+                                   'label': 'Hydraulic potential Dirichlet',
+                                   'col': 'red',
+                                   'marker': 'o',
+                                   'size': 10 * scale}
+                        }
+            
+        if isinstance(md.hydrology, model.classes.hydrology.shakti):
+            spc_dict = {'spchead': {'data': md.hydrology.spchead,
+                                    'label': 'Water head Dirichlet',
+                                    'col': 'red',
+                                    'marker': 'o',
+                                    'size': 10 * scale}
+                        }
+        if isinstance(md.hydrology, model.classes.hydrology.shreve) or isinstance(md.hydrology, model.classes.hydrology.tws):
+            spc_dict = {'spcwatercolumn': {'data': md.hydrology.spcwatercolumn,
+                                           'label': 'Water column Dirichlet',
+                                           'col': 'red',
+                                           'marker': 'o',
+                                           'size': 5 * scale}
+                        }
+        
+        # If no supported hydrology model is found, spc_dict remains empty and a warning is raised.
+        if spc_dict == {}:
+            warnings.warn('No supported hydrology model found for plotting. Supported models include: dc, glads, shakti, shreve, and tws.')
+
+    ## DEBRIS
     if type == 'debris':
         spc_dict = {'spcthickness': {'data': md.debris.spcthickness,
                                      'label': 'Thickness Dirichlet',
@@ -693,6 +752,7 @@ def plot_model_bc(md,
                                      'size': 5 * scale}
                     }
 
+    ## LEVELSET
     if type == 'levelset':
         spc_dict = {'spclevelset': {'data': md.levelset.spclevelset,
                                     'label': 'Levelset Dirichlet',
@@ -700,6 +760,9 @@ def plot_model_bc(md,
                                     'marker': 'o',
                                     'size': 5 * scale}
                     }
+        
+    if spc_dict == {}:
+        raise ValueError(f'pyissm.plot.plot_model_bc: No supported boundary conditions found for type "{type}". Please check the model and type definition.')
 
     ## Set-up (or retrieve) figure
     if ax is None:
@@ -732,10 +795,14 @@ def plot_model_bc(md,
             print(f'No constraints found in {key}')
             pass
         else:
-            # If model is 3D, extract the BCs on the surface layer
+            # If model is 3D, extract the BCs on the specified layer (or surface if no layer specified)
             if is3d:
-                data = data[md.mesh.vertexonsurface == 1]
-                warnings.warn(f'3D model found. Plotting surface BCs only.')
+                if layer is None:
+                    data = data[md.mesh.vertexonsurface == 1]
+                    warnings.warn(f'3D model found. Plotting surface BCs only.')
+                else:
+                    data = model.mesh.project_2d(md, data, layer)
+                    warnings.warn(f'3D model found. Plotting BCs  on layer {layer}.')
 
             # Make plot
             ax.scatter(mesh_x[~np.isnan(data)],
