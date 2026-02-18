@@ -14,18 +14,25 @@ md = pyissm.model.param.set_flow_equation(md, SSA='all')
 md.cluster.np = 2
 
 # -----------------------------
-# Create real time series for B (vertex-based)
+# Create real time series for B (element-based)
 # -----------------------------
+
 md.timestepping.interp_forcing = 0
 md.timestepping.final_time = 2.0 * md.timestepping.time_step
 
-nv = md.mesh.numberofvertices
-B = 1.8e8 * np.ones((nv, 2))
-B[np.where(md.mesh.x < md.mesh.y)[0], 1] = 1.4e8
+ne = md.mesh.numberofelements
+B = 1.8e8 * np.ones((ne, 2))
+
+# element centroids (match MATLAB: mean over element nodes)
+ex = md.mesh.x[md.mesh.elements].mean(axis=1)
+ey = md.mesh.y[md.mesh.elements].mean(axis=1)
+
+B[np.where(ex < ey)[0], 1] = 1.4e8
 
 dt = md.timestepping.time_step
-B = np.vstack([B, np.array([0.01, 2.0 * dt])])  # time row
+B = np.vstack([B, np.array([0.01, 2.0 * dt])])  # last row = times
 md.materials.rheology_B = B
+
 
 # -----------------------------
 # Initial values
