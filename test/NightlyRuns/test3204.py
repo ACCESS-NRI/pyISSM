@@ -27,7 +27,7 @@ def _element_centroids(md):
 # -------------------------
 md = pyissm.model.Model()
 md = pyissm.model.mesh.triangle(md, "../assets/Exp/Square.exp", 100000.0)
-md = pyissm.param.parameterize.set_mask(md, "all", None)
+md = pyissm.model.param.set_mask(md, "all", None)
 md = pyissm.model.param.parameterize(md, "../assets/Par/SquareShelf.py")
 md = pyissm.model.param.set_flow_equation(md, SSA="all")
 md.cluster.np = 2
