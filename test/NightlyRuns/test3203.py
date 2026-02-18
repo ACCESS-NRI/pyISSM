@@ -53,10 +53,11 @@ md.levelset.migration_max = 1e8
 md = pyissm.model.execute.solve(md, "tr")
 
 # --- Modify rheology, now constant ---
-md.materials.rheology_B[:-1, :] = 1.8e8
+md.materials.rheology_B = 1.8e8 * np.ones((md.mesh.numberofvertices + 1, 2))  # keep the final time row
+
 
 # --- Cost function setup over all transient times ---
-weights = np.ones(md.mesh.numberofvertices)
+weights = np.ones(md.mesh.numberofvertices,)
 
 # Make sure containers exist
 if md.outputdefinition.definitions is None:
@@ -117,8 +118,8 @@ max_params = md.materials.rheology_B.copy()
 
 # cuffey(T) should exist in your ISSM/pyISSM environment; otherwise replace with your own mapping.
 # (In ISSM, cuffey() returns B(T) typically.)
-min_params[:-1, :] = pyissm.cuffey(273)
-max_params[:-1, :] = pyissm.cuffey(200)
+min_params[:-1, :] = pyissm.tools.materials.cuffey(273)
+max_params[:-1, :] = pyissm.tools.materials.cuffey(200)
 
 if md.autodiff.independents is None:
     md.autodiff.independents = []
