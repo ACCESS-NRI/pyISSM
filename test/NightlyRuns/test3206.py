@@ -162,7 +162,7 @@ count += 1
 # Independents: (1) MaterialsRheologyBbar, (2) Deepwater melting rate
 # -----------------------------
 # reset B constant before inversion
-md.materials.rheology_B[:-1, :] = 1.8e8
+# md.materials.rheology_B[:-1, :] = 1.8e8
 
 min_params = md.materials.rheology_B.copy()
 max_params = md.materials.rheology_B.copy()
