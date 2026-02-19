@@ -132,6 +132,9 @@ max_params = md.materials.rheology_B.copy()
 # (In ISSM, cuffey() returns B(T) typically.)
 min_params[:-1, :] = pyissm.tools.materials.cuffey(273)
 max_params[:-1, :] = pyissm.tools.materials.cuffey(200)
+min_params_spatial = min_params[:-1, :]
+max_params_spatial = max_params[:-1, :]
+
 
 if md.autodiff.independents is None:
     md.autodiff.independents = []
