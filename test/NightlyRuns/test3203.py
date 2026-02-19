@@ -43,11 +43,10 @@ md.transient.ismovingfront = 1
 nv = md.mesh.numberofvertices
 
 # --- Create real time series for B (vertex-based) ---
-B = 1.8e8 * np.ones((nv, 2))
-B[md.mesh.x < md.mesh.y, 1] = 1.4e8
+md.materials.rheology_B = 1.8e8 * np.ones((nv, 1))
+md.materials.rheology_B = np.vstack([md.materials.rheology_B, [0.01]])
 
 # Append transient forcing time row like MATLAB (1:end-1 are values; last row is [time, final_time])
-md.materials.rheology_B = np.vstack([B, [0.01, 2.0 * md.timestepping.time_step]])
 # --- Calving / frontal forcings / levelset constraints ---
 md.calving = pyissm.model.classes.calving.levermann()
 md.calving.coeff = 4.89e13 * np.ones(md.mesh.numberofvertices)
@@ -140,7 +139,7 @@ if md.autodiff.independents is None:
 # --- Add independent (control) ---
 ind = pyissm.model.classes.independent()
 ind.name = "MaterialsRheologyBbar"
-ind.control_size = 1 #md.materials.rheology_B.shape[1]  # control on all vertices; if your pyISSM build wants element-based control, switch to numberofelements
+ind.control_size = md.materials.rheology_B.shape[1]  # control on all vertices; if your pyISSM build wants element-based control, switch to numberofelements
 ind.type = "vertex"  
 ind.min_parameters = min_params
 ind.max_parameters = max_params
