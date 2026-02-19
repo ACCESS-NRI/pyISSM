@@ -40,7 +40,14 @@ md.transient.issmb = 1
 md.transient.isthermal = 0
 md.transient.isgroundingline = 0
 md.transient.ismovingfront = 1
+nv = md.mesh.numberofvertices
 
+# --- Create real time series for B (vertex-based) ---
+B = 1.8e8 * np.ones((nv, 2))
+B[md.mesh.x < md.mesh.y, 1] = 1.4e8
+
+# Append transient forcing time row like MATLAB (1:end-1 are values; last row is [time, final_time])
+md.materials.rheology_B = np.vstack([B, [0.01, 2.0 * md.timestepping.time_step]])
 # --- Calving / frontal forcings / levelset constraints ---
 md.calving = pyissm.model.classes.calving.levermann()
 md.calving.coeff = 4.89e13 * np.ones(md.mesh.numberofvertices)
@@ -54,8 +61,6 @@ md.levelset.migration_max = 1e8
 
 # --- Forward transient solve (truth run) ---
 md = pyissm.model.execute.solve(md, "tr")
-# rheology B (vertex-based)
-md.materials.rheology_B = np.zeros((md.mesh.numberofvertices, 1))
 # --- Modify rheology, now constant ---
 # Now modify all rows except the last (time) row
 md.materials.rheology_B[:-1, :] = 1.8e8
