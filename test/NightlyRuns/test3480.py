@@ -93,6 +93,7 @@ dep = pyissm.model.classes.dependent()
 dep.name = 'Outputdefinition1'
 dep.type = 'scalar'
 dep.fos_reverse_index = 1
+dep.nods = md.mesh.numberofvertices
 
 md.autodiff.dependents = [dep]
 
