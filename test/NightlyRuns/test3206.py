@@ -90,8 +90,8 @@ for i in range(0, len(md.results.TransientSolution.steps)):
 # -----------------------------
 
 # Deal with vx separately
-vx_data = [sol.Vx / md.constants.yts for sol in md.results.TransientSolution]
-times = [sol.time for sol in md.results.TransientSolution]
+vx_data = [sol.Vx / md.constants.yts for sol in md.results.TransientSolution.steps]
+times = [sol.time for sol in md.results.TransientSolution.steps]
 vx_obs = np.hstack(vx_data)  # Stack vx data horizontally
 vx_obs = np.vstack([vx_obs, times])  # Add time row at bottom
 
@@ -117,7 +117,7 @@ md.autodiff.dependents.append(vx_dep)
 count += 1
 
 # vy observations
-vy_data = [sol.Vy / md.constants.yts for sol in md.results.TransientSolution]
+vy_data = [sol.Vy / md.constants.yts for sol in md.results.TransientSolution.steps]
 vy_obs = np.hstack(vy_data)
 vy_obs = np.vstack([vy_obs, times])
 
@@ -141,7 +141,7 @@ md.autodiff.dependents.append(vy_dep)
 count += 1
 
 # Surface observations
-surf_data = [sol.Surface for sol in md.results.TransientSolution]
+surf_data = [sol.Surface for sol in md.results.TransientSolution.steps]
 surf_obs = np.hstack(surf_data)
 surf_obs = np.vstack([surf_obs, times])
 

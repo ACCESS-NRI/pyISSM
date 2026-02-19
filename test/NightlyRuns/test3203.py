@@ -132,9 +132,7 @@ max_params = md.materials.rheology_B.copy()
 min_params[:-1, :] = pyissm.tools.materials.cuffey(273)
 max_params[:-1, :] = pyissm.tools.materials.cuffey(200)
 
-
-if md.autodiff.independents is None:
-    md.autodiff.independents = []
+md.autodiff.independents = []
 
 # --- Add independent (control) ---
 ind = pyissm.model.classes.independent()
