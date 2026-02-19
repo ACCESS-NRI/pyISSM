@@ -50,12 +50,12 @@ md.frontalforcings.meltingrate = np.zeros(md.mesh.numberofvertices)
 md.levelset.spclevelset = np.full(md.mesh.numberofvertices, np.nan)
 md.levelset.migration_max = 1e8
 
-# rheology B (vertex-based)
-md.materials.rheology_B = np.zeros((md.mesh.numberofvertices, 1))
+
 
 # --- Forward transient solve (truth run) ---
 md = pyissm.model.execute.solve(md, "tr")
-
+# rheology B (vertex-based)
+md.materials.rheology_B = np.zeros((md.mesh.numberofvertices, 1))
 # --- Modify rheology, now constant ---
 # Now modify all rows except the last (time) row
 md.materials.rheology_B[:-1, :] = 1.8e8
