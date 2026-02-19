@@ -116,7 +116,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     dep.name = f"Outputdefinition{count}"
     dep.type = "scalar"
     dep.fos_reverse_index = 1
-    dep.nods = 1  # levelset misfit is scalar
+    dep.nods = md.mesh.numberofvertices  # levelset misfit is scalar
     md.autodiff.dependents.append(dep)
 
     count += 1
@@ -132,8 +132,6 @@ max_params = md.materials.rheology_B.copy()
 # (In ISSM, cuffey() returns B(T) typically.)
 min_params[:-1, :] = pyissm.tools.materials.cuffey(273)
 max_params[:-1, :] = pyissm.tools.materials.cuffey(200)
-min_params_spatial = min_params[:-1, :]
-max_params_spatial = max_params[:-1, :]
 
 
 if md.autodiff.independents is None:
@@ -142,7 +140,7 @@ if md.autodiff.independents is None:
 # --- Add independent (control) ---
 ind = pyissm.model.classes.independent()
 ind.name = "MaterialsRheologyBbar"
-ind.control_size = 1  # control on all vertices; if your pyISSM build wants element-based control, switch to numberofelements
+ind.control_size = md.materials.rheology_B.shape[1]  # control on all vertices; if your pyISSM build wants element-based control, switch to numberofelements
 ind.type = "vertex"  
 ind.min_parameters = min_params
 ind.max_parameters = max_params
