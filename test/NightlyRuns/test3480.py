@@ -16,20 +16,20 @@ md.initialization.vy[:] = 1.0
 md.geometry.thickness[:] = 500.0 - md.mesh.x / 10000.0
 
 # bed = -100 - x/1000
-md.geometry.bed[:] = -100.0 - md.mesh.x / 1000.0
+md.geometry.bed = -100.0 - md.mesh.x / 1000.0
 
 # base = -H * rho_i / rho_w
-md.geometry.base[:] = -md.geometry.thickness * md.materials.rho_ice / md.materials.rho_water
+md.geometry.base = -md.geometry.thickness * md.materials.rho_ice / md.materials.rho_water
 
 # ocean_levelset = H + (rho_w/rho_i)*bed
-md.mask.ocean_levelset[:] = md.geometry.thickness + (md.materials.rho_water / md.materials.rho_ice) * md.geometry.bed
+md.mask.ocean_levelset = md.geometry.thickness + (md.materials.rho_water / md.materials.rho_ice) * md.geometry.bed
 
 # pos = find(ocean_levelset>=0); base(pos)=bed(pos)
 pos = np.where(md.mask.ocean_levelset >= 0)[0]
 md.geometry.base[pos] = md.geometry.bed[pos]
 
 # surface = base + thickness
-md.geometry.surface[:] = md.geometry.base + md.geometry.thickness
+md.geometry.surface = md.geometry.base + md.geometry.thickness
 
 # --- flow equation ---
 md = pyissm.model.param.set_flow_equation(md, SSA='all')
