@@ -52,8 +52,6 @@ md.levelset.migration_max = 1e8
 
 # rheology B (vertex-based)
 md.materials.rheology_B = 1.8e8 * np.ones((md.mesh.numberofvertices, 2))
-md.materials.rheology_B[md.mesh.x < md.mesh.y, 1] = 1.4e8
-md.materials.rheology_B = np.vstack([md.materials.rheology_B, [0.01, 2*md.timestepping.time_step]])
 
 # --- Forward transient solve (truth run) ---
 md = pyissm.model.execute.solve(md, "tr")
@@ -113,7 +111,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     dep.name = f"Outputdefinition{count}"
     dep.type = "scalar"
     dep.fos_reverse_index = 1
-    dep.nods = md.mesh.numberofvertices
+    dep.nods = 1  # levelset misfit is scalar
     md.autodiff.dependents.append(dep)
 
     count += 1
