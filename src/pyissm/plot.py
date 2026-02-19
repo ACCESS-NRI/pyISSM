@@ -790,6 +790,10 @@ def plot_model_bc(md,
     for key, spc in spc_dict.items():
         data = spc['data']
 
+        # If 2D (e.g. spcwatercolumn), use first column
+        if data.ndim == 2:
+            data = data[:, 0]
+
         # If the data are all NaN, there are no constraints
         if np.isnan(data).all():
             print(f'No constraints found in {key}')
