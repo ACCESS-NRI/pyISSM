@@ -100,6 +100,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     dep.name = cf.definitionstring
     dep.type = "scalar"
     dep.fos_reverse_index = 1
+    dep.nods = md.mesh.numberofvertices
     md.autodiff.dependents.append(dep)
     count += 1
 
@@ -119,6 +120,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     dep.name = cf.definitionstring
     dep.type = "scalar"
     dep.fos_reverse_index = 1
+    dep.nods = md.mesh.numberofvertices
     md.autodiff.dependents.append(dep)
     count += 1
 
@@ -138,6 +140,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     dep.name = cf.definitionstring
     dep.type = "scalar"
     dep.fos_reverse_index = 1
+    dep.nods = md.mesh.numberofvertices
     md.autodiff.dependents.append(dep)
     count += 1
 
@@ -157,6 +160,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     dep.name = cf.definitionstring
     dep.type = "scalar"
     dep.fos_reverse_index = 1
+    dep.nods = md.mesh.numberofvertices
     md.autodiff.dependents.append(dep)
     count += 1
 
