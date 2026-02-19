@@ -88,12 +88,12 @@ for i in range(0, len(md.results.TransientSolution.steps)):
 # MATLAB builds: [ [fields]/yts ; [times] ]
 # We'll build arrays of shape (nv+1, nt) with last row = times.
 # -----------------------------
-times = np.array([sol.time for sol in md.results.TransientSolution])
+times = times = np.array([sol.time for sol in md.results.TransientSolution.steps])
 nt = len(times)
 
-vx_stack = np.column_stack([sol.Vx for sol in md.results.TransientSolution]) / md.constants.yts
-vy_stack = np.column_stack([sol.Vy for sol in md.results.TransientSolution]) / md.constants.yts
-surf_stack = np.column_stack([sol.Surface for sol in md.results.TransientSolution])
+vx_stack = np.column_stack([sol.Vx for sol in md.results.TransientSolution.steps]) / md.constants.yts
+vy_stack = np.column_stack([sol.Vy for sol in md.results.TransientSolution.steps]) / md.constants.yts
+surf_stack = np.column_stack([sol.Surface for sol in md.results.TransientSolution.steps])
 
 vx_obs_tr = np.vstack([vx_stack, times])
 vy_obs_tr = np.vstack([vy_stack, times])
