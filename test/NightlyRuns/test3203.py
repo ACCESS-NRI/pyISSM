@@ -51,7 +51,7 @@ md.levelset.spclevelset = np.full(md.mesh.numberofvertices, np.nan)
 md.levelset.migration_max = 1e8
 
 # rheology B (vertex-based)
-md.materials.rheology_B = 1.8e8 * np.ones((md.mesh.numberofvertices, 2))
+md.materials.rheology_B = 1.8e8 * np.ones((md.mesh.numberofvertices, 1))
 
 # --- Forward transient solve (truth run) ---
 md = pyissm.model.execute.solve(md, "tr")
