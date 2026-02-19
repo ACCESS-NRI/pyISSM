@@ -88,74 +88,80 @@ for i in range(0, len(md.results.TransientSolution.steps)):
 # MATLAB builds: [ [fields]/yts ; [times] ]
 # We'll build arrays of shape (nv+1, nt) with last row = times.
 # -----------------------------
-times = times = np.array([sol.time for sol in md.results.TransientSolution.steps])
-nt = len(times)
 
-vx_stack = np.column_stack([sol.Vx for sol in md.results.TransientSolution.steps]) / md.constants.yts
-vy_stack = np.column_stack([sol.Vy for sol in md.results.TransientSolution.steps]) / md.constants.yts
-surf_stack = np.column_stack([sol.Surface for sol in md.results.TransientSolution.steps])
+# Deal with vx separately
+vx_data = [sol.Vx / md.constants.yts for sol in md.results.TransientSolution]
+times = [sol.time for sol in md.results.TransientSolution]
+vx_obs = np.hstack(vx_data)  # Stack vx data horizontally
+vx_obs = np.vstack([vx_obs, times])  # Add time row at bottom
 
-vx_obs_tr = np.vstack([vx_stack, times])
-vy_obs_tr = np.vstack([vy_stack, times])
-surf_obs_tr = np.vstack([surf_stack, times])
+weights = np.append(np.ones(vx_obs.shape[0]-1), 0)
 
-weights_tr = np.vstack([np.ones((nv, 1)), np.array([[0.0]])])  # last row weight for time row = 0
+vx_cf = pyissm.model.classes.cfsurfacesquaretransient()
+vx_cf.name = 'VxMisfit_Transient'
+vx_cf.definitionstring = f'Outputdefinition{count}'
+vx_cf.model_string = 'Vx'
+vx_cf.observations_string = 'VxObs'
+vx_cf.observations = vx_obs
+vx_cf.weights = 500 * weights
+vx_cf.weights_string = 'WeightsSurfaceObservation'
 
-# Vx transient square misfit
-od_vx = pyissm.model.classes.cfsurface.cfsurfacesquaretransient()
-od_vx.name = 'VxMisfit_Transient'
-od_vx.definitionstring = f'Outputdefinition{count}'
-od_vx.model_string = 'Vx'
-od_vx.observations_string = 'VxObs'
-od_vx.observations = vx_obs_tr
-od_vx.weights = 500.0 * weights_tr
-od_vx.weights_string = 'WeightsSurfaceObservation'
-md.outputdefinition.definitions.append(od_vx)
+md.outputdefinition.definitions.append(vx_cf)
 
-dep_vx = pyissm.model.classes.dependent()
-dep_vx.name = f'Outputdefinition{count}'
-dep_vx.type = 'scalar'
-dep_vx.fos_reverse_index = 1
-dep_vx.nods = md.mesh.numberofvertices
-md.autodiff.dependents.append(dep_vx)
+vx_dep = pyissm.model.classes.dependent()
+vx_dep.name = f'Outputdefinition{count}'
+vx_dep.type = 'scalar'
+vx_dep.fos_reverse_index = 1
+md.autodiff.dependents.append(vx_dep)
+
 count += 1
 
-# Vy transient square misfit
-od_vy = pyissm.model.classes.cfsurface.cfsurfacesquaretransient()
-od_vy.name = 'VyMisfit_Transient'
-od_vy.definitionstring = f'Outputdefinition{count}'
-od_vy.model_string = 'Vy'
-od_vy.observations_string = 'VyObs'
-od_vy.observations = vy_obs_tr
-od_vy.weights = weights_tr
-od_vy.weights_string = 'WeightsSurfaceObservation'
-md.outputdefinition.definitions.append(od_vy)
+# vy observations
+vy_data = [sol.Vy / md.constants.yts for sol in md.results.TransientSolution]
+vy_obs = np.hstack(vy_data)
+vy_obs = np.vstack([vy_obs, times])
 
-dep_vy = pyissm.model.classes.dependent()
-dep_vy.name = f'Outputdefinition{count}'
-dep_vy.type = 'scalar'
-dep_vy.fos_reverse_index = 1
-dep_vy.nods = md.mesh.numberofvertices
-md.autodiff.dependents.append(dep_vy)
+vy_cf = pyissm.model.classes.cfsurfacesquaretransient()
+vy_cf.name = 'VyMisfit_Transient'
+vy_cf.definitionstring = f'Outputdefinition{count}'
+vy_cf.model_string = 'Vy'
+vy_cf.observations_string = 'VyObs'
+vy_cf.observations = vy_obs
+vy_cf.weights = weights
+vy_cf.weights_string = 'WeightsSurfaceObservation'
+
+md.outputdefinition.definitions.append(vy_cf)
+
+vy_dep = pyissm.model.classes.dependent()
+vy_dep.name = f'Outputdefinition{count}'
+vy_dep.type = 'scalar'
+vy_dep.fos_reverse_index = 1
+md.autodiff.dependents.append(vy_dep)
+
 count += 1
 
-# Surface transient square misfit
-od_surf = pyissm.model.classes.cfsurface.cfsurfacesquaretransient()
-od_surf.name = 'SurfMisfit_Transient'
-od_surf.definitionstring = f'Outputdefinition{count}'
-od_surf.model_string = 'Surface'
-od_surf.observations_string = 'SurfaceObservation'
-od_surf.observations = surf_obs_tr
-od_surf.weights = weights_tr / md.constants.yts
-od_surf.weights_string = 'WeightsSurfaceObservation'
-md.outputdefinition.definitions.append(od_surf)
+# Surface observations
+surf_data = [sol.Surface for sol in md.results.TransientSolution]
+surf_obs = np.hstack(surf_data)
+surf_obs = np.vstack([surf_obs, times])
 
-dep_surf = pyissm.model.classes.dependent()
-dep_surf.name = f'Outputdefinition{count}'
-dep_surf.type = 'scalar'
-dep_surf.fos_reverse_index = 1
-dep_surf.nods = md.mesh.numberofvertices
-md.autodiff.dependents.append(dep_surf)
+surf_cf = pyissm.model.classes.cfsurfacesquaretransient()
+surf_cf.name = 'SurfMisfit_Transient'
+surf_cf.definitionstring = f'Outputdefinition{count}'
+surf_cf.model_string = 'Surface'
+surf_cf.observations_string = 'SurfaceObservation'
+surf_cf.observations = surf_obs
+surf_cf.weights = weights / md.constants.yts
+surf_cf.weights_string = 'WeightsSurfaceObservation'
+
+md.outputdefinition.definitions.append(surf_cf)
+
+surf_dep = pyissm.model.classes.dependent()
+surf_dep.name = f'Outputdefinition{count}'
+surf_dep.type = 'scalar'
+surf_dep.fos_reverse_index = 1
+md.autodiff.dependents.append(surf_dep)
+
 count += 1
 
 # -----------------------------
