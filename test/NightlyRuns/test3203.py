@@ -44,7 +44,7 @@ nv = md.mesh.numberofvertices
 
 # --- Create real time series for B (vertex-based) ---
 md.materials.rheology_B = 1.8e8 * np.ones((nv, 1))
-md.materials.rheology_B = np.vstack([md.materials.rheology_B, [0.01]])
+md.materials.rheology_B = np.vstack([md.materials.rheology_B, [0.01, 2 * md.timestepping.time_step]])
 
 # Append transient forcing time row like MATLAB (1:end-1 are values; last row is [time, final_time])
 # --- Calving / frontal forcings / levelset constraints ---

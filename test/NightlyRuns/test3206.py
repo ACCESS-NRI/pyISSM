@@ -90,10 +90,9 @@ for i in range(0, len(md.results.TransientSolution.steps)):
 # -----------------------------
 
 # Deal with vx separately
-vx_data = [sol.Vx / md.constants.yts for sol in md.results.TransientSolution.steps]
-times = [sol.time for sol in md.results.TransientSolution.steps]
-vx_obs = np.hstack(vx_data)  # Stack vx data horizontally
-vx_obs = np.vstack([vx_obs, times])  # Add time row at bottom
+vx_data = np.column_stack([sol.Vx / md.constants.yts for sol in md.results.TransientSolution])
+times = np.array([sol.time for sol in md.results.TransientSolution]).reshape(1, -1)
+vx_obs = np.vstack([vx_data, times])
 
 weights = np.append(np.ones(vx_obs.shape[0]-1), 0)
 
@@ -117,9 +116,8 @@ md.autodiff.dependents.append(vx_dep)
 count += 1
 
 # vy observations
-vy_data = [sol.Vy / md.constants.yts for sol in md.results.TransientSolution.steps]
-vy_obs = np.hstack(vy_data)
-vy_obs = np.vstack([vy_obs, times])
+vy_data = np.column_stack([sol.Vy / md.constants.yts for sol in md.results.TransientSolution])
+vy_obs = np.vstack([vy_data, times])
 
 vy_cf = pyissm.model.classes.cfsurfacesquaretransient()
 vy_cf.name = 'VyMisfit_Transient'
@@ -141,9 +139,8 @@ md.autodiff.dependents.append(vy_dep)
 count += 1
 
 # Surface observations
-surf_data = [sol.Surface for sol in md.results.TransientSolution.steps]
-surf_obs = np.hstack(surf_data)
-surf_obs = np.vstack([surf_obs, times])
+surf_data = np.column_stack([sol.Surface for sol in md.results.TransientSolution])
+surf_obs = np.vstack([surf_data, times])
 
 surf_cf = pyissm.model.classes.cfsurfacesquaretransient()
 surf_cf.name = 'SurfMisfit_Transient'
