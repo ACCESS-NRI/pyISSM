@@ -42,7 +42,7 @@ md.basalforcings.deepwater_elevation = -500.0
 md.basalforcings.upperwater_melting_rate = 0.0              # no melting for zb>=0
 md.basalforcings.upperwater_elevation = 0.0                 # sea level
 md.basalforcings.groundedice_melting_rate = np.zeros((nv,)) # no melting on grounded ice
-md.basalforcings.perturbation_melting_rate[:] = 0.0
+md.basalforcings.perturbation_melting_rate = 0.0
 md.transient.isthermal = 0
 
 # Forward solve to create observations
