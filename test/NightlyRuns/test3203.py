@@ -142,7 +142,7 @@ if md.autodiff.independents is None:
 # --- Add independent (control) ---
 ind = pyissm.model.classes.independent()
 ind.name = "MaterialsRheologyBbar"
-ind.control_size = md.materials.rheology_B.shape[1]
+ind.control_size = 10  # control on all vertices; if your pyISSM build wants element-based control, switch to numberofelements
 ind.type = "vertex"  
 ind.min_parameters = min_params
 ind.max_parameters = max_params
