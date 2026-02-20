@@ -152,9 +152,9 @@ md.autodiff.independents.append(ind)
 # -----------------------------
 # Ensure inversion object exists; then wrap/convert to adm1qn3inversion like MATLAB
 
-from pyissm.model.classes.inversion import adm1qn3inversion 
+from pyissm.model.classes.inversion import adm1qn3
 
-md.inversion = adm1qn3inversion(md.inversion)
+md.inversion = adm1qn3(md.inversion)
 md.inversion.iscontrol = 1
 md.inversion.maxiter = 4
 md.inversion.maxsteps = md.inversion.maxiter
