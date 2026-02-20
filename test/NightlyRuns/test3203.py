@@ -175,14 +175,10 @@ field_names = ["Gradient", "Misfit", "Rheology"]
 field_tolerances = [1e-12, 1e-12, 1e-12]
 
 # first transient step result access (pyISSM sometimes uses [0] not (1))
-sol0 = getattr(md.results, "TransientSolution", None)
-if getattr(sol0, "steps", None) is not None:
-    sol0 = sol0.steps[0]
-else:
-    sol0 = sol0[0]
+sol0 = md.results.TransientSolution[0]
 
 field_values = [
-    getattr(sol0, "Gradient1"),
-    getattr(sol0, "J"),
-    getattr(sol0, "MaterialsRheologyBbar"),
+    sol0.Gradient1,
+    sol0.J,
+    sol0.MaterialsRheologyBbar,
 ]
