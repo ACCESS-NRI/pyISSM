@@ -131,7 +131,7 @@ min_params = md.materials.rheology_B.copy()
 max_params = md.materials.rheology_B.copy()
 
 
-from pyissm.model.materials import cuffey
+from pyissm.tools.materials import cuffey
 
 
 
