@@ -6,9 +6,9 @@ import pyissm
 # 1) Generate observations (forward "truth" run)
 # -----------------------------
 md = pyissm.model.Model()
-md = pyissm.model.mesh.triangle(md, "../Exp/Square.exp", 50000.0)
+md = pyissm.model.mesh.triangle(md, "../assets/Exp/Square.exp", 50000.0)
 md = pyissm.model.param.set_mask(md, "all", None)
-md = pyissm.model.param.parameterize(md, "../Par/SquareShelf.par")
+md = pyissm.model.param.parameterize(md, "../assets/Par/SquareShelf.par")
 md = pyissm.model.param.set_flow_equation(md, SSA="all")
 md.cluster.np = 2
 
