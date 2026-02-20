@@ -209,7 +209,7 @@ md.autodiff.independents.append(ind2)
 # -----------------------------
 # 4) Inversion / autodiff settings
 # -----------------------------
-from pyissm.model.classes.inversion.adm1qn3 import adm1qn3
+from pyissm.model.classes.inversion import adm1qn3
 
 md.inversion = adm1qn3(md.inversion)
 md.inversion.iscontrol = 1
