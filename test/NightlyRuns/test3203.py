@@ -94,11 +94,12 @@ from pyissm.model.classes.cflevelsetmisfit import cflevelsetmisfit
 from pyissm.model.classes.levelset import levelset
 
 count = 1
-for sol in steps:
-    time = getattr(sol, "time", None)
+for i in range(0, len(steps)):
+    sol = md.results.TransientSolution[i]
+    time = sol.time
 
     #obs = md.sol.MaskIceLevelset
-    obs = md.results.TransientSolution[sol].MaskIceLevelset
+    obs = sol.MaskIceLevelSet  # this is the "ice thickness" levelset we want to match; could also use MaskIceLevelset if set up correctly in the model
 
     # IMPORTANT: many pyISSM class constructors DO NOT accept kwargs like MATLAB.
     # Pattern that usually works: instantiate with no args, then set attributes.
