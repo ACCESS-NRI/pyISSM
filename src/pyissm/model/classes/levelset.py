@@ -131,7 +131,8 @@ class levelset(class_registry.manage_state):
                 )
 
         # First: extract 0-contour
-        contours, _ = mesh.isoline(md, levelset, value=0)
+        out = mesh.isoline(md, levelset, value=0)
+        contours = out[0] if isinstance(out, tuple) else out   # handles (contours, edges_tria)
         from pyissm.tools.wrappers import ExpToLevelSet
 
         # Distance field (may not be closed)
