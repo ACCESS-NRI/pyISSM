@@ -60,7 +60,7 @@ if getattr(md.autodiff, "dependents", None) is None:
 if getattr(md.autodiff, "independents", None) is None:
     md.autodiff.independents = []
 
-weights = np.ones(nv)
+weights = np.ones(nv, )
 
 # Iterate transient steps robustly (pyISSM can expose .steps or be directly iterable)
 
