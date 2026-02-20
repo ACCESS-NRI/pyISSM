@@ -1,278 +1,248 @@
 # Test Name: SquareShelfTransientCalibrationWithParamcodipack
-
 import numpy as np
 import pyissm
 
 # -----------------------------
-# Generate observations
+# 1) Generate observations (forward "truth" run)
 # -----------------------------
 md = pyissm.model.Model()
-md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 50000.)
-md = pyissm.model.param.set_mask(md, 'all', None)
-md = pyissm.model.param.parameterize(md, '../assets/Par/SquareShelf.py')
-md = pyissm.model.param.set_flow_equation(md, SSA='all')
+md = pyissm.model.mesh.triangle(md, "../Exp/Square.exp", 50000.0)
+md = pyissm.model.param.set_mask(md, "all", None)
+md = pyissm.model.param.parameterize(md, "../Par/SquareShelf.par")
+md = pyissm.model.param.set_flow_equation(md, SSA="all")
 md.cluster.np = 2
 
-# -----------------------------
 # Create real time series for B (vertex-based)
-# -----------------------------
 md.timestepping.interp_forcing = 0
 md.timestepping.final_time = 2.0 * md.timestepping.time_step
 
 nv = md.mesh.numberofvertices
-md.materials.rheology_B = 1.8e8 * np.ones((md.mesh.numberofvertices, 2))
-md.materials.rheology_B[md.mesh.x < md.mesh.y, 1] = 1.4e8
-md.materials.rheology_B = np.vstack([md.materials.rheology_B, [0.01, 2*md.timestepping.time_step]])
-# -----------------------------
-# Initial values
-# -----------------------------
-md.initialization.vx = np.zeros((nv,))
-md.initialization.vy = np.zeros((nv,))
-md.initialization.pressure = np.zeros((nv,))
-md.initialization.temperature = np.zeros((nv,))
-md.basalforcings.geothermalflux = np.zeros((nv,))
-md.thermal.spctemperature = np.full((nv,), np.nan)
+B = 1.8e8 * np.ones((nv, 2))
+B[np.where(md.mesh.x < md.mesh.y)[0], 1] = 1.4e8
+md.materials.rheology_B = np.vstack([B, np.array([0.01, 2.0 * md.timestepping.time_step])])
 
-# -----------------------------
-# Param: linear basal forcings
-# -----------------------------
-md.basalforcings = pyissm.model.classes.basalforcings.linear()
-md.basalforcings.deepwater_melting_rate = 50.0              # m/yr ice equivalent
+# Initial values
+md.initialization.vx = np.zeros(nv)
+md.initialization.vy = np.zeros(nv)
+md.initialization.pressure = np.zeros(nv)
+md.initialization.temperature = np.zeros(nv)
+md.basalforcings.geothermalflux = np.zeros(nv)
+md.thermal.spctemperature = np.nan * np.ones(nv)
+
+# Param basal forcings
+md.basalforcings = pyissm.model.classes.linearbasalforcings()
+md.basalforcings.deepwater_melting_rate = 50.0
 md.basalforcings.deepwater_elevation = -500.0
-md.basalforcings.upperwater_melting_rate = 0.0              # no melting for zb>=0
-md.basalforcings.upperwater_elevation = 0.0                 # sea level
-md.basalforcings.groundedice_melting_rate = np.zeros((nv,)) # no melting on grounded ice
-md.basalforcings.perturbation_melting_rate = np.zeros((nv,)) # no perturbation melting
+md.basalforcings.upperwater_melting_rate = 0.0
+md.basalforcings.upperwater_elevation = 0.0
+md.basalforcings.groundedice_melting_rate = np.zeros(nv)
+md.basalforcings.perturbation_melting_rate[:] = 0.0
+
 md.transient.isthermal = 0
 
-# Forward solve to create observations
-md = pyissm.model.execute.solve(md, 'tr')
+md = pyissm.model.execute.solve(md, "tr")
 
 # -----------------------------
-# Set cost function: per-time LogVel misfits
+# 2) Set cost functions (one per transient time) + transient square misfits
 # -----------------------------
-md.outputdefinition.definitions = []
-md.autodiff.dependents = []
+from pyissm.model.classes.dependent import dependent
+from pyissm.model.classes.independent import independent
+
+# cost function classes (paths can differ; adjust if your repo uses different modules)
+from pyissm.model.classes.cfsurface import cfsurfacelogvel
+from pyissm.model.classes.cfsurface import cfsurfacesquaretransient
+
+# Ensure containers exist
+if getattr(md.outputdefinition, "definitions", None) is None:
+    md.outputdefinition.definitions = []
+if getattr(md.autodiff, "dependents", None) is None:
+    md.autodiff.dependents = []
+if getattr(md.autodiff, "independents", None) is None:
+    md.autodiff.independents = []
+
+weights = np.ones(nv)
+
+# Iterate transient steps robustly (pyISSM can expose .steps or be directly iterable)
 
 count = 1
 for i in range(0, len(md.results.TransientSolution.steps)):
     sol = md.results.TransientSolution[i]
-    vx_obs = sol.Vx
-    vy_obs = sol.Vy
+    vx_obs = getattr(sol, "Vx")
+    vy_obs = getattr(sol, "Vy")
     time = sol.time
-    weights = np.ones((nv,))
 
-    od = pyissm.model.classes.cfsurface.cfsurfacelogvel()
-    od.name = f'LogVelMis{count}'
-    od.definitionstring = f'Outputdefinition{count}'
-    od.vxobs_string = 'VxObs'
-    od.vxobs = vx_obs
-    od.vyobs_string = 'VyObs'
-    od.vyobs = vy_obs
-    od.weights = weights
-    od.weights_string = 'WeightsSurfaceObservation'
-    od.datatime = time
-    md.outputdefinition.definitions.append(od)
+    # IMPORTANT: pyISSM constructors usually don't accept kwargs -> set attributes after init
+    cf = cfsurfacelogvel()
+    cf.name = f"LogVelMis{count}"
+    cf.definitionstring = f"Outputdefinition{count}"
+    cf.vxobs_string = "VxObs"
+    cf.vxobs = vx_obs
+    cf.vyobs_string = "VyObs"
+    cf.vyobs = vy_obs
+    cf.weights = weights
+    cf.weights_string = "WeightsSurfaceObservation"
+    cf.datatime = time
 
-    dep = pyissm.model.classes.dependent()
-    dep.name = f'Outputdefinition{count}'
-    dep.type = 'scalar'
+    md.outputdefinition.definitions.append(cf)
+
+    dep = dependent()
+    dep.name = f"Outputdefinition{count}"
+    dep.type = "scalar"
     dep.fos_reverse_index = 1
-    dep.nods = md.mesh.numberofvertices
     md.autodiff.dependents.append(dep)
 
     count += 1
 
-# -----------------------------
-# Deal with Vx/Vy/Surface as transient observations (stack fields + times)
-# MATLAB builds: [ [fields]/yts ; [times] ]
-# We'll build arrays of shape (nv+1, nt) with last row = times.
-# -----------------------------
-times = times = np.array([sol.time for sol in md.results.TransientSolution.steps])
-nt = len(times)
+# --- Deal with Vx separately (transient square misfit) ---
+# MATLAB: vx_obs  = [[TransientSolution(:).Vx]/yts; [TransientSolution(:).time]];
+vx_list = []
+vy_list = []
+surf_list = []
+t_list = []
+for i in range(0, len(md.results.TransientSolution.steps)):
+    sol = md.results.TransientSolution[i]
+    vx_list.append(getattr(sol, "Vx") / md.constants.yts)
+    vy_list.append(getattr(sol, "Vy") / md.constants.yts)
+    surf_list.append(getattr(sol, "Surface"))
+    t = getattr(sol, "time", None)
+    t_list.append(t)
 
-vx_stack = np.column_stack([sol.Vx for sol in md.results.TransientSolution.steps]) / md.constants.yts
-vy_stack = np.column_stack([sol.Vy for sol in md.results.TransientSolution.steps]) / md.constants.yts
-surf_stack = np.column_stack([sol.Surface for sol in md.results.TransientSolution.steps])
+vx_obs = np.vstack([np.column_stack(vx_list), np.asarray(t_list)])
+vy_obs = np.vstack([np.column_stack(vy_list), np.asarray(t_list)])
+surf_obs = np.vstack([np.column_stack(surf_list), np.asarray(t_list)])
 
-vx_obs_tr = np.vstack([vx_stack, times])
-vy_obs_tr = np.vstack([vy_stack, times])
-surf_obs_tr = np.vstack([surf_stack, times])
+# weights: [ones(nv,1); 0]
+w_ts = np.concatenate([np.ones(nv), np.array([0.0])])
 
-weights = np.vstack([np.ones((vx_obs.shape[0]-1, 1)), [[0]]]).flatten()
+cfvx = cfsurfacesquaretransient()
+cfvx.name = "VxMisfit_Transient"
+cfvx.definitionstring = f"Outputdefinition{count}"
+cfvx.model_string = "Vx"
+cfvx.observations_string = "VxObs"
+cfvx.observations = vx_obs
+cfvx.weights = 500.0 * w_ts
+cfvx.weights_string = "WeightsSurfaceObservation"
+md.outputdefinition.definitions.append(cfvx)
 
-weights_tr = np.vstack([np.ones((nv, 1)), np.array([[0.0]])])  # last row weight for time row = 0
-
-# Vx transient square misfit
-od_vx = pyissm.model.classes.cfsurface.cfsurfacesquaretransient()
-od_vx.name = 'VxMisfit_Transient'
-od_vx.definitionstring = f'Outputdefinition{count}'
-od_vx.model_string = 'Vx'
-od_vx.observations_string = 'VxObs'
-od_vx.observations = vx_obs_tr
-od_vx.weights = 500.0 * weights_tr
-od_vx.weights_string = 'WeightsSurfaceObservation'
-md.outputdefinition.definitions.append(od_vx)
-
-dep_vx = pyissm.model.classes.dependent()
-dep_vx.name = f'Outputdefinition{count}'
-dep_vx.type = 'scalar'
-dep_vx.fos_reverse_index = 1
-dep_vx.nods = md.mesh.numberofvertices
-md.autodiff.dependents.append(dep_vx)
+dep = dependent()
+dep.name = f"Outputdefinition{count}"
+dep.type = "scalar"
+dep.fos_reverse_index = 1
+md.autodiff.dependents.append(dep)
 count += 1
 
-# Vy transient square misfit
-od_vy = pyissm.model.classes.cfsurface.cfsurfacesquaretransient()
-od_vy.name = 'VyMisfit_Transient'
-od_vy.definitionstring = f'Outputdefinition{count}'
-od_vy.model_string = 'Vy'
-od_vy.observations_string = 'VyObs'
-od_vy.observations = vy_obs_tr
-od_vy.weights = weights_tr
-od_vy.weights_string = 'WeightsSurfaceObservation'
-md.outputdefinition.definitions.append(od_vy)
+cfvy = cfsurfacesquaretransient()
+cfvy.name = "VyMisfit_Transient"
+cfvy.definitionstring = f"Outputdefinition{count}"
+cfvy.model_string = "Vy"
+cfvy.observations_string = "VyObs"
+cfvy.observations = vy_obs
+cfvy.weights = w_ts
+cfvy.weights_string = "WeightsSurfaceObservation"
+md.outputdefinition.definitions.append(cfvy)
 
-dep_vy = pyissm.model.classes.dependent()
-dep_vy.name = f'Outputdefinition{count}'
-dep_vy.type = 'scalar'
-dep_vy.fos_reverse_index = 1
-dep_vy.nods = md.mesh.numberofvertices
-md.autodiff.dependents.append(dep_vy)
+dep = dependent()
+dep.name = f"Outputdefinition{count}"
+dep.type = "scalar"
+dep.fos_reverse_index = 1
+md.autodiff.dependents.append(dep)
 count += 1
 
-# Surface transient square misfit
-od_surf = pyissm.model.classes.cfsurface.cfsurfacesquaretransient()
-od_surf.name = 'SurfMisfit_Transient'
-od_surf.definitionstring = f'Outputdefinition{count}'
-od_surf.model_string = 'Surface'
-od_surf.observations_string = 'SurfaceObservation'
-od_surf.observations = surf_obs_tr
-od_surf.weights = weights_tr / md.constants.yts
-od_surf.weights_string = 'WeightsSurfaceObservation'
-md.outputdefinition.definitions.append(od_surf)
+cfs = cfsurfacesquaretransient()
+cfs.name = "SurfMisfit_Transient"
+cfs.definitionstring = f"Outputdefinition{count}"
+cfs.model_string = "Surface"
+cfs.observations_string = "SurfaceObservation"
+cfs.observations = surf_obs
+cfs.weights = w_ts / md.constants.yts
+cfs.weights_string = "WeightsSurfaceObservation"
+md.outputdefinition.definitions.append(cfs)
 
-dep_surf = pyissm.model.classes.dependent()
-dep_surf.name = f'Outputdefinition{count}'
-dep_surf.type = 'scalar'
-dep_surf.fos_reverse_index = 1
-dep_surf.nods = md.mesh.numberofvertices
-md.autodiff.dependents.append(dep_surf)
+dep = dependent()
+dep.name = f"Outputdefinition{count}"
+dep.type = "scalar"
+dep.fos_reverse_index = 1
+dep.nods = md.mesh.numberofvertices
+md.autodiff.dependents.append(dep)
 count += 1
 
 # -----------------------------
-# Independents: (1) MaterialsRheologyBbar, (2) Deepwater melting rate
+# 3) Independents (Bbar + deepwater melt rate)
 # -----------------------------
-# reset B constant before inversion
-# md.materials.rheology_B[:-1, :] = 1.8e8
+# Make B constant (except last time row)
+md.materials.rheology_B[:-1, :] = 1.8e8
+
+# Bounds for Bbar via cuffey(T)
+from pyissm.tools.materials import cuffey
 
 min_params = md.materials.rheology_B.copy()
 max_params = md.materials.rheology_B.copy()
-min_params[:-1, :] = pyissm.tools.materials.cuffey(273)
-max_params[:-1, :] = pyissm.tools.materials.cuffey(200)
+min_params[:-1, :] = cuffey(273)
+max_params[:-1, :] = cuffey(200)
 
-indep1 = pyissm.model.classes.independent()
-indep1.name = 'MaterialsRheologyBbar'
-indep1.control_size = md.materials.rheology_B.shape[1]
-indep1.type = 'vertex'
-indep1.min_parameters = min_params
-indep1.max_parameters = max_params
-indep1.control_scaling_factor = 1e8
+ind1 = independent()
+ind1.name = "MaterialsRheologyBbar"
+ind1.control_size = md.materials.rheology_B.shape[1]
+ind1.type = "vertex"
+ind1.min_parameters = min_params
+ind1.max_parameters = max_params
+ind1.control_scaling_factor = 1e8
+md.autodiff.independents.append(ind1)
 
-# second control: BasalforcingsDeepwaterMeltingRate (set deepwater rate to 1 m/yr first)
-md.basalforcings.deepwater_melting_rate = 1.0  # m/yr ice equivalent
-field = md.basalforcings.deepwater_melting_rate / md.constants.yts  # scalar (1/s)
-name = 'BasalforcingsDeepwaterMeltingRate'
+# Deepwater melting rate control
+md.basalforcings.deepwater_melting_rate = 1.0
+field = md.basalforcings.deepwater_melting_rate / md.constants.yts
+name = "BasalforcingsDeepwaterMeltingRate"
 scaling = 50.0 / md.constants.yts
 
-indep2 = pyissm.model.classes.independent()
-indep2.name = name
-indep2.type = 'vertex'
-indep2.nods = md.mesh.numberofvertices
-# control_size in MATLAB is size(field,2); for scalar -> 1
-indep2.control_size = 1
-indep2.min_parameters = 1e-5 * field
-indep2.max_parameters = 100.0 * field
-indep2.control_scaling_factor = scaling
-
-md.autodiff.independents = [indep1, indep2]
+ind2 = independent()
+ind2.name = name
+ind2.type = "vertex"
+ind2.nods = md.mesh.numberofvertices
+# MATLAB uses size(field,2); here scalar -> 1
+ind2.control_size = 1
+ind2.min_parameters = 1e-5 * field
+ind2.max_parameters = 100.0 * field
+ind2.control_scaling_factor = scaling
+md.autodiff.independents.append(ind2)
 
 # -----------------------------
-# Inversion + autodiff + checkpointing
+# 4) Inversion / autodiff settings
 # -----------------------------
-md.inversion = pyissm.model.classes.inversion.adm1qn3(md.inversion)
+from pyissm.model.classes.adm1qn3inversion import adm1qn3
+
+md.inversion = adm1qn3(md.inversion)
 md.inversion.iscontrol = 1
 md.inversion.maxiter = 3
 md.inversion.maxsteps = md.inversion.maxiter
 md.inversion.dxmin = 1e-5
 
-md.autodiff.isautodiff = True
-md.autodiff.driver = 'fos_reverse'
+md.autodiff.isautodiff = 1
+md.autodiff.driver = "fos_reverse"
 
 md.settings.checkpoint_frequency = 2
 
-# Go solve!
-md = pyissm.model.execute.solve(md, 'tr')
+# -----------------------------
+# 5) Go solve (control run)
+# -----------------------------
+md = pyissm.model.execute.solve(md, "tr")
 
 # -----------------------------
-# Fields and tolerances to track changes
+# 6) Fields and tolerances to track changes
 # -----------------------------
-field_names = ['Gradient1', 'Gradient2', 'Misfit', 'Rheology', 'DeepMelt']
-field_tolerances = [1e-10] * len(field_names)
+# First transient step
+sol0 = md.results.TransientSolution
+if getattr(sol0, "steps", None) is not None:
+    sol0 = sol0.steps[0]
+else:
+    sol0 = sol0[0]
 
-ts1 = md.results.TransientSolution[0]  # MATLAB (1)
+field_names = ["Gradient1", "Gradient2", "Misfit", "Rheology", "DeepMelt"]
+field_tolerances = [1e-10, 1e-10, 1e-10, 1e-10, 1e-10]
 field_values = [
-    ts1.Gradient1,
-    ts1.Gradient2,
-    ts1.J,
-    ts1.MaterialsRheologyBbar,
-    ts1.BasalforcingsDeepwaterMeltingRate
+    getattr(sol0, "Gradient1"),
+    getattr(sol0, "Gradient2"),
+    getattr(sol0, "J"),
+    getattr(sol0, "MaterialsRheologyBbar"),
+    getattr(sol0, "BasalforcingsDeepwaterMeltingRate"),
 ]
-
-# -----------------------------
-# Gradient validation block (MATLAB code after `return;`)
-# Kept here as an optional function you can run manually by setting maxiter=1.
-# -----------------------------
-def validate_gradient_fd(md_in, index=2, delta=0.001):
-    """
-    Finite-difference check for dJ/dB at a given index (0-based python index),
-    mirroring the MATLAB block. Requires md_in to already have outputdefinition
-    and dependents set, and typically md_in.inversion.maxiter = 1.
-    """
-    md2 = md_in  # shallow reference; copy if you want isolation
-
-    dJdB_ad = md2.results.TransientSolution[0].Gradient1[index]
-
-    B1 = md2.materials.rheology_B[index].copy()
-    B0 = B1 * (1.0 - delta)
-    B2 = B1 * (1.0 + delta)
-    deltaB = (B2 - B0)
-
-    # requested outputs list from dependents
-    out_list = [dep.name for dep in md2.autodiff.dependents]
-    md2.transient.requested_outputs = out_list
-
-    # turn off autodiff/inversion for pure forward evaluations
-    md2.autodiff.isautodiff = False
-    md2.inversion.iscontrol = False
-
-    # forward at B0
-    mdA = md2
-    mdA.materials.rheology_B[index] = B0
-    mdA = pyissm.model.execute.solve(mdA, 'tr')
-    J0 = 0.0
-    last = mdA.results.TransientSolution[-1]
-    for nm in out_list:
-        J0 += getattr(last, nm)
-
-    # forward at B2
-    mdB_ = md2
-    mdB_.materials.rheology_B[index] = B2
-    mdB_ = pyissm.model.execute.solve(mdB_, 'tr')
-    J2 = 0.0
-    last = mdB_.results.TransientSolution[-1]
-    for nm in out_list:
-        J2 += getattr(last, nm)
-
-    dJdB_fd = (J2 - J0) / deltaB
-    return dJdB_fd, dJdB_ad
