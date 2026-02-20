@@ -135,8 +135,8 @@ from pyissm.tools.materials import cuffey
 
 
 
-min_params[:-1, :] = cuffey(273)  # warm -> lower viscosity 
-max_params[:-1, :] = cuffey(200)  # cold -> higher viscosity
+min_params[:-1] = cuffey(273)  # warm -> lower viscosity 
+max_params[:-1] = cuffey(200)  # cold -> higher viscosity
 
 ind = independent()
 ind.name = "MaterialsRheologyBbar"
