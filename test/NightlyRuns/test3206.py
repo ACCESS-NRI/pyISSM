@@ -36,7 +36,7 @@ md.basalforcings.deepwater_elevation = -500.0
 md.basalforcings.upperwater_melting_rate = 0.0
 md.basalforcings.upperwater_elevation = 0.0
 md.basalforcings.groundedice_melting_rate = np.zeros(nv)
-md.basalforcings.perturbation_melting_rate[:] = 0.0
+md.basalforcings.perturbation_melting_rate = np.zeros(nv)
 
 md.transient.isthermal = 0
 
