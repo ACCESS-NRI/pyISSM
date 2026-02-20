@@ -8,7 +8,7 @@ import pyissm
 md = pyissm.model.Model()
 md = pyissm.model.mesh.triangle(md, "../assets/Exp/Square.exp", 50000.0)
 md = pyissm.model.param.set_mask(md, "all", None)
-md = pyissm.model.param.parameterize(md, "../assets/Par/SquareShelf.par")
+md = pyissm.model.param.parameterize(md, "../assets/Par/SquareShelf.py")
 md = pyissm.model.param.set_flow_equation(md, SSA="all")
 md.cluster.np = 2
 
@@ -30,7 +30,7 @@ md.basalforcings.geothermalflux = np.zeros(nv)
 md.thermal.spctemperature = np.nan * np.ones(nv)
 
 # Param basal forcings
-md.basalforcings = pyissm.model.classes.linearbasalforcings()
+md.basalforcings = pyissm.model.classes.basalforcings.linear()
 md.basalforcings.deepwater_melting_rate = 50.0
 md.basalforcings.deepwater_elevation = -500.0
 md.basalforcings.upperwater_melting_rate = 0.0
