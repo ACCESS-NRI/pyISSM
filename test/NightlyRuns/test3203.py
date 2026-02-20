@@ -97,9 +97,8 @@ count = 1
 for sol in steps:
     time = getattr(sol, "time", None)
 
-    obs = md.sol.MaskIceLevelset  # default to mask levelset if not explicitly in results
-    if hasattr(sol, "MaskIceLevelset"):
-        obs = sol.MaskIceLevelset
+    #obs = md.sol.MaskIceLevelset
+    obs = md.results.TransientSolution[sol].MaskIceLevelset
 
     # IMPORTANT: many pyISSM class constructors DO NOT accept kwargs like MATLAB.
     # Pattern that usually works: instantiate with no args, then set attributes.
