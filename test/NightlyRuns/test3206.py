@@ -113,7 +113,10 @@ vy_obs = np.vstack([np.column_stack(vy_list), np.asarray(t_list)])
 surf_obs = np.vstack([np.column_stack(surf_list), np.asarray(t_list)])
 
 # weights: [ones(nv,1); 0]
-w_ts = np.concatenate([np.ones(nv), np.array([0.0])])
+nt = len(t_list)
+
+w_ts = np.concatenate([np.ones(nv), np.array([0.0])])      # (nv+1,)
+W_ts = np.tile(w_ts.reshape(-1, 1), (1, nt))   
 
 cfvx = cfsurfacesquaretransient()
 cfvx.name = "VxMisfit_Transient"
@@ -121,7 +124,7 @@ cfvx.definitionstring = f"Outputdefinition{count}"
 cfvx.model_string = "Vx"
 cfvx.observations_string = "VxObs"
 cfvx.observations = vx_obs
-cfvx.weights = 500.0 * w_ts
+cfvx.weights = 500.0 * W_ts
 cfvx.weights_string = "WeightsSurfaceObservation"
 md.outputdefinition.definitions.append(cfvx)
 
@@ -139,7 +142,7 @@ cfvy.definitionstring = f"Outputdefinition{count}"
 cfvy.model_string = "Vy"
 cfvy.observations_string = "VyObs"
 cfvy.observations = vy_obs
-cfvy.weights = w_ts
+cfvy.weights = W_ts
 cfvy.weights_string = "WeightsSurfaceObservation"
 md.outputdefinition.definitions.append(cfvy)
 
@@ -157,7 +160,7 @@ cfs.definitionstring = f"Outputdefinition{count}"
 cfs.model_string = "Surface"
 cfs.observations_string = "SurfaceObservation"
 cfs.observations = surf_obs
-cfs.weights = w_ts / md.constants.yts
+cfs.weights = W_ts / md.constants.yts
 cfs.weights_string = "WeightsSurfaceObservation"
 md.outputdefinition.definitions.append(cfs)
 
