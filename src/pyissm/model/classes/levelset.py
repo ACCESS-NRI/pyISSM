@@ -132,11 +132,31 @@ class levelset(class_registry.manage_state):
 
         # First: extract 0-contour
         out = mesh.isoline(md, levelset, value=0)
-        contours = out[0] if isinstance(out, tuple) else out   # handles (contours, edges_tria)
-        from pyissm.tools.wrappers import ExpToLevelSet
+        contours = out[0] if isinstance(out, tuple) else out  # (contours, edges_tria) -> contours
+
+        # contours should be a list of exp-struct-like objects
+        if isinstance(contours, list):
+            if len(contours) == 0:
+                raise RuntimeError("isoline returned no contours at value=0")
+
+            # ExpToLevelSet_python often expects ONE contour, not a list
+            contour = max(contours, key=lambda c: int(c.get("nods", len(c.get("x", [])))))
+        else:
+            contour = contours
+
+        from pyissm.tools.wrappers import ExpToLevelSet  # import the function, not the module
 
         # Distance field (may not be closed)
-        levelsetnew = np.abs(ExpToLevelSet(md.mesh.x, md.mesh.y, contours))
+        dist = ExpToLevelSet(md.mesh.x, md.mesh.y, contour)
+
+        # Normalize dist shape to match vertex count
+        dist = np.asarray(dist).reshape(-1)
+        n = np.asarray(md.mesh.x).size
+        if dist.size < n:
+            raise RuntimeError(f"ExpToLevelSet returned size {dist.size}, expected at least {n}. Check contour format.")
+        dist = dist[:n]
+
+        levelsetnew = np.abs(dist)
 
         # Finally: change sign
         pos = np.where(levelset < 0)[0]  # refers to base vertices if 3D
