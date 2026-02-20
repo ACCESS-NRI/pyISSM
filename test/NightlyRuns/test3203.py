@@ -140,7 +140,7 @@ max_params[:-1] = cuffey(200)  # cold -> higher viscosity
 
 ind = independent()
 ind.name = "MaterialsRheologyBbar"
-ind.control_size = md.materials.rheology_B.shape[1]
+ind.control_size =1 #md.materials.rheology_B.shape[0] - 1  # exclude last row (which is time)
 ind.type = "vertex"  
 ind.min_parameters = min_params
 ind.max_parameters = max_params
