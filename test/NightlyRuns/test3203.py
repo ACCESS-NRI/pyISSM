@@ -91,7 +91,7 @@ from pyissm.model.classes.independent import independent
 from pyissm.model.classes.cflevelsetmisfit import cflevelsetmisfit
 
 # reinitializelevelset function location can vary; try common places
-from pyissm.model.classes.levelset import reinitialize
+from pyissm.model.classes.levelset import levelset
 
 count = 1
 for sol in steps:
@@ -105,7 +105,7 @@ for sol in steps:
     if phi is None:
         raise AttributeError("TransientSolution step has no 'MaskIceLevelset' field.")
 
-    obs = reinitialize(md, phi)
+    obs = levelset.reinitialize(md, phi)
 
     # IMPORTANT: many pyISSM class constructors DO NOT accept kwargs like MATLAB.
     # Pattern that usually works: instantiate with no args, then set attributes.
