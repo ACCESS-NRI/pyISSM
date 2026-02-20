@@ -95,17 +95,11 @@ from pyissm.model.classes.levelset import levelset
 
 count = 1
 for sol in steps:
-    # Time: in some builds it’s sol.time, in others sol.Time
     time = getattr(sol, "time", None)
-    if time is None:
-        time = getattr(sol, "Time", None)
 
-    # Modelled levelset at that step
-    phi = getattr(sol, "MaskIceLevelset", None)
-    if phi is None:
-        raise AttributeError("TransientSolution step has no 'MaskIceLevelset' field.")
-
-    obs = md.levelset.reinitialize(md, sol.MaskIceLevelset)
+    obs = md.sol.MaskIceLevelset  # default to mask levelset if not explicitly in results
+    if hasattr(sol, "MaskIceLevelset"):
+        obs = sol.MaskIceLevelset
 
     # IMPORTANT: many pyISSM class constructors DO NOT accept kwargs like MATLAB.
     # Pattern that usually works: instantiate with no args, then set attributes.
@@ -136,21 +130,18 @@ for sol in steps:
 min_params = md.materials.rheology_B.copy()
 max_params = md.materials.rheology_B.copy()
 
-# cuffey(T) helper: location varies; try common import
 
 from pyissm.model.materials import cuffey
 
 
-if cuffey is None:
-    raise ImportError("Could not import cuffey(T). Locate it in your pyISSM install and update the import.")
 
-min_params[:-1, :] = cuffey(273)  # warm -> lower viscosity (check your cuffey convention)
+min_params[:-1, :] = cuffey(273)  # warm -> lower viscosity 
 max_params[:-1, :] = cuffey(200)  # cold -> higher viscosity
 
 ind = independent()
 ind.name = "MaterialsRheologyBbar"
 ind.control_size = md.materials.rheology_B.shape[1]
-ind.type = "vertex"  # matches your MATLAB comment
+ind.type = "vertex"  
 ind.min_parameters = min_params
 ind.max_parameters = max_params
 ind.control_scaling_factor = 1e8
@@ -161,7 +152,7 @@ md.autodiff.independents.append(ind)
 # -----------------------------
 # Ensure inversion object exists; then wrap/convert to adm1qn3inversion like MATLAB
 
-from pyissm.model.classes.inversion import adm1qn3inversion  # alternate path some builds use
+from pyissm.model.classes.inversion import adm1qn3inversion 
 
 md.inversion = adm1qn3inversion(md.inversion)
 md.inversion.iscontrol = 1
