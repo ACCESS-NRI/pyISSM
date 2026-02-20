@@ -93,56 +93,65 @@ class levelset(class_registry.manage_state):
             
         return self
     
+
+
+
     def reinitialize(self, md, levelset):
-        """
-        Reinitialize a levelset field as a signed distance function.
 
-        Parameters
-        ----------
-        md : Model
-            ISSM/pyISSM model object.
-        levelset : ndarray
-            Levelset values (2D vertices if mesh is 3D, otherwise all vertices).
-
-        Returns
-        -------
-        levelsetnew : ndarray
-            Signed distance field (on 3D vertices if mesh is 3D, otherwise on vertices).
-        """
-        if levelset is None:
+        import os
+        import tempfile
+        import numpy as np
+        from pyissm.model import mesh
+        from pyissm.tools.wrappers import ExpToLevelSet
+        from pyissm.tools.exp import exp_write
+        if levelset is None or len(levelset) == 0:
             raise RuntimeError("levelset provided is empty")
 
-        levelset = np.asarray(levelset).flatten()
-        if levelset.size == 0:
-            raise RuntimeError("levelset provided is empty")
-
+        levelset = np.asarray(levelset).reshape(-1)
         dim = md.mesh.dimension()
 
-        # If md is 3D, levelset should be on 2D vertices
         if dim == 3:
             if levelset.size != md.mesh.numberofvertices2d:
-                raise RuntimeError(
-                    "levelset provided should be specified at the 2d vertices of the mesh"
-                )
+                raise RuntimeError("levelset provided should be specified at the 2d vertices of the mesh")
+            x = np.asarray(md.mesh.x2d).reshape(-1)
+            y = np.asarray(md.mesh.y2d).reshape(-1)
         else:
             if levelset.size != md.mesh.numberofvertices:
-                raise RuntimeError(
-                    "levelset provided should be specified at the vertices of the mesh"
-                )
+                raise RuntimeError("levelset provided should be specified at the vertices of the mesh")
+            x = np.asarray(md.mesh.x).reshape(-1)
+            y = np.asarray(md.mesh.y).reshape(-1)
 
-        # First: extract 0-contour
-        out = mesh.isoline(md, levelset, value=0)
-        contours = out[0] if isinstance(out, tuple) else out   # handles (contours, edges_tria)
-        from pyissm.tools.wrappers import ExpToLevelSet
+        # 1) extract 0-contour as python dict/list
+        contours, _ = mesh.isoline(md, levelset, value=0.0)
 
-        # Distance field (may not be closed)
-        levelsetnew = np.abs(ExpToLevelSet(md.mesh.x, md.mesh.y, contours))
+        if not isinstance(contours, list) or len(contours) == 0:
+            raise RuntimeError("isoline returned no contours at value=0")
 
-        # Finally: change sign
-        pos = np.where(levelset < 0)[0]  # refers to base vertices if 3D
+        # 2) force .exp write so ExpToLevelSet backend can load it
+        with tempfile.TemporaryDirectory() as td:
+            exp_path = os.path.join(td, "levelset0.exp")
+            exp_write(contours, exp_path)
+            dist = ExpToLevelSet(x, y, exp_path)
+
+        dist = np.asarray(dist).reshape(-1)
+
+        # If ExpToLevelSet returns N+1 metadata row, drop it
+        n = x.size
+        dist = dist[:n]
+
+        levelsetnew = np.abs(dist)
+
+        # 3) restore sign
+        pos = np.where(levelset < 0)[0]
         if dim == 3:
-            for i in range(md.mesh.numberoflayers):
-                pos3d = pos + i * md.mesh.numberofvertices2d
+            # Expand distance to 3D if needed (depends on what ExpToLevelSet returned)
+            nv2d = md.mesh.numberofvertices2d
+            nl = md.mesh.numberoflayers
+            # If levelsetnew is 2D length, tile to 3D length
+            if levelsetnew.size == nv2d:
+                levelsetnew = np.tile(levelsetnew, nl)
+            for i in range(nl):
+                pos3d = pos + i * nv2d
                 levelsetnew[pos3d] = -levelsetnew[pos3d]
         else:
             levelsetnew[pos] = -levelsetnew[pos]
