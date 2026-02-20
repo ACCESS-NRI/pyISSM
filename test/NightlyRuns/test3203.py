@@ -91,7 +91,7 @@ from pyissm.model.classes.independent import independent
 from pyissm.model.classes.cflevelsetmisfit import cflevelsetmisfit
 
 # reinitializelevelset function location can vary; try common places
-from pyissm.model.levelset import reinitialize_levelset 
+from pyissm.model.classes.levelset import reinitialize_levelset 
 
 count = 1
 for sol in steps:
