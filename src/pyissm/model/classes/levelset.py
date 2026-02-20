@@ -92,6 +92,60 @@ class levelset(class_registry.manage_state):
         self.spclevelset = mesh.project_3d(md, vector = self.spclevelset, type = 'node')
             
         return self
+    
+    def reinitialize_levelset(self, md, levelset):
+        """
+        Reinitialize a levelset field as a signed distance function.
+
+        Parameters
+        ----------
+        md : Model
+            ISSM/pyISSM model object.
+        levelset : ndarray
+            Levelset values (2D vertices if mesh is 3D, otherwise all vertices).
+
+        Returns
+        -------
+        levelsetnew : ndarray
+            Signed distance field (on 3D vertices if mesh is 3D, otherwise on vertices).
+        """
+        if levelset is None:
+            raise RuntimeError("levelset provided is empty")
+
+        levelset = np.asarray(levelset).flatten()
+        if levelset.size == 0:
+            raise RuntimeError("levelset provided is empty")
+
+        dim = md.mesh.dimension()
+
+        # If md is 3D, levelset should be on 2D vertices
+        if dim == 3:
+            if levelset.size != md.mesh.numberofvertices2d:
+                raise RuntimeError(
+                    "levelset provided should be specified at the 2d vertices of the mesh"
+                )
+        else:
+            if levelset.size != md.mesh.numberofvertices:
+                raise RuntimeError(
+                    "levelset provided should be specified at the vertices of the mesh"
+                )
+
+        # First: extract 0-contour
+        contours = mesh.isoline(md, levelset, value=0)
+
+        # Distance field (may not be closed)
+        levelsetnew = np.abs(mesh.ExpToLevelSet(md.mesh.x, md.mesh.y, contours))
+
+        # Finally: change sign
+        pos = np.where(levelset < 0)[0]  # refers to base vertices if 3D
+        if dim == 3:
+            for i in range(md.mesh.numberoflayers):
+                pos3d = pos + i * md.mesh.numberofvertices2d
+                levelsetnew[pos3d] = -levelsetnew[pos3d]
+        else:
+            levelsetnew[pos] = -levelsetnew[pos]
+
+        return levelsetnew
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
