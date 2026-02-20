@@ -3220,13 +3220,9 @@ def isoline(md, field, value=0.0, output="struct", edges=None, amr=None):
     # filename.exp saving (optional)
     if out.endswith(".exp"):
         # If your codebase has an expwrite helper, call it here.
-        # Keep it optional so this function still works without exp IO.
-        try:
-            from pyissm.model.expwrite import expwrite
-            expwrite(contours, out)
-        except Exception:
-            # fall back silently; caller can handle saving
-            pass
+        from pyissm.tools.exp import exp_write
+        
+        exp_write(contours, out)
         return contours, edges_tria
 
     # default: "struct"

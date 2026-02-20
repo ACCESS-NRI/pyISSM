@@ -135,7 +135,7 @@ class levelset(class_registry.manage_state):
         from pyissm.tools.wrappers import ExpToLevelSet
 
         # Distance field (may not be closed)
-        levelsetnew = np.abs(ExpToLevelSet(md.mesh.x, md.mesh.y, contours))
+        levelsetnew = np.abs(ExpToLevelSet(md.mesh.x, md.mesh.y, 'contours'))
 
         # Finally: change sign
         pos = np.where(levelset < 0)[0]  # refers to base vertices if 3D
