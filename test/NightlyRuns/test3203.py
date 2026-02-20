@@ -63,7 +63,7 @@ md = pyissm.model.execute.solve(md, "tr")
 # -----------------------------
 # NOTE: in MATLAB you do (1:end-1,:) because the last row can be [time, ...] for time series forcing.
 # Keep that same convention here.
-md.materials.rheology_B[:-1, :] = 1.8e8
+md.materials.rheology_B[:-1] = 1.8e8
 
 # -----------------------------
 # 6) Set cost functions: one cflevelsetmisfit + one dependent per transient time
@@ -125,6 +125,7 @@ for sol in steps:
     dep.name = f"Outputdefinition{count}"
     dep.type = "scalar"
     dep.fos_reverse_index = 1
+    dep.nods = md.mesh.numberofvertices
     md.autodiff.dependents.append(dep)
 
     count += 1
