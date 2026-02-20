@@ -93,7 +93,7 @@ class levelset(class_registry.manage_state):
             
         return self
     
-    def reinitialize_levelset(self, md, levelset):
+    def reinitialize(self, md, levelset):
         """
         Reinitialize a levelset field as a signed distance function.
 

@@ -27,7 +27,7 @@ from pyissm.model.classes.independent import independent
 from pyissm.model.classes.initialization import initialization
 from pyissm.model.classes.inversion import default, m1qn3, adm1qn3
 from pyissm.model.classes.issmsettings import issmsettings
-from pyissm.model.classes.levelset import levelset, reinitialize_levelset
+from pyissm.model.classes.levelset import levelset
 from pyissm.model.classes.love import default, fourier
 from pyissm.model.classes.lovenumbers import lovenumbers
 from pyissm.model.classes.mask import mask
