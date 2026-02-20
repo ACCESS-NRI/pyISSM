@@ -105,7 +105,7 @@ for sol in steps:
     if phi is None:
         raise AttributeError("TransientSolution step has no 'MaskIceLevelset' field.")
 
-    obs = levelset.reinitialize(md, phi)
+    obs = md.levelset.reinitialize(md, sol.MaskIceLevelset)
 
     # IMPORTANT: many pyISSM class constructors DO NOT accept kwargs like MATLAB.
     # Pattern that usually works: instantiate with no args, then set attributes.
