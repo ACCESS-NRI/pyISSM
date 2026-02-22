@@ -47,7 +47,7 @@ class miscellaneous(class_registry.manage_state):
     def __init__(self, other = None):
         self.notes = ''
         self.name = ''
-        self.dummy = collections.OrderedDict()#'Placeholder for dummy fields -- NOT IMPLEMENTED YET'
+        self.dummy = collections.OrderedDict()
 
         # Inherit matching fields from provided class
         super().__init__(other)

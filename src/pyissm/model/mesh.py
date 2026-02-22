@@ -2766,7 +2766,7 @@ def project_2d(md, value, layer):
         raise TypeError("pyissm.model.mesh.project_2d: md must contain a 3D mesh")
 
     if layer < 1 or layer > md.mesh.numberoflayers:
-        raise ValueError(f"pyissm.model.mesh.project_2d: Layer must be between 0 and {md.mesh.numberoflayers}")
+        raise ValueError(f"pyissm.model.mesh.project_2d: Layer must be between 1 and {md.mesh.numberoflayers}")
 
     # coerce to array in case float is passed
     if type(value) not in [np.ndarray, np.ma.core.MaskedArray]:

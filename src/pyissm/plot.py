@@ -912,9 +912,12 @@ def plot_model_ts(md,
     # Auto-extract 1D arrays if no data_list provided
     if data_list is None:
         variables = {}
-        for k, v in vars(md.results.TransientSolution).items():
-            # If the variable is a 1D numpy array and not 'time' or 'step' variables, add it to variables dictionary
-            if isinstance(v, np.ndarray) and v.ndim == 1 and k not in ('step', 'time'):
+        for k, v in md.results.TransientSolution._field_major_cache.items():
+            # Skip specific entries
+            if k in ('step', 'time', 'StressbalanceConvergenceNumSteps', 'outlog', 'errlog'):
+                continue
+            # If it's a 1D array, add to variables dict
+            if isinstance(v, np.ndarray) and v.ndim == 1:
                 variables[k] = v
         
         # If no 1D time series found, raise an error
