@@ -240,11 +240,6 @@ def extract_field_layer(md,
     if not is3d:
         raise TypeError('extract_field_layer: provided model is not 3D')
 
-    # TODO: Implement "layer = [0, 8]" to DepthAverage over a given layer range.
-    # Need to 'weight' the average based on the layer thickness
-    if isinstance(layer, list):
-        raise ValueError('extract_field_layer: A single numeric layer must be defined. Depth averaging is not yet supported.')
-
     # Check dimensions of model mesh. The number of vertices must be equal to md.mesh.numberofvertices2d * md.mesh.numberoflayers
     if not np.equal(md.mesh.numberofvertices / md.mesh.numberoflayers, md.mesh.numberofvertices2d):
         raise ValueError('extract_field_layer: model mesh is not correctly dimensioned')

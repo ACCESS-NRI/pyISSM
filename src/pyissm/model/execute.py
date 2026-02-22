@@ -1110,7 +1110,7 @@ def solve(md,
         done = wait_on_lock(md)
         if md.verbose.solution:
             print('Job completed -- loading results from cluster...')
-            md = load_results_from_cluster(md)
+        md = load_results_from_cluster(md)
     else:
         print('Model results must be loaded manually with md = load_results_from_cluster(md)')
 

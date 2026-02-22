@@ -215,6 +215,16 @@ class solution(class_registry.manage_state):
     
     # Convert time-major (steps) to field-major (dict)
     def _build_field_major(self):
+        """
+        Convert list of solution steps (time-major) into a field-major dictionary.
+        
+        Each field becomes:
+        - A scalar if it has the same value across all steps (static field)
+        - A 1D array (time series) if it varies across steps (time-varying field)
+        - A stacked array if it's a time-varying numeric array (e.g. velocity fields at each step)
+        - A list if it has mixed types or is not an array (preserving None for missing fields in some steps)
+        """
+
         ## Return empty dict if no steps exist
         if not self.steps:
             return {}
@@ -233,19 +243,36 @@ class solution(class_registry.manage_state):
             ### Filter out None values to analyze actual data
             non_none = [v for v in values if v is not None]
             
-            ### Handle different field types
-            if len(non_none) == 1:
-                ### Static/scalar field: only one value across all steps. Store as scalar
+            ## CASE A -- Field is missing in all steps (all None)
+            if not non_none:
+                field_data[field] = None
+                continue
+            
+            ## CASE B - Static field: field appears once in all steps. Store as scalar
+            if len(non_none) == 1 and len(non_none) == len(values):
                 field_data[field] = non_none[0]
-            elif all(isinstance(v, np.ndarray) for v in non_none):
-                ### Time-varying numeric arrays: stack along time axis (axis=0)
-                try:
-                    field_data[field] = np.stack(non_none, axis=0)
-                except Exception:
-                    #### If stacking fails (incompatible shapes), keep as list
-                    field_data[field] = non_none
-            else:
-                ### Mixed types or non-arrays: keep as list (preserving None values)
+                continue
+
+            ## CASE C - Missing data present. Preserve as list
+            if any(v is None for v in values):
+                field_data[field] = values
+                continue
+                
+            ## CASE D - Attempt shape-driven stacking for time-varying numeric arrays
+            try:
+                arrs = [np.atleast_1d(v) for v in values]
+
+                # Attempt to stack along new time axis
+                stacked = np.stack(arrs)
+
+                # If scalar timeseries (t, 1), flattedn to 1D array (t,)
+                if stacked.ndim == 2 and stacked.shape[1] == 1:
+                    stacked = stacked.ravel()
+
+                field_data[field] = stacked
+
+            except Exception:
+                # If stacking fails (e.g. due to incompatible shapes), keep original values
                 field_data[field] = values
 
         return field_data
