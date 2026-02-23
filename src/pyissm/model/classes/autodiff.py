@@ -8,7 +8,7 @@ class autodiff(class_registry.manage_state):
     """
     Automatic differentiation parameters class for ISSM.
 
-    This class encapsulates parameters for automatic differentiation (AD) functionality in the ISSM (Ice Sheet System Model) framework.
+    This class contains parameters for automatic differentiation (AD) functionality in the ISSM framework.
     It allows users to configure AD settings including dependent and independent variables, memory buffer sizes, 
     and optimization parameters for sensitivity analysis and gradient-based optimization.
 
@@ -19,52 +19,43 @@ class autodiff(class_registry.manage_state):
 
     Attributes
     ----------
-    isautodiff : float, default=0.0
+    isautodiff : :class:`float`, default=0.0
         Indicates if automatic differentiation is activated.
-    dependents : str, default='List dependents'
+    dependents : :class:`str`, default='List dependents'
         List of dependent variables for AD.
-    independents : str, default='List independents'
+    independents : :class:`str`, default='List independents'
         List of independent variables for AD.
-    driver : str, default='fos_forward'
+    driver : :class:`str`, default='fos_forward'
         ADOLC driver ('fos_forward' or 'fov_forward').
-    obufsize : float, default=524288
+    obufsize : :class:`float`, default=524288
         Number of operations per buffer (== OBUFSIZE in usrparms.h).
-    lbufsize : float, default=524288
+    lbufsize : :class:`float`, default=524288
         Number of locations per buffer (== LBUFSIZE in usrparms.h).
-    cbufsize : float, default=524288
+    cbufsize : :class:`float`, default=524288
         Number of values per buffer (== CBUFSIZE in usrparms.h).
-    tbufsize : float, default=524288
+    tbufsize : :class:`float`, default=524288
         Number of taylors per buffer (<=TBUFSIZE in usrparms.h).
-    gcTriggerMaxSize : float, default=65536
+    gcTriggerMaxSize : :class:`float`, default=65536
         Free location block sorting/consolidation triggered if allocated locations exceed this value.
-    gcTriggerRatio : float, default=2.0
+    gcTriggerRatio : :class:`float`, default=2.0
         Free location block sorting/consolidation triggered if the ratio between allocated and used locations exceeds this value.
-    tapeAlloc : float, default=15000000
+    tapeAlloc : :class:`float`, default=15000000
         Iteration count of a priori memory allocation of the AD tape.
-    outputTapeMemory : float, default=0.0
+    outputTapeMemory : :class:`float`, default=0.0
         Write AD tape memory statistics to file ad_mem.dat.
-    outputTime : float, default=0.0
+    outputTime : :class:`float`, default=0.0
         Write AD recording and evaluation times to file ad_time.dat.
-    enablePreaccumulation : float, default=0.0
+    enablePreaccumulation : :class:`float`, default=0.0
         Enable CoDiPack preaccumulation in augmented places.
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the autodiff parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the autodiff parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.autodiff = pyissm.model.classes.autodiff()
-    md.autodiff.isautodiff = 1
-    md.autodiff.dependents = ['Vel']
-    md.autodiff.independents = ['MaterialsRheologyBbar']
+    .. code-block:: python
+
+        >>> md.autodiff = pyissm.model.classes.autodiff()
+        >>> md.autodiff.isautodiff = 1
+        >>> md.autodiff.dependents = ['Vel']
+        >>> md.autodiff.independents = ['MaterialsRheologyBbar']
     """
 
     # Initialise with default parameters
@@ -114,6 +105,24 @@ class autodiff(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [autodiff] parameters.
+        
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+        
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+        
         class_utils.check_field(md, fieldname = "autodiff.isautodiff", scalar = True, values = [0, 1])
         
         # Early return if autodiff is not activated
@@ -163,13 +172,13 @@ class autodiff(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
