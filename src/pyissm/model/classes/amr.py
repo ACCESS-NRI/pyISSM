@@ -1,7 +1,3 @@
-"""
-Adaptive Mesh Refinement (AMR) class for ISSM
-"""
-
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
 from pyissm.model import execute
