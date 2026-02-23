@@ -58,17 +58,6 @@ class amr(class_registry.manage_state):
     restart : :class:`int`, default=0
         Indicates if ReMesh() should be called before the first time step.
 
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the AMR parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the AMR parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
-
     Examples
     -------
     .. code-block:: python
@@ -150,7 +139,7 @@ class amr(class_registry.manage_state):
         md : :class:`pyissm.model.Model`
             The model object with any consistency errors noted.
         """
-        
+
         class_utils.check_field(md, fieldname = "amr.hmax", scalar = True, gt = 0, allow_nan = False)
         class_utils.check_field(md, fieldname = "amr.hmin", scalar = True, gt = 0, lt = self.hmax, allow_nan = False)
         class_utils.check_field(md, fieldname = "amr.keepmetric", scalar = True, ge = 0, le = 1, allow_nan = False)
