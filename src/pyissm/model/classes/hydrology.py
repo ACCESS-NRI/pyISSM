@@ -1,7 +1,10 @@
+"""
+Hydrology classes for ISSM.
+"""
+
 import numpy as np
 import warnings
-from pyissm.model.classes import class_utils
-from pyissm.model.classes import class_registry
+from pyissm.model.classes import class_utils, class_registry
 from pyissm.model import execute, mesh
 
 ## ------------------------------------------------------
@@ -10,60 +13,50 @@ from pyissm.model import execute, mesh
 @class_registry.register_class
 class armapw(class_registry.manage_state):
     """
-    ARMAPW hydrology parameters class for ISSM.
+    ARMAPW hydrology class for ISSM.
 
-    This class defines the default parameters for the ARMA piecewise (armapw) hydrology model in ISSM.
+    This class contains the default parameters for the ARMA piecewise (armapw) hydrology model in the ISSM framework.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    num_basins : int, default=0
+    num_basins : :class:`int`, default=0
         Number of different basins [unitless].
-    num_params : int, default=0
+    num_params : :class:`int`, default=0
         Number of different parameters in the piecewise-polynomial (1:intercept only, 2:with linear trend, 3:with quadratic trend, etc.).
-    num_breaks : int, default=0
+    num_breaks : :class:`int`, default=0
         Number of different breakpoints in the piecewise-polynomial (separating num_breaks+1 periods).
-    polynomialparams : ndarray, default=np.nan
+    polynomialparams : :class:`numpy.ndarray`, default=np.nan
         Coefficients for the polynomial (const, trend, quadratic, etc.), dimensioned by basins, periods, and orders.
-    arma_timestep : float, default=0
+    arma_timestep : :class:`float`, default=0
         Time resolution of the ARMA model [yr].
-    ar_order : int, default=0
+    ar_order : :class:`int`, default=0
         Order of the autoregressive model [unitless].
-    ma_order : int, default=0
+    ma_order : :class:`int`, default=0
         Order of the moving-average model [unitless].
-    arlag_coefs : ndarray, default=np.nan
+    arlag_coefs : :class:`numpy.ndarray`, default=np.nan
         Basin-specific vectors of AR lag coefficients [unitless].
-    malag_coefs : ndarray, default=np.nan
+    malag_coefs : :class:`numpy.ndarray`, default=np.nan
         Basin-specific vectors of MA lag coefficients [unitless].
-    datebreaks : ndarray, default=np.nan
+    datebreaks : :class:`numpy.ndarray`, default=np.nan
         Dates at which the breakpoints in the piecewise polynomial occur (1 row per basin) [yr].
-    basin_id : ndarray, default=np.nan
+    basin_id : :class:`numpy.ndarray`, default=np.nan
         Basin number assigned to each element [unitless].
-    monthlyfactors : ndarray, default=np.nan
+    monthlyfactors : :class:`numpy.ndarray`, default=np.nan
         Monthly multiplicative factor on the subglacial water pressure, specified per basin (size: [num_basins, 12]).
-    requested_outputs : list, default=['default']
+    requested_outputs : :class:`list`, default=['default']
         Additional outputs requested.
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the armapw parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the armapw parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
-        Process requested outputs, expanding 'default' to appropriate outputs.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.hydrology = pyissm.model.classes.hydrology.armapw()
+    .. code-block:: python
+    
+        >>> md.hydrology = pyissm.model.classes.hydrology.armapw()
     """
 
     # Initialise with default parameters
@@ -123,6 +116,24 @@ class armapw(class_registry.manage_state):
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [hydrology.armapw] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         #Early return if not HydrologyArmapwAnalysis
         if 'HydrologyArmapwAnalysis' not in analyses:
             return md
@@ -171,20 +182,20 @@ class armapw(class_registry.manage_state):
                         md = None,
                         return_default_outputs = False):
         """
-        Process requested outputs, expanding 'default' to appropriate outputs.
+        Process requested outputs for [hydrology.armapw] parameters, expanding 'default' to appropriate outputs.
 
         Parameters
         ----------
-        md : ISSM model object, optional
+        md : :class:`pyissm.model.Model`, optional
             Model object containing mesh information.
-        return_default_outputs : bool, default=False
+        return_default_outputs : :class:`bool`, default=False
             Whether to also return the list of default outputs.
             
         Returns
         -------
-        outputs : list
+        outputs : :class:`list`
             List of output strings with 'default' expanded to actual output names.
-        default_outputs : list, optional
+        default_outputs : :class:`list`, optional
             Returned only if `return_default_outputs=True`.
         """
 
@@ -215,13 +226,13 @@ class armapw(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -295,98 +306,88 @@ class armapw(class_registry.manage_state):
 @class_registry.register_class
 class dc(class_registry.manage_state):
     """
-    Dual Porous Continuum Equivalent (DC) hydrology parameters class for ISSM.
+    Dual Porous Continuum Equivalent (DC) hydrology class for ISSM.
 
-    This class defines the default parameters for the dual continuum (dc) hydrology model in ISSM.
+    This class contains the default parameters for the dual continuum (dc) hydrology model in the ISSM framework.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    water_compressibility : float, default=5.04e-10
+    water_compressibility : :class:`float`, default=5.04e-10
         Compressibility of water [Pa^-1].
-    isefficientlayer : int, default=1
+    isefficientlayer : :class:`int`, default=1
         Use efficient drainage system [1: true, 0: false].
-    penalty_factor : int, default=3
+    penalty_factor : :class:`int`, default=3
         Exponent used in the penalisation method [dimensionless].
-    penalty_lock : int, default=0
+    penalty_lock : :class:`int`, default=0
         Stabilize unstable constraints (default 0: no stabilization).
     rel_tol : float, default=1.0e-06
         Tolerance for nonlinear iteration between layers [dimensionless].
-    max_iter : int, default=100
+    max_iter : :class:`int`, default=100
         Maximum number of nonlinear iterations.
-    steps_per_step : int, default=1
+    steps_per_step : :class:`int`, default=1
         Number of hydrology steps per time step.
-    step_adapt : int, default=0
+    step_adapt : :class:`int`, default=0
         Adaptive sub-stepping [1: true, 0: false].
-    averaging : int, default=0
+    averaging : :class:`int`, default=0
         Averaging method for steps (0: Arithmetic, 1: Geometric, 2: Harmonic).
-    sedimentlimit_flag : int, default=0
+    sedimentlimit_flag : :class:`int`, default=0
         Type of upper limit for the inefficient layer (0: none, 1: user, 2: hydrostatic, 3: normal stress).
-    sedimentlimit : float, default=0
+    sedimentlimit : :class:`float`, default=0
         User-defined upper limit for the inefficient layer [m].
-    transfer_flag : int, default=1
+    transfer_flag : :class:`int`, default=1
         Transfer method between layers (0: none, 1: constant leakage).
-    unconfined_flag : int, default=0
+    unconfined_flag : :class:`int`, default=0
         Use unconfined scheme (0: confined only, 1: confined-unconfined).
-    leakage_factor : float, default=1.0e-10
+    leakage_factor : :class:`float`, default=1.0e-10
         User-defined leakage factor [m].
-    basal_moulin_input : ndarray, default=np.nan
+    basal_moulin_input : :class:`numpy.ndarray`, default=np.nan
         Water flux at a given point [m3 s^-1].
-    requested_outputs : list, default=['default']
+    requested_outputs : :class:`list`, default=['default']
         Additional outputs requested.
-    spcsediment_head : ndarray, default=np.nan
+    spcsediment_head : :class:`numpy.ndarray`, default=np.nan
         Sediment water head constraints [m above MSL].
-    mask_thawed_node : ndarray, default=np.nan
+    mask_thawed_node : :class:`numpy.ndarray`, default=np.nan
         Mask for thawed nodes (0: frozen).
-    sediment_transmitivity : float, default=8.0e-04
+    sediment_transmitivity : :class:`float`, default=8.0e-04
         Sediment transmissivity [m^2/s].
-    sediment_compressibility : float, default=1.0e-08
+    sediment_compressibility : :class:`float`, default=1.0e-08
         Sediment compressibility [Pa^-1].
-    sediment_porosity : float, default=0.4
+    sediment_porosity : :class:`float`, default=0.4
         Sediment porosity [dimensionless].
-    sediment_thickness : float, default=20.0
+    sediment_thickness : :class:`float`, default=20.0
         Sediment thickness [m].
-    spcepl_head : ndarray, default=np.nan
+    spcepl_head : :class:`numpy.ndarray`, default=np.nan
         EPL water head constraints [m above MSL].
-    mask_eplactive_node : ndarray, default=np.nan
+    mask_eplactive_node : :class:`numpy.ndarray`, default=np.nan
         Mask for active EPL nodes (1: active, 0: inactive).
-    epl_compressibility : float, default=1.0e-08
+    epl_compressibility : :class:`float`, default=1.0e-08
         EPL compressibility [Pa^-1].
-    epl_porosity : float, default=0.4
+    epl_porosity : :class:`float`, default=0.4
         EPL porosity [dimensionless].
-    epl_initial_thickness : float, default=1.0
+    epl_initial_thickness : :class:`float`, default=1.0
         EPL initial thickness [m].
-    epl_thick_comp : int, default=1
+    epl_thick_comp : :class:`int`, default=1
         EPL thickness computation flag.
-    epl_max_thickness : float, default=5.0
+    epl_max_thickness : :class:`float`, default=5.0
         EPL maximal thickness [m].
-    epl_conductivity : float, default=8.0e-02
+    epl_conductivity : :class:`float`, default=8.0e-02
         EPL conductivity [m^2/s].
-    epl_colapse_thickness : float
+    epl_colapse_thickness : :class:`float`
         EPL collapsing thickness [m] (computed as sediment_transmitivity / epl_conductivity).
-    eplflip_lock : int, default=0
+    eplflip_lock : :class:`int`, default=0
         Lock EPL activity to avoid flip-flopping (default 0: no stabilization).
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the dc parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the dc parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
-        Process requested outputs, expanding 'default' to appropriate outputs.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.hydrology = pyissm.model.classes.hydrology.dc()
+    .. code-block:: python
+    
+        >>> md.hydrology = pyissm.model.classes.hydrology.dc()
     """
 
     # Initialise with default parameters
@@ -501,6 +502,24 @@ class dc(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [hydrology.dc] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         #Early return if required analysis not present
         if 'HydrologyDCInefficientAnalysis' not in analyses and 'HydrologyDCEfficientAnalysis' not in analyses:
             return md
@@ -551,8 +570,20 @@ class dc(class_registry.manage_state):
     # Initialise empty fields of correct dimensions
     def initialise(self, md):
         """
-        Initialise empty fields in hydrology.dc.
+        Initialise [hydrology.dc] empty fields.
+
+        If current values of required fields are np.nan, they will be set to default required shapes/values and warnings will be issued.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            >>> md.hydrology = pyissm.model.classes.hydrology.dc()
+            # At this point, initial fields are np.nan
+            # After calling initialise, they will be set to default shapes/values with warnings issued.
+            >>> md.hydrology.initialise(md)
         """
+
         self.epl_colapse_thickness = self.sediment_transmitivity / self.epl_conductivity
         if np.all(np.isnan(self.basal_moulin_input)):
             self.basal_moulin_input = np.zeros((md.mesh.numberofvertices))
@@ -565,20 +596,20 @@ class dc(class_registry.manage_state):
                         md = None,
                         return_default_outputs = False):
         """
-        Process requested outputs, expanding 'default' to appropriate outputs.
+        Process requested outputs for [hydrology.dc] parameters, expanding 'default' to appropriate outputs.
 
         Parameters
         ----------
-        md : ISSM model object, optional
+        md : :class:`pyissm.model.Model`, optional
             Model object containing mesh information.
-        return_default_outputs : bool, default=False
+        return_default_outputs : :class:`bool`, default=False
             Whether to also return the list of default outputs.
             
         Returns
         -------
-        outputs : list
+        outputs : :class:`list`
             List of output strings with 'default' expanded to actual output names.
-        default_outputs : list, optional
+        default_outputs : :class:`list`, optional
             Returned only if `return_default_outputs=True`.
         """
 
@@ -616,13 +647,13 @@ class dc(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -679,80 +710,70 @@ class dc(class_registry.manage_state):
 @class_registry.register_class
 class glads(class_registry.manage_state):
     """
-    GlaDS hydrology parameters class for ISSM.
+    GlaDS hydrology class for ISSM.
 
-    This class defines the default parameters for the Glacier Drainage System (GlaDS) hydrology model in ISSM.
+    This class contains the default parameters for the Glacier Drainage System (GlaDS) hydrology model in the ISSM framework.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    pressure_melt_coefficient : float, default=7.5e-8
+    pressure_melt_coefficient : :class:`float`, default=7.5e-8
         Pressure melt coefficient (c_t) [K Pa^-1].
-    sheet_conductivity : float or ndarray, default=np.nan
+    sheet_conductivity : :class:`float` or ndarray, default=np.nan
         Sheet conductivity (k) [m^(7/4) kg^(-1/2)].
-    cavity_spacing : float, default=2.0
+    cavity_spacing : :class:`float`, default=2.0
         Cavity spacing (l_r) [m].
-    bump_height : float or ndarray, default=np.nan
+    bump_height : :class:`float` or ndarray, default=np.nan
         Typical bump height (h_r) [m].
-    omega : float, default=1./2000.
+    omega : :class:`float`, default=1./2000.
         Transition parameter (omega) [].
-    sheet_alpha : float, default=5.0/4.0
+    sheet_alpha : :class:`float`, default=5.0/4.0
         First sheet-flow exponent (alpha_s) [].
-    sheet_beta : float, default=3.0/2.0
+    sheet_beta : :class:`float`, default=3.0/2.0
         Second sheet-flow exponent (beta_s) [].
-    rheology_B_base : float or ndarray, default=np.nan
+    rheology_B_base : :class:`float` or ndarray, default=np.nan
         Ice rheology factor B at base of ice (B) [Pa s^(-1/3)].
-    isincludesheetthickness : int, default=0
+    isincludesheetthickness : :class:`int`, default=0
         Add rho_w*g*h in effective pressure calculation? 1: yes, 0: no.
-    creep_open_flag : int, default=1
+    creep_open_flag : :class:`int`, default=1
         Allow cavities to open by creep when N<0? 1: yes, 0: no.
 
-    ischannels : bool, default=False
+    ischannels : :class:`bool`, default=False
         Allow for channels? True or False.
-    channel_conductivity : float, default=5.e-2
+    channel_conductivity : :class:`float`, default=5.e-2
         Channel conductivity (k_c) [m^(3/2) kg^(-1/2)].
-    channel_sheet_width : float, default=2.0
+    channel_sheet_width : :class:`float`, default=2.0
         Channel sheet width [m].
-    channel_alpha : float, default=5.0/4.0
+    channel_alpha : :class:`float`, default=5.0/4.0
         First channel-flow exponent (alpha_c) [].
-    channel_beta : float, default=3.0/2.0
+    channel_beta : :class:`float`, default=3.0/2.0
         Second channel-flow exponent (beta_c) [].
 
-    spcphi : float or ndarray, default=np.nan
+    spcphi : :class:`float` or :class:`numpy.ndarray`, default=np.nan
         Hydraulic potential Dirichlet constraints [Pa].
-    moulin_input : float or ndarray, default=np.nan
+    moulin_input : :class:`float` or :class:`numpy.ndarray`, default=np.nan
         Moulin input (Q_s) [m^3/s].
-    neumannflux : float or ndarray, default=np.nan
+    neumannflux : :class:`float` or :class:`numpy.ndarray`, default=np.nan
         Water flux applied along the model boundary [m^2/s].
-    englacial_void_ratio : float, default=1.e-5
+    englacial_void_ratio : :class:`float`, default=1.e-5
         Englacial void ratio (e_v).
-    requested_outputs : list, default=['default']
+    requested_outputs : :class:`list`, default=['default']
         Additional outputs requested.
-    melt_flag : int, default=0
+    melt_flag : :class:`int`, default=0
         User specified basal melt? 0: no (default), 1: use md.basalforcings.groundedice_melting_rate.
-    istransition : int, default=0
+    istransition : :class:`int`, default=0
         Use standard [0, default] or transition model [1].
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the glads parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the glads parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
-        Process requested outputs, expanding 'default' to appropriate outputs.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.hydrology = pyissm.model.classes.hydrology.glads()
+    .. code-block:: python
+    
+        >>> md.hydrology = pyissm.model.classes.hydrology.glads()
     """
 
     # Initialise with default parameters
@@ -841,6 +862,24 @@ class glads(class_registry.manage_state):
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [hydrology.glads] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         # Early return if required analysis not present
         if 'HydrologyGladsAnalysis' not in analyses:
             return md
@@ -882,20 +921,20 @@ class glads(class_registry.manage_state):
                         md = None,
                         return_default_outputs = False):
         """
-        Process requested outputs, expanding 'default' to appropriate outputs.
+        Process requested outputs for [hydrology.glads] parameters, expanding 'default' to appropriate outputs.
 
         Parameters
         ----------
-        md : ISSM model object, optional
+        md : :class:`pyissm.model.Model`, optional
             Model object containing mesh information.
-        return_default_outputs : bool, default=False
+        return_default_outputs : :class:`bool`, default=False
             Whether to also return the list of default outputs.
             
         Returns
         -------
-        outputs : list
+        outputs : :class:`list`
             List of output strings with 'default' expanded to actual output names.
-        default_outputs : list, optional
+        default_outputs : :class:`list`, optional
             Returned only if `return_default_outputs=True`.
         """
 
@@ -926,13 +965,13 @@ class glads(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -971,40 +1010,30 @@ class glads(class_registry.manage_state):
 @class_registry.register_class
 class pism(class_registry.manage_state):
     """
-    PISM hydrology parameters class for ISSM.
+    PISM hydrology class for ISSM.
 
-    This class defines the default parameters for the PISM hydrology model in ISSM.
+    This class contains the default parameters for the PISM hydrology model in the ISSM framework.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    drainage_rate : ndarray, default=np.nan
+    drainage_rate : :class:`numpy.ndarray`, default=np.nan
         Fixed drainage rate [mm/yr].
-    watercolumn_max : float, default=np.nan
+    watercolumn_max : :class:`float`, default=np.nan
         Maximum water column height [m], recommended default: 2 m.
-    requested_outputs: list, default=['default']
+    requested_outputs: :class:`list`, default=['default']
         List of requested output variables.
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the pism parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the pism parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
-        Process requested outputs, expanding 'default' to appropriate outputs.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.hydrology = pyissm.model.classes.hydrology.pism()
+    .. code-block:: python
+        
+        >>> md.hydrology = pyissm.model.classes.hydrology.pism()
     """
 
     # Initialise with default parameters
@@ -1041,6 +1070,23 @@ class pism(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [hydrology.pism] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if required analysis not present
         if 'HydrologyPismAnalysis' not in analyses:
@@ -1058,20 +1104,20 @@ class pism(class_registry.manage_state):
                         md = None,
                         return_default_outputs = False):
         """
-        Process requested outputs, expanding 'default' to appropriate outputs.
+        Process requested outputs for [hydrology.pism] parameters, expanding 'default' to appropriate outputs.
 
         Parameters
         ----------
-        md : ISSM model object, optional
+        md : :class:`pyissm.model.Model`, optional
             Model object containing mesh information.
-        return_default_outputs : bool, default=False
+        return_default_outputs : :class:`bool`, default=False
             Whether to also return the list of default outputs.
             
         Returns
         -------
-        outputs : list
+        outputs : :class:`list`
             List of output strings with 'default' expanded to actual output names.
-        default_outputs : list, optional
+        default_outputs : :class:`list`, optional
             Returned only if `return_default_outputs=True`.
         """
 
@@ -1102,13 +1148,13 @@ class pism(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -1129,62 +1175,52 @@ class pism(class_registry.manage_state):
 @class_registry.register_class
 class shakti(class_registry.manage_state):
     """
-    Shakti hydrology parameters class for ISSM.
+    Shakti hydrology class for ISSM.
 
-    This class defines the default parameters for the Shakti hydrology model in ISSM.
+    This class contains the default parameters for the Shakti hydrology model in the ISSM framework.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    head : float or ndarray, default=np.nan
+    head : :class:`float` or :class:`numpy.ndarray`, default=np.nan
         Subglacial hydrology water head [m].
-    gap_height : float or ndarray, default=np.nan
+    gap_height : :class:`float` or :class:`numpy.ndarray`, default=np.nan
         Height of gap separating ice from bed [m].
-    gap_height_min : float, default=1e-3
+    gap_height_min : :class:`float`, default=1e-3
         Minimum allowed gap height [m].
-    gap_height_max : float, default=1.0
+    gap_height_max : :class:`float`, default=1.0
         Maximum allowed gap height [m].
-    bump_spacing : float or ndarray, default=np.nan
+    bump_spacing : :class:`float` or :class:`numpy.ndarray`, default=np.nan
         Characteristic bedrock bump spacing [m].
-    bump_height : float or ndarray, default=np.nan
+    bump_height : :class:`float` or :class:`numpy.ndarray`, default=np.nan
         Characteristic bedrock bump height [m].
-    englacial_input : float or ndarray, default=np.nan
+    englacial_input : :class:`float` or :class:`numpy.ndarray`, default=np.nan
         Liquid water input from englacial to subglacial system [m/yr].
-    moulin_input : float or ndarray, default=np.nan
+    moulin_input : :class:`float` or :class:`numpy.ndarray`, default=np.nan
         Liquid water input from moulins (at the vertices) to subglacial system [m^3/s].
-    reynolds : float or ndarray, default=np.nan
+    reynolds : :class:`float` or :class:`numpy.ndarray`, default=np.nan
         Reynolds number.
-    spchead : float or ndarray, default=np.nan
+    spchead : :class:`float` or :class:`numpy.ndarray`, default=np.nan
         Water head constraints (NaN means no constraint) [m].
-    neumannflux : float or ndarray, default=np.nan
+    neumannflux : :class:`float` or :class:`numpy.ndarray`, default=np.nan
         Water flux applied along the model boundary [m^2/s].
     relaxation : float, default=1
         Under-relaxation coefficient for nonlinear iteration.
-    storage : float or ndarray, default=np.nan
+    storage : :class:`float` or :class:`numpy.ndarray`, default=np.nan
         Englacial storage coefficient (void ratio).
-    requested_outputs : list, default=['default']
+    requested_outputs : :class:`list`, default=['default']
         Additional outputs requested.
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the shakti parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the shakti parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
-        Process requested outputs, expanding 'default' to appropriate outputs.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file
 
     Examples
     --------
-    md.hydrology = pyissm.model.classes.hydrology.shakti()
+    .. code-block:: python
+
+        >>> md.hydrology = pyissm.model.classes.hydrology.shakti()
     """
 
     # Initialise with default parameters
@@ -1243,6 +1279,24 @@ class shakti(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [hydrology.shakti] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         # Early return if required analysis not present
         if 'HydrologyShaktiAnalysis' not in analyses:
             return md
@@ -1269,20 +1323,20 @@ class shakti(class_registry.manage_state):
                         md = None,
                         return_default_outputs = False):
         """
-        Process requested outputs, expanding 'default' to appropriate outputs.
+        Process requested outputs for [hydrology.shakti] parameters, expanding 'default' to appropriate outputs.
 
         Parameters
         ----------
-        md : ISSM model object, optional
+        md : :class:`pyissm.model.Model`, optional
             Model object containing mesh information.
-        return_default_outputs : bool, default=False
+        return_default_outputs : :class:`bool`, default=False
             Whether to also return the list of default outputs.
             
         Returns
         -------
-        outputs : list
+        outputs : :class:`list`
             List of output strings with 'default' expanded to actual output names.
-        default_outputs : list, optional
+        default_outputs : :class:`list`, optional
             Returned only if `return_default_outputs=True`.
         """
 
@@ -1313,13 +1367,13 @@ class shakti(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -1366,40 +1420,30 @@ class shakti(class_registry.manage_state):
 @class_registry.register_class
 class shreve(class_registry.manage_state):
     """
-    Shreve hydrology parameters class for ISSM.
+    Shreve hydrology class for ISSM.
 
-    This class defines the default parameters for the Shreve hydrology model in ISSM.
+    This class contains the default parameters for the Shreve hydrology model in the ISSM framework.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    spcwatercolumn : ndarray, default=np.nan
+    spcwatercolumn : :class:`numpy.ndarray`, default=np.nan
         Water thickness constraints (NaN means no constraint) [m].
-    stabilization : int, default=1
+    stabilization : :class:`int`, default=1
         Artificial diffusivity (default: 1). Can be more than 1 to increase diffusivity.
-    requested_outputs : list, default=['default']
+    requested_outputs : :class:`list`, default=['default']
         Additional outputs requested.
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the shreve parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the shreve parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
-        Process requested outputs, expanding 'default' to appropriate outputs.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file
 
     Examples
     --------
-    md.hydrology = pyissm.model.classes.hydrology.shreve()
+    .. code-block:: python
+
+        >>> md.hydrology = pyissm.model.classes.hydrology.shreve()
     """
 
     # Initialise with default parameters
@@ -1436,7 +1480,24 @@ class shreve(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-            
+        """
+        Check consistency of the [hydrology.shreve] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         #Early return if required analysis or solution not present
         if 'HydrologyShreveAnalysis' not in analyses or (solution == 'TransientSolution' and not md.transient.ishydrology):
             return md
@@ -1451,20 +1512,20 @@ class shreve(class_registry.manage_state):
                         md = None,
                         return_default_outputs = False):
         """
-        Process requested outputs, expanding 'default' to appropriate outputs.
+        Process requested outputs for [hydrology.shreve] parameters, expanding 'default' to appropriate outputs.
 
         Parameters
         ----------
-        md : ISSM model object, optional
+        md : :class:`pyissm.model.Model`, optional
             Model object containing mesh information.
-        return_default_outputs : bool, default=False
+        return_default_outputs : :class:`bool`, default=False
             Whether to also return the list of default outputs.
             
         Returns
         -------
-        outputs : list
+        outputs : :class:`list`
             List of output strings with 'default' expanded to actual output names.
-        default_outputs : list, optional
+        default_outputs : :class:`list`, optional
             Returned only if `return_default_outputs=True`.
         """
 
@@ -1495,13 +1556,13 @@ class shreve(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -1522,38 +1583,28 @@ class shreve(class_registry.manage_state):
 @class_registry.register_class
 class tws(class_registry.manage_state):
     """
-    TWS hydrology parameters class for ISSM.
+    TWS hydrology class for ISSM.
 
-    This class defines the default parameters for the TWS (two water sheet) hydrology model in ISSM.
+    This class contains the default parameters for the TWS (two water sheet) hydrology model in the ISSM framework.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    spcwatercolumn : ndarray, default=np.nan
+    spcwatercolumn : :class:`numpy.ndarray`, default=np.nan
         Water thickness constraints (NaN means no constraint) [m].
-    requested_outputs : list, default=['default']
+    requested_outputs : :class:`list`, default=['default']
         Additional outputs requested.
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the tws parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the tws parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
-        Process requested outputs, expanding 'default' to appropriate outputs.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file
 
     Examples
     --------
-    md.hydrology = pyissm.model.classes.hydrology.tws()
+    .. code-block:: python
+
+        >>> md.hydrology = pyissm.model.classes.hydrology.tws()
     """
 
     # Initialise with default parameters
@@ -1588,6 +1639,24 @@ class tws(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [hydrology.tws] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         # Early return if required analysis not present
         if 'HydrologyTwsAnalysis' not in analyses:
             return
@@ -1598,20 +1667,20 @@ class tws(class_registry.manage_state):
                         md = None,
                         return_default_outputs = False):
         """
-        Process requested outputs, expanding 'default' to appropriate outputs.
+        Process requested outputs for [hydrology.tws] parameters, expanding 'default' to appropriate outputs.
 
         Parameters
         ----------
-        md : ISSM model object, optional
+        md : :class:`pyissm.model.Model`, optional
             Model object containing mesh information.
-        return_default_outputs : bool, default=False
+        return_default_outputs : :class:`bool`, default=False
             Whether to also return the list of default outputs.
             
         Returns
         -------
-        outputs : list
+        outputs : :class:`list`
             List of output strings with 'default' expanded to actual output names.
-        default_outputs : list, optional
+        default_outputs : :class:`list`, optional
             Returned only if `return_default_outputs=True`.
         """
 
@@ -1642,13 +1711,13 @@ class tws(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
