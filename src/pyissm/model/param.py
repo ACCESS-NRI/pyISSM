@@ -709,7 +709,7 @@ def kill_icebergs(md):
     return ice_ls.copy()
 
 
-def reinitialize_levelset(self, md, levelset):
+def reinitialize_levelset(md, levelset):
 
     import os
     import tempfile
