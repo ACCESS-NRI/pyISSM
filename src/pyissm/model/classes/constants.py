@@ -7,44 +7,36 @@ class constants(class_registry.manage_state):
     """
     Physical constants class for ISSM.
 
-    This class encapsulates fundamental physical constants used in the ISSM (Ice Sheet System Model) framework.
-    It provides standardized values for gravitational acceleration, Earth's rotation, time conversions, 
-    and other physical constants required for ice sheet modeling calculations.
+    This class contains fundamental physical constants used in the ISSM framework.
+    It provides standardized values for gravitational acceleration, Earth's rotation,
+    time conversions, and other physical constants required for ice sheet modeling calculations.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    g : float, default=9.81
+    g : :class:`float`, default=9.81
         Gravitational acceleration [m/s^2].
-    omega : float, default=7.292e-5
+    omega : :class:`float`, default=7.292e-5
         Angular velocity of Earth [rad/s].
-    yts : float, default=31536000.0
+    yts : :class:`float`, default=31536000.0
         Number of seconds in a year [s/yr] (365.0 * 24.0 * 3600.0).
-    referencetemperature : float, default=223.15
+    referencetemperature : :class:`float`, default=223.15
         Reference temperature used in the enthalpy model [K].
-    gravitational_constant : float, default=6.67259e-11
+    gravitational_constant : :class:`float`, default=6.67259e-11
         Newtonian constant of gravitation [m^3/kg/s^2].
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the physical constants, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the constants.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.constants = pyissm.model.classes.constants()
-    md.constants.g = 9.81
-    md.constants.yts = 365.25 * 24.0 * 3600.0
+    .. code-block:: python
+
+        >>> md.constants = pyissm.model.classes.constants()
+        >>> md.constants.g = 9.81
+        >>> md.constants.yts = 365.25 * 24.0 * 3600.0
     """
 
     # Initialise with default parameters
@@ -75,6 +67,24 @@ class constants(class_registry.manage_state):
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [constants] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         class_utils.check_field(md, fieldname = 'constants.g', ge = 0, scalar = True) # We allow 0 for validation tests
         class_utils.check_field(md, fieldname = 'constants.omega', ge = 0, scalar = True)
         class_utils.check_field(md, fieldname = 'constants.yts', ge = 0, scalar = True)
@@ -90,13 +100,13 @@ class constants(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None

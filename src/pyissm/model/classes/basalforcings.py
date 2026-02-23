@@ -4,8 +4,7 @@ Basal forcings classes for ISSM.
 
 import numpy as np
 import warnings
-from pyissm.model.classes import class_utils
-from pyissm.model.classes import class_registry
+from pyissm.model.classes import class_utils, class_registry
 from pyissm.model import execute, mesh
 
 ## ------------------------------------------------------

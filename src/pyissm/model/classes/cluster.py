@@ -1,10 +1,13 @@
+"""
+Cluster classes for ISSM.
+"""
+
 import os
 import yaml
 import subprocess
 import numpy as np
 import warnings
-from pyissm.model.classes import class_utils
-from pyissm.model.classes import class_registry
+from pyissm.model.classes import class_utils, class_registry
 from pyissm import model, tools
 
 ## ------------------------------------------------------
@@ -12,17 +15,16 @@ from pyissm import model, tools
 ## ------------------------------------------------------
 @class_registry.register_class
 class generic(class_registry.manage_state):
-    
     """
     Generic cluster class for ISSM.
 
     This class provides a generic interface for managing cluster configurations
-    and job execution in the Ice Sheet System Model (ISSM) framework. It handles cluster
+    and job execution in the ISSM framework. It handles cluster
     parameters, queue script generation, job submission, and result retrieval.
     
     Parameters
     ----------
-    config_file : str, optional
+    config_file : :class:`str`, optional
         Path to YAML configuration file containing cluster parameters.
         If provided, will override default parameters with values from the file.
     other : object, optional
@@ -30,57 +32,44 @@ class generic(class_registry.manage_state):
     
     Attributes
     ----------
-    name : str
+    name : :class:`str`
         Name of the cluster (defaults to hostname).
-    login : str
+    login : :class:`str`
         Login username for the cluster (defaults to current username).
-    np : int
+    np : :class:`int`
         Number of processors to use (default: 1).
-    port : int
+    port : :class:`int`
         Port number for connections (default: 0).
-    interactive : int
+    interactive : :class:`int`
         Interactive mode flag (default: 1).
-    codepath : str
+    codepath : :class:`str`
         Path to the ISSM executables directory (default: $ISSM_DIR/bin).
-    executionpath : str
+    executionpath : :class:`str`
         Path to the execution directory on the cluster (default: $ISSM_DIR/execution).
-    valgrind : str
+    valgrind : :class:`str`
         Path to valgrind executable for memory debugging (default: $ISSM_DIR/externalpackages/valgrind/bin/valgrind).
-    valgrindlib : str
+    valgrindlib : :class:`str`
         Path to valgrind MPI debug library (default: $ISSM_DIR/externalpackages/valgrind/install/lib/libmpidebug.so).
-    valgrindsup : list of str
+    valgrindsup : list of :class:`str`
         List of valgrind suppression files (default: $ISSM_DIR/externalpackages/valgrind/issm.supp).
-    verbose : int
+    verbose : :class:`int`
         Verbose output flag (default: 1).
-    shell : str
+    shell : :class:`str`
         Shell to use for command execution (default: '/bin/sh').
-
-    Methods
-    -------
-    build_queue_script(dir_name, model_name, solution, io_gather, is_valgrind,
-                       is_gprof, is_dakota, is_ocean_coupling, executable='issm.exe')
-        Generate queue script for model execution.
-    build_kriging_queue_script(model_name, solution, io_gather, is_valgrind,
-                               is_gprof, executable='kriging.exe')
-        Generate queue script for kriging execution.
-    upload_queue_job(model_name, dir_name, file_list)
-        Upload job files to the cluster.
-    launch_queue_job(model_name, dir_name, restart=None, batch=False)
-        Launch job execution on the cluster.
-    download(dir_name, file_list)
-        Download job results from the cluster.
     
     Notes
     -----
-    This class inherits from class_registry.manage_state to provide state
-    management capabilities. Configuration parameters can be overridden
-    via YAML configuration files or by inheriting from other cluster objects.
+    Configuration parameters can be overridden via YAML configuration files or by inheriting from other cluster objects.
 
     Examples
     --------
-    >>> cluster = generic()
-    >>> cluster.np = 4
-    >>> cluster.name = 'my_cluster'
+    .. code-block:: python
+
+        >>> cluster = generic()
+        >>> cluster.np = 4
+        >>> cluster.name = 'my_cluster'
+
+        >>> cluster = generic(config_file='cluster_config.yaml')
     """
 
     # Initialise with default parameters
@@ -149,12 +138,30 @@ class generic(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [cluster.generic] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         if self.np < 1 or np.isnan(self.np):
-            md.check_message('cluster.generic.check_consistency: np must be >= 1')
+            md.check_message('pyissm.model.classes.cluster.generic.check_consistency: np must be >= 1')
 
         pwd = os.getcwd()
         if self.executionpath == pwd:
-            md.check_message('cluster.generic.check_consistency: md.cluster.executionpath must be different from the current working directory.')
+            md.check_message('pyissm.model.classes.cluster.generic.check_consistency: md.cluster.executionpath must be different from the current working directory.')
 
         return md
 
@@ -174,26 +181,27 @@ class generic(class_registry.manage_state):
         This method generates platform-specific execution scripts (bash for Linux/Mac, 
         batch for Windows) that handle model execution with various configurations 
         including MPI, debugging tools, and specialized executables.
+
         Parameters
         ----------
-        dir_name : str
+        dir_name : :class:`str`
             Directory name where the model files are located.
-        model_name : str
+        model_name : :class:`str`
             Name of the model to execute.
-        solution : str
+        solution : :class:`str`
             Solution type or configuration parameter.
-        io_gather : bool
+        io_gather : :class:`bool`
             Flag indicating whether to gather I/O operations. If False, output 
             files will be concatenated.
-        is_valgrind : bool
+        is_valgrind : :class:`bool`
             Flag to enable Valgrind memory debugging tool execution.
-        is_gprof : bool
+        is_gprof : :class:`bool`
             Flag to enable gprof profiling tool execution.
-        is_dakota : bool
+        is_dakota : :class:`bool`
             Flag to use DAKOTA optimization executable.
-        is_ocean_coupling : bool
+        is_ocean_coupling : :class:`bool`
             Flag to use ocean coupling executable.
-        executable : str, optional
+        executable : :class:`str`, optional
             Name of the executable file to run. Default is 'issm.exe'.
 
         Raises
@@ -204,17 +212,18 @@ class generic(class_registry.manage_state):
 
         Notes
         -----
-        - On Linux/Mac systems, creates a '.queue' bash script
-        - On Windows systems, creates a '.bat' batch script
-        - Automatically handles MPI execution when available
-        - In interactive mode, creates empty error and output log files
-        - Supports various debugging and profiling tools integration
-        - Handles different executable types based on coupling requirements
+
+            - On Linux/Mac systems, creates a '.queue' bash script
+            - On Windows systems, creates a '.bat' batch script
+            - Automatically handles MPI execution when available
+            - In interactive mode, creates empty error and output log files
+            - Supports various debugging and profiling tools integration
+            - Handles different executable types based on coupling requirements
         """
         
         # Require wrappers when executing a model
         if not tools.wrappers.check_wrappers_installed():
-            raise IOError('cluster.generic.build_queue_script: Python wrappers not installed. Unable to build queue script.')
+            raise IOError('pyissm.model.classes.cluster.generic.build_queue_script: Python wrappers not installed. Unable to build queue script.')
 
         # DAKOTA EXECUTABLE
         if is_dakota:
@@ -225,7 +234,7 @@ class generic(class_registry.manage_state):
                     executable = 'issm_dakota.exe'
             else:
                 ## If no dakota support, raise error
-                raise IOError('cluster.generic.build_queue_script error: ISSM not built with DAKOTA support')
+                raise IOError('pyissm.model.classes.cluster.generic.build_queue_script error: ISSM not built with DAKOTA support')
         
         # OCEAN COUPLING EXECUTABLE
         if is_ocean_coupling:
@@ -299,18 +308,18 @@ class generic(class_registry.manage_state):
         
         Parameters
         ----------
-        model_name : str
+        model_name : :class:`str`
             Name of the kriging model to execute.
-        solution : str
+        solution : :class:`str`
             Solution type or configuration parameter.
-        io_gather : bool
+        io_gather : :class:`bool`
             Flag indicating whether to gather I/O operations. If False, output 
             files will be concatenated.
-        is_valgrind : bool
+        is_valgrind : :class:`bool`
             Flag to enable Valgrind memory debugging tool execution.
-        is_gprof : bool
+        is_gprof : :class:`bool`
             Flag to enable gprof profiling tool execution.
-        executable : str, optional
+        executable : :class:`str`, optional
             Name of the executable file to run. Default is 'kriging.exe'.
         
         Raises
@@ -320,17 +329,18 @@ class generic(class_registry.manage_state):
         
         Notes
         -----
-        - On Linux/Mac systems, creates a '.queue' bash script
-        - On Windows systems, creates a '.bat' batch script
-        - Automatically handles MPI execution for kriging operations
-        - In interactive mode, creates empty error and output log files
-        - Supports memory debugging with Valgrind and profiling with gprof
-        - Specifically designed for kriging executable execution
+
+            - On Linux/Mac systems, creates a '.queue' bash script
+            - On Windows systems, creates a '.bat' batch script
+            - Automatically handles MPI execution for kriging operations
+            - In interactive mode, creates empty error and output log files
+            - Supports memory debugging with Valgrind and profiling with gprof
+            - Specifically designed for kriging executable execution
         """
         
         # Require wrappers when executing a model
         if not tools.wrappers.check_wrappers_installed():
-            raise IOError('cluster.generic.build_kriging_queue_script: Python wrappers not installed. Unable to build queue script.')
+            raise IOError('pyissm.model.classes.cluster.generic.build_kriging_queue_script: Python wrappers not installed. Unable to build queue script.')
         
         # BUILD SCRIPT
         ## Linux/Mac
@@ -381,11 +391,11 @@ class generic(class_registry.manage_state):
         
         Parameters
         ----------
-        model_name : str
+        model_name : :class:`str`
             Name of the model, used for naming log files in interactive mode.
-        dir_name : str
+        dir_name : :class:`str`
             Name of the directory/archive to be created (without extension).
-        file_list : list of str
+        file_list : list of :class:`str`
             List of file paths to be included in the compressed archive.
         
         Notes
@@ -422,42 +432,50 @@ class generic(class_registry.manage_state):
                          batch = False):
         """
         Launch a job on the cluster queue system.
+
         This method builds and executes the appropriate launch command for submitting
         a job to the cluster's queue system. It handles both fresh job submissions
         and job restarts, with optional batch processing mode.
+
         Parameters
         ----------
-        model_name : str
+        model_name : :class:`str`
             Name of the model to be executed on the cluster.
-        dir_name : str
+        dir_name : :class:`str`
             Name of the directory where the job will be executed.
-        restart : bool or None, optional
+        restart : :class:`bool` or None, optional
             If not None, indicates this is a restart of an existing job.
             When restarting, the method assumes the job directory already exists
             and only executes the queue script. Default is None.
-        batch : bool, optional
+        batch : :class:`bool`, optional
             Flag indicating whether to run in batch mode. When True, only
             extracts the tar.gz file without executing the queue script.
             When False (default), extracts and immediately executes the job.
             Only relevant when restart is None.
+
         Notes
         -----
         The method performs different operations based on the restart parameter:
-        - If restart is not None: Changes to the execution directory and runs
-            the existing queue script.
-        - If restart is None: Removes any existing directory, creates a new one,
-            moves and extracts the tar.gz file, and optionally runs the queue script
-            depending on the batch parameter.
+
+            - If restart is not None: Changes to the execution directory and runs
+                the existing queue script.
+            - If restart is None: Removes any existing directory, creates a new one,
+                moves and extracts the tar.gz file, and optionally runs the queue script
+                depending on the batch parameter.
+
         The job is launched via SSH connection to the cluster using the cluster's
         name, login credentials, and port configuration.
+
         Examples
         --------
-        Launch a new job:
-        >>> cluster.launch_queue_job('simulation_01', 'run_dir')
-        Restart an existing job:
-        >>> cluster.launch_queue_job('simulation_01', 'run_dir', restart=True)
-        Launch in batch mode (extract only, no execution):
-        >>> cluster.launch_queue_job('simulation_01', 'run_dir', batch=True)
+        .. code-block:: python
+            
+            # Launch a new job:
+            >>> cluster.launch_queue_job('simulation_01', 'run_dir')
+            # Restart an existing job:
+            >>> cluster.launch_queue_job('simulation_01', 'run_dir', restart=True)
+            # Launch in batch mode (extract only, no execution):
+            >>> cluster.launch_queue_job('simulation_01', 'run_dir', batch=True)
         """
 
         # Build launch command        
@@ -479,16 +497,17 @@ class generic(class_registry.manage_state):
     def download(self, dir_name, file_list):
         """
         Download files from a remote cluster to the local machine.
+
         This method retrieves specified files from a remote cluster directory
         to the current local directory. On Windows systems, this operation
         is skipped as it's not supported.
 
         Parameters
         ----------
-        dir_name : str
+        dir_name : :class:`str`
             The name of the directory on the remote cluster containing the files
             to download.
-        file_list : list of str
+        file_list : list of :class:`str`
             A list of filenames to download from the remote cluster directory.
 
         Returns
@@ -497,10 +516,11 @@ class generic(class_registry.manage_state):
 
         Notes
         -----
-        - This method does nothing on Windows platforms and returns immediately.
-        - Files are copied from the cluster's execution path combined with the
-          specified directory name.
-        - The actual file transfer is handled by the `model.io.issm_scp_in` function.
+
+            - This method does nothing on Windows platforms and returns immediately.
+            - Files are copied from the cluster's execution path combined with the
+            specified directory name.
+            - The actual file transfer is handled by the `model.io.issm_scp_in` function.
         """
 
         if tools.config.is_pc():
@@ -530,7 +550,7 @@ class gadi(class_registry.manage_state):
 
     Parameters
     ----------
-    config_file : str, optional
+    config_file : :class:`str`, optional
         Path to YAML configuration file containing cluster parameters.
         If provided, will override default parameters with values from the file.
     other : object, optional
@@ -538,34 +558,34 @@ class gadi(class_registry.manage_state):
 
     Attributes
     ----------
-    name : str
+    name : :class:`str`
         Hostname of the cluster. Defaults to 'gadi.nci.org.au' if not on Gadi.
-    login : str
+    login : :class:`str`
         Login username for the cluster. Must be provided for cluster access.
-    np : int
+    np : :class:`int`
         Number of processors to use for job execution. Default is 16.
-    memory : int
+    memory : :class:`int`
         Memory per node in GB. Default is 40.
-    port : int
+    port : :class:`int`
         SSH port number for cluster connection. Default is 0.
-    queue : str
+    queue : :class:`str`
         PBS queue name. Options include 'normal', 'express', 'hugemem'. 
         Default is 'normal'.
-    time : int
+    time : :class:`int`
         Walltime limit for job execution in minutes. Default is 60.
-    codepath : str
+    codepath : :class:`str`
         Path to the ISSM executable directory (e.g., $ISSM_DIR/bin). 
         Must be provided.
-    executionpath : str
+    executionpath : :class:`str`
         Path to the execution/working directory on the cluster. Must be provided.
-    project : str
+    project : :class:`str`
         NCI project code for job submission. Must be provided.
-    storage : str
+    storage : :class:`str`
         Storage paths to access (e.g., 'gdata/XXX+scratch/XXX'). 
         Must be provided.
-    moduleload : list of str
+    moduleload : list of :class:`str`
         List of module load commands needed for PBS job execution.
-    moduleuse : list of str
+    moduleuse : list of :class:`str`
         List of module use commands to specify module paths.
 
     Notes
@@ -576,15 +596,17 @@ class gadi(class_registry.manage_state):
 
     Queue specifications:
     
-    - normal: 48 hours on up to 3072 cores
-    - express: 2 hours on up to 960 cores
-    - hugemem: 48 hours on up to 3072 cores
+        - normal: 48 hours on up to 3072 cores
+        - express: 2 hours on up to 960 cores
+        - hugemem: 48 hours on up to 3072 cores
 
     Examples
     --------
-    >>> cluster = gadi(config_file='gadi_config.yaml')
-    >>> cluster.np = 32
-    >>> cluster.queue = 'express'
+    .. code-block:: python
+
+        >>> cluster = gadi(config_file='gadi_config.yaml')
+        >>> cluster.np = 32
+        >>> cluster.queue = 'express'
     """
 
     # Initialise with default parameters
@@ -651,13 +673,32 @@ class gadi(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [cluster.gadi] parameters.
 
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
+        # Define queue specifications for validation
         queue_dict = {
             'normal': [48*60, 3072], # 48h on 3072 cores
             'express': [2*60, 960], # 2h on 960 cores
             'hugemem': [48*60, 3072], # 48h on 3072 cores
         }
 
+        # Check that queue is valid and that np and time are within queue limits
         class_utils.cluster_queue_requirements(queue_dict, self.queue, self.np, self.time)
 
         if not self.login:
@@ -703,24 +744,24 @@ class gadi(class_registry.manage_state):
 
         Parameters
         ----------
-        dir_name : str
+        dir_name : :class:`str`
             Directory name where the model execution files are stored.
-        model_name : str
+        model_name : :class:`str`
             Name of the model, used for output file naming.
-        solution : str
+        solution : :class:`str`
             Solution type or identifier to pass to the executable.
-        io_gather : bool
+        io_gather : :class:`bool`
             If True, output files are pre-gathered. If False, output binary files
             are concatenated after execution.
-        is_valgrind : bool
-            If True, raises NotImplementedError as Valgrind is not supported.
-        is_gprof : bool
-            If True, raises NotImplementedError as gprof is not supported.
-        is_dakota : bool
-            If True, raises NotImplementedError as DAKOTA is not supported.
-        is_ocean_coupling : bool
-            If True, raises NotImplementedError as ocean coupling is not supported.
-        executable : str, optional
+        is_valgrind : :class:`bool`
+            If True, raises :exc:`NotImplementedError` as Valgrind is not supported.
+        is_gprof : :class:`bool`
+            If True, raises :exc:`NotImplementedError` as gprof is not supported.
+        is_dakota : :class:`bool`
+            If True, raises :exc:`NotImplementedError` as DAKOTA is not supported.
+        is_ocean_coupling : :class:`bool`
+            If True, raises :exc:`NotImplementedError` as ocean coupling is not supported.
+        executable : :class:`str`, optional
             Name of the executable to run. Default is 'issm.exe'.
 
         Raises
@@ -794,11 +835,11 @@ class gadi(class_registry.manage_state):
 
         Parameters
         ----------
-        model_name : str
+        model_name : :class:`str`
             Name of the model, used for naming log files in interactive mode (not used here).
-        dir_name : str
+        dir_name : :class:`str`
             Name of the directory/archive to be created (without extension).
-        file_list : list of str
+        file_list : list of :class:`str`
             List of file paths to be included in the compressed archive.
 
         Notes
@@ -833,15 +874,15 @@ class gadi(class_registry.manage_state):
 
         Parameters
         ----------
-        model_name : str
+        model_name : :class:`str`
             Name of the model to be executed on the cluster.
-        dir_name : str
+        dir_name : :class:`str`
             Name of the directory where the job will be executed.
-        restart : bool or None, optional
+        restart : :class:`bool` or None, optional
             If not None, indicates this is a restart of an existing job.
             When restarting, the method assumes the job directory already exists
             and only submits the queue script via qsub. Default is None.
-        batch : bool, optional
+        batch : :class:`bool`, optional
             Flag indicating whether to run in batch mode. Currently unused for
             Gadi cluster but maintained for interface compatibility.
             Default is False.
@@ -854,23 +895,22 @@ class gadi(class_registry.manage_state):
         -----
         The method performs different operations based on the restart parameter:
         
-        - If restart is not None: Changes to the existing execution directory and
-          submits the queue script using qsub.
-        - If restart is None: Removes any existing directory, creates a new one,
-          moves and extracts the tar.gz file, then submits the queue script using qsub.
+            - If restart is not None: Changes to the existing execution directory and
+            submits the queue script using qsub.
+            - If restart is None: Removes any existing directory, creates a new one,
+            moves and extracts the tar.gz file, then submits the queue script using qsub.
         
         The job is launched via SSH connection to the cluster using the cluster's
         name, login credentials, and port configuration.
 
         Examples
         --------
-        Launch a new job:
+        .. code-block:: python
         
-        >>> cluster.launch_queue_job('simulation_01', 'run_dir')
-        
-        Restart an existing job:
-        
-        >>> cluster.launch_queue_job('simulation_01', 'run_dir', restart=True)
+            # Launch a new job:
+            >>> cluster.launch_queue_job('simulation_01', 'run_dir')
+            # Restart an existing job:
+            >>> cluster.launch_queue_job('simulation_01', 'run_dir', restart=True)
         """
         
         if restart is not None:
@@ -897,10 +937,10 @@ class gadi(class_registry.manage_state):
 
         Parameters
         ----------
-        dir_name : str
+        dir_name : :class:`str`
             The name of the directory on the remote cluster containing the files
             to download.
-        file_list : list of str
+        file_list : list of :class:`str`
             A list of filenames to download from the remote cluster directory.
 
         Returns
