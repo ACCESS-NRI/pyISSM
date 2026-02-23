@@ -8,8 +8,8 @@ from pyissm.tools import wrappers
 
 class Model():
     """
-    ISSM Model Class.
-
+    ISSM Model Class
+    =================
 
     High-level container for all components of an Ice-sheet and Sea-level System Model (ISSM)
     model. Initializes a collection of model components, each of which may store inputs,
@@ -106,13 +106,15 @@ class Model():
 
     Examples
     ----------
-    >>> md = pyissm.model.Model()
-    >>> md.mesh
-    <mesh object>
-    >>> md.mask
-    <mask object>
-    >>> md.geometry
-    <geometry object>
+    .. code-block:: python
+
+        >>> md = pyissm.model.Model()
+        >>> md.mesh
+        <mesh object>
+        >>> md.mask
+        <mask object>
+        >>> md.geometry
+        <geometry object>
     """
 
     def __init__(self):
@@ -234,6 +236,9 @@ class Model():
     # Model consistency check_message
     def check_message(self, string):
         """
+        Model consistency check message method
+        ======================================
+
         Notify about a model consistency error, update internal state, and return the instance.
 
         This method prints a formatted consistency error message to standard output,
@@ -258,10 +263,12 @@ class Model():
 
         Examples
         --------
-        >>> obj.check_message("missing parameter")
-            Model consistency error: missing parameter
-        >>> obj.private.isconsistent
-            False
+        .. code-block:: python
+
+            >>> obj.check_message("missing parameter")
+                Model consistency error: missing parameter
+            >>> obj.private.isconsistent
+                False
         """
         print(f'Model consistency error: {string}')
         self.private.isconsistent = False
@@ -270,6 +277,9 @@ class Model():
     # Get all sub-class names within a model
     def model_class_names(self):
         """
+        List of model class attribute names
+        ===================================
+
         Return a sorted list of registered model class attribute names.
 
         The method inspects the instance attributes and returns those whose
@@ -282,13 +292,15 @@ class Model():
 
         Examples
         ----------
-        >>> md.model_class_names()
-        ['amr', 'autodiff', 'balancethickness', 'basalforcings', 'calving', 'cluster', 'constants',
-        'damage', 'debris', 'debug', 'dsl', 'esa', 'flowequation', 'friction', 'frontalforcings',
-        'geometry', 'groundingline', 'hydrology', 'initialization', 'inversion', 'levelset', 'love',
-        'mask', 'masstransport', 'materials', 'mesh', 'miscellaneous', 'outputdefinition', 'private',
-        'qmu', 'radaroverlay', 'results', 'rifts', 'sampling', 'settings', 'smb', 'solidearth', 'steadystate',
-        'stochasticforcing', 'stressbalance', 'thermal', 'timestepping', 'toolkits', 'transient', 'verbose']
+        .. code-block:: python
+        
+            >>> md.model_class_names()
+            ['amr', 'autodiff', 'balancethickness', 'basalforcings', 'calving', 'cluster', 'constants',
+            'damage', 'debris', 'debug', 'dsl', 'esa', 'flowequation', 'friction', 'frontalforcings',
+            'geometry', 'groundingline', 'hydrology', 'initialization', 'inversion', 'levelset', 'love',
+            'mask', 'masstransport', 'materials', 'mesh', 'miscellaneous', 'outputdefinition', 'private',
+            'qmu', 'radaroverlay', 'results', 'rifts', 'sampling', 'settings', 'smb', 'solidearth', 'steadystate',
+            'stochasticforcing', 'stressbalance', 'thermal', 'timestepping', 'toolkits', 'transient', 'verbose']
         """
         registered_classes = set(classes.class_registry.CLASS_REGISTRY.values())
         names = [
@@ -304,6 +316,9 @@ class Model():
     # Extract a portion of existing model
     def extract(self, area):
         """
+        Extract model sub-domain
+        ========================
+
         Extract a submodel from a larger model based on a domain or flag list.
 
         This routine extracts a submodel from a bigger model with respect to a given 
@@ -351,9 +366,11 @@ class Model():
 
         Examples
         --------
-        >>> md2 = md.extract('Domain.exp')
-        >>> md3 = md.extract('~Domain.exp')  # Extract outside domain
-        >>> md4 = md.extract(flag_array)     # Extract based on flag array
+        .. code-block:: python
+
+            >>> md2 = md.extract('Domain.exp')
+            >>> md3 = md.extract('~Domain.exp')  # Extract outside domain
+            >>> md4 = md.extract(flag_array)     # Extract based on flag array
 
         See Also
         --------
@@ -627,6 +644,9 @@ class Model():
                 upper_exponent = None,
                 coefficients = None):
         """
+        Extrude model in vertical direction
+        ===================================
+
         Vertically extrude a 2D mesh to create a 3D mesh.
 
         Vertically extrude a 2D mesh and create corresponding 3D prism mesh.
@@ -684,15 +704,21 @@ class Model():
         --------
         Single exponent (uniform-like distribution):
 
-        >>> md = md.extrude(num_layers=15, extrusion_exponent=1.3)
+        .. code-block:: python
+
+            >>> md = md.extrude(num_layers=15, extrusion_exponent=1.3)
 
         Dual exponents (non-uniform distribution):
 
-        >>> md = md.extrude(num_layers=15, lower_exponent=1.3, upper_exponent=1.2)
+        .. code-block:: python
+
+            >>> md = md.extrude(num_layers=15, lower_exponent=1.3, upper_exponent=1.2)
 
         Custom coefficients (specific layer distribution):
 
-        >>> md = md.extrude(coefficients=[0, 0.2, 0.5, 0.7, 0.9, 0.95, 1])
+        .. code-block:: python
+
+            >>> md = md.extrude(coefficients=[0, 0.2, 0.5, 0.7, 0.9, 0.95, 1])
 
         See Also
         --------
@@ -885,6 +911,9 @@ class Model():
     # Collapse 3D mesh to 2D mesh
     def collapse(self):
         """
+        Collapse ISSM model
+        ===================
+
         Collapse a 3D mesh into a 2D mesh.
 
         This method collapses a 3D model into a 2D model by depth-averaging all fields.
@@ -919,8 +948,10 @@ class Model():
 
         Examples
         --------
-        >>> md = pyissm.model.Model()
-        >>> md.collapse()
+        .. code-block:: python
+        
+            >>> md = pyissm.model.Model()
+            >>> md.collapse()
 
         See Also
         --------
