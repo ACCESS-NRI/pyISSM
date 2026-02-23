@@ -98,7 +98,7 @@ for i in range(0, len(steps)):
     time = sol.time
 
     #obs = md.sol.MaskIceLevelset
-    obs = md.levelset.reinitialize(md, sol.MaskIceLevelset)  #sol.MaskIceLevelset  # this is the "ice thickness" levelset we want to match; could also use MaskIceLevelset if set up correctly in the model
+    obs = pyissm.model.param.reinitialize_levelset(md, sol.MaskIceLevelset)  #sol.MaskIceLevelset  # this is the "ice thickness" levelset we want to match; could also use MaskIceLevelset if set up correctly in the model
 
     # IMPORTANT: many pyISSM class constructors DO NOT accept kwargs like MATLAB.
     # Pattern that usually works: instantiate with no args, then set attributes.
