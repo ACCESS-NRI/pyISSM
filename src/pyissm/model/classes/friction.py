@@ -1,6 +1,9 @@
+"""
+Friction classes for ISSM.
+"""
+
 import numpy as np
-from pyissm.model.classes import class_utils
-from pyissm.model.classes import class_registry
+from pyissm.model.classes import class_utils, class_registry
 from pyissm.model import execute, mesh
 
 ## ------------------------------------------------------
@@ -9,47 +12,39 @@ from pyissm.model import execute, mesh
 @class_registry.register_class
 class default(class_registry.manage_state):
     """
-    Default friction parameters class for ISSM.
+    Default friction class for ISSM.
 
-    This class encapsulates the default parameters for friction in the ISSM (Ice Sheet System Model) framework.
-    It defines the main friction-related parameters.
+    This class contains the parameters for the default (Budd) friction law in the ISSM framework.
+    It defines the main friction-related parameters specific to the Budd law.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    coefficient : ndarray, default=np.nan
+    coefficient : :class:`nump.ndarray`, default=np.nan
         Friction coefficient [SI].
-    p : ndarray, default=np.nan
+    p : :class:`nump.ndarray`, default=np.nan
         p exponent.
-    q : ndarray, default=np.nan
+    q : :class:`nump.ndarray`, default=np.nan
         q exponent.
-    coupling : int, default=0
+    coupling : :class:`int`, default=0
         Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet).
-    linearize : int, default=0
+    linearize : :class:`int`, default=0
         0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0).
-    effective_pressure : ndarray, default=np.nan
+    effective_pressure : :class:`nump.ndarray`, default=np.nan
         Effective Pressure for the forcing if not coupled [Pa].
-    effective_pressure_limit : ndarray, default=0
+    effective_pressure_limit : :class:`nump.ndarray`, default=0
         Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the friction parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the friction parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.friction = pyissm.model.classes.friction.default()
+    .. code-block:: python
+
+        >>> md.friction = pyissm.model.classes.friction.default()
     """
 
     # Initialise with default parameters
@@ -99,6 +94,23 @@ class default(class_registry.manage_state):
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [friction.default] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if necessary analyses or solutions not specified
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
@@ -125,13 +137,13 @@ class default(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -169,47 +181,39 @@ class default(class_registry.manage_state):
 @class_registry.register_class
 class coulomb(class_registry.manage_state):
     """
-    Coulomb friction parameters class for ISSM.
+    Coulomb friction class for ISSM.
 
-    This class encapsulates the parameters for the Coulomb friction law in the ISSM (Ice Sheet System Model) framework.
+    This class contains the parameters for the Coulomb friction law in the ISSM framework.
     It defines the main friction-related parameters specific to the Coulomb law.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    coefficient : ndarray, default=np.nan
+    coefficient : :class:`numpy.ndarray`, default=np.nan
         Power law (Weertman) friction coefficient [SI].
-    coefficientcoulomb : ndarray, default=np.nan
+    coefficientcoulomb : :class:`numpy.ndarray`, default=np.nan
         Coulomb friction coefficient [SI].
-    p : ndarray, default=np.nan
+    p : :class:`numpy.ndarray`, default=np.nan
         p exponent.
-    q : ndarray, default=np.nan
+    q : :class:`numpy.ndarray`, default=np.nan
         q exponent.
-    coupling : int, default=0
+    coupling : :class:`int`, default=0
         Coupling flag: 0 for default, 1 for forcing (provide md.friction.effective_pressure), 2 for coupled (not implemented yet).
-    effective_pressure : =ndarray, default=np.nan
+    effective_pressure : :class:`numpy.ndarray`, default=np.nan
         Effective Pressure for the forcing if not coupled [Pa].
-    effective_pressure_limit : =ndarray, default=0
+    effective_pressure_limit : :class:`numpy.ndarray`, default=0
         Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the friction parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the friction parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.friction = pyissm.model.classes.friction.coulomb()
+    .. code-block:: python
+        
+        >>> md.friction = pyissm.model.classes.friction.coulomb()
     """
 
     # Initialise with default parameters
@@ -262,6 +266,23 @@ class coulomb(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [friction.coulomb] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if necessary analyses or solutions not specified
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
@@ -290,13 +311,13 @@ class coulomb(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -326,47 +347,39 @@ class coulomb(class_registry.manage_state):
 @class_registry.register_class
 class coulomb2(class_registry.manage_state):
     """
-    Coulomb2 friction parameters class for ISSM.
+    Coulomb2 friction class for ISSM.
 
-    This class encapsulates the parameters for the Coulomb2 friction law in the ISSM (Ice Sheet System Model) framework.
+    This class contains the parameters for the Coulomb2 friction law in the ISSM framework.
     It defines the main friction-related parameters specific to the Coulomb2 law.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    coefficient : ndarray, default=np.nan
+    coefficient : :class:`numpy.ndarray`, default=np.nan
         Power law (Weertman) friction coefficient [SI].
-    coefficientcoulomb : ndarray, default=np.nan
+    coefficientcoulomb : :class:`numpy.ndarray`, default=np.nan
         Coulomb friction coefficient [SI].
-    p : ndarray, default=np.nan
+    p : :class:`numpy.ndarray`, default=np.nan
         p exponent.
-    q : ndarray, default=np.nan
+    q : :class:`numpy.ndarray`, default=np.nan
         q exponent.
-    coupling : int, default=0
+    coupling : :class:`int`, default=0
         Coupling flag: 0 for default, 1 for forcing (provide md.friction.effective_pressure), 2 for coupled (not implemented yet).
-    effective_pressure : ndarray, default=np.nan
+    effective_pressure : :class:`numpy.ndarray`, default=np.nan
         Effective Pressure for the forcing if not coupled [Pa].
-    effective_pressure_limit : ndarray, default=0
+    effective_pressure_limit : :class:`numpy.ndarray`, default=0
         Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the friction parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the friction parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.friction = pyissm.model.classes.friction.coulomb2()
+    .. code-block:: python
+    
+        >>> md.friction = pyissm.model.classes.friction.coulomb2()
     """
 
     # Initialise with default parameters
@@ -419,6 +432,23 @@ class coulomb2(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [friction.coulomb2] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if necessary analyses or solutions not specified
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
@@ -447,13 +477,13 @@ class coulomb2(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -483,45 +513,37 @@ class coulomb2(class_registry.manage_state):
 @class_registry.register_class
 class hydro(class_registry.manage_state):
     """
-    Hydro friction parameters class for ISSM.
+    Hydro friction class for ISSM.
 
-    This class encapsulates the parameters for the hydro (Gagliardini 2007) friction law in the ISSM (Ice Sheet System Model) framework.
+    This class contains the parameters for the hydro (Gagliardini 2007) friction law in the ISSM framework.
     It defines the main friction-related parameters specific to the hydro law.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    coupling : int, default=0
+    coupling : :class:`int`, default=0
         Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: use coupled model (not implemented yet).
-    q : ndarray, default=np.nan
+    q : :class:`numpy.ndarray`, default=np.nan
         Friction law exponent q >= 1.
-    C : ndarray, default=np.nan
+    C : :class:`numpy.ndarray`, default=np.nan
         Friction law max value (Iken bound).
-    As : ndarray, default=np.nan
+    As : :class:`numpy.ndarray`, default=np.nan
         Sliding parameter without cavitation [m Pa^-n s^-1].
-    effective_pressure : ndarray, default=np.nan
+    effective_pressure : :class:`numpy.ndarray`, default=np.nan
         Effective Pressure for the forcing if not coupled [Pa].
-    effective_pressure_limit : ndarray, default=0
+    effective_pressure_limit : :class:`numpy.ndarray`, default=0
         Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the friction parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the friction parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.friction = pyissm.model.classes.friction.hydro()
+    .. code-block:: python
+
+        >>> md.friction = pyissm.model.classes.friction.hydro()
     """
 
     # Initialise with default parameters
@@ -571,6 +593,23 @@ class hydro(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [friction.hydro] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if necessary analyses or solutions not specified
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
@@ -596,13 +635,13 @@ class hydro(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -631,41 +670,33 @@ class hydro(class_registry.manage_state):
 @class_registry.register_class
 class josh(class_registry.manage_state):
     """
-    Josh friction parameters class for ISSM.
+    Josh friction class for ISSM.
 
-    This class encapsulates the parameters for the Josh friction law in the ISSM (Ice Sheet System Model) framework.
+    This class contains the parameters for the Josh friction law in the ISSM framework.
     It defines the main friction-related parameters specific to the Josh law.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    coefficient : ndarray, default=np.nan
+    coefficient : :class:`numpy.ndarray`, default=np.nan
         Friction coefficient [SI].
-    pressure_adjusted_temperature : ndarray, default=np.nan
+    pressure_adjusted_temperature : :class:`numpy.ndarray`, default=np.nan
         Friction pressure_adjusted_temperature (T - Tpmp) [K].
-    gamma : ndarray, default=1.
+    gamma : :class:`numpy.ndarray`, default=1.
         (T - Tpmp)/gamma [K].
-    effective_pressure_limit : ndarray, default=0
+    effective_pressure_limit : :class:`numpy.ndarray`, default=0
         Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the friction parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the friction parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.friction = pyissm.model.classes.friction.josh()
+    .. code-block:: python
+
+        >>> md.friction = pyissm.model.classes.friction.josh()
     """
 
     # Initialise with default parameters
@@ -706,6 +737,23 @@ class josh(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [friction.josh] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if necessary analyses or solutions not specified
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
@@ -727,13 +775,13 @@ class josh(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -755,45 +803,37 @@ class josh(class_registry.manage_state):
 @class_registry.register_class
 class pism(class_registry.manage_state):
     """
-    PISM friction parameters class for ISSM.
+    PISM friction class for ISSM.
 
-    This class encapsulates the parameters for the PISM friction law in the ISSM (Ice Sheet System Model) framework.
+    This class contains the parameters for the PISM friction law in the ISSM framework.
     It defines the main friction-related parameters specific to the PISM law.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    pseudoplasticity_exponent : float, default=0.6
+    pseudoplasticity_exponent : :class:`float`, default=0.6
         Pseudoplasticity exponent [dimensionless].
-    threshold_speed : float, default=100.
+    threshold_speed : :class:`float`, default=100.
         Threshold speed [m/yr].
-    delta : float, default=0.02
+    delta : :class:`float`, default=0.02
         Lower limit of the effective pressure, expressed as a fraction of overburden pressure [dimensionless].
-    void_ratio : float, default=0.69
+    void_ratio : :class:`float`, default=0.69
         Void ratio at a reference effective pressure [dimensionless].
-    till_friction_angle : float, default=np.nan
+    till_friction_angle : :class:`float`, default=np.nan
         Till friction angle [deg], recommended default: 30 deg.
-    sediment_compressibility_coefficient : float, default=np.nan
+    sediment_compressibility_coefficient : :class:`float`, default=np.nan
         Coefficient of compressibility of the sediment [dimensionless], recommended default: 0.12.
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the friction parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the friction parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.friction = pyissm.model.classes.friction.pism()
+    .. code-block:: python
+
+        >>> md.friction = pyissm.model.classes.friction.pism()
     """
 
     # Initialise with default parameters
@@ -837,6 +877,23 @@ class pism(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [friction.pism] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if necessary analyses or solutions not specified
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
@@ -860,13 +917,13 @@ class pism(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -890,39 +947,31 @@ class pism(class_registry.manage_state):
 @class_registry.register_class
 class regcoulomb(class_registry.manage_state):
     """
-    Regularized Coulomb friction parameters class for ISSM.
+    Regularized Coulomb friction class for ISSM.
 
-    This class encapsulates the parameters for the regularized Coulomb friction law (Joughin et al., 2019) in the ISSM (Ice Sheet System Model) framework.
+    This class contains the parameters for the regularized Coulomb friction law (Joughin et al., 2019) in the ISSM framework.
     It defines the main friction-related parameters specific to the regularized Coulomb law.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    C : float or ndarray, default=np.nan
+    C : :class:`float` or :class:`numpy.ndarray`, default=np.nan
         Friction coefficient [SI].
-    u0 : float or ndarray, default=1000
+    u0 : :class:`float` or :class:`numpy.ndarray`, default=1000
         Velocity controlling plastic limit.
-    m : float or ndarray, default=np.nan
+    m : :class:`float` or :class:`numpy.ndarray`, default=np.nan
         m exponent (set to m = 3 in original paper).
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the friction parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the friction parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.friction = pyissm.model.classes.friction.regcoulomb()
+    .. code-block:: python
+    
+        >>> md.friction = pyissm.model.classes.friction.regcoulomb()
     """
 
     # Initialise with default parameters
@@ -966,6 +1015,23 @@ class regcoulomb(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [friction.regcoulomb] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if necessary analyses or solutions not specified
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
@@ -984,13 +1050,13 @@ class regcoulomb(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -1011,41 +1077,33 @@ class regcoulomb(class_registry.manage_state):
 @class_registry.register_class
 class regcoulomb2(class_registry.manage_state):
     """
-    Regularized Coulomb 2 friction parameters class for ISSM.
+    Regularized Coulomb 2 friction class for ISSM.
 
-    This class encapsulates the parameters for the regularized Coulomb 2 friction law (see Zoet and Iverson 2020 or Choi et al., 2022) in the ISSM (Ice Sheet System Model) framework.
+    This class contains the parameters for the regularized Coulomb 2 friction law (see Zoet and Iverson 2020 or Choi et al., 2022) in the ISSM framework.
     It defines the main friction-related parameters specific to the regularized Coulomb 2 law.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    C : \ndarray, default=np.nan
+    C : :class:`numpy.ndarray`, default=np.nan
         Friction coefficient [SI].
-    K : ndarray, default=np.nan
+    K : :class:`numpy.ndarray`, default=np.nan
         K parameter for velocity controlling plastic limit.
-    m : ndarray, default=np.nan
+    m : :class:`numpy.ndarray`, default=np.nan
         m exponent.
-    effective_pressure_limit : float, default=0
+    effective_pressure_limit : :class:`float`, default=0
         Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the friction parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the friction parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.friction = pyissm.model.classes.friction.regcoulomb2()
+    .. code-block:: python
+        
+        >>> md.friction = pyissm.model.classes.friction.regcoulomb2()
     """
 
     # Initialise with default parameters
@@ -1092,6 +1150,23 @@ class regcoulomb2(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [friction.regcoulomb2] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if necessary analyses or solutions not specified
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
@@ -1110,13 +1185,13 @@ class regcoulomb2(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -1138,45 +1213,37 @@ class regcoulomb2(class_registry.manage_state):
 @class_registry.register_class
 class schoof(class_registry.manage_state):
     """
-    Schoof friction parameters class for ISSM.
+    Schoof friction class for ISSM.
 
-    This class encapsulates the parameters for the Schoof sliding law in the ISSM (Ice Sheet System Model) framework.
+    This class contains the parameters for the Schoof sliding law in the ISSM framework.
     It defines the main friction-related parameters specific to the Schoof law.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    C : ndarray, default=np.nan
+    C : :class:`numpy.ndarray`, default=np.nan
         Friction coefficient [SI].
-    Cmax : ndarray, default=np.nan
+    Cmax : :class:`numpy.ndarray`, default=np.nan
         Iken's bound (typically between 0.17 and 0.84) [SI].
-    m : ndarray, default=np.nan
+    m : :class:`numpy.ndarray`, default=np.nan
         m exponent (generally taken as m = 1/n = 1/3).
-    coupling : int, default=0
+    coupling : :class:`int`, default=0
         Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet).
-    effective_pressure : ndarray, default=np.nan
+    effective_pressure : :class:`numpy.ndarray`, default=np.nan
         Effective Pressure for the forcing if not coupled [Pa].
-    effective_pressure_limit : float, default=0
+    effective_pressure_limit : :class:`float`, default=0
         Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the friction parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the friction parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.friction = pyissm.model.classes.friction.schoof()
+    .. code-block:: python
+
+        >>> md.friction = pyissm.model.classes.friction.schoof()
     """
 
     # Initialise with default parameters
@@ -1229,6 +1296,23 @@ class schoof(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [friction.schoof] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if necessary analyses or solutions not specified
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
@@ -1252,13 +1336,13 @@ class schoof(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -1287,35 +1371,27 @@ class schoof(class_registry.manage_state):
 @class_registry.register_class
 class shakti(class_registry.manage_state):
     """
-    Shakti friction parameters class for ISSM.
+    Shakti friction class for ISSM.
 
-    This class encapsulates the parameters for the Shakti friction law in the ISSM (Ice Sheet System Model) framework.
+    This class contains the parameters for the Shakti friction law in the ISSM framework.
     It defines the main friction-related parameters specific to the Shakti law.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    coefficient : ndarray, default=np.nan
+    coefficient : :class:`numpy.ndarray`, default=np.nan
         Friction coefficient [SI].
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the friction parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the friction parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.friction = pyissm.model.classes.friction.shakti()
+    .. code-block:: python
+    
+        >>> md.friction = pyissm.model.classes.friction.shakti()
     """
 
     # Initialise with default parameters
@@ -1349,6 +1425,23 @@ class shakti(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [friction.shakti] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if necessary analyses or solutions not specified
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
@@ -1365,13 +1458,13 @@ class shakti(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -1390,43 +1483,35 @@ class shakti(class_registry.manage_state):
 @class_registry.register_class
 class waterlayer(class_registry.manage_state):
     """
-    Waterlayer friction parameters class for ISSM.
+    Waterlayer friction class for ISSM.
 
-    This class encapsulates the parameters for the waterlayer friction law in the ISSM (Ice Sheet System Model) framework.
+    This class contains the parameters for the waterlayer friction law in the ISSM framework.
     It defines the main friction-related parameters specific to the waterlayer law.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    coefficient : ndarray, default=np.nan
+    coefficient : :class:`numpy.ndarray`, default=np.nan
         Friction coefficient [SI].
-    f : ndarray, default=np.nan
+    f : :class:`numpy.ndarray`, default=np.nan
         f variable for effective pressure.
-    p : ndarray, default=np.nan
+    p : :class:`numpy.ndarray`, default=np.nan
         p exponent.
-    q : ndarray, default=np.nan
+    q : :class:`numpy.ndarray`, default=np.nan
         q exponent.
-    water_layer : ndarray, default=np.nan
+    water_layer : :class:`numpy.ndarray`, default=np.nan
         Water thickness at the base of the ice (m).
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the friction parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the friction parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.friction = pyissm.model.classes.friction.waterlayer()
+    .. code-block:: python
+    
+        >>> md.friction = pyissm.model.classes.friction.waterlayer()
     """
 
     # Initialise with default parameters
@@ -1470,6 +1555,23 @@ class waterlayer(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [friction.waterlayer] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if necessary analyses or solutions not specified
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
@@ -1490,13 +1592,13 @@ class waterlayer(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -1519,39 +1621,31 @@ class waterlayer(class_registry.manage_state):
 @class_registry.register_class
 class weertman(class_registry.manage_state):
     """
-    Weertman friction parameters class for ISSM.
+    Weertman friction class for ISSM.
 
-    This class encapsulates the parameters for the Weertman sliding law in the ISSM (Ice Sheet System Model) framework.
+    This class contains the parameters for the Weertman sliding law in the ISSM framework.
     It defines the main friction-related parameters specific to the Weertman law.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    C : ndarray, default=np.nan
+    C : :class:`numpy.ndarray`, default=np.nan
         Friction coefficient [SI].
-    m : ndarray, default=np.nan
+    m : :class:`numpy.ndarray`, default=np.nan
         m exponent.
-    linearize : int, default=0
+    linearize : :class:`int`, default=0
         0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0).
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the friction parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the friction parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.friction = pyissm.model.classes.friction.weertman()
+    .. code-block:: python
+    
+        >>> md.friction = pyissm.model.classes.friction.weertman()
     """
 
     # Initialise with default parameters
@@ -1579,6 +1673,23 @@ class weertman(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [friction.weertman] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if necessary analyses or solutions not specified
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
@@ -1597,13 +1708,13 @@ class weertman(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None

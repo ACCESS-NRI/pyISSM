@@ -1,85 +1,77 @@
 import numpy as np
 import warnings
-from pyissm.model.classes import class_utils
-from pyissm.model.classes import class_registry
+from pyissm.model.classes import class_utils, class_registry
 from pyissm.model import execute, mesh
 
 @class_registry.register_class
 class flowequation(class_registry.manage_state):
     """
-    Flow equation parameters class for ISSM.
+    Flow equation class for ISSM.
 
-    This class encapsulates parameters for configuring flow equations in the ISSM (Ice Sheet System Model) framework.
-    It allows users to select and configure different ice flow approximations such as SIA, SSA, Higher-Order, and Full-Stokes,
-    along with their associated numerical methods and boundary conditions.
+    This class contains parameters for configuring flow equations in the ISSM framework.
+    It allows users to select and configure different ice flow approximations such as SIA,
+    SSA, Higher-Order, and Full-Stokes, along with their associated numerical methods and
+    boundary conditions.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    isSIA : int, default=0
+    isSIA : :class:`int`, default=0
         Is the Shallow Ice Approximation (SIA) used?
-    isL1L2 : int, default=0
+    isL1L2 : :class:`int`, default=0
         Are L1L2 equations used?
-    isSSA : int, default=0
+    isSSA : :class:`int`, default=0
         Is the Shelfy-Stream Approximation (SSA) used?
-    isMOLHO : int, default=0
+    isMOLHO : :class:`int`, default=0
         Are MOno-layer Higher-Order (MOLHO) equations used?
-    isHO : int, default=0
+    isHO : :class:`int`, default=0
         Is the Higher-Order (HO) approximation used?
-    isFS : int, default=0
+    isFS : :class:`int`, default=0
         Are the Full-Stokes (FS) equations used?
-    isNitscheBC : int, default=0
+    isNitscheBC : :class:`int`, default=0
         Is weakly imposed condition used?
-    FSNitscheGamma : float, default=1e6
+    FSNitscheGamma : :class:`float`, default=1e6
         Gamma value for the Nitsche term.
-    fe_SSA : str, default='P1'
+    fe_SSA : :class:`str`, default='P1'
         Finite Element for SSA: 'P1', 'P1bubble', 'P1bubblecondensed', 'P2'.
-    fe_HO : str, default='P1'
+    fe_HO : :class:`str`, default='P1'
         Finite Element for HO: 'P1', 'P1bubble', 'P1bubblecondensed', 'P2'.
-    fe_FS : str, default='MINIcondensed'
+    fe_FS : :class:`str`, default='MINIcondensed'
         Finite Element for FS: 'MINI', 'MINIcondensed', 'TaylorHood', 'XTaylorHood', 'OneLayerP4z', 'CrouzeixRaviart'.
-    augmented_lagrangian_r : float, default=1
+    augmented_lagrangian_r : :class:`float`, default=1
         Augmented Lagrangian parameter r.
-    augmented_lagrangian_rhop : float, default=1
+    augmented_lagrangian_rhop : :class:`float`, default=1
         Augmented Lagrangian parameter rhop.
-    augmented_lagrangian_rlambda : float, default=1
+    augmented_lagrangian_rlambda : :class:`float`, default=1
         Augmented Lagrangian parameter rlambda.
-    augmented_lagrangian_rholambda : float, default=1
+    augmented_lagrangian_rholambda : :class:`float`, default=1
         Augmented Lagrangian parameter rholambda.
-    XTH_theta : float, default=0
+    XTH_theta : :class:`float`, default=0
         XTH theta parameter.
-    vertex_equation : float, default=nan
+    vertex_equation : :class:`float`, default=np.nan
         Vertex equation parameter.
-    element_equation : float, default=nan
+    element_equation : :class:`float`, default=np.nan
         Element equation parameter.
-    borderSSA : float, default=nan
+    borderSSA : :class:`float`, default=np.nan
         Border parameter for SSA.
-    borderHO : float, default=nan
+    borderHO : :class:`float`, default=np.nan
         Border parameter for HO.
-    borderFS : float, default=nan
+    borderFS : :class:`float`, default=np.nan
         Border parameter for FS.
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the flowequation parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the flowequation parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.flowequation = pyissm.model.classes.flowequation()
-    md.flowequation.isSSA = 1
-    md.flowequation.fe_SSA = 'P1bubble'
-    md.flowequation.FSNitscheGamma = 1e5
+    .. code-block:: python
+    
+        >>> md.flowequation = pyissm.model.classes.flowequation()
+        >>> md.flowequation.isSSA = 1
+        >>> md.flowequation.fe_SSA = 'P1bubble'
+        >>> md.flowequation.FSNitscheGamma = 1e5
     """
 
     # Initialise with default parameters
@@ -151,6 +143,24 @@ class flowequation(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [flowequation.default] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         # Early return if necessary analyses and solutions not present
         if ('StressbalanceAnalysis' not in analyses and 'StressbalanceSIAAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isstressbalance):
             return md
@@ -202,17 +212,17 @@ class flowequation(class_registry.manage_state):
     # Marshall method for saving the flowequation parameters
     def marshall_class(self, fid, prefix, md  =  None):
         """
-        Marshall [flowequation] parameters to a binary file.
+        Marshall [flowequation.default] parameters to a binary file.
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
