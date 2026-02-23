@@ -1,7 +1,3 @@
-"""
-Automatic Differentiation class for ISSM.
-"""
-
 import numpy as np
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry

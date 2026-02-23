@@ -925,7 +925,7 @@ class mismip(class_registry.manage_state):
     .. code-block:: python
     
         >>> md.basalforcings = pyissm.model.classes.basalforcings.mismip()
-        >>> md.basalforcings.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices,))
+        >>> md.basalforcings.groundedice_melting_rate = np.zeros(md.mesh.numberofvertices,)
         >>> md.basalforcings.meltrate_factor = 0.2
         >>> md.basalforcings.threshold_thickness = 75.
         >>> md.basalforcings.upperdepth_melt = -100.
@@ -1124,8 +1124,8 @@ class plume(class_registry.manage_state):
     .. code-block:: python
 
         >>> md.basalforcings = pyissm.model.classes.basalforcings.plume()
-        >>> md.basalforcings.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices,))
-        >>> md.basalforcings.floatingice_melting_rate = np.ones((md.mesh.numberofvertices,)) * 2
+        >>> md.basalforcings.groundedice_melting_rate = np.zeros(md.mesh.numberofvertices, )
+        >>> md.basalforcings.floatingice_melting_rate = np.ones(md.mesh.numberofvertices, ) * 2
     """
 
     # Initialise with default parameters
@@ -1307,19 +1307,19 @@ class spatiallinear(class_registry.manage_state):
 
     Attributes
     ----------
-    groundedice_melting_rate : ndarray, default=np.nan
+    groundedice_melting_rate : :class:`numpy.ndarray`, default=np.nan
         Basal melting rate for grounded ice (positive if melting) [m/yr].
-    deepwater_melting_rate : ndarray, default=np.nan
+    deepwater_melting_rate : :class:`numpy.ndarray`, default=np.nan
         Basal melting rate applied for floating ice with base < deepwater_elevation [m/yr].
-    deepwater_elevation : ndarray, default=np.nan
+    deepwater_elevation : :class:`numpy.ndarray`, default=np.nan
         Elevation threshold for deepwater melting rate [m].
-    upperwater_melting_rate : ndarray, default=np.nan
+    upperwater_melting_rate : :class:`numpy.ndarray`, default=np.nan
         Basal melting rate applied for floating ice with base >= upperwater_elevation [m/yr].
-    upperwater_elevation : ndarray, default=np.nan
+    upperwater_elevation : :class:`numpy.ndarray`, default=np.nan
         Elevation threshold for upperwater melting rate [m].
-    geothermalflux : ndarray, default=np.nan
+    geothermalflux : :class:`numpy.ndarray`, default=np.nan
         Geothermal heat flux [W/m^2].
-    perturbation_melting_rate : ndarray, default=np.nan
+    perturbation_melting_rate : :class:`numpy.ndarray`, default=np.nan
         Basal melting rate perturbation added to computed melting rate (positive if melting) [m/yr].
 
     Examples
