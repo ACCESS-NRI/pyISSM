@@ -84,8 +84,8 @@ class levelsetmisfit(class_registry.manage_state):
         super().__init__(other)
 
     def __repr__(self):
-        s = "   cflevelsetmisfit:\n"
-        s += f"{class_utils.fielddisplay(self, 'name', 'identifier for this cflevelsetmisfit response')}\n"
+        s = "   levelsetmisfit:\n"
+        s += f"{class_utils.fielddisplay(self, 'name', 'identifier for this levelsetmisfit response')}\n"
         s += f"{class_utils.fielddisplay(self, 'definitionstring', 'unique output definition string (e.g. Outputdefinition1)')}\n"
         s += f"{class_utils.fielddisplay(self, 'model_string', 'string for field that is modeled')}\n"
         s += f"{class_utils.fielddisplay(self, 'observation', 'observed field compared against the model')}\n"
@@ -128,21 +128,21 @@ class levelsetmisfit(class_registry.manage_state):
         Check field validity for this response definition.
         """
         if not isinstance(self.name, str):
-            raise TypeError("cflevelsetmisfit: 'name' must be a string")
+            raise TypeError("levelsetmisfit: 'name' must be a string")
 
         # MATLAB allowed Outputdefinition1..2000
         outputdef_allowed = [f"Outputdefinition{i}" for i in range(1, 2001)]
 
         class_utils.check_field(
             md,
-            fieldname="cflevelsetmisfit.definitionstring",
+            fieldname="levelsetmisfit.definitionstring",
             field=self.definitionstring,
             values=outputdef_allowed,
         )
 
         class_utils.check_field(
             md,
-            fieldname="cflevelsetmisfit.observation",
+            fieldname="levelsetmisfit.observation",
             field=self.observation,
             timeseries=True,
             allow_nan=True,
@@ -150,7 +150,7 @@ class levelsetmisfit(class_registry.manage_state):
         )
         class_utils.check_field(
             md,
-            fieldname="cflevelsetmisfit.weights",
+            fieldname="levelsetmisfit.weights",
             field=self.weights,
             timeseries=True,
             allow_nan=True,
@@ -158,7 +158,7 @@ class levelsetmisfit(class_registry.manage_state):
         )
         class_utils.check_field(
             md,
-            fieldname="cflevelsetmisfit.datatime",
+            fieldname="levelsetmisfit.datatime",
             field=self.datatime,
             le=md.timestepping.final_time,
         )
@@ -177,19 +177,19 @@ class levelsetmisfit(class_registry.manage_state):
         nv = md.mesh.numberofvertices
         yts = md.constants.yts
 
-        execute.WriteData(fid, prefix, data=self.name, name="md.cflevelsetmisfit.name", format="String")
+        execute.WriteData(fid, prefix, data=self.name, name="md.levelsetmisfit.name", format="String")
         execute.WriteData(
             fid,
             prefix,
             data=self.definitionstring,
-            name="md.cflevelsetmisfit.definitionstring",
+            name="md.levelsetmisfit.definitionstring",
             format="String",
         )
         execute.WriteData(
             fid,
             prefix,
             data=self.model_string,
-            name="md.cflevelsetmisfit.model_string",
+            name="md.levelsetmisfit.model_string",
             format="String",
         )
 
@@ -197,7 +197,7 @@ class levelsetmisfit(class_registry.manage_state):
             fid,
             prefix,
             data=self.observation,
-            name="md.cflevelsetmisfit.observation",
+            name="md.levelsetmisfit.observation",
             format="DoubleMat",
             mattype=1,
             timeserieslength=nv + 1,
@@ -207,7 +207,7 @@ class levelsetmisfit(class_registry.manage_state):
             fid,
             prefix,
             data=self.observation_string,
-            name="md.cflevelsetmisfit.observation_string",
+            name="md.levelsetmisfit.observation_string",
             format="String",
         )
 
@@ -215,7 +215,7 @@ class levelsetmisfit(class_registry.manage_state):
             fid,
             prefix,
             data=self.weights,
-            name="md.cflevelsetmisfit.weights",
+            name="md.levelsetmisfit.weights",
             format="DoubleMat",
             mattype=1,
             timeserieslength=nv + 1,
@@ -225,7 +225,7 @@ class levelsetmisfit(class_registry.manage_state):
             fid,
             prefix,
             data=self.weights_string,
-            name="md.cflevelsetmisfit.weights_string",
+            name="md.levelsetmisfit.weights_string",
             format="String",
         )
 
@@ -301,8 +301,8 @@ class surfacesquare(class_registry.manage_state):
         super().__init__(other)
 
     def __repr__(self):
-        s = "   cfsurfacesquare:\n"
-        s += f"{class_utils.fielddisplay(self, 'name', 'identifier for this cfsurfacesquare response')}\n"
+        s = "   surfacesquare:\n"
+        s += f"{class_utils.fielddisplay(self, 'name', 'identifier for this surfacesquare response')}\n"
         s += f"{class_utils.fielddisplay(self, 'definitionstring', 'unique output definition string (e.g. Outputdefinition1)')}\n"
         s += f"{class_utils.fielddisplay(self, 'surfaceid', '1: surface, 2: base')}\n"
         s += f"{class_utils.fielddisplay(self, 'model_string', 'string for field that is modeled')}\n"
@@ -314,7 +314,7 @@ class surfacesquare(class_registry.manage_state):
         return s
 
     def __str__(self):
-        return "ISSM - cfsurfacesquare Class"
+        return "ISSM - surfacesquare Class"
 
     def extrude(self, md):
         """
@@ -346,18 +346,18 @@ class surfacesquare(class_registry.manage_state):
         """
         # Basic pythonic type checks
         if not isinstance(self.name, str):
-            raise TypeError("cfsurfacesquare: 'name' must be a string")
+            raise TypeError("surfacesquare: 'name' must be a string")
 
         # MATLAB allowed Outputdefinition1..2000
         outputdef_allowed = [f"Outputdefinition{i}" for i in range(1, 2001)]
 
-        class_utils.check_field(md, fieldname="cfsurfacesquare.surfaceid", field=self.surfaceid, values=[1, 2])
-        class_utils.check_field(md, fieldname="cfsurfacesquare.definitionstring", field=self.definitionstring, values=outputdef_allowed)
+        class_utils.check_field(md, fieldname="surfacesquare.surfaceid", field=self.surfaceid, values=[1, 2])
+        class_utils.check_field(md, fieldname="surfacesquare.definitionstring", field=self.definitionstring, values=outputdef_allowed)
 
         # observation/weights: timeseries, allow NaN/Inf (MATLAB: 'timeseries',1,'NaN',1,'Inf',1)
         class_utils.check_field(
             md,
-            fieldname="cfsurfacesquare.observation",
+            fieldname="surfacesquare.observation",
             field=self.observation,
             timeseries=True,
             allow_nan=True,
@@ -365,7 +365,7 @@ class surfacesquare(class_registry.manage_state):
         )
         class_utils.check_field(
             md,
-            fieldname="cfsurfacesquare.weights",
+            fieldname="surfacesquare.weights",
             field=self.weights,
             timeseries=True,
             allow_nan=True,
@@ -375,7 +375,7 @@ class surfacesquare(class_registry.manage_state):
         # datatime must be within simulation window
         class_utils.check_field(
             md,
-            fieldname="cfsurfacesquare.datatime",
+            fieldname="surfacesquare.datatime",
             field=self.datatime,
             le=md.timestepping.final_time,
         )
@@ -394,41 +394,41 @@ class surfacesquare(class_registry.manage_state):
         nv = md.mesh.numberofvertices
         yts = md.constants.yts
 
-        execute.WriteData(fid, prefix, data=self.name, name="md.cfsurfacesquare.name", format="String")
-        execute.WriteData(fid, prefix, data=self.definitionstring, name="md.cfsurfacesquare.definitionstring", format="String")
-        execute.WriteData(fid, prefix, data=self.surfaceid, name="md.cfsurfacesquare.surfaceid", format="Integer")
-        execute.WriteData(fid, prefix, data=self.model_string, name="md.cfsurfacesquare.model_string", format="String")
+        execute.WriteData(fid, prefix, data=self.name, name="md.surfacesquare.name", format="String")
+        execute.WriteData(fid, prefix, data=self.definitionstring, name="md.surfacesquare.definitionstring", format="String")
+        execute.WriteData(fid, prefix, data=self.surfaceid, name="md.surfacesquare.surfaceid", format="Integer")
+        execute.WriteData(fid, prefix, data=self.model_string, name="md.surfacesquare.model_string", format="String")
 
         execute.WriteData(
             fid,
             prefix,
             data=self.observation,
-            name="md.cfsurfacesquare.observation",
+            name="md.surfacesquare.observation",
             format="DoubleMat",
             mattype=1,
             timeserieslength=nv + 1,
             yts=yts,
         )
-        execute.WriteData(fid, prefix, data=self.observation_string, name="md.cfsurfacesquare.observation_string", format="String")
+        execute.WriteData(fid, prefix, data=self.observation_string, name="md.surfacesquare.observation_string", format="String")
 
         execute.WriteData(
             fid,
             prefix,
             data=self.weights,
-            name="md.cfsurfacesquare.weights",
+            name="md.surfacesquare.weights",
             format="DoubleMat",
             mattype=1,
             timeserieslength=nv + 1,
             yts=yts,
         )
-        execute.WriteData(fid, prefix, data=self.weights_string, name="md.cfsurfacesquare.weights_string", format="String")
+        execute.WriteData(fid, prefix, data=self.weights_string, name="md.surfacesquare.weights_string", format="String")
 
         # MATLAB: round(datatime * yts) stored as Double
         execute.WriteData(
             fid,
             prefix,
             data=float(np.round(self.datatime * yts)),
-            name="md.cfsurfacesquare.datatime",
+            name="md.surfacesquare.datatime",
             format="Double",
         )
 
@@ -480,7 +480,7 @@ class surfacesquaretransient(class_registry.manage_state):
 
     Examples
     --------
-    >>> cf = cfsurfacesquaretransient()
+    >>> cf = surfacesquaretransient()
     >>> cf.name = "SurfaceAltimetry"
     >>> cf.definitionstring = "Outputdefinition1"
     >>> cf.model_string = "Surface"
@@ -499,8 +499,8 @@ class surfacesquaretransient(class_registry.manage_state):
         super().__init__(other)
 
     def __repr__(self):
-        s = "   cfsurfacesquaretransient:\n"
-        s += f"{class_utils.fielddisplay(self, 'name', 'identifier for this cfsurfacesquaretransient response')}\n"
+        s = "   surfacesquaretransient:\n"
+        s += f"{class_utils.fielddisplay(self, 'name', 'identifier for this surfacesquaretransient response')}\n"
         s += f"{class_utils.fielddisplay(self, 'definitionstring', 'unique output definition string (e.g. Outputdefinition1)')}\n"
         s += f"{class_utils.fielddisplay(self, 'model_string', 'string for field that is modeled')}\n"
         s += f"{class_utils.fielddisplay(self, 'observations', 'observed field time series compared against the model')}\n"
@@ -508,7 +508,7 @@ class surfacesquaretransient(class_registry.manage_state):
         return s
 
     def __str__(self):
-        return "ISSM - cfsurfacesquaretransient Class"
+        return "ISSM - surfacesquaretransient Class"
 
     def extrude(self, md):
         """
@@ -540,14 +540,14 @@ class surfacesquaretransient(class_registry.manage_state):
         Check field validity for this response definition.
         """
         if not isinstance(self.name, str):
-            raise TypeError("cfsurfacesquaretransient: 'name' must be a string")
+            raise TypeError("surfacesquaretransient: 'name' must be a string")
 
         # MATLAB allowed Outputdefinition1..2000
         outputdef_allowed = [f"Outputdefinition{i}" for i in range(1, 2001)]
 
         class_utils.check_field(
             md,
-            fieldname="cfsurfacesquaretransient.definitionstring",
+            fieldname="surfacesquaretransient.definitionstring",
             field=self.definitionstring,
             values=outputdef_allowed,
         )
@@ -559,7 +559,7 @@ class surfacesquaretransient(class_registry.manage_state):
 
         class_utils.check_field(
             md,
-            fieldname="cfsurfacesquaretransient.observations",
+            fieldname="surfacesquaretransient.observations",
             field=self.observations,
             size=(nv + 1, np.nan),
             timeseries=True,
@@ -569,7 +569,7 @@ class surfacesquaretransient(class_registry.manage_state):
 
         class_utils.check_field(
             md,
-            fieldname="cfsurfacesquaretransient.weights",
+            fieldname="surfacesquaretransient.weights",
             field=self.weights,
             size=(nv + 1, np.nan),
             allow_nan=True,
@@ -590,19 +590,19 @@ class surfacesquaretransient(class_registry.manage_state):
         nv = md.mesh.numberofvertices
         yts = md.constants.yts
 
-        execute.WriteData(fid, prefix, data=self.name, name="md.cfsurfacesquaretransient.name", format="String")
+        execute.WriteData(fid, prefix, data=self.name, name="md.surfacesquaretransient.name", format="String")
         execute.WriteData(
             fid,
             prefix,
             data=self.definitionstring,
-            name="md.cfsurfacesquaretransient.definitionstring",
+            name="md.surfacesquaretransient.definitionstring",
             format="String",
         )
         execute.WriteData(
             fid,
             prefix,
             data=self.model_string,
-            name="md.cfsurfacesquaretransient.model_string",
+            name="md.surfacesquaretransient.model_string",
             format="String",
         )
 
@@ -610,7 +610,7 @@ class surfacesquaretransient(class_registry.manage_state):
             fid,
             prefix,
             data=self.observations,
-            name="md.cfsurfacesquaretransient.observations",
+            name="md.surfacesquaretransient.observations",
             format="DoubleMat",
             mattype=1,
             timeserieslength=nv + 1,
@@ -620,7 +620,7 @@ class surfacesquaretransient(class_registry.manage_state):
             fid,
             prefix,
             data=self.weights,
-            name="md.cfsurfacesquaretransient.weights",
+            name="md.surfacesquaretransient.weights",
             format="DoubleMat",
             mattype=1,
             timeserieslength=nv + 1,
@@ -713,8 +713,8 @@ class surfacelogvel(class_registry.manage_state):
         super().__init__(other)
 
     def __repr__(self):
-        s = "   cfsurfacelogvel:\n"
-        s += f"{class_utils.fielddisplay(self, 'name', 'identifier for this cfsurfacelogvel response')}\n"
+        s = "   surfacelogvel:\n"
+        s += f"{class_utils.fielddisplay(self, 'name', 'identifier for this surfacelogvel response')}\n"
         s += f"{class_utils.fielddisplay(self, 'definitionstring', 'unique output definition string (e.g. Outputdefinition1)')}\n"
         s += f"{class_utils.fielddisplay(self, 'vxobs', 'observed Vx used for misfit')}\n"
         s += f"{class_utils.fielddisplay(self, 'vxobs_string', 'identifier for observed Vx')}\n"
@@ -726,7 +726,7 @@ class surfacelogvel(class_registry.manage_state):
         return s
 
     def __str__(self):
-        return "ISSM - cfsurfacelogvel Class"
+        return "ISSM - surfacelogvel Class"
 
     def extrude(self, md):
         """
@@ -760,14 +760,14 @@ class surfacelogvel(class_registry.manage_state):
         Check field validity for this response definition.
         """
         if not isinstance(self.name, str):
-            raise TypeError("cfsurfacelogvel: 'name' must be a string")
+            raise TypeError("surfacelogvel: 'name' must be a string")
 
         # MATLAB allowed Outputdefinition1..2000
         outputdef_allowed = [f"Outputdefinition{i}" for i in range(1, 2001)]
 
         class_utils.check_field(
             md,
-            fieldname="cfsurfacelogvel.definitionstring",
+            fieldname="surfacelogvel.definitionstring",
             field=self.definitionstring,
             values=outputdef_allowed,
         )
@@ -776,7 +776,7 @@ class surfacelogvel(class_registry.manage_state):
         # We keep parity, but you can add vyobs similarly if desired.
         class_utils.check_field(
             md,
-            fieldname="cfsurfacelogvel.vxobs",
+            fieldname="surfacelogvel.vxobs",
             field=self.vxobs,
             timeseries=True,
             allow_nan=True,
@@ -784,7 +784,7 @@ class surfacelogvel(class_registry.manage_state):
         )
         class_utils.check_field(
             md,
-            fieldname="cfsurfacelogvel.weights",
+            fieldname="surfacelogvel.weights",
             field=self.weights,
             timeseries=True,
             allow_nan=True,
@@ -792,7 +792,7 @@ class surfacelogvel(class_registry.manage_state):
         )
         class_utils.check_field(
             md,
-            fieldname="cfsurfacelogvel.datatime",
+            fieldname="surfacelogvel.datatime",
             field=self.datatime,
             le=md.timestepping.final_time,
         )
@@ -813,12 +813,12 @@ class surfacelogvel(class_registry.manage_state):
         nv = md.mesh.numberofvertices
         yts = md.constants.yts
 
-        execute.WriteData(fid, prefix, data=self.name, name="md.cfsurfacelogvel.name", format="String")
+        execute.WriteData(fid, prefix, data=self.name, name="md.surfacelogvel.name", format="String")
         execute.WriteData(
             fid,
             prefix,
             data=self.definitionstring,
-            name="md.cfsurfacelogvel.definitionstring",
+            name="md.surfacelogvel.definitionstring",
             format="String",
         )
 
@@ -826,7 +826,7 @@ class surfacelogvel(class_registry.manage_state):
             fid,
             prefix,
             data=self.vxobs,
-            name="md.cfsurfacelogvel.vxobs",
+            name="md.surfacelogvel.vxobs",
             format="DoubleMat",
             mattype=1,
             timeserieslength=nv + 1,
@@ -837,7 +837,7 @@ class surfacelogvel(class_registry.manage_state):
             fid,
             prefix,
             data=self.vxobs_string,
-            name="md.cfsurfacelogvel.vxobs_string",
+            name="md.surfacelogvel.vxobs_string",
             format="String",
         )
 
@@ -845,7 +845,7 @@ class surfacelogvel(class_registry.manage_state):
             fid,
             prefix,
             data=self.vyobs,
-            name="md.cfsurfacelogvel.vyobs",
+            name="md.surfacelogvel.vyobs",
             format="DoubleMat",
             mattype=1,
             timeserieslength=nv + 1,
@@ -856,7 +856,7 @@ class surfacelogvel(class_registry.manage_state):
             fid,
             prefix,
             data=self.vyobs_string,
-            name="md.cfsurfacelogvel.vyobs_string",
+            name="md.surfacelogvel.vyobs_string",
             format="String",
         )
 
@@ -864,7 +864,7 @@ class surfacelogvel(class_registry.manage_state):
             fid,
             prefix,
             data=self.weights,
-            name="md.cfsurfacelogvel.weights",
+            name="md.surfacelogvel.weights",
             format="DoubleMat",
             mattype=1,
             timeserieslength=nv + 1,
@@ -874,7 +874,7 @@ class surfacelogvel(class_registry.manage_state):
             fid,
             prefix,
             data=self.weights_string,
-            name="md.cfsurfacelogvel.weights_string",
+            name="md.surfacelogvel.weights_string",
             format="String",
         )
 
@@ -882,6 +882,6 @@ class surfacelogvel(class_registry.manage_state):
             fid,
             prefix,
             data=float(np.round(self.datatime * yts)),
-            name="md.cfsurfacelogvel.datatime",
+            name="md.surfacelogvel.datatime",
             format="Double",
         )

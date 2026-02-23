@@ -72,7 +72,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     time = sol.time
 
     # IMPORTANT: pyISSM constructors usually don't accept kwargs -> set attributes after init
-    cf = cfsurfacelogvel()
+    cf = surfacelogvel()
     cf.name = f"LogVelMis{count}"
     cf.definitionstring = f"Outputdefinition{count}"
     cf.vxobs_string = "VxObs"
@@ -118,7 +118,7 @@ nt = len(t_list)
 w_ts = np.concatenate([np.ones(nv), np.array([0.0])])      # (nv+1,)
 W_ts = np.tile(w_ts.reshape(-1, 1), (1, nt))   
 
-cfvx = cfsurfacesquaretransient()
+cfvx = surfacesquaretransient()
 cfvx.name = "VxMisfit_Transient"
 cfvx.definitionstring = f"Outputdefinition{count}"
 cfvx.model_string = "Vx"
@@ -136,7 +136,7 @@ dep.nods = md.mesh.numberofvertices
 md.autodiff.dependents.append(dep)
 count += 1
 
-cfvy = cfsurfacesquaretransient()
+cfvy = surfacesquaretransient()
 cfvy.name = "VyMisfit_Transient"
 cfvy.definitionstring = f"Outputdefinition{count}"
 cfvy.model_string = "Vy"
@@ -154,7 +154,7 @@ dep.nods = md.mesh.numberofvertices
 md.autodiff.dependents.append(dep)
 count += 1
 
-cfs = cfsurfacesquaretransient()
+cfs = surfacesquaretransient()
 cfs.name = "SurfMisfit_Transient"
 cfs.definitionstring = f"Outputdefinition{count}"
 cfs.model_string = "Surface"
