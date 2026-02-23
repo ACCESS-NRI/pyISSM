@@ -60,7 +60,7 @@ md.autodiff.independents = [indep]
 vy_obs = md.initialization.vy / md.constants.yts
 weights = np.ones((md.mesh.numberofvertices,))
 
-od = pyissm.model.classes.cfsurface.cfsurfacesquare()
+od = pyissm.model.classes.cf.cfsurfacesquare()
 od.name = 'VyMisfit1'
 od.definitionstring = 'Outputdefinition1'
 od.model_string = 'Vy'
