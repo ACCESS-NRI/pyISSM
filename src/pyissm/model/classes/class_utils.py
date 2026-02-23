@@ -1,12 +1,12 @@
+"""
+Various utility functions for ISSM model classes.
+"""
+
 import numpy as np
 import os
 import re
 from operator import attrgetter
-from pyissm.model.classes import basalforcings
-from pyissm.model.classes import calving
-from pyissm.model.classes import friction
-from pyissm.model.classes import smb
-from pyissm.model.classes import frontalforcings
+from pyissm.model.classes import basalforcings, calving, friction, smb, frontalforcings
 
 """
 Functions for formatting and displaying model fields in ISSM classes. Taken from $ISSM_DIR/src/m/miscellaneous/fielddisplay.py.
@@ -22,25 +22,27 @@ def fielddisplay(md, name, comment):
 
     Parameters
     ----------
-    md : object
+    md : :class:`object`
         The model object containing the field to display.
-    name : str
+    name : :class:`str`
         The name of the field attribute to extract and display.
-    comment : str
+    comment : :class:`str`
         Descriptive comment explaining the field's purpose and units.
 
     Returns
     -------
-    str
+    :class:`str`
         Formatted string representation of the field suitable for display.
 
     Examples
     --------
-    >>> fielddisplay(md, 'thickness', 'ice thickness [m]')
-    '         thickness        : (100, 200)    -- ice thickness [m]'
-    
-    >>> fielddisplay(md, 'verbose', 'verbose output flag')
-    '         verbose          : True          -- verbose output flag'
+    .. code-block:: python
+
+        >>> fielddisplay(md, 'thickness', 'ice thickness [m]')
+        '         thickness        : (100, 200)    -- ice thickness [m]'
+        
+        >>> fielddisplay(md, 'verbose', 'verbose output flag')
+        '         verbose          : True          -- verbose output flag'
     """
 
     #get field
@@ -60,36 +62,39 @@ def parsedisplay(offset, name, field, comment):
 
     Parameters
     ----------
-    offset : str
+    offset : :class:`str`
         String of spaces used for indentation in the output.
-    name : str
+    name : :class:`str`
         The name of the field being displayed.
     field : any
         The field value to be formatted for display.
-    comment : str
+    comment : :class:`str`
         Descriptive comment explaining the field's purpose and units.
 
     Returns
     -------
-    str
+    :class:`str`
         Formatted string representation of the field.
 
     Notes
     -----
     Handles the following data types:
-    - str: Shows string value (truncated if > 30 characters)
-    - int, float: Shows numeric value
-    - np.ndarray: Shows array shape
-    - bool: Shows True/False
-    - dict: Shows nested dictionary structure
-    - list, tuple: Shows container contents (up to 5 elements)
-    - None: Shows "None"
-    - Other types: Shows "not displayed"
+
+        - :class:`str`: Shows string value (truncated if > 30 characters)
+        - :class:`int`, :class:`float`: Shows numeric value
+        - :class:`numpy.ndarray`: Shows array shape
+        - :class:`bool`: Shows True/False
+        - :class:`dict`: Shows nested dictionary structure
+        - :class:`list`, :class:`tuple`: Shows container contents (up to 5 elements)
+        - None: Shows "None"
+        - Other types: Shows "not displayed"
 
     Examples
     --------
-    >>> parsedisplay('   ', 'temperature', 273.15, 'temperature [K]')
-    '   temperature        : 273.15        -- temperature [K]'
+    .. code-block:: python
+
+            >>> parsedisplay('   ', 'temperature', 273.15, 'temperature [K]')
+        '   temperature        : 273.15        -- temperature [K]'
     """
     #string
     if isinstance(field, str):
@@ -141,18 +146,18 @@ def dict_display(offset, name, field, comment):
 
     Parameters
     ----------
-    offset : str
+    offset : :class:`str`
         String of spaces used for base indentation in the output.
-    name : str
+    name : :class:`str`
         The name of the dictionary field being displayed.
     field : dict
         The dictionary to be formatted for display.
-    comment : str
+    comment : :class:`str`
         Descriptive comment explaining the dictionary's purpose.
 
     Returns
     -------
-    str
+    :class:`str`
         Formatted multi-line string representation of the dictionary structure.
 
     Notes
@@ -162,10 +167,12 @@ def dict_display(offset, name, field, comment):
 
     Examples
     --------
-    >>> dict_display('   ', 'params', {'a': 1, 'b': 2}, 'parameters')
-    '   params             : {dictionary}   -- parameters
-          a               : 1
-          b               : 2'
+    .. code-block:: python
+
+        >>> dict_display('   ', 'params', {'a': 1, 'b': 2}, 'parameters')
+        '   params             : {dictionary}   -- parameters
+            a               : 1
+            b               : 2'
     """
     if field:
         string = displayunit(offset, name, '{dictionary}', comment) + '\n'
@@ -193,33 +200,36 @@ def list_display(offset, name, field, comment):
 
     Parameters
     ----------
-    offset : str
+    offset : :class:`str`
         String of spaces used for indentation in the output.
-    name : str
+    name : :class:`str`
         The name of the list/tuple field being displayed.
     field : list or tuple
         The list or tuple to be formatted for display.
-    comment : str
+    comment : :class:`str`
         Descriptive comment explaining the container's purpose.
 
     Returns
     -------
-    str
+    :class:`str`
         Formatted string representation of the list or tuple.
 
     Notes
     -----
-    Small containers show individual elements: [1, 2, 3] or ('a', 'b', 'c').
-    Large containers show size: [100x1] or (50x1).
-    Only simple data types (str, bool, int, float) are shown individually.
+        
+    - Small containers show individual elements: [1, 2, 3] or ('a', 'b', 'c').
+    - Large containers show size: [100x1] or (50x1).
+    - Only simple data types (:class:`str`, :class:`bool`, :class:`int`, :class:`float`) are shown individually.
 
     Examples
     --------
-    >>> list_display('   ', 'coords', [1.0, 2.0, 3.0], 'coordinates')
-    '   coords             : [1.0, 2.0, 3.0] -- coordinates'
-    
-    >>> list_display('   ', 'data', list(range(100)), 'large dataset')
-    '   data               : [100x1]         -- large dataset'
+    .. code-block:: python
+
+        >>> list_display('   ', 'coords', [1.0, 2.0, 3.0], 'coordinates')
+        '   coords             : [1.0, 2.0, 3.0] -- coordinates'
+        
+        >>> list_display('   ', 'data', list(range(100)), 'large dataset')
+        '   data               : [100x1]         -- large dataset'
     """
 
     #initialization
@@ -261,19 +271,19 @@ def displayunit(offset, name, characterization, comment):
 
     Parameters
     ----------
-    offset : str
+    offset : :class:`str`
         String of spaces used for indentation.
-    name : str
+    name : :class:`str`
         The field name (truncated if > 23 characters).
-    characterization : str
+    characterization : :class:`str`
         The string representation of the field value.
-    comment : str or list of str
+    comment : :class:`str` or list of str
         Descriptive comment(s) explaining the field. Can be a single string
         or a list of strings for multi-line comments.
 
     Returns
     -------
-    str
+    :class:`str`
         Formatted display line with proper spacing and alignment.
 
     Notes
@@ -281,18 +291,21 @@ def displayunit(offset, name, characterization, comment):
     Format: "{offset}{name:23}: {characterization:15} -- {comment}"
     
     Special handling:
-    - Names > 23 chars are truncated with "..."
-    - Characterizations > 15 chars are truncated with "..."
-    - Empty/NaN values are shown as "N/A"
-    - List comments create multi-line output
+
+        - Names > 23 chars are truncated with "..."
+        - Characterizations > 15 chars are truncated with "..."
+        - Empty/NaN values are shown as "N/A"
+        - List comments create multi-line output
 
     Examples
     --------
-    >>> displayunit('   ', 'temperature', '273.15', 'temperature [K]')
-    '   temperature        : 273.15         -- temperature [K]'
-    
-    >>> displayunit('   ', 'very_long_field_name', '42', 'description')
-    '   very_long_field_n...: 42             -- description'
+    .. code-block:: python
+
+        >>> displayunit('   ', 'temperature', '273.15', 'temperature [K]')
+        '   temperature        : 273.15         -- temperature [K]'
+        
+        >>> displayunit('   ', 'very_long_field_name', '42', 'description')
+        '   very_long_field_n...: 42             -- description'
     """
 
     #take care of name
@@ -336,24 +349,27 @@ def getlongestfieldname(self):
 
     Returns
     -------
-    int
+    :class:`int`
         The length of the longest field name in the object's __dict__.
 
-    Examples
-    --------
-    >>> class Example:
-    ...     def __init__(self):
-    ...         self.a = 1
-    ...         self.very_long_field_name = 2
-    ...         self.b = 3
-    >>> obj = Example()
-    >>> getlongestfieldname(obj)
-    20
-    
     Notes
     -----
     Only considers attributes in the object's __dict__, not inherited
     attributes or properties.
+
+    Examples
+    --------
+    ..code-block:: python
+
+        >>> class Example:
+        ...     def __init__(self):
+        ...         self.a = 1
+        ...         self.very_long_field_name = 2
+        ...         self.b = 3
+        >>> obj = Example()
+        >>> getlongestfieldname(obj)
+        20
+    
     """
 
     maxlength = 0
@@ -374,7 +390,7 @@ def marshall_inversion_cost_functions(cost_functions):
     
     Parameters
     ----------
-    cost_functions : int or list of int
+    cost_functions : :class:`int` or list of :class:`int`
         Cost function code(s) to be mapped. Supported codes include:
         - 101: SurfaceAbsVelMisfit
         - 102: SurfaceRelVelMisfit  
@@ -390,17 +406,19 @@ def marshall_inversion_cost_functions(cost_functions):
     
     Returns
     -------
-    list of str
+    list of :class:`str`
         List containing the string name(s) corresponding to the input cost
         function code(s).
     
     Examples
     --------
-    >>> map_inversion_cost_functions(101)
-    ['SurfaceAbsVelMisfit']
-    
-    >>> map_inversion_cost_functions([101, 201, 501])
-    ['SurfaceAbsVelMisfit', 'ThicknessAbsMisfit', 'DragCoefficientAbsGradient']
+    .. code-block:: python
+
+        >>> map_inversion_cost_functions(101)
+        ['SurfaceAbsVelMisfit']
+        
+        >>> map_inversion_cost_functions([101, 201, 501])
+        ['SurfaceAbsVelMisfit', 'ThicknessAbsMisfit', 'DragCoefficientAbsGradient']
     """
 
     ## Define dictionary of cost functions
@@ -428,7 +446,7 @@ def supported_inversion_control_parameters():
 
     Returns
     -------
-    list of str
+    list of :class:`str`
         List of supported inversion control parameter names.
     """
 
@@ -453,7 +471,7 @@ def supported_inversion_cost_functions():
 
     Returns
     -------
-    list of int
+    list of :class:`int`
         List of supported inversion cost function codes.
     """
     return list(range(101, 105 + 1)) + [201] + list(range(501, 508 + 1)) + [510] + list(range(601, 604 + 1))
@@ -464,7 +482,7 @@ def supported_analyses():
 
     Returns
     -------
-    list of str
+    list of :class:`str`
         List of supported analyses.
     """
     return [
@@ -495,17 +513,18 @@ def supported_analyses():
     ]
 
 def supported_stochastic_forcings(return_dict = False):
-    """Return supported stochastic forcings.
+    """
+    Return supported stochastic forcings.
     
     Parameters
     ----------
-    return_dict : bool, default=False
+    return_dict : :class:`bool`, default=False
         If True, return the full mapping dict; 
         otherwise, return just the list of keys.
 
     Returns
     -------
-    dict or list of str
+    :class:`dict` or list of :class:`str`
         Mapping of supported stochastic forcing fields to their
         corresponding parameter modules, or list of field names.
 
@@ -513,6 +532,7 @@ def supported_stochastic_forcings(return_dict = False):
     -----
     Maintain legacy naming for compatibility with MATLAB version
     """
+
     structure = {
         'BasalforcingsDeepwaterMeltingRatearma': basalforcings.lineararma,
         'BasalforcingsSpatialDeepwaterMeltingRate': basalforcings.spatiallinear,
@@ -527,7 +547,10 @@ def supported_stochastic_forcings(return_dict = False):
     return structure if return_dict else list(structure.keys())
 
 def _resolve_field(md, field=None, fieldname=None):
-    """Retrieve a field either directly or via a dotted/indexed path."""
+    """
+    Retrieve a field either directly or via a dotted/indexed path.
+    """
+
     if field is not None:
         return field, fieldname or "anonymous"
 
@@ -545,11 +568,14 @@ def _resolve_field(md, field=None, fieldname=None):
 
 
 def _check_size(md, field, fieldname, expected, message=None):
-    """Check array size or 'universal' size semantics."""
+    """
+    Check array size or 'universal' size semantics.
+    """
+
     if isinstance(expected, str) and expected == "universal":
         v, e = md.mesh.numberofvertices, md.mesh.numberofelements
         if v == e or v + 1 == e or v == e + 1:
-            md.check_message(message or f"{fieldname}: ambiguous universal size")
+            md.check_message(message or f"{fieldname}: md.mesh.numberofvertices and md.mesh.numberofelements are within 1 of each other, cannot determine universal size")
         return
 
     if expected is not None:
@@ -561,13 +587,19 @@ def _check_size(md, field, fieldname, expected, message=None):
 
 
 def _check_values(md, field, fieldname, allowed, message=None):
-    """Check categorical values."""
+    """
+    Check categorical values.
+    """
+
     if not np.all(np.isin(field, allowed)):
         md.check_message(message or f"{fieldname} values not in {allowed}")
 
 
 def _check_bound(md, field, fieldname, op, bound, allow_nan, message=None):
-    """Generic bound check: <, <=, >, >=."""
+    """
+    Generic bound check: <, <=, >, >=.
+    """
+
     fn = {
         ">": np.greater,
         ">=": np.greater_equal,
@@ -590,7 +622,10 @@ def _check_bound(md, field, fieldname, op, bound, allow_nan, message=None):
         md.check_message(message or f"{fieldname} fails condition {op} {bound}")
 
 def _split_timeseries_field(md, field, kind):
-    """Remove time row from timeseries field if present."""
+    """
+    Remove time row from timeseries field if present.
+    """
+
     if field.ndim <= 1:
         return field, None
 
@@ -614,7 +649,10 @@ def _split_timeseries_field(md, field, kind):
 
 
 def _check_timeseries(md, field, fieldname, kind, message=None):
-    """Check time series structure and sorting."""
+    """
+    Check time series structure and sorting.
+    """
+
     nrow = field.shape[0]
     v, e = md.mesh.numberofvertices, md.mesh.numberofelements
 
@@ -679,48 +717,48 @@ def check_field(
 
     Parameters
     ----------
-    md : object
+    md : :class:`object`
         ISSM model object. Must provide md.mesh.numberofvertices,
         md.mesh.numberofelements (for timeseries semantics) and a
         md.check_message(str) method to report validation failures.
     field : any, optional
-        Direct field value to validate. If provided, `fieldname` is optional.
-    fieldname : str, optional
-        Path used to resolve the field on `md` when `field` is None.
+        Direct field value to validate. If provided, ``fieldname`` is optional.
+    fieldname : :class:`str`, optional
+        Path used to resolve the field on ``md`` when ``field`` is None.
         Supports dotted attribute access and index notation, e.g.
         "results.TransientSolution[0].Vel".
-    allow_nan : bool, optional
+    allow_nan : :class:`bool`, optional
         If False, fail when the field contains NaNs. Default True.
-    allow_inf : bool, optional
+    allow_inf : :class:`bool`, optional
         If False, fail when the field contains Infs. Default True.
-    scalar : bool, optional
+    scalar : :class:`bool`, optional
         If True, require the field to be a scalar (or single element). Default False.
-    size : tuple or "universal", optional
+    size : :class:`tuple` or "universal", optional
         Expected shape of the field. Use np.nan for wildcard dimensions.
         The special string "universal" applies mesh-universal heuristics.
-    numel : int or sequence of int, optional
+    numel : :class:`int` or sequence of int, optional
         Expected number of elements (np.size). Can be an int or list/tuple of
         acceptable ints.
-    cell : bool, optional
+    cell : :class:`bool`, optional
         If True, require the field to be a Python container (list/tuple/dict).
-    string_list : bool, optional
+    string_list : :class:`bool`, optional
         If True, require the field to be a list of strings.
-    allow_empty : bool, optional
+    allow_empty : :class:`bool`, optional
         If True, allow an empty field; otherwise an empty field triggers a check.
-    values : sequence, optional
+    values : ``sequence``, optional
         Allowed categorical values for the field (checked with np.isin).
-    gt, ge, lt, le : scalar or array-like, optional
+    gt, ge, lt, le : :class:`scalar` or ``array-like``, optional
         Bound constraints (>, >=, <, <=). If provided, the corresponding
         comparison is applied elementwise.
-    timeseries : bool, optional
+    timeseries : :class:`bool`, optional
         Apply timeseries structural checks ("timeseries" kind).
-    singletimeseries : bool, optional
+    singletimeseries : :class:`bool`, optional
         Apply single-timeseries structural checks ("singletimeseries" kind).
-    mappedtimeseries : bool, optional
+    mappedtimeseries : :class:`bool`, optional
         Apply mapped-timeseries structural checks ("mappedtimeseries" kind).
-    file : bool, optional
+    file : :class:`bool`, optional
         If True, treat the field as a filesystem path and require it exists.
-    message : str, optional
+    message : :class:`str`, optional
         Custom message to use on check failures instead of generated defaults.
 
     Returns
@@ -730,10 +768,9 @@ def check_field(
 
     Notes
     -----
-    - If a resolved field is a Python scalar (bool/int/float) it will be
-      converted to a 1-element numpy array for uniform checking.
-    - Checks do not raise exceptions; they report failures via
-      md.check_message(msg).
+
+    - If a resolved field is a Python scalar (bool/int/float) it will be converted to a 1-element numpy array for uniform checking.
+    - Checks do not raise exceptions; they report failures via md.check_message(msg).
     - The `size` parameter may contain np.nan entries that act as wildcards.
     """
     
@@ -828,16 +865,16 @@ def cluster_queue_requirements(queue_dict, queue, np, time):
 
     Parameters
     ----------
-    queue_dict : dict
+    queue_dict : :class:`dict`
         Dictionary mapping queue names to (max_time, max_np) tuples, where
         max_time is the maximum allowed time for the queue and max_np is the
         maximum allowed number of processors.
-    queue : str
+    queue : :class:`str`
         Name of the requested queue.
-    np : int
+    np : :class:`int`
         Number of processors requested. Must be positive and not exceed the
         queue's maximum.
-    time : float or int
+    time : :class:`float` or :class:`int`
         Requested time in minutes (or appropriate time unit). Must be positive
         and not exceed the queue's maximum allowed time.
 
@@ -845,13 +882,9 @@ def cluster_queue_requirements(queue_dict, queue, np, time):
     ------
     Exception
         If the queue name is not found in queue_dict.
-    Exception
         If time is not positive.
-    Exception
         If requested time exceeds the maximum allowed time for the queue.
-    Exception
         If number of processors is not positive.
-    Exception
         If requested number of processors exceeds the maximum allowed for the queue.
     """
 

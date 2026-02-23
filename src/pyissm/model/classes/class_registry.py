@@ -1,3 +1,7 @@
+"""
+Class registry management for ISSM classes.
+"""
+
 import numpy as np
 
 CLASS_REGISTRY = {}
@@ -23,8 +27,9 @@ def register_class(cls):
     Notes
     -----
     The registration key is constructed as:
-    - If "classes" is in the module path: uses parts after "classes" + class name
-    - Otherwise: uses last 2 module parts + class name
+
+        - If "classes" is in the module path: uses parts after "classes" + class name
+        - Otherwise: uses last 2 module parts + class name
     
     Example module path: pyissm.model.classes.smb -> key: "smb.default" (for class 'default')
 
@@ -73,12 +78,12 @@ def map_classtype(classtype):
     -----
     The mapping covers major ISSM component categories:
 
-    - basalforcings: Various basal forcing models (default, pico, linear, etc.)
-    - calving: Ice calving models (default, crevassedepth, levermann, etc.)  
-    - friction: Basal friction laws (default, coulomb, weertman, etc.)
-    - smb: Surface mass balance models (default, arma, pdd, etc.)
-    - hydrology: Subglacial hydrology models (glads, shreve, pism, etc.)
-    - And many more...
+        - basalforcings: Various basal forcing models (default, pico, linear, etc.)
+        - calving: Ice calving models (default, crevassedepth, levermann, etc.)  
+        - friction: Basal friction laws (default, coulomb, weertman, etc.)
+        - smb: Surface mass balance models (default, arma, pdd, etc.)
+        - hydrology: Subglacial hydrology models (glads, shreve, pism, etc.)
+        - And many more...
 
     When a legacy class type is mapped, an informational message is printed.
 
@@ -217,7 +222,6 @@ def create_instance(classtype):
     if classtype not in CLASS_REGISTRY:
         print(f"⚠️ Unknown classtype {classtype}. Skipping...")
         return None
-        # raise ValueError(f'create_instance: Unknown class type: {classtype}')
     return CLASS_REGISTRY[classtype]()
 
 ## Manage state for save/load and inheritance
