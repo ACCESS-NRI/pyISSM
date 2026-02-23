@@ -1,3 +1,7 @@
+"""
+Basal forcings classes for ISSM.
+"""
+
 import numpy as np
 import warnings
 from pyissm.model.classes import class_utils
@@ -128,8 +132,6 @@ class default(class_registry.manage_state):
         .. code-block:: python
 
             >>> md.basalforcings = pyissm.model.classes.basalforcings.default()
-            # At this point, initial fields are np.nan
-            # After calling initialise, they will be set to default shapes/values with warnings issued.
             >>> md.basalforcings.initialise(md)
         """
 
@@ -324,8 +326,6 @@ class pico(class_registry.manage_state):
         .. code-block:: python
 
             >>> md.basalforcings = pyissm.model.classes.basalforcings.pico()
-            # At this point, initial fields are np.nan
-            # After calling initialise, they will be set to default shapes/values with warnings issued.
             >>> md.basalforcings.initialise(md)
         """
 
@@ -534,8 +534,6 @@ class linear(class_registry.manage_state):
         .. code-block:: python
 
             >>> md.basalforcings = pyissm.model.classes.basalforcings.linear()
-            # At this point, groundedice_melting_rate and floatingice_melting_rate are np.nan
-            # After calling initialise, they will be set to zero with warnings issued.
             >>> md.basalforcings.initialise(md)
         """
         
@@ -778,8 +776,6 @@ class lineararma(class_registry.manage_state):
         .. code-block:: python
 
             >>> md.basalforcings = pyissm.model.classes.basalforcings.lineararma()
-            # At this point, initial fields are np.nan
-            # After calling initialise, they will be set to default shapes/values with warnings issued.
             >>> md.basalforcings.initialise(md)
         """
 
@@ -1025,8 +1021,6 @@ class mismip(class_registry.manage_state):
         .. code-block:: python
 
             >>> md.basalforcings = pyissm.model.classes.basalforcings.mismip()
-            # At this point, initial fields are np.nan
-            # After calling initialise, they will be set to default shapes/values with warnings issued.
             >>> md.basalforcings.initialise(md)
         """
 
@@ -1246,8 +1240,6 @@ class plume(class_registry.manage_state):
         .. code-block:: python
 
             >>> md.basalforcings = pyissm.model.classes.basalforcings.plume()
-            # At this point, initial fields are np.nan
-            # After calling initialise, they will be set to default shapes/values with warnings issued.
             >>> md.basalforcings.initialise(md)
         """
 
@@ -1433,8 +1425,6 @@ class spatiallinear(class_registry.manage_state):
         .. code-block:: python
 
             >>> md.basalforcings = pyissm.model.classes.basalforcings.spatiallinear()
-            # At this point, initial fields are np.nan
-            # After calling initialise, they will be set to default shapes/values with warnings issued.
             >>> md.basalforcings.initialise(md)
         """
 
