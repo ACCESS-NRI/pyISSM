@@ -1,7 +1,10 @@
+"""
+Dynamic Sea Level (DSL) classes for ISSM.
+"""
+
 import numpy as np
 import warnings
-from pyissm.model.classes import class_utils
-from pyissm.model.classes import class_registry
+from pyissm.model.classes import class_utils, class_registry
 from pyissm.model import execute, mesh
 
 ## ------------------------------------------------------
@@ -10,39 +13,31 @@ from pyissm.model import execute, mesh
 @class_registry.register_class
 class default(class_registry.manage_state):
     """
-    Default DSL parameters class for ISSM.
+    Default DSL class for ISSM.
 
-    This class encapsulates the default parameters for dynamic sea level (DSL) in the ISSM (Ice Sheet System Model) framework.
+    This class contains the default parameters for dynamic sea level (DSL) in the ISSM framework.
     It defines the main DSL-related parameters.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    global_average_thermosteric_sea_level : float or ndarray, default=np.nan
+    global_average_thermosteric_sea_level : :class:`float` or :class:`numpy.ndarray`, default=np.nan
         Corresponds to zostoga field in CMIP5 archives. Specified as a temporally variable quantity (in m).
-    sea_surface_height_above_geoid : float or ndarray, default=np.nan
+    sea_surface_height_above_geoid : :class:`float` or :class:`numpy.ndarray`, default=np.nan
         Corresponds to zos field in CMIP5 archives. Spatial average is 0. Specified as a spatio-temporally variable quantity (in m).
-    sea_water_pressure_at_sea_floor : float or ndarray, default=np.nan
+    sea_water_pressure_at_sea_floor : :class:`float` or :class:`numpy.ndarray`, default=np.nan
         Corresponds to bpo field in CMIP5 archives. Specified as a spatio-temporally variable quantity (in m equivalent, not in Pa!).
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the DSL parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the DSL parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.dsl = pyissm.model.classes.dsl.default()
+    .. code-block:: python
+    
+        >>> md.dsl = pyissm.model.classes.dsl.default()
     """
 
     # Initialise with default parameters
@@ -79,6 +74,24 @@ class default(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [dsl.default] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         # Early return if no sealevelchange analysis or if transient solution without isslc or oceantransport
         if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc) or (not md.transient.isoceantransport):
             return md
@@ -94,7 +107,18 @@ class default(class_registry.manage_state):
     # Initialise empty fields of correct dimensions
     def initialise(self, md):
         """
-        Initialise empty fields in dsl.default.
+        Initialise [dsl.default] empty fields.
+
+        If current values of required fields are np.nan, they will be set to default required shapes/values and warnings will be issued.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            >>> md.dsl = pyissm.model.classes.dsl.default()
+            # At this point, initial fields are np.nan
+            # After calling initialise, they will be set to default shapes/values with warnings issued.
+            >>> md.dsl.initialise(md)
         """
 
         if np.all(np.isnan(self.global_average_thermosteric_sea_level)):
@@ -118,13 +142,13 @@ class default(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -146,41 +170,33 @@ class default(class_registry.manage_state):
 @class_registry.register_class
 class mme(class_registry.manage_state):
     """
-    Multi-Model Ensemble (MME) DSL parameters class for ISSM.
+    Multi-Model Ensemble (MME) DSL class for ISSM.
 
-    This class encapsulates the parameters for dynamic sea level (DSL) for a multi-model ensemble (MME) of CMIP5 outputs in the ISSM (Ice Sheet System Model) framework.
+    This class conatins the parameters for dynamic sea level (DSL) for a multi-model ensemble (MME) of CMIP5 outputs in the ISSM framework.
     It defines the main DSL-related parameters for each ensemble member.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    modelid : int, default=0
+    modelid : :class:`int`, default=0
         Index into the multi-model ensemble, determines which field will be used.
-    global_average_thermosteric_sea_level : float or ndarray, default=np.nan
+    global_average_thermosteric_sea_level : :class:`float` or :class:`numpy.ndarray`, default=np.nan
         Corresponds to zostoga field in CMIP5 archives. Specified as a temporally variable quantity (in m) for each ensemble member.
-    sea_surface_height_above_geoid : float or ndarray, default=np.nan
+    sea_surface_height_above_geoid : :class:`float` or :class:`numpy.ndarray`, default=np.nan
         Corresponds to zos field in CMIP5 archives. Spatial average is 0. Specified as a spatio-temporally variable quantity (in m) for each ensemble member.
-    sea_water_pressure_at_sea_floor : float or ndarray, default=np.nan
+    sea_water_pressure_at_sea_floor : :class:`float` or :class:`numpy.ndarray`, default=np.nan
         Corresponds to bpo field in CMIP5 archives. Specified as a spatio-temporally variable quantity (in m equivalent, not in Pa!) for each ensemble member.
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the MME DSL parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the MME DSL parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.dsl = pyissm.model.classes.dsl.mme()
+    .. code-block:: python
+        
+        >>> md.dsl = pyissm.model.classes.dsl.mme()
     """
 
     # Initialise with default parameters
@@ -220,6 +236,24 @@ class mme(class_registry.manage_state):
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [dsl.mme] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         # Early return if no sealevelchange analysis or if transient solution without isslc or oceantransport
         if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc) or (not md.transient.isoceantransport):
             return md
@@ -239,17 +273,17 @@ class mme(class_registry.manage_state):
     # Marshall method for saving the dsl.default parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [dsl.default] parameters to a binary file.
+        Marshall [dsl.mme] parameters to a binary file.
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
