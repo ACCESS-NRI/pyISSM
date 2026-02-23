@@ -28,11 +28,11 @@ except:
     import xarray as xr
 
     ## To load datasets locally using xarray, please update the following paths
-    velocity = xr.open_dataset("<PATH_TO_MEASURES_V2_ICE_VELOCITY_DATASET>")
-    bm = xr.open_dataset("<PATH_TO_MEASURES_BEDMACHINCE_V3_DATASET>")
-    racmo_temp = xr.open_dataset("<PATH_TO_RACMO2.3p3_MONTHLY_27KM_1979-2022_TSKIN_DATASET>")
-    racmo_smb = xr.open_dataset("<PATH_TO_RACMO2.3p3_MONTHLY_27KM_1979-2022_SMB_DATASET>")
-    aq1 = xr.open_dataset("<PATH_TO_AQ1_20KM_DATASET>")
+    velocity = xr.open_dataset("<PATH_TO_MEASURES_V2_ICE_VELOCITY_DATASET>") # Data available here: https://nsidc.org/data/nsidc-0484/versions/2
+    bm = xr.open_dataset("<PATH_TO_MEASURES_BEDMACHINCE_V3_DATASET>") # Data available here: https://nsidc.org/data/nsidc-0756/versions/3
+    racmo_temp = xr.open_dataset("<PATH_TO_RACMO2.3p3_MONTHLY_27KM_1979-2022_TSKIN_DATASET>") # Data available here: https://zenodo.org/records/7845736
+    racmo_smb = xr.open_dataset("<PATH_TO_RACMO2.3p3_MONTHLY_27KM_1979-2022_SMB_DATASET>") # Data available here: https://zenodo.org/records/7845736
+    aq1 = xr.open_dataset("<PATH_TO_AQ1_20KM_DATASET>") # Data available here: https://doi.org/10.1594/PANGAEA.924857
 
 ## -------------- BEGIN PARAMETERIZATION HERE -------------- ##
 
