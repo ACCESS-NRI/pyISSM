@@ -68,7 +68,7 @@ md.materials.rheology_B[:-1, :] = 1.8e8
 # -----------------------------
 from pyissm.model.classes.dependent import dependent
 from pyissm.model.classes.independent import independent
-from pyissm.model.classes.cfsurface import cfsurfacelogvel, cfsurfacesquare
+from pyissm.model.classes.cf import cfsurfacelogvel, cfsurfacesquare
 
 def set_if(obj, **kvs):
     """Set attributes if they exist on this build's wrapper."""

@@ -62,7 +62,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     weights = np.ones((nv,))
 
     # 1) LogVel misfit
-    od1 = pyissm.model.classes.cfsurfacelogvel()
+    od1 = pyissm.model.classes.cf.cfsurfacelogvel()
     od1.name = f'LogVelMis{count}'
     od1.definitionstring = f'Outputdefinition{count}'
     od1.vxobs_string = 'VxObs'
@@ -83,7 +83,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     count += 1
 
     # 2) Vy square misfit
-    od2 = pyissm.model.classes.cfsurfacesquare()
+    od2 = pyissm.model.classes.cf.cfsurfacesquare()
     od2.name = f'VyMisfit{count}'
     od2.definitionstring = f'Outputdefinition{count}'
     od2.model_string = 'Vy'
@@ -103,7 +103,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     count += 1
 
     # 3) Vx square misfit (500*weights)
-    od3 = pyissm.model.classes.cfsurfacesquare()
+    od3 = pyissm.model.classes.cf.cfsurfacesquare()
     od3.name = f'VxMisfit{count}'
     od3.definitionstring = f'Outputdefinition{count}'
     od3.model_string = 'Vx'
@@ -123,7 +123,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     count += 1
 
     # 4) DEM/surface misfit
-    od4 = pyissm.model.classes.cfsurfacesquare()
+    od4 = pyissm.model.classes.cf.cfsurfacesquare()
     od4.name = f'DEMMisfit{count}'
     od4.definitionstring = f'Outputdefinition{count}'
     od4.model_string = 'Surface'

@@ -88,9 +88,8 @@ if steps is None:
 # Import classes (paths can differ across pyISSM builds)
 from pyissm.model.classes.dependent import dependent
 from pyissm.model.classes.independent import independent
-from pyissm.model.classes.cflevelsetmisfit import cflevelsetmisfit
+from pyissm.model.classes.cf import cflevelsetmisfit
 
-# reinitializelevelset function location can vary; try common places
 from pyissm.model.classes.levelset import levelset
 
 count = 1
