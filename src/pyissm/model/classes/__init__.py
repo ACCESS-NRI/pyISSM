@@ -7,7 +7,7 @@ from pyissm.model.classes.autodiff import autodiff
 from pyissm.model.classes.balancethickness import balancethickness
 from pyissm.model.classes.basalforcings import default, pico, linear, lineararma, mismip
 from pyissm.model.classes.calving import default, crevassedepth, dev, levermann, minthickness, parameterization, vonmises
-from pyissm.model.classes.cf import cfsurfacesquare, cfsurfacesquaretransient, cfsurfacelogvel, cflevelsetmisfit
+from pyissm.model.classes.cf import surfacesquare, surfacesquaretransient, surfacelogvel, levelsetmisfit
 from pyissm.model.classes.constants import constants
 from pyissm.model.classes.cluster import generic
 from pyissm.model.classes.damage import damage
