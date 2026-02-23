@@ -806,12 +806,6 @@ class tao(class_registry.manage_state):
             execute.WriteData(fid, prefix, name = 'md.inversion.cost_functions', data = class_utils.marshall_inversion_cost_functions(self.cost_functions), format = 'StringArray')
             execute.WriteData(fid, prefix, name = 'md.inversion.num_cost_functions', data = np.size(self.cost_functions), format = 'Integer')
 
-from pyissm.model.classes import class_registry, class_utils
-from pyissm.model import execute
-from pyissm import tools
-import warnings
-
-
 @class_registry.register_class
 class adm1qn3(class_registry.manage_state):
     """
