@@ -1,3 +1,7 @@
+"""
+Balance thickness class for ISSM.
+"""
+
 import numpy as np
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
@@ -6,7 +10,7 @@ from pyissm.model import execute
 @class_registry.register_class
 class balancethickness(class_registry.manage_state):
     """
-    Balance thickness solution parameters class for ISSM.
+    Balance thickness parameters class for ISSM.
 
     This class contains parameters for the balance thickness solution in the ISSM framework.
     It allows users to configure thickness constraints, thickening rates, and stabilization

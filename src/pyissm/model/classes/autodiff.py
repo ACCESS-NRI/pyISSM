@@ -1,3 +1,7 @@
+"""
+Automatic Differentiation class for ISSM.
+"""
+
 import numpy as np
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
@@ -6,7 +10,7 @@ from pyissm.model import execute
 @class_registry.register_class
 class autodiff(class_registry.manage_state):
     """
-    Automatic differentiation parameters class for ISSM.
+    Automatic differentiation class for ISSM.
 
     This class contains parameters for automatic differentiation (AD) functionality in the ISSM framework.
     It allows users to configure AD settings including dependent and independent variables, memory buffer sizes, 
