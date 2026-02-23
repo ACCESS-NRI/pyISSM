@@ -1,49 +1,42 @@
 import numpy as np
-from pyissm.model.classes import class_utils
-from pyissm.model.classes import class_registry
+from pyissm.model.classes import class_utils, class_registry
 from pyissm.model import execute, mesh
 
 @class_registry.register_class
 class geometry(class_registry.manage_state):
     """
-    Geometry parameters class for ISSM.
+    Geometry class for ISSM.
 
-    This class encapsulates geometric parameters that define the ice sheet geometry in the ISSM (Ice Sheet System Model) framework.
-    It stores elevation data for ice surface, thickness, base, and bed that are fundamental to ice sheet modeling.
+    This class contains geometric parameters that define the ice sheet geometry in the ISSM framework.
+    It stores elevation data for ice surface, thickness, base, and bed.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    surface : ndarray, default=nan
+    surface : :class:`ndarray`, default=np.nan
         Ice upper surface elevation [m].
-    thickness : ndarray, default=nan
+    thickness : :class:`ndarray`, default=np.nan
         Ice thickness [m].
-    base : ndarray, default=nan
+    base : :class:`ndarray`, default=np.nan
         Ice base elevation [m].
-    bed : ndarray, default=nan
+    bed : :class:`numpy.ndarray`, default=np.nan
         Bed elevation [m].
-    hydrostatic_ratio : float, default=nan
+    hydrostatic_ratio : :class:`float`, default=nan
         Hydrostatic ratio for floating ice.
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the geometry parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the geometry parameters.
-    __str__(self)
-        Returns a short string identifying the class.
 
     Examples
     --------
-    md.geometry = pyissm.model.classes.geometry()
-    md.geometry.surface = surface_elevation
-    md.geometry.thickness = ice_thickness
-    md.geometry.bed = bed_elevation
+    .. code-block:: python
+
+        >>> md.geometry = pyissm.model.classes.geometry()
+        >>> md.geometry.surface = surface_elevation
+        >>> md.geometry.thickness = ice_thickness
+        >>> md.geometry.bed = bed_elevation
     """
 
     # Initialise with default parameters
@@ -87,6 +80,24 @@ class geometry(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [geometry] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         # Early return if LoveSolution
         if solution == 'LoveSolution':
             return md
@@ -114,13 +125,13 @@ class geometry(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None

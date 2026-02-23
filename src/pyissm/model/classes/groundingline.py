@@ -1,54 +1,43 @@
 import numpy as np
-from pyissm.model.classes import class_utils
-from pyissm.model.classes import class_registry
+from pyissm.model.classes import class_utils, class_registry
 from pyissm.model import execute
 
 @class_registry.register_class
 class groundingline(class_registry.manage_state):
     """
-    Grounding line migration parameters class for ISSM.
+    Grounding line migration class for ISSM.
 
-    This class encapsulates parameters for configuring grounding line migration in the ISSM (Ice Sheet System Model) framework.
+    This class contains parameters for configuring grounding line migration in the ISSM framework.
     It controls how the grounding line (boundary between grounded and floating ice) moves during simulations,
     including migration methods and interpolation schemes for friction and melting on partially floating elements.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    migration : str, default='SubelementMigration'
+    migration : :class:`str`, default='SubelementMigration'
         Type of grounding line migration: 'SoftMigration', 'SubelementMigration', 'AggressiveMigration', 'Contact', 'None'.
-    friction_interpolation : str, default='SubelementFriction1'
+    friction_interpolation : :class:`str`, default='SubelementFriction1'
         Type of friction interpolation on partially floating elements: 'SubelementFriction1', 'SubelementFriction2', 'NoFrictionOnPartiallyFloating'.
-    melt_interpolation : str, default='NoMeltOnPartiallyFloating'
+    melt_interpolation : :class:`str`, default='NoMeltOnPartiallyFloating'
         Type of melt interpolation on partially floating elements: 'SubelementMelt1', 'SubelementMelt2', 'IntrusionMelt', 'NoMeltOnPartiallyFloating', 'FullMeltOnPartiallyFloating'.
-    intrusion_distance : float, default=0
+    intrusion_distance : :class:`float`, default=0
         Distance of seawater intrusion from grounding line [m].
-    requested_outputs : list, default=['default']
+    requested_outputs : :class:`list`, default=['default']
         Additional outputs requested for grounding line analysis.
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the groundingline parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the groundingline parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
-        Process requested outputs, expanding 'default' to appropriate outputs.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.groundingline = pyissm.model.classes.groundingline()
-    md.groundingline.migration = 'AggressiveMigration'
-    md.groundingline.friction_interpolation = 'SubelementFriction2'
-    md.groundingline.melt_interpolation = 'SubelementMelt1'
+    .. code-block:: python
+
+        >>> md.groundingline = pyissm.model.classes.groundingline()
+        >>> md.groundingline.migration = 'AggressiveMigration'
+        >>> md.groundingline.friction_interpolation = 'SubelementFriction2'
+        >>> md.groundingline.melt_interpolation = 'SubelementMelt1'
     """
 
     # Initialise with default parameters
@@ -80,6 +69,24 @@ class groundingline(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [groundingline] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         class_utils.check_field(md, fieldname = 'groundingline.migration', values = ['None', 'SubelementMigration', 'AggressiveMigration', 'SoftMigration', 'Contact', 'GroundingOnly'])
         class_utils.check_field(md, fieldname = 'groundingline.friction_interpolation', values = ['SubelementFriction1', 'SubelementFriction2', 'NoFrictionOnPartiallyFloating'])
         class_utils.check_field(md, fieldname = 'groundingline.melt_interpolation', values = ['NoMeltOnPartiallyFloating', 'FullMeltOnPartiallyFloating', 'SubelementMelt1', 'SubelementMelt2', 'IntrusionMelt'])
@@ -102,20 +109,20 @@ class groundingline(class_registry.manage_state):
                         md = None,
                         return_default_outputs = False):
         """
-        Process requested outputs, expanding 'default' to appropriate outputs.
+        Process requested outputs for [groundingline] parameters, expanding 'default' to appropriate outputs.
 
         Parameters
         ----------
-        md : ISSM model object, optional
+        md : :class:`pyissm.model.Model`, optional
             Model object containing mesh information.
-        return_default_outputs : bool, default=False
+        return_default_outputs : :class:`bool`, default=False
             Whether to also return the list of default outputs.
             
         Returns
         -------
-        outputs : list
+        outputs : :class:`list`
             List of output strings with 'default' expanded to actual output names.
-        default_outputs : list, optional
+        default_outputs : :class:`list`, optional
             Returned only if `return_default_outputs=True`.
         """
 
@@ -146,13 +153,13 @@ class groundingline(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
