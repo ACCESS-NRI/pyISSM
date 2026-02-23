@@ -51,7 +51,9 @@ autosummary_generate = True
 
 autodoc_default_options = {
     "members": True,
-    "undoc-members": True,
+    "undoc-members": False, # Ignore members with no docstring
+    "private-members": False, # Ignore private members (those starting with _)
+    "special-members": False, # Ignore special members (those starting and ending with __)
     "show-inheritance": True,
 }
 
