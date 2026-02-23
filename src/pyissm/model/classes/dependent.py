@@ -1,56 +1,47 @@
 import numpy as np
 import warnings
-from pyissm.model.classes import class_utils
-from pyissm.model.classes import class_registry
+import os
+from pyissm.model.classes import class_utils, class_registry
 from pyissm import tools
 
 @class_registry.register_class
 class dependent(class_registry.manage_state):
     """
-    Dependent variable parameters class for ISSM.
+    Dependent variable class for ISSM.
 
-    This class encapsulates parameters for dependent variables in the ISSM (Ice Sheet System Model) framework.
-    Dependent variables are outputs or responses that depend on independent variables and are typically
-    used as objective functions in inverse problems or as outputs for sensitivity analysis.
+    This class contains parameters for dependent variables in the ISSM framework.
+    Dependent variables are outputs or responses that depend on independent variables
+    and are typically used as objective functions in inverse problems or as outputs
+    for sensitivity analysis.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    name : str, default=''
+    name : :class:`str`, default=''
         Variable name (must match corresponding String).
-    fos_reverse_index : float, default=nan
+    fos_reverse_index : :class:`float`, default=np.nan
         Index for fos_reverse driver of ADOLC.
-    exp : str, default=''
+    exp : :class:`str`, default=''
         File needed to compute dependent variable.
-    segments : str, default='List of segments'
+    segments : :class:`list`, default=[]
         Mass flux segments.
-    index : int, default=-1
+    index : :class:`int`, default=-1
         Index parameter.
-    nods : int, default=0
+    nods : :class:`int`, default=0
         Size parameter.
-
-    Methods
-    -------
-    __init__(self, md=None, other=None)
-        Initializes the dependent parameters, requires model object for mesh information, if name = 'MassFlux' is used. Optionally inherits from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the dependent parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-
-    Notes
-    -----
-    This functionality is not yet fully implemented in the current version.
 
     Examples
     --------
-    md.dependent = pyissm.model.classes.dependent()
-    md.dependent.name = 'Vel'
-    md.dependent.exp = 'velocity_observations.exp'
+    .. code-block:: python
+
+        >>> md.dependent = pyissm.model.classes.dependent()
+        >>> md.dependent.name = 'Vel'
+        >>> md.dependent.exp = 'velocity_observations.exp'
     """
 
     # Initialise with default parameters
@@ -72,11 +63,11 @@ class dependent(class_registry.manage_state):
 
             ## Check that the supplied *.exp file exists
             if not os.path.exists(self.exp):
-                raise IOError(f'dependent: the supplied *.exp file {self.exp} does not exist!')
+                raise IOError(f'pyissm.model.classes.dependent: the supplied *.exp file {self.exp} does not exist!')
 
             ## Check that a model object is provided to extract mesh information from
             if md is None:
-                raise ValueError('dependent: md must be provided when using massflux as dependent variable!')
+                raise ValueError('pyissm.model.classes.dependent: md must be provided when using massflux as dependent variable!')
             
             ## Get segments that intersect with the supplied *.exp file.
             if tools.wrappers.check_wrappers_installed():
@@ -86,8 +77,6 @@ class dependent(class_registry.manage_state):
                 warnings.warn('pyissm.model.classes.dependent: Python wrappers not installed. Unable to compute segments for mass flux variable.\n'
                               'Returning empty segments list to be defined manually.')
                 self.segments = []
-
-        # TODO: Implement check and adjustment for mass flux variable
 
     # Define repr
     def __repr__(self):
@@ -108,6 +97,24 @@ class dependent(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [dependent] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         if self.name.lower() == 'massflux':
             if not self.segments:
                 raise ValueError('pyissm.model.classes.dependent.check_consistency: need segments to compute massflux dependent variable response')

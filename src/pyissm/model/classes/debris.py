@@ -1,66 +1,55 @@
 import numpy as np
-from pyissm.model.classes import class_utils
-from pyissm.model.classes import class_registry
+from pyissm.model.classes import class_utils, class_registry
 from pyissm.model import execute, mesh
 
 @class_registry.register_class
 class debris(class_registry.manage_state):
     """
-    Debris transport parameters class for ISSM.
+    Debris transport class for ISSM.
 
-    This class encapsulates parameters for debris transport modeling in the ISSM (Ice Sheet System Model) framework.
+    This class contains parameters for debris transport modeling in the ISSM framework.
     Debris transport simulates the movement and accumulation of rock debris on glacier surfaces,
     which affects surface albedo, melting rates, and overall ice dynamics.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    spcthickness : ndarray, default=nan
+    spcthickness : :class:`numpy.ndarray`, default=np.nan
         Debris thickness constraints (NaN means no constraint) [m].
-    min_thickness : float, default=0.0
+    min_thickness : :class:`float`, default=0.0
         Minimum debris thickness allowed [m].
-    stabilization : int, default=2
+    stabilization : :class:`int`, default=2
         Stabilization method: 0=no stabilization, 1=artificial diffusion, 2=streamline upwinding, 3=streamline upwind Petrov-Galerkin (SUPG).
-    packingfraction : float, default=0.01
+    packingfraction : :class:`float`, default=0.01
         Fraction of debris covered in the ice.
-    removalmodel : int, default=0
+    removalmodel : :class:`int`, default=0
         Frontal removal of debris: 0=no removal, 1=Slope-triggered debris removal, 2=driving-stress triggered debris removal.
-    displacementmodel : int, default=0
+    displacementmodel : :class:`int`, default=0
         Debris displacement: 0=no displacement, 1=...
-    max_displacementvelocity : float, default=0.0
+    max_displacementvelocity : :class:`float`, default=0.0
         Maximum velocity of debris transport (v_ice + v_displacement) [m/a].
-    removal_slope_threshold : float, default=0.0
+    removal_slope_threshold : :class:`float`, default=0.0
         Critical slope [degrees] for removalmodel (1).
-    removal_stress_threshold : float, default=0.0
+    removal_stress_threshold : :class:`float`, default=0.0
         Critical stress [Pa] for removalmodel (2).
-    vertex_pairing : float, default=nan
+    vertex_pairing : :class:`float`, default=np.nan
         Pairs of vertices that are penalized.
-    requested_outputs : list, default=['default']
+    requested_outputs : :class:`list`, default=['default']
         Additional outputs requested.
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the debris parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the debris parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
-        Process requested outputs, expanding 'default' to appropriate outputs.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.debris = pyissm.model.classes.debris()
-    md.debris.min_thickness = 0.001
-    md.debris.packingfraction = 0.02
-    md.debris.stabilization = 2
+    .. code-block:: python
+    
+        >>> md.debris = pyissm.model.classes.debris()
+        >>> md.debris.min_thickness = 0.001
+        >>> md.debris.packingfraction = 0.02
+        >>> md.debris.stabilization = 2
     """
 
     # Initialise with default parameters
@@ -115,6 +104,23 @@ class debris(class_registry.manage_state):
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [debris] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if not mass transport analysis or transient with debris transport
         if not 'MassTransportAnalysis' in analyses or solution == 'TransientSolution' and not md.transient.isdebris:
@@ -141,20 +147,20 @@ class debris(class_registry.manage_state):
                         md = None,
                         return_default_outputs = False):
         """
-        Process requested outputs, expanding 'default' to appropriate outputs.
+        Process requested outputs for [debris] parameters, expanding 'default' to appropriate outputs.
 
         Parameters
         ----------
-        md : ISSM model object, optional
+        md : :class:`pyissm.model.Model`, optional
             Model object containing mesh information.
-        return_default_outputs : bool, default=False
+        return_default_outputs : :class:`bool`, default=False
             Whether to also return the list of default outputs.
             
         Returns
         -------
-        outputs : list
+        outputs : :class:`list`
             List of output strings with 'default' expanded to actual output names.
-        default_outputs : list, optional
+        default_outputs : :class:`list`, optional
             Returned only if `return_default_outputs=True`.
         """
 
@@ -185,13 +191,13 @@ class debris(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
