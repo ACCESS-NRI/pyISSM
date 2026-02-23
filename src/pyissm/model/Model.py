@@ -8,9 +8,6 @@ from pyissm.tools import wrappers
 
 class Model():
     """
-    ISSM Model Class
-    ----------------
-
     High-level container for all components of an Ice-sheet and Sea-level System Model (ISSM)
     model. Initializes a collection of model components, each of which may store inputs,
     settings, and results related to ice sheet simulation.
@@ -236,9 +233,6 @@ class Model():
     # Model consistency check_message
     def check_message(self, string):
         """
-        Model consistency check message method
-        --------------------------------------
-
         Notify about a model consistency error, update internal state, and return the instance.
 
         This method prints a formatted consistency error message to standard output,
@@ -277,9 +271,6 @@ class Model():
     # Get all sub-class names within a model
     def model_class_names(self):
         """
-        List of model class attribute names
-        -----------------------------------
-
         Return a sorted list of registered model class attribute names.
 
         The method inspects the instance attributes and returns those whose
@@ -316,9 +307,6 @@ class Model():
     # Extract a portion of existing model
     def extract(self, area):
         """
-        Extract model sub-domain
-        ------------------------
-
         Extract a submodel from a larger model based on a domain or flag list.
 
         This routine extracts a submodel from a bigger model with respect to a given 
@@ -644,9 +632,6 @@ class Model():
                 upper_exponent = None,
                 coefficients = None):
         """
-        Extrude model in vertical direction
-        -----------------------------------
-
         Vertically extrude a 2D mesh to create a 3D mesh.
 
         Vertically extrude a 2D mesh and create corresponding 3D prism mesh.
@@ -911,9 +896,6 @@ class Model():
     # Collapse 3D mesh to 2D mesh
     def collapse(self):
         """
-        Collapse ISSM model
-        -------------------
-
         Collapse a 3D mesh into a 2D mesh.
 
         This method collapses a 3D model into a 2D model by depth-averaging all fields.
