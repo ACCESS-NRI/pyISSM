@@ -103,7 +103,7 @@ class levelset(class_registry.manage_state):
         import numpy as np
         from pyissm.model import mesh
         from pyissm.tools.wrappers import ExpToLevelSet
-        from pyissm.tools.exp import exp_write
+        from pyissm.tools.exp import exp_write, isoline
         if levelset is None or len(levelset) == 0:
             raise RuntimeError("levelset provided is empty")
 
@@ -122,7 +122,7 @@ class levelset(class_registry.manage_state):
             y = np.asarray(md.mesh.y).reshape(-1)
 
         # 1) extract 0-contour as python dict/list
-        contours, _ = mesh.isoline(md, levelset, value=0.0)
+        contours, _ = isoline(md, levelset, value=0.0)
 
         if not isinstance(contours, list) or len(contours) == 0:
             raise RuntimeError("isoline returned no contours at value=0")
