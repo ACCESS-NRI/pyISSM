@@ -49,8 +49,8 @@ from pyissm.model.classes.dependent import dependent
 from pyissm.model.classes.independent import independent
 
 # cost function classes (paths can differ; adjust if your repo uses different modules)
-from pyissm.model.classes.cf import cfsurfacelogvel
-from pyissm.model.classes.cf import cfsurfacesquaretransient
+from pyissm.model.classes.cf import surfacelogvel
+from pyissm.model.classes.cf import surfacesquaretransient
 
 # Ensure containers exist
 if getattr(md.outputdefinition, "definitions", None) is None:

@@ -68,7 +68,7 @@ md.materials.rheology_B[:-1, :] = 1.8e8
 # -----------------------------
 from pyissm.model.classes.dependent import dependent
 from pyissm.model.classes.independent import independent
-from pyissm.model.classes.cf import cfsurfacelogvel, cfsurfacesquare
+from pyissm.model.classes.cf import surfacelogvel, surfacesquare
 
 def set_if(obj, **kvs):
     """Set attributes if they exist on this build's wrapper."""
@@ -92,7 +92,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     weights = np.ones(nv)
 
     # ---- LogVel misfit ----
-    cf = cfsurfacelogvel()
+    cf = surfacelogvel()
     set_if(cf,
         name=f"LogVelMis{count}",
         definitionstring=f"Outputdefinition{count}",
@@ -110,7 +110,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     count += 1
 
     # ---- Vy square misfit ----
-    cf = cfsurfacesquare()
+    cf = surfacesquare()
     set_if(cf,
         name=f"VyMisfit{count}",
         definitionstring=f"Outputdefinition{count}",
@@ -129,7 +129,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     count += 1
 
     # ---- Vx square misfit (500*weights) ----
-    cf = cfsurfacesquare()
+    cf = surfacesquare()
     set_if(cf,
         name=f"VxMisfit{count}",
         definitionstring=f"Outputdefinition{count}",
@@ -148,7 +148,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     count += 1
 
     # ---- DEM / Surface misfit (1/yts * weights) ----
-    cf = cfsurfacesquare()
+    cf = surfacesquare()
     set_if(cf,
         name=f"DEMMisfit{count}",
         definitionstring=f"Outputdefinition{count}",

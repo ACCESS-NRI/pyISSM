@@ -88,7 +88,7 @@ if steps is None:
 # Import classes (paths can differ across pyISSM builds)
 from pyissm.model.classes.dependent import dependent
 from pyissm.model.classes.independent import independent
-from pyissm.model.classes.cf import cflevelsetmisfit
+from pyissm.model.classes.cf import levelsetmisfit
 
 from pyissm.model.classes.levelset import levelset
 
@@ -102,7 +102,7 @@ for i in range(0, len(steps)):
 
     # IMPORTANT: many pyISSM class constructors DO NOT accept kwargs like MATLAB.
     # Pattern that usually works: instantiate with no args, then set attributes.
-    mis = cflevelsetmisfit()
+    mis = levelsetmisfit()
     mis.name = f"LevelsetMisfit{count}"
     mis.definitionstring = f"Outputdefinition{count}"
     mis.model_string = "MaskIceLevelset"

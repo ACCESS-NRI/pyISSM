@@ -84,7 +84,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     weights = np.ones((nv, 1))
 
     # 1) Log velocity misfit
-    cf = pyissm.model.classes.cf.cfsurfacelogvel()
+    cf = pyissm.model.classes.cf.surfacelogvel()
     cf.name = f"LogVelMis{count+1}"
     cf.definitionstring = f"Outputdefinition{count+1}"
     cf.vxobs_string = "VxObs"
@@ -105,7 +105,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     count += 1
 
     # 2) Vy square misfit (note MATLAB divides by yts for Vx/Vy observations)
-    cf = pyissm.model.classes.cf.cfsurfacesquare()
+    cf = pyissm.model.classes.cf.surfacesquare()
     cf.name = f"VyMisfit{count+1}"
     cf.definitionstring = f"Outputdefinition{count+1}"
     cf.model_string = "Vy"
@@ -125,7 +125,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     count += 1
 
     # 3) Vx square misfit (MATLAB uses 500*weights here)
-    cf = pyissm.model.classes.cf.cfsurfacesquare()
+    cf = pyissm.model.classes.cf.surfacesquare()
     cf.name = f"VxMisfit{count+1}"
     cf.definitionstring = f"Outputdefinition{count+1}"
     cf.model_string = "Vx"
@@ -145,7 +145,7 @@ for i in range(0, len(md.results.TransientSolution.steps)):
     count += 1
 
     # 4) DEM / surface square misfit (MATLAB uses (1/yts)*weights)
-    cf = pyissm.model.classes.cf.cfsurfacesquare()
+    cf = pyissm.model.classes.cf.surfacesquare()
     cf.name = f"DEMMisfit{count+1}"
     cf.definitionstring = f"Outputdefinition{count+1}"
     cf.model_string = "Surface"

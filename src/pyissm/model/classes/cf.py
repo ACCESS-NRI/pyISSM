@@ -4,7 +4,7 @@ from pyissm.model.classes import class_utils, class_registry
 from pyissm.model import execute, mesh
 
 @class_registry.register_class
-class cflevelsetmisfit(class_registry.manage_state):
+class levelsetmisfit(class_registry.manage_state):
     """
     Level-set misfit response definition.
 
@@ -239,7 +239,7 @@ class cflevelsetmisfit(class_registry.manage_state):
 
 
 @class_registry.register_class
-class cfsurfacesquare(class_registry.manage_state):
+class surfacesquare(class_registry.manage_state):
     """
     Surface-square cost-function (response) definition.
 
@@ -433,7 +433,7 @@ class cfsurfacesquare(class_registry.manage_state):
         )
 
 @class_registry.register_class
-class cfsurfacesquaretransient(class_registry.manage_state):
+class surfacesquaretransient(class_registry.manage_state):
     """
     Transient surface-square misfit response definition.
 
@@ -628,7 +628,7 @@ class cfsurfacesquaretransient(class_registry.manage_state):
         )
 
 @class_registry.register_class
-class cfsurfacelogvel(class_registry.manage_state):
+class surfacelogvel(class_registry.manage_state):
     """
     Surface log-velocity misfit response definition.
 
