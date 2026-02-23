@@ -1,59 +1,48 @@
 import numpy as np
-from pyissm.model.classes import class_utils
-from pyissm.model.classes import class_registry
+from pyissm.model.classes import class_utils, class_registry
 from pyissm.model import execute
 
 @class_registry.register_class
 class esa(class_registry.manage_state):
     """
-    Elastic solid earth adjustment (ESA) parameters class for ISSM.
+    Elastic solid earth adjustment (ESA) class for ISSM.
 
-    This class encapsulates parameters for elastic solid earth adjustment in the ISSM (Ice Sheet System Model) framework.
+    This class contains parameters for elastic solid earth adjustment in the ISSM framework.
     ESA models the instantaneous elastic response of the solid Earth to ice loading changes,
     which is important for studying present-day ice sheet mass balance and sea level change.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    deltathickness : float, default=nan
+    deltathickness : :class:`float`, default=np.nan
         Thickness change: ice height equivalent [m].
-    love_h : float, default=0.0
+    love_h : :class:`float`, default=0.0
         Load Love number for radial displacement.
-    love_l : float, default=0.0
+    love_l : :class:`float`, default=0.0
         Load Love number for horizontal displacements.
-    hemisphere : float, default=0.0
+    hemisphere : :class:`float`, default=0.0
         North-south, East-west components of 2-D horizontal displacement vector: -1 south, 1 north.
-    degacc : float, default=0.01
+    degacc : :class:`float`, default=0.01
         Accuracy (default 0.01 deg) for numerical discretization of the Green's functions.
-    requested_outputs : list, default=['default']
+    requested_outputs : :class:`list`, default=['default']
         Additional outputs requested (default: EsaUmotion).
-    transitions : list, default=[]
+    transitions : :class:`list`, default=[]
         Indices into parts of the mesh that will be icecaps.
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the esa parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the esa parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
-        Process requested outputs, expanding 'default' to appropriate outputs.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.esa = pyissm.model.classes.esa()
-    md.esa.deltathickness = thickness_change
-    md.esa.love_h = 0.6
-    md.esa.love_l = 0.1
-    md.esa.degacc = 0.005
+    .. code-block:: python
+    
+        >>> md.esa = pyissm.model.classes.esa()
+        >>> md.esa.deltathickness = thickness_change
+        >>> md.esa.love_h = 0.6
+        >>> md.esa.love_l = 0.1
+        >>> md.esa.degacc = 0.005
     """
 
     # Initialise with default parameters
@@ -89,6 +78,24 @@ class esa(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [calving.default] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         # Early return if EsaAnalysis not specified
         if (solution != 'EsaAnalysis'):
             return md
@@ -109,20 +116,20 @@ class esa(class_registry.manage_state):
                         md = None,
                         return_default_outputs = False):
         """
-        Process requested outputs, expanding 'default' to appropriate outputs.
+        Process requested outputs for [esa] parameters, expanding 'default' to appropriate outputs.
 
         Parameters
         ----------
-        md : ISSM model object, optional
+        md : :class:`pyissm.model.Model`, optional
             Model object containing mesh information.
-        return_default_outputs : bool, default=False
+        return_default_outputs : :class:`bool`, default=False
             Whether to also return the list of default outputs.
             
         Returns
         -------
-        outputs : list
+        outputs : :class:`list`
             List of output strings with 'default' expanded to actual output names.
-        default_outputs : list, optional
+        default_outputs : :class:`list`, optional
             Returned only if `return_default_outputs=True`.
         """
 
@@ -153,13 +160,13 @@ class esa(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
