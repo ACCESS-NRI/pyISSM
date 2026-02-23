@@ -86,7 +86,7 @@ def parsedisplay(offset, name, field, comment):
         - :class:`bool`: Shows True/False
         - :class:`dict`: Shows nested dictionary structure
         - :class:`list`, :class:`tuple`: Shows container contents (up to 5 elements)
-        - None: Shows "None"
+        - ``None`: Shows "None"
         - Other types: Shows "not displayed"
 
     Examples
@@ -392,6 +392,7 @@ def marshall_inversion_cost_functions(cost_functions):
     ----------
     cost_functions : :class:`int` or list of :class:`int`
         Cost function code(s) to be mapped. Supported codes include:
+
         - 101: SurfaceAbsVelMisfit
         - 102: SurfaceRelVelMisfit  
         - 103: SurfaceLogVelMisfit
@@ -724,7 +725,7 @@ def check_field(
     field : any, optional
         Direct field value to validate. If provided, ``fieldname`` is optional.
     fieldname : :class:`str`, optional
-        Path used to resolve the field on ``md`` when ``field`` is None.
+        Path used to resolve the field on ``md`` when ``field`` is ``None``.
         Supports dotted attribute access and index notation, e.g.
         "results.TransientSolution[0].Vel".
     allow_nan : :class:`bool`, optional
@@ -769,7 +770,7 @@ def check_field(
     Notes
     -----
 
-    - If a resolved field is a Python scalar (bool/int/float) it will be converted to a 1-element numpy array for uniform checking.
+    - If a resolved field is a Python scalar (:class:`bool`, :class:`int`, :class:`float`) it will be converted to a 1-element numpy array for uniform checking.
     - Checks do not raise exceptions; they report failures via md.check_message(msg).
     - The `size` parameter may contain np.nan entries that act as wildcards.
     """
@@ -881,11 +882,12 @@ def cluster_queue_requirements(queue_dict, queue, np, time):
     Raises
     ------
     Exception
-        If the queue name is not found in queue_dict.
-        If time is not positive.
-        If requested time exceeds the maximum allowed time for the queue.
-        If number of processors is not positive.
-        If requested number of processors exceeds the maximum allowed for the queue.
+
+        - If the queue name is not found in queue_dict.
+        - If time is not positive.
+        - If requested time exceeds the maximum allowed time for the queue.
+        - If number of processors is not positive.
+        - If requested number of processors exceeds the maximum allowed for the queue.
     """
 
     try:
