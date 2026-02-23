@@ -9,7 +9,7 @@ from pyissm.tools import wrappers
 class Model():
     """
     ISSM Model Class
-    =================
+    ----------------
 
     High-level container for all components of an Ice-sheet and Sea-level System Model (ISSM)
     model. Initializes a collection of model components, each of which may store inputs,
@@ -237,7 +237,7 @@ class Model():
     def check_message(self, string):
         """
         Model consistency check message method
-        ======================================
+        --------------------------------------
 
         Notify about a model consistency error, update internal state, and return the instance.
 
@@ -278,7 +278,7 @@ class Model():
     def model_class_names(self):
         """
         List of model class attribute names
-        ===================================
+        -----------------------------------
 
         Return a sorted list of registered model class attribute names.
 
@@ -317,7 +317,7 @@ class Model():
     def extract(self, area):
         """
         Extract model sub-domain
-        ========================
+        ------------------------
 
         Extract a submodel from a larger model based on a domain or flag list.
 
@@ -645,7 +645,7 @@ class Model():
                 coefficients = None):
         """
         Extrude model in vertical direction
-        ===================================
+        -----------------------------------
 
         Vertically extrude a 2D mesh to create a 3D mesh.
 
@@ -912,7 +912,7 @@ class Model():
     def collapse(self):
         """
         Collapse ISSM model
-        ===================
+        -------------------
 
         Collapse a 3D mesh into a 2D mesh.
 
