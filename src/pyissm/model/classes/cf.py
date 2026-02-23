@@ -394,41 +394,41 @@ class surfacesquare(class_registry.manage_state):
         nv = md.mesh.numberofvertices
         yts = md.constants.yts
 
-        execute.WriteData(fid, prefix, data=self.name, name="md.surfacesquare.name", format="String")
-        execute.WriteData(fid, prefix, data=self.definitionstring, name="md.surfacesquare.definitionstring", format="String")
-        execute.WriteData(fid, prefix, data=self.surfaceid, name="md.surfacesquare.surfaceid", format="Integer")
-        execute.WriteData(fid, prefix, data=self.model_string, name="md.surfacesquare.model_string", format="String")
+        execute.WriteData(fid, prefix, data=self.name, name="md.cfsurfacesquare.name", format="String")
+        execute.WriteData(fid, prefix, data=self.definitionstring, name="md.cfsurfacesquare.definitionstring", format="String")
+        execute.WriteData(fid, prefix, data=self.surfaceid, name="md.cfsurfacesquare.surfaceid", format="Integer")
+        execute.WriteData(fid, prefix, data=self.model_string, name="md.cfsurfacesquare.model_string", format="String")
 
         execute.WriteData(
             fid,
             prefix,
             data=self.observation,
-            name="md.surfacesquare.observation",
+            name="md.cfsurfacesquare.observation",
             format="DoubleMat",
             mattype=1,
             timeserieslength=nv + 1,
             yts=yts,
         )
-        execute.WriteData(fid, prefix, data=self.observation_string, name="md.surfacesquare.observation_string", format="String")
+        execute.WriteData(fid, prefix, data=self.observation_string, name="md.cfsurfacesquare.observation_string", format="String")
 
         execute.WriteData(
             fid,
             prefix,
             data=self.weights,
-            name="md.surfacesquare.weights",
+            name="md.cfsurfacesquare.weights",
             format="DoubleMat",
             mattype=1,
             timeserieslength=nv + 1,
             yts=yts,
         )
-        execute.WriteData(fid, prefix, data=self.weights_string, name="md.surfacesquare.weights_string", format="String")
+        execute.WriteData(fid, prefix, data=self.weights_string, name="md.cfsurfacesquare.weights_string", format="String")
 
         # MATLAB: round(datatime * yts) stored as Double
         execute.WriteData(
             fid,
             prefix,
             data=float(np.round(self.datatime * yts)),
-            name="md.surfacesquare.datatime",
+            name="md.cfsurfacesquare.datatime",
             format="Double",
         )
 
@@ -590,19 +590,19 @@ class surfacesquaretransient(class_registry.manage_state):
         nv = md.mesh.numberofvertices
         yts = md.constants.yts
 
-        execute.WriteData(fid, prefix, data=self.name, name="md.surfacesquaretransient.name", format="String")
+        execute.WriteData(fid, prefix, data=self.name, name="md.cfsurfacesquaretransient.name", format="String")
         execute.WriteData(
             fid,
             prefix,
             data=self.definitionstring,
-            name="md.surfacesquaretransient.definitionstring",
+            name="md.cfsurfacesquaretransient.definitionstring",
             format="String",
         )
         execute.WriteData(
             fid,
             prefix,
             data=self.model_string,
-            name="md.surfacesquaretransient.model_string",
+            name="md.cfsurfacesquaretransient.model_string",
             format="String",
         )
 
@@ -610,7 +610,7 @@ class surfacesquaretransient(class_registry.manage_state):
             fid,
             prefix,
             data=self.observations,
-            name="md.surfacesquaretransient.observations",
+            name="md.cfsurfacesquaretransient.observations",
             format="DoubleMat",
             mattype=1,
             timeserieslength=nv + 1,
@@ -620,7 +620,7 @@ class surfacesquaretransient(class_registry.manage_state):
             fid,
             prefix,
             data=self.weights,
-            name="md.surfacesquaretransient.weights",
+            name="md.cfsurfacesquaretransient.weights",
             format="DoubleMat",
             mattype=1,
             timeserieslength=nv + 1,
@@ -813,12 +813,12 @@ class surfacelogvel(class_registry.manage_state):
         nv = md.mesh.numberofvertices
         yts = md.constants.yts
 
-        execute.WriteData(fid, prefix, data=self.name, name="md.surfacelogvel.name", format="String")
+        execute.WriteData(fid, prefix, data=self.name, name="md.cfsurfacelogvel.name", format="String")
         execute.WriteData(
             fid,
             prefix,
             data=self.definitionstring,
-            name="md.surfacelogvel.definitionstring",
+            name="md.cfsurfacelogvel.definitionstring",
             format="String",
         )
 
@@ -826,7 +826,7 @@ class surfacelogvel(class_registry.manage_state):
             fid,
             prefix,
             data=self.vxobs,
-            name="md.surfacelogvel.vxobs",
+            name="md.cfsurfacelogvel.vxobs",
             format="DoubleMat",
             mattype=1,
             timeserieslength=nv + 1,
@@ -837,7 +837,7 @@ class surfacelogvel(class_registry.manage_state):
             fid,
             prefix,
             data=self.vxobs_string,
-            name="md.surfacelogvel.vxobs_string",
+            name="md.cfsurfacelogvel.vxobs_string",
             format="String",
         )
 
@@ -845,7 +845,7 @@ class surfacelogvel(class_registry.manage_state):
             fid,
             prefix,
             data=self.vyobs,
-            name="md.surfacelogvel.vyobs",
+            name="md.cfsurfacelogvel.vyobs",
             format="DoubleMat",
             mattype=1,
             timeserieslength=nv + 1,
@@ -856,7 +856,7 @@ class surfacelogvel(class_registry.manage_state):
             fid,
             prefix,
             data=self.vyobs_string,
-            name="md.surfacelogvel.vyobs_string",
+            name="md.cfsurfacelogvel.vyobs_string",
             format="String",
         )
 
@@ -864,7 +864,7 @@ class surfacelogvel(class_registry.manage_state):
             fid,
             prefix,
             data=self.weights,
-            name="md.surfacelogvel.weights",
+            name="md.cfsurfacelogvel.weights",
             format="DoubleMat",
             mattype=1,
             timeserieslength=nv + 1,
@@ -874,7 +874,7 @@ class surfacelogvel(class_registry.manage_state):
             fid,
             prefix,
             data=self.weights_string,
-            name="md.surfacelogvel.weights_string",
+            name="md.cfsurfacelogvel.weights_string",
             format="String",
         )
 
@@ -882,6 +882,6 @@ class surfacelogvel(class_registry.manage_state):
             fid,
             prefix,
             data=float(np.round(self.datatime * yts)),
-            name="md.surfacelogvel.datatime",
+            name="md.cfsurfacelogvel.datatime",
             format="Double",
         )
