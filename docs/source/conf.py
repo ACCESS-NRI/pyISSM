@@ -54,7 +54,7 @@ autodoc_default_options = {
     "undoc-members": False, # Ignore members with no docstring
     "private-members": False, # Ignore private members (those starting with _)
     "special-members": False, # Ignore special members (those starting and ending with __)
-    "show-inheritance": True,
+    "show-inheritance": False,
 }
 
 templates_path = ['_templates']

@@ -6,7 +6,6 @@ from pyissm.model import execute
 class amr(class_registry.manage_state):
     """
     Adaptive Mesh Refinement (AMR) class for ISSM
-    ---------------------------------------------
 
     This class contains parameters and configuration options for adaptive mesh refinement (AMR) in the ISSM framework.
     It allows users to control mesh resolution based on various criteria such as velocity, thickness error,
@@ -134,6 +133,24 @@ class amr(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [amr] parameters.
+        
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+        
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+        
         class_utils.check_field(md, fieldname = "amr.hmax", scalar = True, gt = 0, allow_nan = False)
         class_utils.check_field(md, fieldname = "amr.hmin", scalar = True, gt = 0, lt = self.hmax, allow_nan = False)
         class_utils.check_field(md, fieldname = "amr.keepmetric", scalar = True, ge = 0, le = 1, allow_nan = False)
