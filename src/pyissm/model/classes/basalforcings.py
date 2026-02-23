@@ -12,41 +12,34 @@ class default(class_registry.manage_state):
     """
     Default basal forcings parameters class for ISSM.
 
-    This class encapsulates the default parameters for basal forcings in the ISSM (Ice Sheet System Model) framework.
-    It defines the melting rates for grounded and floating ice, perturbation melting rate, and geothermal heat flux.
+    This class contains the default parameters for basal forcings in the ISSM framework.
+    It defines the melting rates for grounded and floating ice, perturbation melting rate,
+    and geothermal heat flux.
     
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    groundedice_melting_rate : ndarray, default=np.nan
+    groundedice_melting_rate : :class:`numpy.ndarray`, default=np.nan
         Basal melting rate for grounded ice (positive if melting) [m/yr].
-    floatingice_melting_rate : ndarray, default=np.nan
+    floatingice_melting_rate : :class:`numpy.ndarray`, default=np.nan
         Basal melting rate for floating ice (positive if melting) [m/yr].
-    perturbation_melting_rate : ndarray, default=np.nan
+    perturbation_melting_rate : :class:`numpy.ndarray`, default=np.nan
         Optional perturbation in basal melting rate under floating ice (positive if melting) [m/yr].
-    geothermalflux : float, default=np.nan
+    geothermalflux : :class:`float`, default=np.nan
         Geothermal heat flux [W/m^2].
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the basal forcings parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the basal forcings parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.basalforcings = pyissm.model.classes.basalforcings.default()
-    md.basalforcings.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices,))
-    md.basalforcings.floatingice_melting_rate = np.ones((md.mesh.numberofvertices,)) * 2
+    .. code-block:: python
+
+        >>> md.basalforcings = pyissm.model.classes.basalforcings.default()
+        >>> md.basalforcings.groundedice_melting_rate = np.zeros(md.mesh.numberofvertices,)
+        >>> md.basalforcings.floatingice_melting_rate = np.ones(md.mesh.numberofvertices,) * 2
     """
 
     # Initialise with default parameters
@@ -77,7 +70,7 @@ class default(class_registry.manage_state):
     # Extrude to 3D mesh
     def extrude(self, md):
         """
-        Extrude basalforcings.default fields to 3D
+        Extrude [basalforcings.default] fields to 3D
         """
         self.groundedice_melting_rate = mesh.project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
         self.perturbation_melting_rate = mesh.project_3d(md, vector = self.perturbation_melting_rate, type = 'node', layer = 1)
@@ -88,6 +81,24 @@ class default(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [basalforcings.default] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         # Masstransport analysis
         if 'Masstransport' in analyses and solution != 'TransientSolution' and not md.transient.ismasstransport:
             class_utils.check_field(md, fieldname = "basalforcings.groundedice_melting_rate", timeseries = True, allow_nan = False, allow_inf = False)
@@ -108,7 +119,18 @@ class default(class_registry.manage_state):
     # Initialise empty fields of correct dimensions
     def initialise(self, md):
         """
-        Initialise empty fields in basalforcings.default.
+        Initialise [basalforcings.default] empty fields.
+
+        If current values of required fields are np.nan, they will be set to default required shapes/values and warnings will be issued.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            >>> md.basalforcings = pyissm.model.classes.basalforcings.default()
+            # At this point, initial fields are np.nan
+            # After calling initialise, they will be set to default shapes/values with warnings issued.
+            >>> md.basalforcings.initialise(md)
         """
 
         if np.all(np.isnan(self.groundedice_melting_rate)):
@@ -128,13 +150,13 @@ class default(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -160,54 +182,47 @@ class pico(class_registry.manage_state):
     """
     Potsdam Ice-shelf Cavity mOdel (PICO) basal forcings parameters class for ISSM.
 
-    This class encapsulates the parameters for the PICO basal melt parameterization in the ISSM (Ice Sheet System Model) framework.
-    It defines the structure of the ice shelf cavities, including the number of basins, basin IDs, and various parameters related to ocean temperature, salinity, and melting rates.
+    This class contains the parameters for the PICO basal melt parameterization in the ISSM framework.
+    It defines the structure of the ice shelf cavities, including the number of basins, basin IDs, and 
+    various parameters related to ocean temperature, salinity, and melting rates.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    num_basins : int, default=0
+    num_basins : :class:`int`, default=0
         Number of basins the model domain is partitioned into [unitless].
-    basin_id : ndarray, default=np.nan
+    basin_id : :class:`numpy.ndarray`, default=np.nan
         Basin number assigned to each node [unitless].
-    maxboxcount : int, default=0
+    maxboxcount : :class:`int`, default=0
         Maximum number of boxes initialized under all ice shelves.
-    overturning_coeff : float, default=np.nan
+    overturning_coeff : :class:`float`, default=np.nan
         Overturning strength [m^3/s].
-    gamma_T : float, default=0.
+    gamma_T : :class:`float`, default=0.
         Turbulent temperature exchange velocity [m/s].
-    farocean_temperature : ndarray, default=np.nan
+    farocean_temperature : :class:`numpy.ndarray`, default=np.nan
         Depth averaged ocean temperature in front of the ice shelf for each basin [K].
-    farocean_salinity : ndarray, default=np.nan
+    farocean_salinity : :class:`numpy.ndarray`, default=np.nan
         Depth averaged ocean salinity in front of the ice shelf for each basin [psu].
-    isplume : int, default=0
+    isplume : :class:`int`, default=0
         Boolean (0 or 1) to use buoyant plume melt rate parameterization from Lazeroms et al., 2018 (default false).
-    geothermalflux : float, default=np.nan
+    geothermalflux : :class:`float`, default=np.nan
         Geothermal heat flux [W/m^2].
-    groundedice_melting_rate : ndarray, default=np.nan
+    groundedice_melting_rate : :class:`numpy.ndarray`, default=np.nan
         Basal melting rate for grounded ice (positive if melting) [m/yr].
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the PICO basal forcings parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the PICO basal forcings parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.basalforcings = pyissm.model.classes.basalforcings.pico()
-    md.basalforcings.num_basins = 3
-    md.basalforcings.basin_id = np.array([1, 2, 3])
-    md.basalforcings.farocean_temperature = np.array([273.15, 273.2, 273.1])
+    .. code-block:: python
+
+        >>> md.basalforcings = pyissm.model.classes.basalforcings.pico()
+        >>> md.basalforcings.num_basins = 3
+        >>> md.basalforcings.basin_id = np.array([1, 2, 3])
+        >>> md.basalforcings.farocean_temperature = np.array([273.15, 273.2, 273.1])
     """
 
     # Initialise with default parameters
@@ -251,7 +266,7 @@ class pico(class_registry.manage_state):
     # Extrude to 3D mesh
     def extrude(self, md):
         """
-        Extrude basalforcings.pico fields to 3D
+        Extrude [basalforcings.pico] fields to 3D
         """
         self.basin_id = mesh.project_3d(md, vector = self.basin_id, type = 'element', layer = 1)
         self.geothermalflux = mesh.project_3d(md, vector = self.geothermalflux, type = 'element', layer = 1) # Bedrock only gets geothermal flux        
@@ -261,6 +276,23 @@ class pico(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [basalforcings.pico] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         class_utils.check_field(md, fieldname = "basalforcings.num_basins", scalar = True, gt = 0, allow_nan = False, allow_inf = False)
         class_utils.check_field(md, fieldname = "basalforcings.basin_id", size = (md.mesh.numberofelements, 1), ge = 0, le = md.basalforcings.num_basins, allow_inf = False)
@@ -283,7 +315,18 @@ class pico(class_registry.manage_state):
     # Initialise empty fields of correct dimensions
     def initialise(self, md):
         """
-        Initialise empty fields in basalforcings.pico.
+        Initialise [basalforcings.pico] empty fields.
+
+        If current values of required fields are np.nan, they will be set to default required shapes/values and warnings will be issued.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            >>> md.basalforcings = pyissm.model.classes.basalforcings.pico()
+            # At this point, initial fields are np.nan
+            # After calling initialise, they will be set to default shapes/values with warnings issued.
+            >>> md.basalforcings.initialise(md)
         """
 
         if np.isnan(self.maxboxcount):
@@ -311,13 +354,13 @@ class pico(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -355,49 +398,42 @@ class linear(class_registry.manage_state):
     """
     Linear basal forcings parameters class for ISSM.
 
-    This class encapsulates the parameters for linear basal forcings in the ISSM (Ice Sheet System Model) framework.
-    It defines the melting rates for deep and upper water, grounded ice, and geothermal flux, allowing for a depth-dependent representation of basal melting processes.
+    This class contains the parameters for linear basal forcings in the ISSM framework.
+    It defines the melting rates for deep and upper water, grounded ice, and geothermal flux,
+    allowing for a depth-dependent representation of basal melting processes.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    deepwater_melting_rate : float, default=0.
+    deepwater_melting_rate : :class:`float`, default=0.
         Basal melting rate applied for floating ice with base < deepwater_elevation [m/yr].
-    deepwater_elevation : float, default=0.
+    deepwater_elevation : :class:`float`, default=0.
         Elevation threshold for deepwater melting rate [m].
-    upperwater_melting_rate : float, default=0.
+    upperwater_melting_rate : :class:`float`, default=0.
         Basal melting rate applied for floating ice with base >= upperwater_elevation [m/yr].
-    upperwater_elevation : float, default=0.
+    upperwater_elevation : :class:`float`, default=0.
         Elevation threshold for upperwater melting rate [m].
-    groundedice_melting_rate : ndarray, default=np.nan
+    groundedice_melting_rate : :class:`numpy.ndarray`, default=np.nan
         Basal melting rate for grounded ice (positive if melting) [m/yr].
-    perturbation_melting_rate : ndarray, default=np.nan
+    perturbation_melting_rate : :class:`numpy.ndarray`, default=np.nan
         Perturbation applied to computed melting rate (positive if melting) [m/yr].
-    geothermalflux : float, default=np.nan
+    geothermalflux : :class:`float`, default=np.nan
         Geothermal heat flux [W/m^2].
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the linear basal forcings parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the linear basal forcings parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.basalforcings = pyissm.model.classes.basalforcings.linear()
-    md.basalforcings.deepwater_melting_rate = 1.5
-    md.basalforcings.deepwater_elevation = -500
-    md.basalforcings.upperwater_melting_rate = 0.5
-    md.basalforcings.upperwater_elevation = -200
+    .. code-block:: python
+
+        >>> md.basalforcings = pyissm.model.classes.basalforcings.linear()
+        >>> md.basalforcings.deepwater_melting_rate = 1.5
+        >>> md.basalforcings.deepwater_elevation = -500
+        >>> md.basalforcings.upperwater_melting_rate = 0.5
+        >>> md.basalforcings.upperwater_elevation = -200
     """
 
     # Initialise with default parameters
@@ -434,7 +470,7 @@ class linear(class_registry.manage_state):
     # Extrude to 3D mesh
     def extrude(self, md):
         """
-        Extrude basalforcings.linear fields to 3D
+        Extrude [basalforcings.linear] fields to 3D
         """
         self.perturbation_melting_rate = mesh.project_3d(md, vector = self.perturbation_melting_rate, type = 'node', layer = 1)
         self.groundedice_melting_rate = mesh.project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
@@ -444,6 +480,24 @@ class linear(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [basalforcings.linear] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         if not np.all(np.isnan(self.perturbation_melting_rate)):
             class_utils.check_field(md, fieldname = "basalforcings.perturbation_melting_rate", timeseries = True, allow_nan = False, allow_inf = False)
         if 'MasstransportAnalysis' in analyses and solution != 'TransientSolution' and not md.transient.ismasstransport:
@@ -471,7 +525,18 @@ class linear(class_registry.manage_state):
     # Initialise empty fields of correct dimensions
     def initialise(self, md):
         """
-        Initialise empty fields in basalforcings.linear.
+        Initialise [basalforcings.linear] empty fields.
+
+        If current values of required fields are np.nan, they will be set to default required shapes/values and warnings will be issued.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            >>> md.basalforcings = pyissm.model.classes.basalforcings.linear()
+            # At this point, groundedice_melting_rate and floatingice_melting_rate are np.nan
+            # After calling initialise, they will be set to zero with warnings issued.
+            >>> md.basalforcings.initialise(md)
         """
         
         if np.all(np.isnan(self.groundedice_melting_rate)):
@@ -487,13 +552,13 @@ class linear(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -520,63 +585,56 @@ class lineararma(class_registry.manage_state):
     """
     Linear ARMA basal forcings parameters class for ISSM.
 
-    This class encapsulates the parameters for linear ARMA basal forcings in the ISSM (Ice Sheet System Model) framework.
-    It defines the structure for piecewise polynomial parameters, autoregressive and moving-average coefficients, and various melting rates and elevations for different basins.
+    This class contains the parameters for linear ARMA basal forcings in the ISSM framework.
+    It defines the structure for piecewise polynomial parameters, autoregressive and moving-average
+    coefficients, and various melting rates and elevations for different basins.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    num_basins : int, default=0
+    num_basins : :class:`int`, default=0
         Number of different basins [unitless].
-    num_params : int, default=0
+    num_params : :class:`int`, default=0
         Number of different parameters in the piecewise-polynomial (1:intercept only, 2:with linear trend, 3:with quadratic trend, etc.).
-    num_breaks : int, default=0
+    num_breaks : :class:`int`, default=0
         Number of different breakpoints in the piecewise-polynomial (separating num_breaks+1 periods).
-    polynomialparams : ndarray, default=np.nan
+    polynomialparams : :class:`numpy.ndarray`, default=np.nan
         Coefficients for the polynomial (const, trend, quadratic, etc.), dim1 for basins, dim2 for periods, dim3 for orders.
-    datebreaks : ndarray, default=np.nan
+    datebreaks : :class:`numpy.ndarray`, default=np.nan
         Dates at which the breakpoints in the piecewise polynomial occur (1 row per basin) [yr].
-    ar_order : float, default=0.
+    ar_order : :class:`float`, default=0.
         Order of the autoregressive model [unitless].
-    ma_order : float, default=0.
+    ma_order : :class:`float`, default=0.
         Order of the moving-average model [unitless].
-    arma_timestep : int, default=0
+    arma_timestep : :class:`int`, default=0
         Time resolution of the ARMA model [yr].
-    arlag_coefs : ndarray, default=np.nan
+    arlag_coefs : :class:`numpy.ndarray`, default=np.nan
         Basin-specific vectors of AR lag coefficients [unitless].
-    malag_coefs : ndarray, default=np.nan
+    malag_coefs : :class:`numpy.ndarray`, default=np.nan
         Basin-specific vectors of MA lag coefficients [unitless].
-    basin_id : ndarray, default=np.nan
+    basin_id : :class:`numpy.ndarray`, default=np.nan
         Basin number assigned to each element [unitless].
-    groundedice_melting_rate : ndarray, default=np.nan
+    groundedice_melting_rate : :class:`numpy.ndarray`, default=np.nan
         Node-specific basal melting rate for grounded ice (positive if melting) [m/yr].
-    deepwater_elevation : ndarray, default=np.nan
+    deepwater_elevation : :class:`numpy.ndarray`, default=np.nan
         Basin-specific elevation of ocean deepwater [m].
-    upperwater_melting_rate : ndarray, default=np.nan
+    upperwater_melting_rate : :class:`numpy.ndarray`, default=np.nan
         Basin-specific basal melting rate (positive if melting applied for floating ice with base >= upperwater_elevation) [m/yr].
-    upperwater_elevation : ndarray, default=np.nan
+    upperwater_elevation : :class:`numpy.ndarray`, default=np.nan
         Basin-specific elevation of ocean upperwater [m].
-    geothermalflux : ndarray, default=np.nan
+    geothermalflux : :class:`numpy.ndarray`, default=np.nan
         Node-specific geothermal heat flux [W/m^2].
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the linear ARMA basal forcings parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the linear ARMA basal forcings parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.basalforcings = pyissm.model.classes.basalforcings.lineararma()
+    .. code-block:: python
+
+        >>> md.basalforcings = pyissm.model.classes.basalforcings.lineararma()
     """
 
     # Initialise with default parameters
@@ -631,7 +689,7 @@ class lineararma(class_registry.manage_state):
     # Extrude to 3D mesh
     def extrude(self, md):
         """
-        Extrude basalforcings.lineararma fields to 3D
+        Extrude [basalforcings.lineararma] fields to 3D
         """
         warnings.warn('pyissm.model.classes.basalforcings.lineararma.extrude: 3D extrusion not implemented for basalforcings.lineararma. Returning unchanged (2D) basalforcing fields.')        
 
@@ -639,6 +697,24 @@ class lineararma(class_registry.manage_state):
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [basalforcings.lineararma] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         if 'MasstransportAnalysis' in analyses:
             nbas = md.basalforcings.num_basins
             nprm = md.basalforcings.num_params
@@ -693,7 +769,18 @@ class lineararma(class_registry.manage_state):
     # Initialise empty fields of correct dimensions
     def initialise(self, md):
         """
-        Initialise empty fields in basalforcings.lineararma.
+        Initialise [basalforcings.lineararma] empty fields.
+
+        If current values of required fields are np.nan, they will be set to default required shapes/values and warnings will be issued.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            >>> md.basalforcings = pyissm.model.classes.basalforcings.lineararma()
+            # At this point, initial fields are np.nan
+            # After calling initialise, they will be set to default shapes/values with warnings issued.
+            >>> md.basalforcings.initialise(md)
         """
 
         if np.all(np.isnan(self.groundedice_melting_rate)):
@@ -730,13 +817,13 @@ class lineararma(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -814,46 +901,38 @@ class mismip(class_registry.manage_state):
     """
     MISMIP basal forcings parameters class for ISSM.
 
-    This class encapsulates the parameters for the MISMIP basal melt parameterization in the ISSM (Ice Sheet System Model) framework.
-    It defines the basal melting rate for grounded ice, a melt rate factor, a threshold thickness for saturation of basal melting,
-    an upper depth above which the melt rate is zero, and geothermal heat flux.
+    This class contains the parameters for the MISMIP basal melt parameterization in the ISSM framework.
+    It defines the basal melting rate for grounded ice, a melt rate factor, a threshold thickness for
+    saturation of basal melting, an upper depth above which the melt rate is zero, and geothermal heat flux.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    groundedice_melting_rate : ndarray, default=np.nan
+    groundedice_melting_rate : :class:`numpy.ndarray`, default=np.nan
         Basal melting rate for grounded ice (positive if melting) [m/yr].
-    meltrate_factor : float, default=0.2
+    meltrate_factor : :class:`float`, default=0.2
         Melt-rate factor [1/yr] (sign is opposite to MISMIP+ benchmark to remain consistent with ISSM convention of positive values for melting).
-    threshold_thickness : float, default=75.
+    threshold_thickness : :class:`float`, default=75.
         Threshold thickness for saturation of basal melting [m].
-    upperdepth_melt : float, default=-100.
+    upperdepth_melt : :class:`float`, default=-100.
         Depth above which melt rate is zero [m].
-    geothermalflux : float, default=np.nan
+    geothermalflux : :class:`float`, default=np.nan
         Geothermal heat flux [W/m^2].
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the MISMIP basal forcings parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the MISMIP basal forcings parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.basalforcings = pyissm.model.classes.basalforcings.mismip()
-    md.basalforcings.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices,))
-    md.basalforcings.meltrate_factor = 0.2
-    md.basalforcings.threshold_thickness = 75.
-    md.basalforcings.upperdepth_melt = -100.
+    .. code-block:: python
+    
+        >>> md.basalforcings = pyissm.model.classes.basalforcings.mismip()
+        >>> md.basalforcings.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices,))
+        >>> md.basalforcings.meltrate_factor = 0.2
+        >>> md.basalforcings.threshold_thickness = 75.
+        >>> md.basalforcings.upperdepth_melt = -100.
     """
 
     # Initialise with default parameters
@@ -886,7 +965,7 @@ class mismip(class_registry.manage_state):
     # Extrude to 3D mesh
     def extrude(self, md):
         """
-        Extrude basalforcings.mismip fields to 3D
+        Extrude [basalforcings.mismip] fields to 3D
         """
         self.groundedice_melting_rate = mesh.project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
         self.geothermalflux = mesh.project_3d(md, vector = self.geothermalflux, type = 'node', layer = 1)  #bedrock only gets geothermal flux
@@ -895,6 +974,24 @@ class mismip(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [basalforcings.mismip] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         if 'MasstransportAnalysis' in analyses and solution != 'TransientSolution' and not md.transient.ismasstransport:
             class_utils.check_field(md, fieldname = "basalforcings.groundedice_melting_rate", timeseries = True, allow_nan = False, allow_inf = False)
             class_utils.check_field(md, fieldname = "basalforcings.meltrate_factor", scalar = True, ge = 0)
@@ -919,7 +1016,18 @@ class mismip(class_registry.manage_state):
     # Initialise empty fields of correct dimensions
     def initialise(self, md):
         """
-        Initialise empty fields in basalforcings.mismip.
+        Initialise [basalforcings.mismip] empty fields.
+
+        If current values of required fields are np.nan, they will be set to default required shapes/values and warnings will be issued.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            >>> md.basalforcings = pyissm.model.classes.basalforcings.mismip()
+            # At this point, initial fields are np.nan
+            # After calling initialise, they will be set to default shapes/values with warnings issued.
+            >>> md.basalforcings.initialise(md)
         """
 
         if np.all(np.isnan(self.groundedice_melting_rate)):
@@ -939,13 +1047,13 @@ class mismip(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -976,61 +1084,54 @@ class plume(class_registry.manage_state):
     """
     Plume basal forcings parameters class for ISSM.
 
-    This class encapsulates the parameters for plume basal forcings in the ISSM (Ice Sheet System Model) framework.
-    It defines the structure of the mantle plume, including its radius, depth, and position, as well as parameters related to geothermal heat flux and melting rates.
+    This class contains the parameters for plume basal forcings in the ISSM framework.
+    It defines the structure of the mantle plume, including its radius, depth, and position,
+    as well as parameters related to geothermal heat flux and melting rates.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    floatingice_melting_rate : ndarray, default=np.nan
+    floatingice_melting_rate : :class:`numpy.ndarray`, default=np.nan
         Basal melting rate for floating ice (positive if melting) [m/yr].
-    groundedice_melting_rate : ndarray, default=np.nan
+    groundedice_melting_rate : :class:`numpy.ndarray`, default=np.nan
         Basal melting rate for grounded ice (positive if melting) [m/yr].
-    mantleconductivity : float, default=2.2
+    mantleconductivity : :class:`float`, default=2.2
         Mantle heat conductivity [W/m^3].
-    nusselt : float, default=300
+    nusselt : :class:`float`, default=300
         Nusselt number, ratio of mantle to plume [1].
-    dtbg : float, default=0.011
+    dtbg : :class:`float`, default=0.011
         Background temperature gradient [degree/m].
-    plumeradius : float, default=100000
+    plumeradius : :class:`float`, default=100000
         Radius of the mantle plume [m].
-    topplumedepth : float, default=10000
+    topplumedepth : :class:`float`, default=10000
         Depth of the mantle plume top below the crust [m].
-    bottomplumedepth : float, default=1050000
+    bottomplumedepth : :class:`float`, default=1050000
         Depth of the mantle plume base below the crust [m].
-    plumex : float, default=np.nan
+    plumex : :class:`float`, default=np.nan
         x coordinate of the center of the plume [m].
-    plumey : float, default=np.nan
+    plumey : :class:`float`, default=np.nan
         y coordinate of the center of the plume [m].
-    crustthickness : float, default=30000
+    crustthickness : :class:`float`, default=30000
         Thickness of the crust [m].
-    uppercrustthickness : float, default=14000
+    uppercrustthickness : :class:`float`, default=14000
         Thickness of the upper crust [m].
-    uppercrustheat : float, default=1.7e-6
+    uppercrustheat : :class:`float`, default=1.7e-6
         Volumic heat of the upper crust [W/m^3].
-    lowercrustheat : float, default=0.4e-6
+    lowercrustheat : :class:`float`, default=0.4e-6
         Volumic heat of the lower crust [W/m^3].
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the plume basal forcings parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the plume basal forcings parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.basalforcings = pyissm.model.classes.basalforcings.plume()
-    md.basalforcings.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices,))
-    md.basalforcings.floatingice_melting_rate = np.ones((md.mesh.numberofvertices,)) * 2
+    .. code-block:: python
+
+        >>> md.basalforcings = pyissm.model.classes.basalforcings.plume()
+        >>> md.basalforcings.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices,))
+        >>> md.basalforcings.floatingice_melting_rate = np.ones((md.mesh.numberofvertices,)) * 2
     """
 
     # Initialise with default parameters
@@ -1081,7 +1182,7 @@ class plume(class_registry.manage_state):
     # Extrude to 3D mesh
     def extrude(self, md):
         """
-        Extrude basalforcings.plume fields to 3D
+        Extrude [basalforcings.plume] fields to 3D
         """
         self.groundedice_melting_rate = mesh.project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
         self.floatingice_melting_rate = mesh.project_3d(md, vector = self.floatingice_melting_rate, type = 'node', layer = 1)
@@ -1090,6 +1191,24 @@ class plume(class_registry.manage_state):
     
     # Check model consistency
     def checkconsistency(self, md, solution, analyses):
+        """
+        Check consistency of the [basalforcings.plume] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         if 'MasstransportAnalysis' in analyses and not (solution == 'TransientSolution' and md.transient.ismasstransport == 0):
             class_utils.check_field(md, fieldname = "basalforcings.groundedice_melting_rate", timeseries = True, allow_nan = False)
             class_utils.check_field(md, fieldname = "basalforcings.floatingice_melting_rate", timeseries = True, allow_nan = False)
@@ -1118,7 +1237,18 @@ class plume(class_registry.manage_state):
     # Initialise empty fields of correct dimensions
     def initialise(self, md):
         """
-        Initialise empty fields in basalforcings.plume.
+        Initialise [basalforcings.plume] empty fields.
+
+        If current values of required fields are np.nan, they will be set to default required shapes/values and warnings will be issued.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            >>> md.basalforcings = pyissm.model.classes.basalforcings.plume()
+            # At this point, initial fields are np.nan
+            # After calling initialise, they will be set to default shapes/values with warnings issued.
+            >>> md.basalforcings.initialise(md)
         """
 
         if np.all(np.isnan(self.groundedice_melting_rate)):
@@ -1138,13 +1268,13 @@ class plume(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -1173,13 +1303,15 @@ class spatiallinear(class_registry.manage_state):
     """
     Spatial linear basal forcings parameters class for ISSM.
 
-    This class encapsulates the parameters for spatial linear basal forcings in the ISSM (Ice Sheet System Model) framework.
-    It defines the melting rates for grounded ice, deepwater, and upperwater, as well as geothermal heat flux and perturbation melting rate.
+    This class contains the parameters for spatial linear basal forcings in the ISSM framework.
+    It defines the melting rates for grounded ice, deepwater, and upperwater, as well as geothermal
+    heat flux and perturbation melting rate.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
@@ -1198,20 +1330,11 @@ class spatiallinear(class_registry.manage_state):
     perturbation_melting_rate : ndarray, default=np.nan
         Basal melting rate perturbation added to computed melting rate (positive if melting) [m/yr].
 
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the spatial linear basal forcings parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the spatial linear basal forcings parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
-
     Examples
     --------
-    md.basalforcings = pyissm.model.classes.basalforcings.spatiallinear()
+    .. code-block:: python
+
+        >>> md.basalforcings = pyissm.model.classes.basalforcings.spatiallinear()
     """
 
     # Initialise with default parameters
@@ -1262,6 +1385,24 @@ class spatiallinear(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [basalforcings.spatiallinear] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         if not np.all(np.isnan(self.perturbation_melting_rate)):
             class_utils.check_field(md, fieldname = "basalforcings.perturbation_melting_rate", timeseries = True, allow_nan = False)
 
@@ -1283,7 +1424,18 @@ class spatiallinear(class_registry.manage_state):
     # Initialise empty fields of correct dimensions
     def initialise(self, md):
         """
-        Initialise empty fields in basalforcings.spatiallinear.
+        Initialise [basalforcings.spatiallinear] empty fields.
+
+        If current values of required fields are np.nan, they will be set to default required shapes/values and warnings will be issued.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            >>> md.basalforcings = pyissm.model.classes.basalforcings.spatiallinear()
+            # At this point, initial fields are np.nan
+            # After calling initialise, they will be set to default shapes/values with warnings issued.
+            >>> md.basalforcings.initialise(md)
         """
 
         if np.all(np.isnan(self.groundedice_melting_rate)):
@@ -1299,13 +1451,13 @@ class spatiallinear(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None

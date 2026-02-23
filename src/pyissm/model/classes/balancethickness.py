@@ -8,46 +8,38 @@ class balancethickness(class_registry.manage_state):
     """
     Balance thickness solution parameters class for ISSM.
 
-    This class encapsulates parameters for the balance thickness solution in the ISSM (Ice Sheet System Model) framework.
-    It allows users to configure thickness constraints, thickening rates, and stabilization parameters for 
-    solving the balance thickness equation.
+    This class contains parameters for the balance thickness solution in the ISSM framework.
+    It allows users to configure thickness constraints, thickening rates, and stabilization
+    parameters for solving the balance thickness equation.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other``
+        differ from default values, they will override the default values.
 
     Attributes
     ----------
-    spcthickness : float, default=nan
+    spcthickness : :class:`float`, default=np.nan
         Thickness constraints (NaN means no constraint) [m].
-    thickening_rate : float, default=nan
+    thickening_rate : :class:`float`, default=np.nan
         Ice thickening rate used in the mass conservation (dh/dt) [m/yr].
-    stabilization : int, default=1
+    stabilization : :class:`int`, default=1
         Stabilization method: 0=None, 1=SU, 2=SSA's artificial diffusivity, 3=DG.
-    omega : float, default=nan
+    omega : :class:`float`, default=np.nan
         Stabilization parameter.
-    slopex : float, default=nan
+    slopex : :class:`float`, default=np.nan
         Surface slope in x-direction for stabilization.
-    slopey : float, default=nan
+    slopey : :class:`float`, default=np.nan
         Surface slope in y-direction for stabilization.
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the balance thickness parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the balance thickness parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.balancethickness = pyissm.model.classes.balancethickness()
-    md.balancethickness.spcthickness = 100.0
-    md.balancethickness.thickening_rate = 0.1
+    .. code-block:: python
+
+        >>> md.balancethickness = pyissm.model.classes.balancethickness()
+        >>> md.balancethickness.spcthickness = 100.0
+        >>> md.balancethickness.thickening_rate = 0.1
     """
 
     # Initialise with default parameters
@@ -78,6 +70,23 @@ class balancethickness(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [balancethickness] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if balance thickness solution is not requested
         if solution != 'Balancethickness':
@@ -96,13 +105,13 @@ class balancethickness(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
