@@ -80,10 +80,9 @@ jobs:
         run: |
           python3 -c "import pyissm; print('Wrappers installed:', pyissm.tools.wrappers.check_wrappers_installed())"
       
-      # Run Nightly tests
-      # NOTE: Exclude AD tests
+      # Run CI tests
       - name: Run tests
         run: |
           source $ISSM_DIR/etc/environment.sh
-          cd ./test/NightlyRuns/
-          python3 -u ../run-tests.py ${{ inputs.test-args }}
+          cd ./test/ci_tests/
+          python3 -u ./run-tests.py ${{ inputs.test-args }}
