@@ -69,8 +69,9 @@ class levelsetmisfit(class_registry.manage_state):
     >>> cf.datatime = time
     >>> md.outputdefinition.definitions.append(cf)
     """
-
+    issm_typename = "cflevelsetmisfit" # for class registry and marshalling
     def __init__(self, other=None):
+        
         # Defaults (MATLAB parity)
         self.name = ""
         self.definitionstring = ""
@@ -177,19 +178,19 @@ class levelsetmisfit(class_registry.manage_state):
         nv = md.mesh.numberofvertices
         yts = md.constants.yts
 
-        execute.WriteData(fid, prefix, data=self.name, name="md.levelsetmisfit.name", format="String")
+        execute.WriteData(fid, prefix, data=self.name, name="md.cflevelsetmisfit.name", format="String")
         execute.WriteData(
             fid,
             prefix,
             data=self.definitionstring,
-            name="md.levelsetmisfit.definitionstring",
+            name="md.cflevelsetmisfit.definitionstring",
             format="String",
         )
         execute.WriteData(
             fid,
             prefix,
             data=self.model_string,
-            name="md.levelsetmisfit.model_string",
+            name="md.cflevelsetmisfit.model_string",
             format="String",
         )
 
@@ -197,7 +198,7 @@ class levelsetmisfit(class_registry.manage_state):
             fid,
             prefix,
             data=self.observation,
-            name="md.levelsetmisfit.observation",
+            name="md.cflevelsetmisfit.observation",
             format="DoubleMat",
             mattype=1,
             timeserieslength=nv + 1,
@@ -207,7 +208,7 @@ class levelsetmisfit(class_registry.manage_state):
             fid,
             prefix,
             data=self.observation_string,
-            name="md.levelsetmisfit.observation_string",
+            name="md.cflevelsetmisfit.observation_string",
             format="String",
         )
 
@@ -215,7 +216,7 @@ class levelsetmisfit(class_registry.manage_state):
             fid,
             prefix,
             data=self.weights,
-            name="md.levelsetmisfit.weights",
+            name="md.cflevelsetmisfit.weights",
             format="DoubleMat",
             mattype=1,
             timeserieslength=nv + 1,
@@ -225,7 +226,7 @@ class levelsetmisfit(class_registry.manage_state):
             fid,
             prefix,
             data=self.weights_string,
-            name="md.levelsetmisfit.weights_string",
+            name="md.cflevelsetmisfit.weights_string",
             format="String",
         )
 
@@ -285,7 +286,7 @@ class surfacesquare(class_registry.manage_state):
       time series and writes them with ``timeserieslength = nv + 1`` and
       ``yts`` conversion. This class mirrors that marshalling behavior.
     """
-
+    issm_typename = "cfsurfacesquare" # for class registry and marshalling
     def __init__(self, other=None):
         # Defaults (MATLAB parity)
         self.name = ""
@@ -488,7 +489,7 @@ class surfacesquaretransient(class_registry.manage_state):
     >>> cf.weights = np.ones((md.mesh.numberofvertices + 1, 1))
     >>> md.outputdefinition.definitions.append(cf)
     """
-
+    issm_typename = "cfsurfacesquaretransient" # for class registry and marshalling
     def __init__(self, other=None):
         self.name = ""
         self.definitionstring = ""
@@ -697,7 +698,7 @@ class surfacelogvel(class_registry.manage_state):
     - ``vxobs`` and ``vyobs`` are written with a ``scale = 1/yts`` in MATLAB,
       matching ISSM’s internal unit conventions (m/s vs m/yr).
     """
-
+    issm_typename = "cfsurfacelogvel" # for class registry and marshalling
     def __init__(self, other=None):
         # Defaults (MATLAB parity)
         self.name = ""

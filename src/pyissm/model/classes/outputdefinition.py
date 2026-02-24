@@ -104,9 +104,18 @@ class outputdefinition(class_registry.manage_state):
             ## Marshall each definition
             definition.marshall_class(fid, prefix, md)
 
-            ## Extract the class name and capitalize the first letter
-            class_name = definition.__class__.__name__
-            class_name = class_name.capitalize()
+            # Use ISSM-facing typename when provided (keeps enums stable even if
+            # Python class names are "nicer").
+            #
+            # Example: Python class "surfacesquare" -> issm_typename "Cfsurfacesquare"
+            # Without this, we'd write "Surfacesquare" and ISSM StringToEnumx fails.
+            class_name = getattr(definition, "issm_typename", definition.__class__.__name__)
+
+            # Historically this code capitalized python class names, but that breaks
+            # ISSM enums for renamed classes. If you still want capitalization for
+            # legacy classes, only apply it when no explicit issm_typename exists.
+            if not hasattr(definition, "issm_typename"):
+                class_name = class_name.capitalize()
 
             ## 
             data.append(class_name)
