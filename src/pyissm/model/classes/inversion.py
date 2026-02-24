@@ -1,7 +1,6 @@
 import numpy as np
 import warnings
-from pyissm.model.classes import class_utils
-from pyissm.model.classes import class_registry
+from pyissm.model.classes import class_utils, class_registry
 from pyissm.model import execute, mesh
 from pyissm import tools
 
@@ -11,68 +10,60 @@ from pyissm import tools
 @class_registry.register_class
 class default(class_registry.manage_state):
     """
-    Default inversion parameters class for ISSM.
+    Default inversion class for ISSM.
 
-    This class defines the default parameters for the ISSM inversion process.
+    This class contains the default parameters for the inversion process in the ISSM framework.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    iscontrol : int, default=0
+    iscontrol : :class:`int`, default=0
         Is inversion activated? (0: no, 1: yes)
-    incomplete_adjoint : int, default=1
+    incomplete_adjoint : :class:`int`, default=1
         1: linear viscosity, 0: non-linear viscosity
-    control_parameters : str, default='FrictionCoefficient'
+    control_parameters : :class:`str`, default='FrictionCoefficient'
         Control parameter(s) for inversion (e.g., 'FrictionCoefficient', 'MaterialsRheologyBbar')
-    nsteps : int, default=20
+    nsteps : :class:`int`, default=20
         Number of optimization searches
-    maxiter_per_step : ndarray, default=20*np.ones(nsteps)
+    maxiter_per_step : :class:`numpy.ndarray`, default=20*np.ones(nsteps)
         Maximum iterations during each optimization step
-    cost_functions : str, default='List of cost functions'
+    cost_functions : :class:`str`, default='List of cost functions'
         Type of response for each optimization step
-    cost_functions_coefficients : ndarray, default=np.nan
+    cost_functions_coefficients : :class:`numpy.ndarray`, default=np.nan
         Coefficients applied to the misfit of each vertex and for each control parameter
-    gradient_scaling : ndarray, default=50*np.ones((nsteps, 1))
+    gradient_scaling : :class:`numpy.ndarray`, default=50*np.ones((nsteps, 1))
         Scaling factor on gradient direction during optimization, for each optimization step
-    cost_function_threshold : float, default=np.nan
+    cost_function_threshold : :class:`float`, default=np.nan
         Misfit convergence criterion. Default is 1%, NaN if not applied
-    min_parameters : float, default=np.nan
+    min_parameters : :class:`float`, default=np.nan
         Absolute minimum acceptable value of the inversed parameter on each vertex
-    max_parameters : float, default=np.nan
+    max_parameters : :class:`float`, default=np.nan
         Absolute maximum acceptable value of the inversed parameter on each vertex
-    step_threshold : ndarray, default=0.7*np.ones(nsteps)
+    step_threshold : :class:`numpy.ndarray`, default=0.7*np.ones(nsteps)
         Decrease threshold for misfit, default is 30%
-    vx_obs : ndarray, default=np.nan
+    vx_obs : :class:`numpy.ndarray`, default=np.nan
         Observed velocity x component [m/yr]
-    vy_obs : ndarray, default=np.nan
+    vy_obs : :class:`numpy.ndarray`, default=np.nan
         Observed velocity y component [m/yr]
-    vz_obs : ndarray, default=np.nan
+    vz_obs : :class:`numpy.ndarray`, default=np.nan
         Observed velocity z component [m/yr]
-    vel_obs : ndarray, default=np.nan
+    vel_obs : :class:`numpy.ndarray`, default=np.nan
         Observed velocity magnitude [m/yr]
-    thickness_obs : ndarray, default=np.nan
+    thickness_obs : :class:`numpy.ndarray`, default=np.nan
         Observed thickness [m]
-    surface_obs : ndarray, default=np.nan
+    surface_obs : :class:`numpy.ndarray`, default=np.nan
         Observed surface elevation [m]
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the default inversion parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the default inversion parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file
 
     Examples
     --------
-    md.inversion = pyissm.model.classes.inversion.default()
+    .. code-block:: python
+        
+        >>> md.inversion = pyissm.model.classes.inversion.default()
     """
 
     # Initialise with default parameters
@@ -157,6 +148,24 @@ class default(class_registry.manage_state):
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [inversion.default] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         # Early return if inversion disabled
         if not self.iscontrol:
             return md
@@ -211,13 +220,13 @@ class default(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -263,70 +272,62 @@ class default(class_registry.manage_state):
 @class_registry.register_class
 class m1qn3(class_registry.manage_state):
     """
-    m1qn3 inversion parameters class for ISSM.
+    m1qn3 inversion class for ISSM.
 
-    This class defines the default parameters for the ISSM inversion process using the m1qn3 optimization algorithm.
+    This class includes the default parameters for the ISSM inversion process using the m1qn3 optimization algorithm in the ISSM framework.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    iscontrol : int, default=0
+    iscontrol : :class:`int`, default=0
         Is inversion activated? (0: no, 1: yes)
-    incomplete_adjoint : int, default=1
+    incomplete_adjoint : :class:`int`, default=1
         1: linear viscosity, 0: non-linear viscosity
-    control_parameters : str, default='FrictionCoefficient'
+    control_parameters : :class:`str`, default='FrictionCoefficient'
         Control parameter(s) for inversion (e.g., 'FrictionCoefficient', 'MaterialsRheologyBbar')
-    control_scaling_factors : float or ndarray, default=1
+    control_scaling_factors : :class:`float` or :class:`numpy.ndarray`, default=1
         Order of magnitude of each control (useful for multi-parameter optimization)
-    maxsteps : int, default=20
+    maxsteps : :class:`int`, default=20
         Maximum number of iterations (gradient computation)
-    maxiter : int, default=40
+    maxiter : :class:`int`, default=40
         Maximum number of function evaluations (forward run)
-    dxmin : float, default=0.1
+    dxmin : :class:`float`, default=0.1
         Convergence criterion: two points less than dxmin from each other (sup-norm) are considered identical
-    dfmin_frac : float, default=1.0
+    dfmin_frac : :class:`float`, default=1.0
         Expected reduction of cost function during the first step (e.g., 0.3 = 30% reduction)
-    gttol : float, default=1e4
+    gttol : :class:`float`, default=1e-4
         ||g(X)||/||g(X0)|| (g(X0): gradient at initial guess X0)
-    cost_functions : int or list, default=101
+    cost_functions : :class:`int` or :class:`list`, default=101
         Type of response for each optimization step
-    cost_functions_coefficients : ndarray, default=np.nan
+    cost_functions_coefficients : :class:`numpy.ndarray`, default=np.nan
         Coefficients applied to the misfit of each vertex and for each control parameter
-    min_parameters : float, default=np.nan
+    min_parameters : :class:`float`, default=np.nan
         Absolute minimum acceptable value of the inversed parameter on each vertex
-    max_parameters : float, default=np.nan
+    max_parameters : :class:`float`, default=np.nan
         Absolute maximum acceptable value of the inversed parameter on each vertex
-    vx_obs : ndarray, default=np.nan
+    vx_obs : :class:`numpy.ndarray`, default=np.nan
         Observed velocity x component [m/yr]
-    vy_obs : ndarray, default=np.nan
+    vy_obs : :class:`numpy.ndarray`, default=np.nan
         Observed velocity y component [m/yr]
-    vz_obs : ndarray, default=np.nan
+    vz_obs : :class:`numpy.ndarray`, default=np.nan
         Observed velocity z component [m/yr]
-    vel_obs : ndarray, default=np.nan
+    vel_obs : :class:`numpy.ndarray`, default=np.nan
         Observed velocity magnitude [m/yr]
-    thickness_obs : ndarray, default=np.nan
+    thickness_obs : :class:`numpy.ndarray`, default=np.nan
         Observed thickness [m]
-    surface_obs : ndarray, default=np.nan
+    surface_obs : :class:`numpy.ndarray`, default=np.nan
         Observed surface elevation [m]
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the m1qn3 inversion parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the m1qn3 inversion parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file
 
     Examples
     --------
-    md.inversion = pyissm.model.classes.inversion.m1qn3()
+    .. code-block:: python
+        
+        >>> md.inversion = pyissm.model.classes.inversion.m1qn3()
     """
 
     # Initialise with default parameters
@@ -411,6 +412,24 @@ class m1qn3(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [inversion.m1qn3] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         # Early return if inversion disabled
         if not self.iscontrol:
             return md
@@ -461,13 +480,13 @@ class m1qn3(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -519,74 +538,66 @@ class m1qn3(class_registry.manage_state):
 @class_registry.register_class
 class tao(class_registry.manage_state):
     """
-    tao inversion parameters class for ISSM.
+    tao inversion class for ISSM.
 
-    This class defines the default parameters for the ISSM inversion process using the TAO optimization algorithms.
+    This class contains the default parameters for the ISSM inversion process using the TAO optimization algorithms in the ISSM framework.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    iscontrol : int, default=0
+    iscontrol : :class:`int`, default=0
         Is inversion activated? (0: no, 1: yes)
-    incomplete_adjoint : int, default=1
+    incomplete_adjoint : :class:`int`, default=1
         1: linear viscosity, 0: non-linear viscosity
-    control_parameters : str, default='FrictionCoefficient'
+    control_parameters : :class:`str`, default='FrictionCoefficient'
         Control parameter(s) for inversion (e.g., 'FrictionCoefficient', 'MaterialsRheologyBbar')
-    maxsteps : int, default=20
+    maxsteps : :class:`int`, default=20
         Maximum number of iterations (gradient computation)
-    maxiter : int, default=30
+    maxiter : :class:`int`, default=30
         Maximum number of function evaluations (forward run)
-    fatol : float, default=0
+    fatol : :class:`float`, default=0
         Absolute tolerance for cost function convergence (f(X) - f(X*))
-    frtol : float, default=0
+    frtol : :class:`float`, default=0
         Relative tolerance for cost function convergence (|f(X) - f(X*)| / |f(X*)|)
-    gatol : float, default=0
+    gatol : :class:`float`, default=0
         Absolute tolerance for gradient norm convergence (||g(X)||)
-    grtol : float, default=0
+    grtol : :class:`float`, default=0
         Relative tolerance for gradient norm convergence (||g(X)|| / |f(X)|)
-    gttol : float, default=1e-4
+    gttol : :class:`float`, default=1e-4
         Tolerance for gradient norm relative to initial (||g(X)|| / ||g(X0)||)
-    algorithm : str, default='blmvm'
+    algorithm : :class:`str`, default='blmvm'
         Minimization algorithm: 'blmvm', 'cg', 'lmvm'
-    cost_functions : int or list, default=101
+    cost_functions : :class:`int` or :class:`list`, default=101
         Type of response for each optimization step
-    cost_functions_coefficients : ndarray, default=np.nan
+    cost_functions_coefficients : :class:`numpy.ndarray`, default=np.nan
         Coefficients applied to the misfit of each vertex and for each control parameter
-    min_parameters : float, default=np.nan
+    min_parameters : :class:`float`, default=np.nan
         Absolute minimum acceptable value of the inversed parameter on each vertex
-    max_parameters : float, default=np.nan
+    max_parameters : :class:`float`, default=np.nan
         Absolute maximum acceptable value of the inversed parameter on each vertex
-    vx_obs : ndarray, default=np.nan
+    vx_obs : :class:`numpy.ndarray`, default=np.nan
         Observed velocity x component [m/yr]
-    vy_obs : ndarray, default=np.nan
+    vy_obs : :class:`numpy.ndarray`, default=np.nan
         Observed velocity y component [m/yr]
-    vz_obs : ndarray, default=np.nan
+    vz_obs : :class:`numpy.ndarray`, default=np.nan
         Observed velocity z component [m/yr]
-    vel_obs : ndarray, default=np.nan
+    vel_obs : :class:`numpy.ndarray`, default=np.nan
         Observed velocity magnitude [m/yr]
-    thickness_obs : ndarray, default=np.nan
+    thickness_obs : :class:`numpy.ndarray`, default=np.nan
         Observed thickness [m]
-    surface_obs : ndarray, default=np.nan
+    surface_obs : :class:`numpy.ndarray`, default=np.nan
         Observed surface elevation [m]
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the tao inversion parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the tao inversion parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file
 
     Examples
     --------
-    md.inversion = pyissm.model.classes.inversion.tao()
+    .. code-block:: python
+        
+        >>> md.inversion = pyissm.model.classes.inversion.tao()
     """
 
     # Initialise with default parameters
@@ -680,7 +691,24 @@ class tao(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        
+        """
+        Check consistency of the [inversion.tao] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         # Early return if inversion disabled
         if not self.iscontrol:
             return md
@@ -734,6 +762,9 @@ class tao(class_registry.manage_state):
     
     # Determine appropriate algorithm based on PETSc version
     def _get_algorithm(self):
+        """
+        Determine the appropriate TAO algorithm based on the installed PETSc version.
+        """
 
         ## If python wrappers are installed, check PETSc version
         if tools.wrappers.check_wrappers_installed():
@@ -759,13 +790,13 @@ class tao(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None

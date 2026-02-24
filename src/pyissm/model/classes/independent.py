@@ -1,58 +1,51 @@
 import numpy as np
-from pyissm.model.classes import class_utils
-from pyissm.model.classes import class_registry
+from pyissm.model.classes import class_utils, class_registry
 
 @class_registry.register_class
 class independent(class_registry.manage_state):
     """
-    Independent variable parameters class for ISSM.
+    Independent variable class for ISSM.
 
-    This class encapsulates parameters for independent variables in the ISSM (Ice Sheet System Model) framework.
+    This class contains parameters for independent variables in the ISSM framework.
     Independent variables are parameters that can be optimized or varied during inverse problems, 
     sensitivity analysis, or uncertainty quantification studies.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    name : str, default=''
+    name : :class:`str`, default=''
         Variable name (must match corresponding String).
-    type : str, default=''
+    type : :class:`str`, default=''
         Type of variable ('vertex' or 'scalar').
-    fos_forward_index : float, default=nan
+    fos_forward_index : :class:`float`, default=np.nan
         Index for fos_forward driver of ADOLC.
-    fov_forward_indices : array, default=[]
+    fov_forward_indices : :class:`numpy.ndarray`, default=np.array([])
         Indices for fov_forward driver of ADOLC.
-    nods : int, default=0
+    nods : :class:`int`, default=0
         Size of independent variables.
-    min_parameters : float, default=nan
+    min_parameters : :class:`float`, default=np.nan
         Absolute minimum acceptable value of the inversed parameter on each vertex.
-    max_parameters : float, default=nan
+    max_parameters : :class:`float`, default=np.nan
         Absolute maximum acceptable value of the inversed parameter on each vertex.
-    control_scaling_factor : float, default=nan
+    control_scaling_factor : :class:`float`, default=np.nan
         Order of magnitude of each control (useful for multi-parameter optimization).
-    control_size : int, default=1
+    control_size : :class:`int`, default=1
         Number of timesteps.
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the independent parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the independent parameters.
-    __str__(self)
-        Returns a short string identifying the class.
 
     Examples
     --------
-    md.independent = pyissm.model.classes.independent()
-    md.independent.name = 'FrictionCoefficient'
-    md.independent.type = 'vertex'
-    md.independent.min_parameters = 1e-3
-    md.independent.max_parameters = 100
+    .. code-block:: python
+    
+        >>> md.independent = pyissm.model.classes.independent()
+        >>> md.independent.name = 'FrictionCoefficient'
+        >>> md.independent.type = 'vertex'
+        >>> md.independent.min_parameters = 1e-3
+        >>> md.independent.max_parameters = 100
     """
 
     # Initialise with default parameters
@@ -91,7 +84,25 @@ class independent(class_registry.manage_state):
         return s
     
     # Check model consistency
-    def check_consistency(self, md, i, solution, analyses, driver):
+    def check_consistency(self, md, i, solution, analyses):
+        """
+        Check consistency of the [independent] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         if not np.isnan(self.fos_forward_index):
             if self.nods == 0:
                 raise TypeError('pyissm.model.classes.independent.check_consistency: nods should be set to the size of the independent variable')

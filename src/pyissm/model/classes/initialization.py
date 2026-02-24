@@ -1,86 +1,76 @@
 import numpy as np
 import warnings
-from pyissm.model.classes import class_utils
-from pyissm.model.classes import class_registry
-from pyissm.model.classes import hydrology
+from pyissm.model.classes import class_utils, class_registry, hydrology
 from pyissm.model import execute, mesh
 
 @class_registry.register_class
 class initialization(class_registry.manage_state):
     """
-    Initialization field values class for ISSM.
+    Initialization class for ISSM.
 
-    This class encapsulates initial field values for various physical quantities in the ISSM (Ice Sheet System Model) framework.
+    This class contains initial field values for various physical quantities in the ISSM framework.
     It provides storage for initial conditions of velocity, pressure, temperature, and other state variables
     that are used to initialize ice sheet model simulations.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    vx : ndarray, default=nan
+    vx : :class:`numpy.ndarray`, default=nan
         x component of velocity [m/yr].
-    vy : ndarray, default=nan
+    vy : :class:`numpy.ndarray`, default=nan
         y component of velocity [m/yr].
-    vz : ndarray, default=nan
+    vz : :class:`numpy.ndarray`, default=nan
         z component of velocity [m/yr].
-    vel : ndarray, default=nan
+    vel : :class:`numpy.ndarray`, default=nan
         velocity norm [m/yr].
-    pressure : ndarray, default=nan
+    pressure : :class:`numpy.ndarray`, default=nan
         pressure [Pa].
-    temperature : ndarray, default=nan
+    temperature : :class:`numpy.ndarray`, default=nan
         temperature [K].
-    enthalpy : ndarray, default=nan
+    enthalpy : :class:`numpy.ndarray`, default=nan
         enthalpy [J].
-    waterfraction : ndarray, default=nan
+    waterfraction : :class:`numpy.ndarray`, default=nan
         fraction of water in the ice.
-    sediment_head : ndarray, default=nan
+    sediment_head : :class:`numpy.ndarray`, default=nan
         sediment water head of subglacial system [m].
-    epl_head : ndarray, default=nan
+    epl_head : :class:`numpy.ndarray`, default=nan
         epl water head of subglacial system [m].
-    epl_thickness : ndarray, default=nan
+    epl_thickness : :class:`numpy.ndarray`, default=nan
         thickness of the epl [m].
-    watercolumn : ndarray, default=nan
+    watercolumn : :class:`numpy.ndarray`, default=nan
         thickness of subglacial water [m].
-    hydraulic_potential : ndarray, default=nan
+    hydraulic_potential : :class:`numpy.ndarray`, default=nan
         Hydraulic potential (for GlaDS) [Pa].
-    channelarea : ndarray, default=nan
+    channelarea : :class:`numpy.ndarray`, default=nan
         subglacial water channel area (for GlaDS) [m2].
-    sealevel : ndarray, default=nan
+    sealevel : :class:`numpy.ndarray`, default=nan
         sea level [m].
-    bottompressure : ndarray, default=nan
+    bottompressure : :class:`numpy.ndarray`, default=nan
         bottom pressure [Pa].
-    dsl : ndarray, default=nan
+    dsl : :class:`numpy.ndarray`, default=nan
         dynamic sea level [m].
-    str : ndarray, default=nan
+    str : :class:`numpy.ndarray`, default=nan
         surface temperature rate [K/yr].
-    sample : ndarray, default=nan
+    sample : :class:`numpy.ndarray`, default=nan
         Realization of a Gaussian random field.
-    debris : ndarray, default=nan
+    debris : :class:`numpy.ndarray`, default=nan
         Surface debris layer [m].
-    age : ndarray, default=nan
+    age : :class:`numpy.ndarray`, default=nan
         Initial age [yr].
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the initialization parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the initialization parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file
 
     Examples
     --------
-    md.initialization = pyissm.model.classes.initialization()
-    md.initialization.vx = vx_initial
-    md.initialization.vy = vy_initial
-    md.initialization.temperature = temp_initial
+    .. code-block:: python
+    
+        >>> md.initialization = pyissm.model.classes.initialization()
+        >>> md.initialization.vx = vx_initial
+        >>> md.initialization.vy = vy_initial
+        >>> md.initialization.temperature = temp_initial
     """
 
     # Initialise with default parameters
@@ -172,6 +162,23 @@ class initialization(class_registry.manage_state):
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [initialization] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         ## StressbalanceAnalysis
         if 'StressbalanceAnalysis' in analyses and not solution == 'TransientSolution' and not md.transient.isstressbalance:
@@ -280,13 +287,13 @@ class initialization(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
