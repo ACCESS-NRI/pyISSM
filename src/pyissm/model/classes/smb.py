@@ -3250,6 +3250,10 @@ class pddSicopolis(class_registry.manage_state):
         Present day lapse rate [degree/km]. Default: 7.4.
     isfirnwarming : int, default=1
         Is firn warming (Reeh 1991) activated (0 or 1). Default: 1.
+    pdd_fac_ice : float, default=7.28
+         Pdd factor for ice for all the domain (mm ice equiv/day/decgree C)
+    pdd_fac_snow : float, default=2.73
+         Pdd factor for snow for all the domain (mm ice equiv/day/decgree C)
     steps_per_step : int, default=1
         Number of SMB steps per time step.
     averaging : int, default=0
@@ -3300,6 +3304,8 @@ class pddSicopolis(class_registry.manage_state):
         self.s0t = np.nan
         self.rlaps = 7.4
         self.isfirnwarming = 1
+        self.pdd_fac_ice = 7.28
+        self.pdd_fac_snow = 2.73
         self.steps_per_step = 1
         self.averaging = 0
         self.requested_outputs = ['default']
@@ -3321,6 +3327,8 @@ class pddSicopolis(class_registry.manage_state):
         s += '{}\n'.format(class_utils.fielddisplay(self, 'rlaps', 'present day lapse rate (default is 7.4 degree/km)'))
         s += '{}\n'.format(class_utils.fielddisplay(self, 'desfac', 'desertification elevation factor (default is -log(2.0)/1000)'))
         s += '{}\n'.format(class_utils.fielddisplay(self, 'isfirnwarming', 'is firnwarming (Reeh 1991) activated (0 or 1, default is 1)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'pdd_fac_ice', 'Pdd factor for ice for all the domain [mm ice equiv/day/decgree C]'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'pdd_fac_snow', 'Pdd factor for snow for all the domain [mm ice equiv/day/decgree C]'))
         s += '{}\n'.format(class_utils.fielddisplay(self, 'steps_per_step', 'number of smb steps per time step'))
         s += '{}\n'.format(class_utils.fielddisplay(self, 'averaging', 'averaging methods from short to long steps'))
         s += '\t\t{}\n'.format('0: Arithmetic (default)')
@@ -3360,6 +3368,8 @@ class pddSicopolis(class_registry.manage_state):
             class_utils.check_field(md, fieldname = 'smb.rlaps', ge = 0, scalar = True)
             class_utils.check_field(md, fieldname = 'smb.monthlytemperatures', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
             class_utils.check_field(md, fieldname = 'smb.precipitation', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'smb.pdd_fac_ice', gt = 0, scalar = True)
+            class_utils.check_field(md, fieldname = 'smb.pdd_fac_snow', gt = 0, scalar = True)
         class_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
         class_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
         class_utils.check_field(md, fieldname = 'smb.requested_outputs', string_list = 1)
@@ -3464,6 +3474,9 @@ class pddSicopolis(class_registry.manage_state):
         execute.WriteData(fid, prefix, obj = self, fieldname = 'desfac', format = 'Double')
         execute.WriteData(fid, prefix, obj = self, fieldname = 's0p', format = 'DoubleMat', mattype = 1)
         execute.WriteData(fid, prefix, obj = self, fieldname = 's0t', format = 'DoubleMat', mattype = 1)
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'pdd_fac_ice', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'pdd_fac_snow', format = 'Double')
         execute.WriteData(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
         execute.WriteData(fid, prefix, obj = self, fieldname = 'monthlytemperatures', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)

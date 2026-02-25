@@ -32,7 +32,7 @@ class independent(class_registry.manage_state):
         Absolute minimum acceptable value of the inversed parameter on each vertex.
     max_parameters : float, default=nan
         Absolute maximum acceptable value of the inversed parameter on each vertex.
-    control_scaling_factor : float, default=nan
+    control_scaling_factor : float, default=1.0
         Order of magnitude of each control (useful for multi-parameter optimization).
     control_size : int, default=1
         Number of timesteps.
@@ -64,7 +64,7 @@ class independent(class_registry.manage_state):
         self.nods = 0
         self.min_parameters = np.nan
         self.max_parameters = np.nan
-        self.control_scaling_factor = np.nan
+        self.control_scaling_factor = 1.0
         self.control_size = 1
 
         # Inherit matching fields from provided class
@@ -101,5 +101,7 @@ class independent(class_registry.manage_state):
                 raise TypeError('pyissm.model.classes.independent.check_consistency: nods should be set to the size of the independent variable')
             
             class_utils.check_field(md, fieldname = 'autodiff.independents[%d].fov_forward_indices' % i, ge = 1, le = self.nods)
+        
+        md = class_utils.check_field(md, fieldname = 'autodiff.independents[%d].control_scaling_factor' % i, size = (1, 1), gt = 0., allow_nan = False, allow_nan = False)
 
         return md
