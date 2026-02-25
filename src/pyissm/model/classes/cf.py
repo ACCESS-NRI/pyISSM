@@ -69,7 +69,10 @@ class levelsetmisfit(class_registry.manage_state):
     >>> cf.datatime = time
     >>> md.outputdefinition.definitions.append(cf)
     """
-    issm_typename = "cflevelsetmisfit" # for class registry and marshalling
+    @classmethod
+    def issm_enum_string(cls) -> str:
+        return "Cflevelsetmisfit"
+
     def __init__(self, other=None):
         
         # Defaults (MATLAB parity)
@@ -286,7 +289,10 @@ class surfacesquare(class_registry.manage_state):
       time series and writes them with ``timeserieslength = nv + 1`` and
       ``yts`` conversion. This class mirrors that marshalling behavior.
     """
-    issm_typename = "cfsurfacesquare" # for class registry and marshalling
+    @classmethod
+    def issm_enum_string(cls) -> str:
+        return "Cfsurfacesquare" # for class registry and marshalling
+    
     def __init__(self, other=None):
         # Defaults (MATLAB parity)
         self.name = ""
@@ -489,7 +495,10 @@ class surfacesquaretransient(class_registry.manage_state):
     >>> cf.weights = np.ones((md.mesh.numberofvertices + 1, 1))
     >>> md.outputdefinition.definitions.append(cf)
     """
-    issm_typename = "cfsurfacesquaretransient" # for class registry and marshalling
+    @classmethod
+    def issm_enum_string(cls) -> str:
+        return "Cfsurfacesquaretransient" # for class registry and marshalling
+    
     def __init__(self, other=None):
         self.name = ""
         self.definitionstring = ""
@@ -698,7 +707,10 @@ class surfacelogvel(class_registry.manage_state):
     - ``vxobs`` and ``vyobs`` are written with a ``scale = 1/yts`` in MATLAB,
       matching ISSM’s internal unit conventions (m/s vs m/yr).
     """
-    issm_typename = "cfsurfacelogvel" # for class registry and marshalling
+    @classmethod
+    def issm_enum_string(cls) -> str:
+        return "Cfsurfacelogvel" # for class registry and marshalling
+    
     def __init__(self, other=None):
         # Defaults (MATLAB parity)
         self.name = ""
