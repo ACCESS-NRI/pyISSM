@@ -101,17 +101,10 @@ class outputdefinition(class_registry.manage_state):
         data = []
         
         for definition in self.definitions:
-            # Use ISSM-facing typename when provided (keeps enums stable even if
-            # Python class names are "nicer").
-
-            # Example: Python class "surfacesquare" -> issm_typename "Cfsurfacesquare"
-            # Without this, we'd write "Surfacesquare" and ISSM StringToEnumx fails.
-            # Historically this code capitalized python class names, but that breaks
-            # ISSM enums for renamed classes. If you still want capitalization for
-            # legacy classes, only apply it when no explicit issm_typename exists.
-
             # Marshall each definition
             definition.marshall_class(fid, prefix, md)
+
+            # Append class name for this definition to data list
             data.append(definition.__class__.issm_enum_string())
         
         ## Remove duplicates

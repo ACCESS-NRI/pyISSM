@@ -6,8 +6,12 @@ import numpy as np
 import os
 from pathlib import Path
 from datetime import datetime
-from pyissm import model, tools
+import tempfile
 import copy
+from pyissm import model, tools
+from pyissm.model import mesh
+from pyissm.tools.wrappers import ExpToLevelSet
+from pyissm.tools.exp import exp_write, isoline
 
 def set_mask(md,
              floating_ice_name = None,
@@ -710,12 +714,23 @@ def kill_icebergs(md):
 
 
 def reinitialize_levelset(md, levelset):
+    '''
+    Reinitialize a levelset field using the ExpToLevelSet backend.
+    This function takes a levelset field defined on the vertices of the mesh and reinitializes it to be a signed distance function using the ExpToLevelSet backend. The zero
+    level of the resulting field is the original levelset contour.
 
-    import os
-    import tempfile
-    from pyissm.model import mesh
-    from pyissm.tools.wrappers import ExpToLevelSet
-    from pyissm.tools.exp import exp_write, isoline
+    Parameters
+    ----------    
+    md : ISSM model object
+        The model containing the mesh information.
+    levelset : array-like
+        The levelset field to reinitialize, defined at the vertices of the mesh. For 3D meshes, this should be defined at the 2D vertices.     
+    Returns
+    -------
+    ndarray : The reinitialized levelset field, with the same shape as the input levelset. The zero level of this field corresponds to the original levelset contour, and the values represent the signed distance to
+    the contour (negative inside, positive outside).
+    '''
+
     if levelset is None or len(levelset) == 0:
         raise RuntimeError("levelset provided is empty")
 

@@ -71,6 +71,10 @@ class levelsetmisfit(class_registry.manage_state):
     """
     @classmethod
     def issm_enum_string(cls) -> str:
+        '''
+        This method is used by the class registry and marshalling to identify the class type in a way 
+        that matches MATLAB's naming convention.
+        '''
         return "Cflevelsetmisfit"
 
     def __init__(self, other=None):
@@ -291,7 +295,11 @@ class surfacesquare(class_registry.manage_state):
     """
     @classmethod
     def issm_enum_string(cls) -> str:
-        return "Cfsurfacesquare" # for class registry and marshalling
+        '''
+        This method is used by the class registry and marshalling to identify the class type in a way 
+        that matches MATLAB's naming convention.
+        '''
+        return "Cfsurfacesquare" 
     
     def __init__(self, other=None):
         # Defaults (MATLAB parity)
@@ -497,6 +505,10 @@ class surfacesquaretransient(class_registry.manage_state):
     """
     @classmethod
     def issm_enum_string(cls) -> str:
+        '''
+        This method is used by the class registry and marshalling to identify the class type in a way 
+        that matches MATLAB's naming convention.
+        '''
         return "Cfsurfacesquaretransient" # for class registry and marshalling
     
     def __init__(self, other=None):
@@ -709,6 +721,10 @@ class surfacelogvel(class_registry.manage_state):
     """
     @classmethod
     def issm_enum_string(cls) -> str:
+        '''
+        This method is used by the class registry and marshalling to identify the class type in a way 
+        that matches MATLAB's naming convention.
+        '''
         return "Cfsurfacelogvel" # for class registry and marshalling
     
     def __init__(self, other=None):

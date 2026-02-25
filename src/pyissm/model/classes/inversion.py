@@ -852,17 +852,6 @@ class adm1qn3(class_registry.manage_state):
         Gradient convergence criterion measured relative to the initial gradient:
         ``||g(X)|| / ||g(X0)||``.
 
-    Methods
-    -------
-    extrude(md)
-        No-op. Present for consistency with other classes and to support uniform
-        model pipelines that call ``extrude`` on all sub-objects.
-    check_consistency(md, solution=None, analyses=None)
-        Validate fields and (when possible) verify that ISSM was compiled with M1QN3
-        support, which ADM1QN3 depends on.
-    marshall_class(fid, prefix, md=None)
-        Write this object to the ISSM binary input file using ``execute.WriteData``.
-
     Notes
     -----
     - ISSM inversion type written by this class is **4** (ADM1QN3).
