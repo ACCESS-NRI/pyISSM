@@ -10,8 +10,6 @@ import tempfile
 import copy
 from pyissm import model, tools
 from pyissm.model import mesh
-from pyissm.tools.wrappers import ExpToLevelSet
-from pyissm.tools.exp import exp_write, isoline
 
 def set_mask(md,
              floating_ice_name = None,
@@ -749,7 +747,7 @@ def reinitialize_levelset(md, levelset):
         y = np.asarray(md.mesh.y).reshape(-1)
 
     # 1) extract 0-contour as python dict/list
-    contours, _ = isoline(md, levelset, value=0.0)
+    contours, _ = tools.exp.isoline(md, levelset, value=0.0)
 
     if not isinstance(contours, list) or len(contours) == 0:
         raise RuntimeError("isoline returned no contours at value=0")
@@ -757,8 +755,8 @@ def reinitialize_levelset(md, levelset):
     # 2) force .exp write so ExpToLevelSet backend can load it
     with tempfile.TemporaryDirectory() as td:
         exp_path = os.path.join(td, "levelset0.exp")
-        exp_write(contours, exp_path)
-        dist = ExpToLevelSet(x, y, exp_path)
+        tools.exp.exp_write(contours, exp_path)
+        dist = tools.wrappers.ExpToLevelSet(x, y, exp_path)
 
     dist = np.asarray(dist).reshape(-1)
 
