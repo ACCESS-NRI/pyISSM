@@ -257,7 +257,7 @@ class manage_state:
     """
 
     @classmethod
-    def issm_enum_string(cls) -> str:
+    def issm_enum_string(cls):
         """
         Default ISSM C++ enum string used during marshalling.
 
