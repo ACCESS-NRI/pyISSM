@@ -101,15 +101,11 @@ class outputdefinition(class_registry.manage_state):
         data = []
         
         for definition in self.definitions:
-            ## Marshall each definition
+            # Marshall each definition
             definition.marshall_class(fid, prefix, md)
 
-            ## Extract the class name and capitalize the first letter
-            class_name = definition.__class__.__name__
-            class_name = class_name.capitalize()
-
-            ## 
-            data.append(class_name)
+            # Append class name for this definition to data list
+            data.append(definition.__class__.issm_enum_string())
         
         ## Remove duplicates
         unique_data = np.unique(data)
