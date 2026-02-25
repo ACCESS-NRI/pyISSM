@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="docs/_static/pyissm_logo_med.png" alt="pyISSM Logo" width="300"/>
+</div>
+
 # pyISSM - ISSM Python API
 
 [![PyPI](https://img.shields.io/pypi/v/pyissm)](https://pypi.org/project/pyissm/)
