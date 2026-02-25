@@ -719,7 +719,7 @@ class josh(class_registry.manage_state):
         class_utils.check_field(md, fieldname = "friction.pressure_adjusted_temperature", allow_nan = False, allow_inf = False)
         class_utils.check_field(md, fieldname = "friction.gamma", gt = 0, scalar = True, allow_nan = False, allow_inf = False)
         class_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)       
-        class_utils.check_field(md, fieldname = "friction.coefficient_max", scalar = True, gt = 0, all_nan = False, allow_inf = False)       
+        class_utils.check_field(md, fieldname = "friction.coefficient_max", scalar = True, gt = 0, allow_nan = False, allow_inf = False)       
         class_utils.check_field(md, fieldname = "initialization.temperature", size = 'universal', allow_nan = False, allow_inf = False)
 
         return md
@@ -1589,7 +1589,7 @@ class weertman(class_registry.manage_state):
         """
         self.C = mesh.project_3d(md, vector = self.C, type = 'node', layer = 1)
         self.m = mesh.project_3d(md, vector = self.p, type = 'element')
-        
+
         return self
     
     # Check model consistency
