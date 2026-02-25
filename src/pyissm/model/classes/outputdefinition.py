@@ -111,8 +111,14 @@ class outputdefinition(class_registry.manage_state):
             # legacy classes, only apply it when no explicit issm_typename exists.
 
             # Marshall each definition
-            definition.marshall_class(fid, prefix, md)
-            data.append(definition.__class__.issm_enum_string())
+            kls = definition.__class__
+            issm_enum_fn = getattr(kls, "issm_enum_string", None)
+            if callable(issm_enum_fn):
+                class_name = issm_enum_fn()
+            else:
+                # Safe legacy fallback for non-manage_state classes
+                class_name = kls.__name__.capitalize()
+            data.append(class_name)
         
         ## Remove duplicates
         unique_data = np.unique(data)
