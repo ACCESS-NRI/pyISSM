@@ -64,7 +64,7 @@ class independent(class_registry.manage_state):
         self.nods = 0
         self.min_parameters = np.nan
         self.max_parameters = np.nan
-        self.control_scaling_factor = 1.0
+        self.control_scaling_factor = np.nan
         self.control_size = 1
 
         # Inherit matching fields from provided class
@@ -102,6 +102,6 @@ class independent(class_registry.manage_state):
             
             class_utils.check_field(md, fieldname = 'autodiff.independents[%d].fov_forward_indices' % i, ge = 1, le = self.nods)
         
-        md = class_utils.check_field(md, fieldname = 'autodiff.independents[%d].control_scaling_factor' % i, scalar = True, gt = 0., allow_nan = False, allow_inf = False)
+        # md = class_utils.check_field(md, fieldname = 'autodiff.independents[%d].control_scaling_factor' % i, scalar = True, gt = 0., allow_nan = False, allow_inf = False)
 
         return md
