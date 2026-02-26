@@ -102,7 +102,12 @@ class independent(class_registry.manage_state):
             
             class_utils.check_field(md, fieldname = f'autodiff.independents[{i}].fov_forward_indices', ge = 1, le = self.nods)
         
-        print(f'pyissm.model.classes.independent.check_consistency: md.autodiff.independents[{i}].control_scaling_factor: {md.autodiff.independents[i].control_scaling_factor}', flush=True)
+        # print(f'pyissm.model.classes.independent.check_consistency: md.autodiff.independents[{i}].control_scaling_factor: {md.autodiff.independents[i].control_scaling_factor}', flush=True)
+        val = md.autodiff.independents[i].control_scaling_factor
+        print('type(type(val)):', type(type(val)))
+        print('np.ndim(val):', np.ndim(val))
+        print('isinstance(val, float):', isinstance(val, float))
+        md.autodiff.independents[i].control_scaling_factor = float(val)
         md = class_utils.check_field(md, fieldname = f'autodiff.independents[{i}].control_scaling_factor', scalar = True, gt = 0., allow_nan = False, allow_inf = False)
 
         return md
