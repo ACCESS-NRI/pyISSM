@@ -100,10 +100,8 @@ class independent(class_registry.manage_state):
             if self.nods == 0:
                 raise TypeError('pyissm.model.classes.independent.check_consistency: nods should be set to the size of the independent variable')
             
-            class_utils.check_field(md, fieldname = f'autodiff.independents[{i}].fov_forward_indices', ge = 1, le = self.nods)
+            class_utils.check_field(md, field = self.fov_forward_indices, ge = 1, le = self.nods)
         
-        # field = md.autodiff.independents[i].control_scaling_factor
-        # md = class_utils.check_field(md, field = field, scalar = True, gt = 0., allow_nan = False, allow_inf = False)
         md = class_utils.check_field(md, field = self.control_scaling_factor, scalar = True, gt = 0., allow_nan = False, allow_inf = False)
 
         return md

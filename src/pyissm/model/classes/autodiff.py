@@ -153,8 +153,6 @@ class autodiff(class_registry.manage_state):
             dep.check_consistency(md, solution, analyses)
         for indep in self.independents:
             indep.check_consistency(md, solution, analyses, self.driver)
-        # for i, indep in enumerate(self.independents):
-        #     indep.check_consistency(md, i, solution, analyses, self.driver)
 
         return md
 
