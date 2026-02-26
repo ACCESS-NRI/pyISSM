@@ -102,6 +102,6 @@ class independent(class_registry.manage_state):
             
             class_utils.check_field(md, fieldname = 'autodiff.independents[%d].fov_forward_indices' % i, ge = 1, le = self.nods)
         
-        md = class_utils.check_field(md, fieldname = 'autodiff.independents[%d].control_scaling_factor' % i, size = (1, 1), gt = 0., allow_nan = False, allow_inf = False)
+        md = class_utils.check_field(md, fieldname = 'autodiff.independents[%d].control_scaling_factor' % i, scalar = True, gt = 0., allow_nan = False, allow_inf = False)
 
         return md
