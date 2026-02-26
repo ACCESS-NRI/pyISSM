@@ -91,7 +91,7 @@ class independent(class_registry.manage_state):
         return s
     
     # Check model consistency
-    def check_consistency(self, md, i, solution, analyses, driver):
+    def check_consistency(self, md, solution, analyses, driver):
         if not np.isnan(self.fos_forward_index):
             if self.nods == 0:
                 raise TypeError('pyissm.model.classes.independent.check_consistency: nods should be set to the size of the independent variable')
@@ -102,8 +102,8 @@ class independent(class_registry.manage_state):
             
             class_utils.check_field(md, fieldname = f'autodiff.independents[{i}].fov_forward_indices', ge = 1, le = self.nods)
         
-        # print(f'pyissm.model.classes.independent.check_consistency: md.autodiff.independents[{i}].control_scaling_factor: {md.autodiff.independents[i].control_scaling_factor}', flush=True)
-        val = md.autodiff.independents[i].control_scaling_factor
-        md = class_utils.check_field(md, field = val, scalar = True, gt = 0., allow_nan = False, allow_inf = False)
+        # field = md.autodiff.independents[i].control_scaling_factor
+        # md = class_utils.check_field(md, field = field, scalar = True, gt = 0., allow_nan = False, allow_inf = False)
+        md = class_utils.check_field(md, field = self.control_scaling_factor, scalar = True, gt = 0., allow_nan = False, allow_inf = False)
 
         return md
