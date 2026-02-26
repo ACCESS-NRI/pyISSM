@@ -978,7 +978,7 @@ class regcoulomb(class_registry.manage_state):
         
         class_utils.check_field(md, fieldname = 'friction.C', timeseries = True, ge = 0., allow_nan = False, allow_inf = False)
         class_utils.check_field(md, fieldname = 'friction.u0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, 1), gt = 0., allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, ), gt = 0., allow_nan = False, allow_inf = False)
 
         return md
 
@@ -1104,7 +1104,7 @@ class regcoulomb2(class_registry.manage_state):
         
         class_utils.check_field(md, fieldname = 'friction.C', timeseries = True, ge = 0., allow_nan = False, allow_inf = False)
         class_utils.check_field(md, fieldname = 'friction.K', gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, 1), gt = 0., allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, ), gt = 0., allow_nan = False, allow_inf = False)
 
         return md
 
@@ -1241,7 +1241,7 @@ class schoof(class_registry.manage_state):
         
         class_utils.check_field(md, fieldname = 'friction.C', timeseries = True, gt = 0., allow_nan = False, allow_inf = False)
         class_utils.check_field(md, fieldname = 'friction.Cmax', timeseries = True, gt = 0., allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, 1), gt = 0., allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, ), gt = 0., allow_nan = False, allow_inf = False)
         class_utils.check_field(md, fieldname = 'friction.effective_pressure_limit', scalar = True, ge = 0.)
         class_utils.check_field(md, fieldname = 'friction.coupling', scalar = True, values = [0, 1, 2, 3, 4])
         

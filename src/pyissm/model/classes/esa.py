@@ -93,7 +93,7 @@ class esa(class_registry.manage_state):
         if (solution != 'EsaAnalysis'):
             return md
         
-        class_utils.check_field(md, fieldname = "esa.deltathickness", allow_nan = True, allow_inf = True, size = (md.mesh.numberofelements, 1))
+        class_utils.check_field(md, fieldname = "esa.deltathickness", allow_nan = True, allow_inf = True, size = (md.mesh.numberofelements, ))
         class_utils.check_field(md, fieldname = "esa.love_h", allow_nan = False, allow_inf = False)
         class_utils.check_field(md, fieldname = "esa.love_l", allow_nan = False, allow_inf = False)
         class_utils.check_field(md, fieldname = "esa.hemisphere", allow_nan = False, allow_inf = False)

@@ -12,8 +12,8 @@ md.cluster.np = 3
 md.smb = pyissm.model.classes.smb.pddSicopolis()
 # initalize pdd fields
 md.smb.initialise(md)
-md.smb.s0p = md.geometry.surface.reshape(-1, 1)
-md.smb.s0t = md.geometry.surface.reshape(-1, 1)
+md.smb.s0p = md.geometry.surface.copy()
+md.smb.s0t = md.geometry.surface.copy()
 
 
 md.smb.monthlytemperatures = np.empty((md.mesh.numberofvertices, 12))

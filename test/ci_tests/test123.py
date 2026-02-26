@@ -19,7 +19,7 @@ md.misfit.model_string = 'Surface'
 md.misfit.observation = fake_surface
 md.misfit.observation_string = 'SurfaceObservation'
 md.misfit.timeinterpolation = 'nearestneighbor'
-md.misfit.weights = np.ones((md.mesh.numberofvertices, 1))
+md.misfit.weights = np.ones(md.mesh.numberofvertices, )
 md.misfit.weights_string = 'WeightsSurfaceObservation'
 
 md.transient.requested_outputs = ['default', 'SurfaceMisfit']

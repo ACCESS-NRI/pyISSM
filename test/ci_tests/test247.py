@@ -61,8 +61,8 @@ md.smb.precipitations_reconstructed[md.mesh.numberofvertices,24:36] = tim1+5
 md.thermal.spctemperature=np.mean(md.smb.temperatures_presentday[0:md.mesh.numberofvertices,0:12],axis=1)-10.
 md.initialization.temperature=md.thermal.spctemperature
 
-md.smb.s0p = np.maximum(md.geometry.surface.reshape(-1, 1),np.zeros((md.mesh.numberofvertices,1)))
-md.smb.s0t = np.maximum(md.geometry.surface.reshape(-1, 1),np.zeros((md.mesh.numberofvertices,1)))
+md.smb.s0p = np.maximum(md.geometry.surface, 0)
+md.smb.s0t = np.maximum(md.geometry.surface, 0)
 md.smb.issetpddfac = 1
 md.smb.pddfac_snow = 8
 md.smb.pddfac_ice = 10

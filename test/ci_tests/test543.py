@@ -26,7 +26,7 @@ nb_tf = 2
 
 # Calving parameters
 md.mask.ice_levelset = 1e4 * (md.mask.ice_levelset + 0.5)
-md.calving.calvingrate = 0 * np.ones((md.mesh.numberofvertices,))
+md.calving.calvingrate = 0 * np.ones(md.mesh.numberofvertices, )
 md.levelset.spclevelset = np.full((md.mesh.numberofvertices,), np.nan)
 md.levelset.migration_max = 10.0
 ### Frontal forcing parameters ###
@@ -70,7 +70,7 @@ sd_polyparam               = np.transpose(np.stack((sd_const,sd_trend)),(1,2,0))
 
 md.frontalforcings.num_basins = nb_tf
 md.frontalforcings.basin_id = idb_tf
-md.frontalforcings.subglacial_discharge = 0.01 * np.ones((md.mesh.numberofvertices,))
+md.frontalforcings.subglacial_discharge = 0.01 * np.ones(md.mesh.numberofvertices, )
 md.frontalforcings.num_params = numparams #number of parameters in the polynomial
 md.frontalforcings.num_breaks = numbreaks #number of breakpoints
 md.frontalforcings.polynomialparams = polynomialparams
@@ -86,7 +86,7 @@ md.frontalforcings.monthlyvals_trends      = trendsM
 md.frontalforcings.monthlyvals_datebreaks  = datebreaksM
 md.frontalforcings.isdischargearma         = isdischargearma
 if(isdischargearma==0):
-   md.frontalforcings.subglacial_discharge    = 0.01 * np.ones(md.mesh.numberofvertices,1)
+   md.frontalforcings.subglacial_discharge    = 0.01 * np.ones(md.mesh.numberofvertices, )
 else:
     md.frontalforcings.sd_num_breaks         = sd_num_breaks
     md.frontalforcings.sd_num_params         = sd_num_params

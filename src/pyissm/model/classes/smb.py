@@ -987,7 +987,7 @@ class d18opdd(class_registry.manage_state):
         if 'MasstransportAnalysis' in analyses:
             class_utils.check_field(md, fieldname = 'smb.desfac', le = 1, scalar = True)
             class_utils.check_field(md, fieldname = 'smb.s0p', size = (md.mesh.numberofvertices, ), ge = 0, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.s0t', size = (md.mesh.numberovertices, ), ge = 0, allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'smb.s0t', size = (md.mesh.numberofvertices, ), ge = 0, allow_nan = False, allow_inf = False)
             class_utils.check_field(md, fieldname = 'smb.rlaps', ge = 0, scalar = True)
             class_utils.check_field(md, fieldname = 'smb.rlapslgm', ge = 0, scalar = True)
             class_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
@@ -3363,8 +3363,8 @@ class pddSicopolis(class_registry.manage_state):
             return
         if 'MasstransportAnalysis' in analyses:
             class_utils.check_field(md, fieldname = 'smb.desfac', le = 1, scalar = True)
-            class_utils.check_field(md, fieldname = 'smb.s0p', ge = 0, size = (md.mesh.numberofvertices, 1), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.s0t', ge = 0, size = (md.mesh.numberofvertices, 1), allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'smb.s0p', ge = 0, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = 'smb.s0t', ge = 0, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
             class_utils.check_field(md, fieldname = 'smb.rlaps', ge = 0, scalar = True)
             class_utils.check_field(md, fieldname = 'smb.monthlytemperatures', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
             class_utils.check_field(md, fieldname = 'smb.precipitation', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
