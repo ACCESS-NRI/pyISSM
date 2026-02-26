@@ -190,7 +190,6 @@ set_if(ind,
 )
 md.autodiff.independents = [ind]
 
-print('independent variable control_scaling_factor:', md.autodiff.independents[0].control_scaling_factor, flush=True)
 
 # -----------------------------
 # 5) Inversion / AD settings and solve
