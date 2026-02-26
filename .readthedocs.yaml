@@ -8,8 +8,8 @@ build:
     # We copy some external foders/file needed within the docs folder
     pre_build:
       - cp -r tutorials docs/source/tutorials
-      - mkdir docs/source/_static
-      - cp -r tutorials docs/source/_static/tutorials
+      - cd docs/source/tutorials && zip -r assets.zip assets
+      - rm -rf docs/source/tutorials/assets
 
 # Build documentation with Sphinx
 sphinx:

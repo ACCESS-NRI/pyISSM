@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('../src'))
 project = 'pyissm'
 author = 'ACCESS-NRI'
 copyright = f"{datetime.now().year}, {author}"
-release = 'v0.0.1.dev190126'
+release = 'v0.0.1.dev_260219'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
