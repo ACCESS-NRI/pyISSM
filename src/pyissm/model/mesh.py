@@ -2192,7 +2192,7 @@ def bamg(md, **kwargs):
                 md.mesh.y,
                 np.ones((md.mesh.numberofvertices))
             )).T
-            bamg_mesh['Triangles'] = np.hstack((md.mesh.elements, np.ones(md.mesh.numberofelements, )))
+            bamg_mesh['Triangles'] = np.column_stack((md.mesh.elements, np.ones(md.mesh.numberofelements, )))
 
         ## If there are rifts in the model, raise an error (not supported yet)
         if isinstance(md.rifts.riftstruct, dict):
