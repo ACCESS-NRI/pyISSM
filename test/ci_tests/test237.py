@@ -29,12 +29,12 @@ for imonth in range(0, 12):
     md.smb.temperatures_lgm[0:md.mesh.numberofvertices, imonth] = tmonth[imonth] - 20.
 
 # creating initialization and spc temperatures initialization and spc
-md.thermal.spctemperature = np.mean(md.smb.temperatures_lgm[0:md.mesh.numberofvertices, :], axis=1)  # - 10 * ones(md.mesh.numberofvertices, 1)
+md.thermal.spctemperature = np.mean(md.smb.temperatures_lgm[0:md.mesh.numberofvertices, :], axis=1)  # - 10 * ones(md.mesh.numberofvertices, )
 md.thermal.spctemperature = np.tile(md.thermal.spctemperature, (int(md.timestepping.final_time / md.timestepping.time_step), 1)).T
 itemp = np.arange(0, md.timestepping.final_time, md.timestepping.time_step)
 md.thermal.spctemperature = np.vstack((md.thermal.spctemperature, itemp))
 
-md.initialization.temperature = md.smb.temperatures_lgm[0:md.mesh.numberofvertices, 0]  # * ones(md.mesh.numberofvertices, 1)
+md.initialization.temperature = md.smb.temperatures_lgm[0:md.mesh.numberofvertices, 0]  # * ones(md.mesh.numberofvertices, )
 md.smb.initialise(md)
 
 # creating precipitation

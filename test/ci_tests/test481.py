@@ -11,9 +11,9 @@ md = pyissm.model.param.set_flow_equation(md, HO = 'all')
 md.cluster.np = 3
 md.transient.isthermal = 0
 md.friction = pyissm.model.classes.friction.schoof(md.friction)
-md.friction.C    = pow(20.e4, 0.5) * np.ones((md.mesh.numberofvertices, 1))
-md.friction.Cmax = 0.5 * np.ones((md.mesh.numberofvertices, 1))
-md.friction.m    = 1./3.* np.ones((md.mesh.numberofelements, 1))
+md.friction.C    = pow(20.e4, 0.5) * np.ones(md.mesh.numberofvertices, )
+md.friction.Cmax = 0.5 * np.ones(md.mesh.numberofvertices, )
+md.friction.m    = 1./3.* np.ones(md.mesh.numberofelements, )
 
 # Execute model
 md = pyissm.model.execute.solve(md, 'Transient')
