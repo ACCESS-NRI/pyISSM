@@ -1,14 +1,18 @@
-import numpy as np
+"""
+cf classes for ISSM.
+"""
 
+import numpy as np
 from pyissm.model.classes import class_utils, class_registry
 from pyissm.model import execute, mesh
 
+## ------------------------------------------------------
+## cf.levelsetmisfit
+## ------------------------------------------------------
 @class_registry.register_class
 class levelsetmisfit(class_registry.manage_state):
     """
-    Level-set misfit response definition.
-
-    Python/pyISSM equivalent of ISSM MATLAB's ``cflevelsetmisfit`` class.
+    Level-set misfit response definition class for ISSM.
 
     This response is commonly used to measure misfit between a modeled level-set
     field (e.g. calving-front / ice-mask level set) and an observed level-set
@@ -17,69 +21,59 @@ class levelsetmisfit(class_registry.manage_state):
 
     Parameters
     ----------
-    other : object, optional
-        Any object with matching attribute names. If provided, its values overwrite
-        the defaults (pyISSM convention).
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    name : str
+    name : :class:`str`
         Identifier for this response definition.
-    definitionstring : str
+    definitionstring : :class:`str`
         Unique output definition identifier, typically ``"OutputdefinitionN"``.
         MATLAB allows ``Outputdefinition1``..``Outputdefinition2000``.
-    model_string : str
+    model_string : :class:`str`
         String key for the modeled field to be compared.
         Example: ``"MaskIceLevelset"``.
-    observation : array_like or float
+    observation : :class:`numpy.ndarray` or :class:`float`
         Observed field to compare against (often in ISSM time-series format).
         Written as a DoubleMat time series with ``timeserieslength = nv + 1``.
         Default is NaN (unset).
-    observation_string : str
+    observation_string : :class:`str`
         Identifier/name for the observation dataset.
-    weights : array_like or float
+    weights : :class:`numpy.ndarray` or :class:`float`
         Weight coefficients (per-vertex, often time-series formatted).
         Written as a DoubleMat time series with ``timeserieslength = nv + 1``.
         Default is NaN (unset).
-    weights_string : str
+    weights_string : :class:`str`
         Identifier/name for the weights dataset.
-    datatime : float
+    datatime : :class:`float`
         Time in years from start associated with the data. MATLAB writes this as
         ``round(datatime * yts)`` to the binary file.
 
-    Methods
-    -------
-    extrude(md)
-        Project node-based fields to 3D (no-op if unset).
-    check_consistency(md, solution=None, analyses=None)
-        Validate field types and ranges.
-    marshall_class(fid, prefix, md=None)
-        Write this definition to ISSM binary format via ``execute.WriteData``.
-
     Examples
     --------
-    >>> cf = cflevelsetmisfit()
-    >>> cf.name = "CalvingFrontPosition"
-    >>> cf.definitionstring = "Outputdefinition1"
-    >>> cf.model_string = "MaskIceLevelset"
-    >>> cf.observation_string = "LevelsetObservations"
-    >>> cf.observation = md.mask.ice_levelset
-    >>> cf.weights = np.ones(md.mesh.numberofvertices, )
-    >>> cf.weights_string = "WeightsLevelsetObservations"
-    >>> cf.datatime = time
-    >>> md.outputdefinition.definitions.append(cf)
+    .. code-block:: python
+
+        >>> cf = cflevelsetmisfit()
+        >>> cf.name = "CalvingFrontPosition"
+        >>> cf.definitionstring = "Outputdefinition1"
+        >>> cf.model_string = "MaskIceLevelset"
+        >>> cf.observation_string = "LevelsetObservations"
+        >>> cf.observation = md.mask.ice_levelset
+        >>> cf.weights = np.ones(md.mesh.numberofvertices, )
+        >>> cf.weights_string = "WeightsLevelsetObservations"
+        >>> cf.datatime = time
+        >>> md.outputdefinition.definitions.append(cf)
     """
+    
+    # Define class string for registry and marshalling
     @classmethod
     def issm_enum_string(cls) -> str:
-        '''
-        This method is used by the class registry and marshalling to identify the class type in a way 
-        that matches MATLAB's naming convention.
-        '''
         return "Cflevelsetmisfit"
 
+    # Initialise with default parameters
     def __init__(self, other=None):
-        
-        # Defaults (MATLAB parity)
         self.name = ""
         self.definitionstring = ""
         self.model_string = ""
@@ -89,8 +83,10 @@ class levelsetmisfit(class_registry.manage_state):
         self.weights_string = ""
         self.datatime = 0.0
 
+        # Inherit matching fields from provided class
         super().__init__(other)
 
+    # Define repr
     def __repr__(self):
         s = "   levelsetmisfit:\n"
         s += f"{class_utils.fielddisplay(self, 'name', 'identifier for this levelsetmisfit response')}\n"
@@ -103,16 +99,16 @@ class levelsetmisfit(class_registry.manage_state):
         s += f"{class_utils.fielddisplay(self, 'datatime', 'time (years from start) for data-model comparison')}\n"
         return s
 
+    # Define class string
     def __str__(self):
-        return "ISSM - cflevelsetmisfit Class"
+        return "ISSM - cf.levelsetmisfit Class"
 
+    # Extrude to 3D mesh
     def extrude(self, md):
         """
-        Extrude node-based fields to 3D.
-
-        Projects ``weights`` and ``observation`` with ``mesh.project_3d`` if they
-        are set (i.e., not entirely NaN). Mirrors MATLAB behavior.
+        Extrude cf.levelsetmisfit fields to 3D
         """
+
         # weights
         if np.size(self.weights) > 1:
             if not np.all(np.isnan(self.weights)):
@@ -131,10 +127,26 @@ class levelsetmisfit(class_registry.manage_state):
 
         return self
 
+    # Check model consistency
     def check_consistency(self, md, solution=None, analyses=None):
         """
-        Check field validity for this response definition.
+        Check consistency of the [cf.levelsetmisfit] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
         """
+
         if not isinstance(self.name, str):
             raise TypeError("levelsetmisfit: 'name' must be a string")
 
@@ -172,16 +184,26 @@ class levelsetmisfit(class_registry.manage_state):
         )
 
         return md
-
+    
+    # Marshall method for saving the cf.levelsetmisfit parameters
     def marshall_class(self, fid, prefix, md=None):
         """
-        Marshall this response definition to ISSM binary input.
+        Marshall [cf.levelsetmisfit] parameters to a binary file.
 
-        Mirrors MATLAB marshalling:
-          - observation/weights written as DoubleMat time series with:
-              mattype=1, timeserieslength=nv+1, yts conversion
-          - datatime written as ``round(datatime * yts)`` (seconds) as Double
+        Parameters
+        ----------
+        fid : :class:`file object`
+            The file object to write the binary data to.
+        prefix : :class:`str`
+            Prefix string used for data identification in the binary file.
+        md : :class:`pyissm.model.Model`, optional
+            ISSM model object needed in some cases.
+            
+        Returns
+        -------
+        None
         """
+
         nv = md.mesh.numberofvertices
         yts = md.constants.yts
 
@@ -245,11 +267,13 @@ class levelsetmisfit(class_registry.manage_state):
             format="Double",
         )
 
-
+## ------------------------------------------------------
+## cf.surfacesquare
+## ------------------------------------------------------
 @class_registry.register_class
 class surfacesquare(class_registry.manage_state):
     """
-    Surface-square cost-function (response) definition.
+    Surface-square cost-function (response) definition class for ISSM.
 
     Python/pyISSM equivalent of ISSM MATLAB's ``cfsurfacesquare`` class. This
     response is typically used to compare a modeled surface (or base) field
@@ -257,52 +281,44 @@ class surfacesquare(class_registry.manage_state):
 
     Parameters
     ----------
-    other : object, optional
-        Any object with matching attributes. If provided, its values overwrite
-        the defaults.
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    name : str
+    name : :class:`str`
         Identifier for this response definition.
-    definitionstring : str
+    definitionstring : :class:`str`
         Unique output definition identifier, typically ``"OutputdefinitionN"``.
-    surfaceid : int
+    surfaceid : :class:`int`
         Which surface to evaluate:
         - 1: surface
         - 2: base
-    model_string : str
+    model_string : :class:`str`
         Name of the modeled field to compare (string key used by ISSM).
-    observation : array_like or float
+    observation : :class:`numpy.ndarray` or :class:`float`
         Observed field to compare against. May be provided as a time series in
         ISSM “timeseries” format (length = numberofvertices + 1).
         Default is NaN (unset).
-    observation_string : str
+    observation_string : :class:`str`
         Name/identifier for the observation dataset.
-    weights : array_like or float
+    weights : :class:`numpy.ndarray` or :class:`float`
         Per-vertex weights (or timeseries weights). Default is NaN (unset).
-    weights_string : str
+    weights_string : :class:`str`
         Name/identifier for the weights dataset.
-    datatime : float
+    datatime : :class:`float`
         Time in years from start associated with the data (used to pick the
         comparison time). Default is 0.0.
-
-    Notes
-    -----
-    - The MATLAB implementation treats ``observation`` and ``weights`` as
-      time series and writes them with ``timeserieslength = nv + 1`` and
-      ``yts`` conversion. This class mirrors that marshalling behavior.
     """
+
+    # Define class string for registry and marshalling
     @classmethod
     def issm_enum_string(cls) -> str:
-        '''
-        This method is used by the class registry and marshalling to identify the class type in a way 
-        that matches MATLAB's naming convention.
-        '''
         return "Cfsurfacesquare" 
-    
+
+    # Initialise with default parameters    
     def __init__(self, other=None):
-        # Defaults (MATLAB parity)
         self.name = ""
         self.definitionstring = ""
         self.surfaceid = 1
@@ -313,8 +329,10 @@ class surfacesquare(class_registry.manage_state):
         self.weights_string = ""
         self.datatime = 0.0
 
+        # Inherit matching fields from provided class
         super().__init__(other)
 
+    # Define repr
     def __repr__(self):
         s = "   surfacesquare:\n"
         s += f"{class_utils.fielddisplay(self, 'name', 'identifier for this surfacesquare response')}\n"
@@ -328,16 +346,16 @@ class surfacesquare(class_registry.manage_state):
         s += f"{class_utils.fielddisplay(self, 'datatime', 'time (years from start) for data-model comparison')}\n"
         return s
 
+    # Define class string
     def __str__(self):
         return "ISSM - surfacesquare Class"
 
+    # Extrude to 3D mesh
     def extrude(self, md):
         """
-        Extrude node-based fields to 3D.
-
-        Projects ``weights`` and ``observation`` with ``mesh.project_3d`` if they
-        are provided (i.e., not entirely NaN).
+        Extrude cf.surfacesquare fields to 3D
         """
+
         # Treat "unset" as scalar NaN or arrays that are all-NaN
         if np.size(self.weights) > 1:
             if not np.all(np.isnan(self.weights)):
@@ -355,10 +373,26 @@ class surfacesquare(class_registry.manage_state):
 
         return self
 
-    def check_consistency(self, md, solution=None, analyses=None):
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
         """
-        Check field validity for this response definition.
+        Check consistency of the [cf.surfacesquare] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
         """
+
         # Basic pythonic type checks
         if not isinstance(self.name, str):
             raise TypeError("surfacesquare: 'name' must be a string")
@@ -397,15 +431,25 @@ class surfacesquare(class_registry.manage_state):
 
         return md
 
+    # Marshall method for saving the cf.surfacesquare parameters
     def marshall_class(self, fid, prefix, md=None):
         """
-        Marshall this response definition to ISSM binary input.
+        Marshall [cf.surfacesquare] parameters to a binary file.
 
-        Mirrors MATLAB:
-        - writes strings + ints directly
-        - writes observation/weights as timeseries DoubleMat with length nv+1 and yts
-        - writes datatime in seconds (rounded) as Double
+        Parameters
+        ----------
+        fid : :class:`file object`
+            The file object to write the binary data to.
+        prefix : :class:`str`
+            Prefix string used for data identification in the binary file.
+        md : :class:`pyissm.model.Model`, optional
+            ISSM model object needed in some cases.
+            
+        Returns
+        -------
+        None
         """
+
         nv = md.mesh.numberofvertices
         yts = md.constants.yts
 
@@ -447,12 +491,13 @@ class surfacesquare(class_registry.manage_state):
             format="Double",
         )
 
+## ------------------------------------------------------
+## cf.surfacesquaretransient
+## ------------------------------------------------------
 @class_registry.register_class
 class surfacesquaretransient(class_registry.manage_state):
     """
-    Transient surface-square misfit response definition.
-
-    Python/pyISSM equivalent of ISSM MATLAB's ``cfsurfacesquaretransient`` class.
+    Transient surface-square misfit response definition class for ISSM.
 
     This response compares a modeled field (given by ``model_string``) against a set
     of *time-series observations* using a squared-misfit form, with optional
@@ -462,55 +507,47 @@ class surfacesquaretransient(class_registry.manage_state):
 
     Parameters
     ----------
-    other : object, optional
-        Any object with matching attribute names. If provided, its values overwrite
-        the defaults.
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    name : str
+    name : :class:`str`
         Identifier for this response definition.
-    definitionstring : str
+    definitionstring : :class:`str`
         Unique output definition identifier, typically ``"OutputdefinitionN"``.
         MATLAB allows ``Outputdefinition1``..``Outputdefinition2000``.
-    model_string : str
+    model_string : :class:`str`
         Name of the modeled field to compare (string key used by ISSM).
         Example: ``"Surface"``, ``"Vx"``, ``"Vy"``.
-    observations : array_like or float
+    observations : :class:`numpy.ndarray` or :class:`float`
         Observed time series to compare against. By MATLAB convention this is a
         time-series array marshalled with ``timeserieslength = nv + 1``.
         Default is NaN (unset).
-    weights : array_like or float
+    weights : :class:`numpy.ndarray` or :class:`float`
         Weights applied to the misfit, typically a time-series array with the same
         convention as ``observations``. Default is NaN (unset).
 
-    Methods
-    -------
-    extrude(md)
-        Project node-based fields to 3D (no-op if unset).
-    check_consistency(md, solution=None, analyses=None)
-        Validate fields (definitionstring, timeseries sizes, NaN/Inf allowances).
-    marshall_class(fid, prefix, md=None)
-        Write to ISSM binary format via ``execute.WriteData``.
-
     Examples
     --------
-    >>> cf = surfacesquaretransient()
-    >>> cf.name = "SurfaceAltimetry"
-    >>> cf.definitionstring = "Outputdefinition1"
-    >>> cf.model_string = "Surface"
-    >>> cf.observations = np.vstack([md.geometry.surface, [0.0]])  # example
-    >>> cf.weights = np.ones((md.mesh.numberofvertices + 1, 1))
-    >>> md.outputdefinition.definitions.append(cf)
+    .. code-block:: python
+
+        >>> cf = surfacesquaretransient()
+        >>> cf.name = "SurfaceAltimetry"
+        >>> cf.definitionstring = "Outputdefinition1"
+        >>> cf.model_string = "Surface"
+        >>> cf.observations = np.vstack([md.geometry.surface, [0.0]])  # example
+        >>> cf.weights = np.ones((md.mesh.numberofvertices + 1, 1))
+        >>> md.outputdefinition.definitions.append(cf)
     """
+
+    # Define class string for registry and marshalling
     @classmethod
     def issm_enum_string(cls) -> str:
-        '''
-        This method is used by the class registry and marshalling to identify the class type in a way 
-        that matches MATLAB's naming convention.
-        '''
-        return "Cfsurfacesquaretransient" # for class registry and marshalling
+        return "Cfsurfacesquaretransient"
     
+    # Initialise with default parameters
     def __init__(self, other=None):
         self.name = ""
         self.definitionstring = ""
@@ -518,8 +555,10 @@ class surfacesquaretransient(class_registry.manage_state):
         self.observations = np.nan
         self.weights = np.nan
 
+        # Inherit matching fields from provided class
         super().__init__(other)
 
+    # Define repr
     def __repr__(self):
         s = "   surfacesquaretransient:\n"
         s += f"{class_utils.fielddisplay(self, 'name', 'identifier for this surfacesquaretransient response')}\n"
@@ -529,16 +568,16 @@ class surfacesquaretransient(class_registry.manage_state):
         s += f"{class_utils.fielddisplay(self, 'weights', 'weights applied to the transient square misfit')}\n"
         return s
 
+    # Define class string
     def __str__(self):
         return "ISSM - surfacesquaretransient Class"
 
+    # Extrude to 3D mesh
     def extrude(self, md):
         """
-        Extrude node-based fields to 3D.
-
-        Projects ``weights`` and ``observations`` with ``mesh.project_3d`` if they
-        are set (i.e., not entirely NaN). This mirrors MATLAB behavior.
+        Extrude cf.surfacesquaretransient fields to 3D
         """
+        
         # weights
         if np.size(self.weights) > 1:
             if not np.all(np.isnan(self.weights)):
@@ -557,10 +596,26 @@ class surfacesquaretransient(class_registry.manage_state):
 
         return self
 
-    def check_consistency(self, md, solution=None, analyses=None):
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
         """
-        Check field validity for this response definition.
+        Check consistency of the [cf.surfacesquaretransient] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
         """
+
         if not isinstance(self.name, str):
             raise TypeError("surfacesquaretransient: 'name' must be a string")
 
@@ -602,13 +657,22 @@ class surfacesquaretransient(class_registry.manage_state):
 
     def marshall_class(self, fid, prefix, md=None):
         """
-        Marshall this response definition to ISSM binary input.
+        Marshall [cf.surfacesquaretransient] parameters to a binary file.
 
-        Mirrors MATLAB marshalling:
-        - strings written directly
-        - observations and weights written as DoubleMat with:
-          mattype=1, timeserieslength=nv+1, and yts conversion.
+        Parameters
+        ----------
+        fid : :class:`file object`
+            The file object to write the binary data to.
+        prefix : :class:`str`
+            Prefix string used for data identification in the binary file.
+        md : :class:`pyissm.model.Model`, optional
+            ISSM model object needed in some cases.
+            
+        Returns
+        -------
+        None
         """
+
         nv = md.mesh.numberofvertices
         yts = md.constants.yts
 
@@ -649,12 +713,13 @@ class surfacesquaretransient(class_registry.manage_state):
             yts=yts,
         )
 
+## ------------------------------------------------------
+## cf.surfacelogvel
+## ------------------------------------------------------
 @class_registry.register_class
 class surfacelogvel(class_registry.manage_state):
     """
-    Surface log-velocity misfit response definition.
-
-    Python/pyISSM equivalent of ISSM MATLAB's ``cfsurfacelogvel`` class.
+    Surface log-velocity misfit response definition class for ISSM.
 
     This response is typically used in transient inversions/calibration workflows
     where the misfit compares the *logarithm of surface speed* implied by modeled
@@ -670,46 +735,37 @@ class surfacelogvel(class_registry.manage_state):
 
     Parameters
     ----------
-    other : object, optional
-        Any object with matching attribute names. If provided, its values overwrite
-        the defaults (pyISSM convention).
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    name : str
+    name : :class:`str`
         Identifier for this response definition.
-    definitionstring : str
+    definitionstring : :class:`str`
         Unique output definition identifier, typically ``"OutputdefinitionN"``.
         MATLAB allows ``Outputdefinition1``..``Outputdefinition2000``.
-    vxobs : array_like or float
+    vxobs : :class:`numpy.ndarray` or :class:`float`
         Observed x-velocity component. MATLAB marshals this as a DoubleMat time
         series with ``timeserieslength = nv + 1`` and applies a scale of
         ``1 / yts``.
         Default is NaN (unset).
-    vxobs_string : str
+    vxobs_string : :class:`str`
         Identifier/name for the observed x-velocity dataset.
-    vyobs : array_like or float
+    vyobs : :class:`numpy.ndarray` or :class:`float`
         Observed y-velocity component. Same marshalling conventions as ``vxobs``.
         Default is NaN (unset).
-    vyobs_string : str
+    vyobs_string : :class:`str`
         Identifier/name for the observed y-velocity dataset.
-    weights : array_like or float
+    weights : :class:`numpy.ndarray` or :class:`float`
         Weight coefficients (typically per-vertex, often time-series formatted).
         Default is NaN (unset).
-    weights_string : str
+    weights_string : :class:`str`
         Identifier/name for the weights dataset.
-    datatime : float
+    datatime : :class:`float`
         Time in years from start associated with the data. MATLAB writes this as
         ``round(datatime * yts)`` to the binary file.
-
-    Methods
-    -------
-    extrude(md)
-        Project node-based fields to 3D (no-op if unset).
-    check_consistency(md, solution=None, analyses=None)
-        Validate field types and ranges.
-    marshall_class(fid, prefix, md=None)
-        Write this definition to ISSM binary format via ``execute.WriteData``.
 
     Notes
     -----
@@ -719,16 +775,14 @@ class surfacelogvel(class_registry.manage_state):
     - ``vxobs`` and ``vyobs`` are written with a ``scale = 1/yts`` in MATLAB,
       matching ISSM’s internal unit conventions (m/s vs m/yr).
     """
+
+    # Define class string for registry and marshalling
     @classmethod
     def issm_enum_string(cls) -> str:
-        '''
-        This method is used by the class registry and marshalling to identify the class type in a way 
-        that matches MATLAB's naming convention.
-        '''
-        return "Cfsurfacelogvel" # for class registry and marshalling
+        return "Cfsurfacelogvel"
     
+    # Initialise with default parameters
     def __init__(self, other=None):
-        # Defaults (MATLAB parity)
         self.name = ""
         self.definitionstring = ""
         self.vxobs = np.nan
@@ -739,8 +793,10 @@ class surfacelogvel(class_registry.manage_state):
         self.weights_string = ""
         self.datatime = 0.0
 
+        # Inherit matching fields from provided class
         super().__init__(other)
 
+    # Define repr
     def __repr__(self):
         s = "   surfacelogvel:\n"
         s += f"{class_utils.fielddisplay(self, 'name', 'identifier for this surfacelogvel response')}\n"
@@ -754,18 +810,16 @@ class surfacelogvel(class_registry.manage_state):
         s += f"{class_utils.fielddisplay(self, 'datatime', 'time (years from start) for data-model comparison')}\n"
         return s
 
+    # Define class string
     def __str__(self):
         return "ISSM - surfacelogvel Class"
 
+    # Extrude to 3D mesh
     def extrude(self, md):
         """
-        Extrude node-based fields to 3D.
-
-        Mirrors MATLAB behavior:
-          - project ``weights`` if set
-          - project ``vxobs`` if set
-          - (do NOT project ``vyobs`` for strict MATLAB parity)
+        Extrude cf.surfacelogvel fields to 3D
         """
+
         # weights
         if np.size(self.weights) > 1:
             if not np.all(np.isnan(self.weights)):
@@ -784,10 +838,26 @@ class surfacelogvel(class_registry.manage_state):
 
         return self
 
-    def check_consistency(self, md, solution=None, analyses=None):
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
         """
-        Check field validity for this response definition.
+        Check consistency of the [cf.surfacelogvel] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
         """
+
         if not isinstance(self.name, str):
             raise TypeError("surfacelogvel: 'name' must be a string")
 
@@ -828,17 +898,25 @@ class surfacelogvel(class_registry.manage_state):
 
         return md
 
+    # Marshall method for saving the cf.surfacelogvel parameters
     def marshall_class(self, fid, prefix, md=None):
         """
-        Marshall this response definition to ISSM binary input.
+        Marshall [cf.surfacelogvel] parameters to a binary file.
 
-        Mirrors MATLAB marshalling exactly:
-          - vxobs/vyobs written as DoubleMat time series with:
-              mattype=1, timeserieslength=nv+1, yts conversion, and scale=1/yts
-          - weights written as DoubleMat time series with:
-              mattype=1, timeserieslength=nv+1, yts conversion
-          - datatime written as ``round(datatime * yts)`` (seconds) as Double
+        Parameters
+        ----------
+        fid : :class:`file object`
+            The file object to write the binary data to.
+        prefix : :class:`str`
+            Prefix string used for data identification in the binary file.
+        md : :class:`pyissm.model.Model`, optional
+            ISSM model object needed in some cases.
+            
+        Returns
+        -------
+        None
         """
+
         nv = md.mesh.numberofvertices
         yts = md.constants.yts
 
