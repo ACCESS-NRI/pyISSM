@@ -143,7 +143,7 @@ ind.control_size =1 #md.materials.rheology_B.shape[0] - 1  # exclude last row (w
 ind.type = "vertex"  
 ind.min_parameters = min_params
 ind.max_parameters = max_params
-ind.control_scaling_factor = np.nan
+ind.control_scaling_factor = 1e8
 md.autodiff.independents.append(ind)
 
 # -----------------------------
