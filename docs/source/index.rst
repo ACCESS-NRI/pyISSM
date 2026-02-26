@@ -1,3 +1,8 @@
+.. image:: ../_static/pyissm_logo_med.png
+   :align: center
+   :width: 300px
+   :alt: pyISSM Logo
+
 pyissm Documentation
 ====================
 
