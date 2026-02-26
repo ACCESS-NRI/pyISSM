@@ -151,8 +151,8 @@ class autodiff(class_registry.manage_state):
         # Check dependents and independents recursively
         for dep in self.dependents:
             dep.check_consistency(md, solution, analyses)
-        for i, indep in enumerate(self.independents):
-            indep.check_consistency(md, i, solution, analyses, self.driver)
+        for indep in self.independents:
+            indep.check_consistency(md, solution, analyses)
 
         return md
 

@@ -2262,7 +2262,8 @@ def bamg(md, **kwargs):
     md.mesh.elementconnectivity = md.mesh.elementconnectivity.astype(int)
 
     # Check for orphan vertices
-    if np.any(np.logical_not(np.isin(np.arange(1, md.mesh.numberofvertices + 1), md.mesh.elements.flat))):
+    nodes = np.arange(1, md.mesh.numberofvertices + 1)
+    if np.any(~np.isin(nodes, md.mesh.elements)):
         raise RuntimeError('Output mesh has orphans. Check your Domain and/or RequiredVertices')
 
     return md

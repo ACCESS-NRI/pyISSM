@@ -412,7 +412,6 @@ class generic(class_registry.manage_state):
         subprocess.call(compress_string, shell = True)
 
         ## Transfer to cluster
-        print(f'Transferring {dir_name}.tar.gz to cluster {self.name}...')
         model.io.issm_scp_out(self.name, self.executionpath, self.login, self.port, [dir_name + '.tar.gz'])
         
     def launch_queue_job(self,
@@ -473,7 +472,6 @@ class generic(class_registry.manage_state):
                 launch_command = 'cd {} && rm -rf ./{} && mkdir {} && cd {} && mv ../{}.tar.gz ./&& tar -zxf {}.tar.gz  && chmod 755 {}.queue && ./{}.queue'.format(self.executionpath, dir_name, dir_name, dir_name, dir_name, dir_name, model_name, model_name)
                    
         ## Launch job on cluster
-        print(f'Launching job {model_name} on cluster {self.name}...')
         model.io.issm_ssh(self.name, self.login, self.port, launch_command)
 
     def download(self, dir_name, file_list):
@@ -508,7 +506,6 @@ class generic(class_registry.manage_state):
             return
         
         # Copy files from cluster to current directory
-        print(f'Retrieving results from cluster {self.name}...')
         directory = f'{self.executionpath}/{dir_name}/'
         model.io.issm_scp_in(self.name, self.login, self.port, directory, file_list)
 
@@ -815,7 +812,6 @@ class gadi(class_registry.manage_state):
             compressstring += f' {f}'
 
         subprocess.call(compressstring, shell = True)
-        print(f'Transferring {dir_name}.tar.gz to cluster {self.name}...')
         directory = self.executionpath
         model.io.issm_scp_out(self.name, directory, self.login, self.port, [dir_name + '.tar.gz'])
 
@@ -887,7 +883,6 @@ class gadi(class_registry.manage_state):
                 f'qsub {model_name}.queue'
                 )
             
-        print(f'Launching job {model_name} on cluster {self.name}...')
         model.io.issm_ssh(self.name, self.login, self.port, launch_command)
 
     # Download results from cluster
@@ -909,6 +904,5 @@ class gadi(class_registry.manage_state):
         """
 
         # Copy files from cluster to current directory
-        print(f'Retrieving results from cluster {self.name}...')
         directory = f'{self.executionpath}/{dir_name}/'
         model.io.issm_scp_in(self.name, self.login, self.port, directory, file_list)

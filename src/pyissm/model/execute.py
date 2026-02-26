@@ -1085,10 +1085,11 @@ def solve(md,
             file_list.append('qmu.in')
 
         ## Upload all files to cluster
-        print('Uploading files to cluster...')
+        print(f'Transferring {md.private.runtimename}.tar.gz to cluster {md.cluster.name}...')
         md.cluster.upload_queue_job(model_name, md.private.runtimename, file_list)
 
     # Launch job
+    print(f'Launching job {model_name} on cluster {md.cluster.name}...')
     md.cluster.launch_queue_job(
         model_name,
         md.private.runtimename,
@@ -1381,6 +1382,7 @@ def load_results_from_cluster(md,
         file_list.append(md.miscellaneous.name + '.outbin')
     
     # Download all files from cluster
+    print(f'Retrieving results from cluster {md.cluster.name}...')
     md.cluster.download(md.private.runtimename, file_list)
 
     # Load results from downloaded files
