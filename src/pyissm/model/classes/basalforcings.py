@@ -263,13 +263,13 @@ class pico(class_registry.manage_state):
     def check_consistency(self, md, solution, analyses):
 
         class_utils.check_field(md, fieldname = "basalforcings.num_basins", scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "basalforcings.basin_id", size = (md.mesh.numberofelements, 1), ge = 0, le = md.basalforcings.num_basins, allow_inf = False)
+        class_utils.check_field(md, fieldname = "basalforcings.basin_id", size = (md.mesh.numberofelements, ), ge = 0, le = md.basalforcings.num_basins, allow_inf = False)
         class_utils.check_field(md, fieldname = "basalforcings.maxboxcount", scalar = True, gt = 0, allow_nan = False, allow_inf = False)
 
         if np.size(self.overturning_coeff) == 1:
             class_utils.check_field(md, fieldname = "basalforcings.overturning_coeff", scalar = True, gt = 0, allow_nan = False, allow_inf = False)
         else:
-            class_utils.check_field(md, fieldname = "basalforcings.overturning_coeff", size = (md.mesh.numberofvertices, 1), gt = 0, allow_nan = False, allow_inf = False)
+            class_utils.check_field(md, fieldname = "basalforcings.overturning_coeff", size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
 
         class_utils.check_field(md, fieldname = "basalforcings.gamma_T", scalar = True, gt = 0, allow_nan = False, allow_inf = False)
         class_utils.check_field(md, fieldname = "basalforcings.farocean_temperature", size = (md.basalforcings.num_basins + 1, None), allow_nan = False, allow_inf = False)
@@ -291,7 +291,7 @@ class pico(class_registry.manage_state):
             warnings.warn('pyissm.parm.basalforcings.pico: no maximum number of boxes set -- value set to 5.')
 
         if np.isnan(self.overturning_coeff):
-            self.overturning_coeff = 1e6 * np.ones((md.mesh.numberofvertices,1))
+            self.overturning_coeff = 1e6 * np.ones(md.mesh.numberofvertices, )
             warnings.warn('pyissm.parm.basalforcings.pico: no overturning strength set -- value set to 1e6.')
 
         if np.isnan(self.gamma_T):
@@ -299,7 +299,7 @@ class pico(class_registry.manage_state):
             warnings.warn('pyissm.parm.basalforcings.pico: no turbulent temperature exchange velocity set -- value set to 2e-5.')
 
         if np.isnan(self.groundedice_melting_rate):
-            self.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices,1))
+            self.groundedice_melting_rate = np.zeros(md.mesh.numberofvertices, )
             warnings.warn('pyissm.parm.basalforcings.pico: no basalforcings.groundedice_melting_rate specified -- values set as zero.')
 
         return self

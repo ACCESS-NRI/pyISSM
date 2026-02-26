@@ -102,11 +102,11 @@ class default(class_registry.manage_state):
             warnings.warn('pyissm.model.classes.dsl.default: no dsl.global_average_thermosteric_sea_level specified: transient values set to zero')
 
         if np.all(np.isnan(self.sea_surface_height_above_geoid)):
-            self.sea_surface_height_above_geoid = np.append(np.zeros((md.mesh.numberofvertices, 1)), 0).reshape(-1, 1)
+            self.sea_surface_height_above_geoid = np.append(np.zeros(md.mesh.numberofvertices, ), 0).reshape(-1, 1)
             warnings.warn('pyissm.model.classes.dsl.default: no dsl.sea_surface_height_above_geoid specified: transient values set to zero')
 
         if np.all(np.isnan(self.sea_water_pressure_at_sea_floor)):
-            self.sea_water_pressure_at_sea_floor = np.append(np.zeros((md.mesh.numberofvertices, 1)), 0).reshape(-1, 1)
+            self.sea_water_pressure_at_sea_floor = np.append(np.zeros(md.mesh.numberofvertices, ), 0).reshape(-1, 1)
             warnings.warn('pyissm.model.classes.dsl.default: no dsl.sea_water_pressure_at_sea_floor specified: transient values set to zero')
 
         return self
