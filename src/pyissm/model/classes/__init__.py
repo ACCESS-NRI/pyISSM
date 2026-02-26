@@ -7,6 +7,7 @@ from pyissm.model.classes.autodiff import autodiff
 from pyissm.model.classes.balancethickness import balancethickness
 from pyissm.model.classes.basalforcings import default, pico, linear, lineararma, mismip
 from pyissm.model.classes.calving import default, crevassedepth, dev, levermann, minthickness, parameterization, vonmises
+from pyissm.model.classes.cf import surfacesquare, surfacesquaretransient, surfacelogvel, levelsetmisfit
 from pyissm.model.classes.constants import constants
 from pyissm.model.classes.cluster import generic
 from pyissm.model.classes.damage import damage
@@ -23,7 +24,7 @@ from pyissm.model.classes.groundingline import groundingline
 from pyissm.model.classes.hydrology import armapw, dc, glads, pism, shakti, shreve, tws
 from pyissm.model.classes.independent import independent
 from pyissm.model.classes.initialization import initialization
-from pyissm.model.classes.inversion import default, m1qn3, tao
+from pyissm.model.classes.inversion import default, m1qn3, tao, adm1qn3
 from pyissm.model.classes.issmsettings import issmsettings
 from pyissm.model.classes.levelset import levelset
 from pyissm.model.classes.love import default, fourier

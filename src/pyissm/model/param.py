@@ -6,8 +6,10 @@ import numpy as np
 import os
 from pathlib import Path
 from datetime import datetime
-from pyissm import model, tools
+import tempfile
 import copy
+from pyissm import model, tools
+from pyissm.model import mesh
 
 def set_mask(md,
              floating_ice_name = None,
@@ -707,3 +709,76 @@ def kill_icebergs(md):
 
     print("No iceberg found!")
     return ice_ls.copy()
+
+
+def reinitialize_levelset(md, levelset):
+    '''
+    Reinitialize a levelset field using the ExpToLevelSet backend.
+    This function takes a levelset field defined on the vertices of the mesh and reinitializes it to be a signed distance function using the ExpToLevelSet backend. The zero
+    level of the resulting field is the original levelset contour.
+
+    Parameters
+    ----------    
+    md : ISSM model object
+        The model containing the mesh information.
+    levelset : array-like
+        The levelset field to reinitialize, defined at the vertices of the mesh. For 3D meshes, this should be defined at the 2D vertices.     
+    Returns
+    -------
+    ndarray : The reinitialized levelset field, with the same shape as the input levelset. The zero level of this field corresponds to the original levelset contour, and the values represent the signed distance to
+    the contour (negative inside, positive outside).
+    '''
+
+    if levelset is None or len(levelset) == 0:
+        raise RuntimeError("levelset provided is empty")
+
+    levelset = np.asarray(levelset).reshape(-1)
+    dim = md.mesh.dimension()
+
+    if dim == 3:
+        if levelset.size != md.mesh.numberofvertices2d:
+            raise RuntimeError("levelset provided should be specified at the 2d vertices of the mesh")
+        x = np.asarray(md.mesh.x2d).reshape(-1)
+        y = np.asarray(md.mesh.y2d).reshape(-1)
+    else:
+        if levelset.size != md.mesh.numberofvertices:
+            raise RuntimeError("levelset provided should be specified at the vertices of the mesh")
+        x = np.asarray(md.mesh.x).reshape(-1)
+        y = np.asarray(md.mesh.y).reshape(-1)
+
+    # 1) extract 0-contour as python dict/list
+    contours, _ = tools.exp.isoline(md, levelset, value=0.0)
+
+    if not isinstance(contours, list) or len(contours) == 0:
+        raise RuntimeError("isoline returned no contours at value=0")
+
+    # 2) force .exp write so ExpToLevelSet backend can load it
+    with tempfile.TemporaryDirectory() as td:
+        exp_path = os.path.join(td, "levelset0.exp")
+        tools.exp.exp_write(contours, exp_path)
+        dist = tools.wrappers.ExpToLevelSet(x, y, exp_path)
+
+    dist = np.asarray(dist).reshape(-1)
+
+    # If ExpToLevelSet returns N+1 metadata row, drop it
+    n = x.size
+    dist = dist[:n]
+
+    levelsetnew = np.abs(dist)
+
+    # 3) restore sign
+    pos = np.where(levelset < 0)[0]
+    if dim == 3:
+        # Expand distance to 3D if needed (depends on what ExpToLevelSet returned)
+        nv2d = md.mesh.numberofvertices2d
+        nl = md.mesh.numberoflayers
+        # If levelsetnew is 2D length, tile to 3D length
+        if levelsetnew.size == nv2d:
+            levelsetnew = np.tile(levelsetnew, nl)
+        for i in range(nl):
+            pos3d = pos + i * nv2d
+            levelsetnew[pos3d] = -levelsetnew[pos3d]
+    else:
+        levelsetnew[pos] = -levelsetnew[pos]
+
+    return levelsetnew

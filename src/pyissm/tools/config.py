@@ -148,7 +148,7 @@ def issm_mumps_solver(**kwargs):
     Notes
     -----
     This function sets up ISSM's native MUMPS solver interface with:
-    - 'mpiparse' matrix type for ISSM's sparse matrix format
+    - 'mpisparse' matrix type for ISSM's sparse matrix format
     - 'mpi' vector type for parallel vector operations
     - 'mumps' solver type for direct factorization
 
@@ -160,7 +160,7 @@ def issm_mumps_solver(**kwargs):
 
     ## Define defaults
     defaults = {'toolkit': 'issm',
-                'mat_type': 'mpiparse',
+                'mat_type': 'mpisparse',
                 'vec_type': 'mpi',
                 'solver_type': 'mumps'}
     

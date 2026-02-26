@@ -32,7 +32,7 @@ class independent(class_registry.manage_state):
         Absolute minimum acceptable value of the inversed parameter on each vertex.
     max_parameters : :class:`float`, default=np.nan
         Absolute maximum acceptable value of the inversed parameter on each vertex.
-    control_scaling_factor : :class:`float`, default=np.nan
+    control_scaling_factor : :class:`float`, default=1.0
         Order of magnitude of each control (useful for multi-parameter optimization).
     control_size : :class:`int`, default=1
         Number of timesteps.
@@ -57,7 +57,7 @@ class independent(class_registry.manage_state):
         self.nods = 0
         self.min_parameters = np.nan
         self.max_parameters = np.nan
-        self.control_scaling_factor = np.nan
+        self.control_scaling_factor = 1.0
         self.control_size = 1
 
         # Inherit matching fields from provided class
@@ -84,7 +84,7 @@ class independent(class_registry.manage_state):
         return s
     
     # Check model consistency
-    def check_consistency(self, md, i, solution, analyses):
+    def check_consistency(self, md, solution, analyses):
         """
         Check consistency of the [independent] parameters.
 
@@ -111,6 +111,8 @@ class independent(class_registry.manage_state):
             if self.nods == 0:
                 raise TypeError('pyissm.model.classes.independent.check_consistency: nods should be set to the size of the independent variable')
             
-            class_utils.check_field(md, fieldname = 'autodiff.independents[%d].fov_forward_indices' % i, ge = 1, le = self.nods)
+            class_utils.check_field(md, field = self.fov_forward_indices, ge = 1, le = self.nods, message = "pyissm.model.classes.independent.check_consistency: fov_forward_indices should be between 1 and nods (inclusive).")
+        
+        md = class_utils.check_field(md, field = self.control_scaling_factor, scalar = True, gt = 0., allow_nan = False, allow_inf = False, message = "pyissm.model.classes.independent.check_consistency: control_scaling_factor should be a positive scalar value.")
 
         return md

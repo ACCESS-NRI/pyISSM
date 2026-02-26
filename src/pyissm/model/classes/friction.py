@@ -691,6 +691,8 @@ class josh(class_registry.manage_state):
         (T - Tpmp)/gamma [K].
     effective_pressure_limit : :class:`numpy.ndarray`, default=0
         Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).
+    coefficient_max : float, default=300.
+        effective friction C = min(coefficient_max, sqrt(exp(T_b(modern) - T_b(t))/gamma) * coefficient)
 
     Examples
     --------
@@ -705,6 +707,7 @@ class josh(class_registry.manage_state):
         self.pressure_adjusted_temperature = np.nan
         self.gamma = 1.
         self.effective_pressure_limit = 0
+        self.coefficient_max = 300.
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -718,6 +721,7 @@ class josh(class_registry.manage_state):
         s += '{}\n'.format(class_utils.fielddisplay(self, 'pressure_adjusted_temperature', 'friction pressure_adjusted_temperature (T - Tpmp) [K]'))
         s += '{}\n'.format(class_utils.fielddisplay(self, 'gamma', '(T - Tpmp)/gamma [K]'))
         s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
+        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficient_max', 'effective friction C = min(coefficient_max, sqrt(exp(T_b(modern) - T_b(t))/gamma) * coefficient)'))
         return s
 
     # Define class string
@@ -763,7 +767,7 @@ class josh(class_registry.manage_state):
         class_utils.check_field(md, fieldname = "friction.pressure_adjusted_temperature", allow_nan = False, allow_inf = False)
         class_utils.check_field(md, fieldname = "friction.gamma", gt = 0, scalar = True, allow_nan = False, allow_inf = False)
         class_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)       
-
+        class_utils.check_field(md, fieldname = "friction.coefficient_max", scalar = True, gt = 0, allow_nan = False, allow_inf = False)       
         class_utils.check_field(md, fieldname = "initialization.temperature", size = 'universal', allow_nan = False, allow_inf = False)
 
         return md
@@ -796,6 +800,7 @@ class josh(class_registry.manage_state):
         execute.WriteData(fid, prefix, obj = self, fieldname = 'pressure_adjusted_temperature', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         execute.WriteData(fid, prefix, obj = self, fieldname = 'gamma', format = 'Double')
         execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure_limit', format = 'Double')
+        execute.WriteData(fid, prefix, obj = self, fieldname = 'coefficient_max', format = 'Double')
 
 ## ------------------------------------------------------
 ## friction.pism
@@ -1670,6 +1675,16 @@ class weertman(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - friction.weertman Class'
         return s
+    
+    # Extrude to 3D mesh
+    def extrude(self, md):
+        """
+        Extrude friction.weertman fields to 3D
+        """
+        self.C = mesh.project_3d(md, vector = self.C, type = 'node', layer = 1)
+        self.m = mesh.project_3d(md, vector = self.p, type = 'element')
+
+        return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):

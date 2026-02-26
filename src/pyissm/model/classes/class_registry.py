@@ -265,6 +265,17 @@ class manage_state:
         20
     """
 
+    @classmethod
+    def issm_enum_string(cls):
+        """
+        Default ISSM C++ enum string used during marshalling.
+
+        Historical behavior for outputdefinition was to capitalize the Python class
+        name (e.g., 'surfacesquare' -> 'Surfacesquare'). Subclasses can override
+        this when ISSM expects a different enum string (e.g., 'Cfsurfacesquare').
+        """
+        return cls.__name__.capitalize()
+
     ## Allow inheritance from existing model class
     def __init__(self, other=None):
         """
@@ -399,3 +410,4 @@ class manage_state:
         Used by Python's pickle module and ISSM's save/load functionality.
         """
         self.__dict__.update(state)
+

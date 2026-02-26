@@ -1,8 +1,12 @@
+<div align="center">
+  <img src="docs/_static/pyissm_logo_med.png" alt="pyISSM Logo" width="300"/>
+</div>
+
 # pyISSM - ISSM Python API
 
 [![PyPI](https://img.shields.io/pypi/v/pyissm)](https://pypi.org/project/pyissm/)
 [![Conda](https://img.shields.io/conda/v/accessnri/pyissm)](https://anaconda.org/accessnri/pyissm)
-[![CI](https://img.shields.io/github/actions/workflow/status/access-nri/pyISSM/CI.yml?label=NightlyRun%20Tests%20(CI.yml))](https://github.com/ACCESS-NRI/pyISSM/actions/workflows/CI.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/access-nri/pyISSM/CI.yml?label=CI%20Tests)](https://github.com/ACCESS-NRI/pyISSM/actions/workflows/CI.yml)
 [![Docs](https://app.readthedocs.org/projects/pyissm/badge/?version=latest)](https://pyissm.readthedocs.io/latest/)
 
 ---
