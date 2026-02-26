@@ -91,7 +91,7 @@ class independent(class_registry.manage_state):
         return s
     
     # Check model consistency
-    def check_consistency(self, md, solution, analyses, driver):
+    def check_consistency(self, md, solution, analyses):
         if not np.isnan(self.fos_forward_index):
             if self.nods == 0:
                 raise TypeError('pyissm.model.classes.independent.check_consistency: nods should be set to the size of the independent variable')
@@ -102,6 +102,6 @@ class independent(class_registry.manage_state):
             
             class_utils.check_field(md, field = self.fov_forward_indices, ge = 1, le = self.nods)
         
-        md = class_utils.check_field(md, field = self.control_scaling_factor, scalar = True, gt = 0., allow_nan = False, allow_inf = False)
+        md = class_utils.check_field(md, field = self.control_scaling_factor, scalar = True, gt = 0., allow_nan = False, allow_inf = False, message = "pyissm.model.classes.independent.check_consistency: control_scaling_factor should be a positive scalar value.")
 
         return md

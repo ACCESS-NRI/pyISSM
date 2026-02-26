@@ -152,7 +152,7 @@ class autodiff(class_registry.manage_state):
         for dep in self.dependents:
             dep.check_consistency(md, solution, analyses)
         for indep in self.independents:
-            indep.check_consistency(md, solution, analyses, self.driver)
+            indep.check_consistency(md, solution, analyses)
 
         return md
 
