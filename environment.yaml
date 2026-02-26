@@ -1,0 +1,26 @@
+name: pyissm
+channels:
+  - accessnri
+  - conda-forge
+  - nodefaults
+
+dependencies:
+  # Core runtime (matches pyISSM project.toml deps)
+  - python==3.11.*
+  - xarray==2025.10.*
+  - numpy==1.26.*
+  - scipy==1.16.*
+  - netcdf4==1.7.*
+  - pandas==2.3.*
+  - matplotlib>=3.10.*
+  - attrs>=23.0
+  - pyyaml>=6.0
+
+  # Common packaging/install tooling
+  - pip>=25
+  - setuptools>=61.0
+  - wheel
+
+  # If you want editable installs / local dev workflows
+  - pip:
+    - -e .[dev]
