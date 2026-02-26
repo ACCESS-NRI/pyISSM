@@ -64,7 +64,7 @@ class independent(class_registry.manage_state):
         self.nods = 0
         self.min_parameters = np.nan
         self.max_parameters = np.nan
-        self.control_scaling_factor = np.nan
+        self.control_scaling_factor = 1.0
         self.control_size = 1
 
         # Inherit matching fields from provided class
