@@ -64,7 +64,7 @@ class levelsetmisfit(class_registry.manage_state):
     >>> cf.model_string = "MaskIceLevelset"
     >>> cf.observation_string = "LevelsetObservations"
     >>> cf.observation = md.mask.ice_levelset
-    >>> cf.weights = np.ones((md.mesh.numberofvertices, 1))
+    >>> cf.weights = np.ones(md.mesh.numberofvertices, )
     >>> cf.weights_string = "WeightsLevelsetObservations"
     >>> cf.datatime = time
     >>> md.outputdefinition.definitions.append(cf)

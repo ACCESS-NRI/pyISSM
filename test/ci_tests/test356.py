@@ -12,22 +12,22 @@ md.cluster.np = 3
 # Use Schoof's law
 Cmax = 0.8
 md.friction = pyissm.model.classes.friction.schoof()
-md.friction.m    = 1.0 / 3.0 * np.ones((md.mesh.numberofelements, 1))
-md.friction.Cmax = Cmax * np.ones((md.mesh.numberofvertices, 1))
-md.friction.C = 200 * np.ones((md.mesh.numberofvertices, 1))
+md.friction.m    = 1.0 / 3.0 * np.ones(md.mesh.numberofelements, )
+md.friction.Cmax = Cmax * np.ones(md.mesh.numberofvertices, )
+md.friction.C = 200 * np.ones(md.mesh.numberofvertices, )
 
 # Control parameters
 md.inversion.iscontrol = 1
 md.inversion.control_parameters = ['FrictionC']
-md.inversion.min_parameters = 1. * np.ones((md.mesh.numberofvertices, 1))
-md.inversion.max_parameters = 10000. * np.ones((md.mesh.numberofvertices, 1))
+md.inversion.min_parameters = 1. * np.ones(md.mesh.numberofvertices, )
+md.inversion.max_parameters = 10000. * np.ones(md.mesh.numberofvertices, )
 md.inversion.nsteps = 2
 md.inversion.cost_functions = [102, 501]
 md.inversion.cost_functions_coefficients = np.ones((md.mesh.numberofvertices, 2))
 md.inversion.cost_functions_coefficients[:, 1] = 2e-7
-md.inversion.gradient_scaling = 3. * np.ones((md.inversion.nsteps, ))
-md.inversion.maxiter_per_step = 2 * np.ones((md.inversion.nsteps, ))
-md.inversion.step_threshold = 0.3 * np.ones((md.inversion.nsteps, ))
+md.inversion.gradient_scaling = 3. * np.ones(md.inversion.nsteps, )
+md.inversion.maxiter_per_step = 2 * np.ones(md.inversion.nsteps, )
+md.inversion.step_threshold = 0.3 * np.ones(md.inversion.nsteps, )
 md.inversion.vx_obs = md.initialization.vx
 md.inversion.vy_obs= md.initialization.vy
 
