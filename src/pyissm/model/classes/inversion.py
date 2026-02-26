@@ -1,3 +1,7 @@
+"""
+Inversion classes for ISSM.
+"""
+
 import numpy as np
 import warnings
 from pyissm.model.classes import class_utils, class_registry
@@ -837,6 +841,9 @@ class tao(class_registry.manage_state):
             execute.WriteData(fid, prefix, name = 'md.inversion.cost_functions', data = class_utils.marshall_inversion_cost_functions(self.cost_functions), format = 'StringArray')
             execute.WriteData(fid, prefix, name = 'md.inversion.num_cost_functions', data = np.size(self.cost_functions), format = 'Integer')
 
+## ------------------------------------------------------
+## inversion.adm1qn3
+## ------------------------------------------------------
 @class_registry.register_class
 class adm1qn3(class_registry.manage_state):
     """
@@ -859,33 +866,31 @@ class adm1qn3(class_registry.manage_state):
 
     Parameters
     ----------
-    other : object, optional
-        Any object with matching attribute names. If provided, its attribute values
-        overwrite the defaults defined in this class. This mirrors how other pyISSM
-        classes support lightweight “inherit defaults then override” workflows.
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    iscontrol : int
+    iscontrol : :class:`int`
         Flag enabling inversion (0: off, 1: on). When 0, ``check_consistency`` and
         ``marshall_class`` will early-return and write only the minimal fields.
-    maxsteps : int
+    maxsteps : :class:`int`
         Maximum number of *gradient evaluations* (outer iterations).
-    maxiter : int
+    maxiter : :class:`int`
         Maximum number of *function evaluations* (forward model runs).
-    dxmin : float
+    dxmin : :class:`float`
         Convergence threshold on the parameter update size. Two iterates closer than
         ``dxmin`` in sup-norm are treated as identical (MATLAB parity).
-    dfmin_frac : float
+    dfmin_frac : :class:`float`
         Expected fractional reduction of the objective during the first step.
         Example: 0.3 corresponds to an expected 30% reduction.
-    gttol : float
+    gttol : :class:`float`
         Gradient convergence criterion measured relative to the initial gradient:
         ``||g(X)|| / ||g(X0)||``.
 
     Notes
     -----
-    - ISSM inversion type written by this class is **4** (ADM1QN3).
     - The M1QN3 availability check uses ``tools.wrappers.IssmConfig("_HAVE_M1QN3_")``
       when Python wrappers are available. If wrappers are unavailable, the check is
       skipped with a warning (mirroring patterns elsewhere in pyISSM).
@@ -894,31 +899,21 @@ class adm1qn3(class_registry.manage_state):
 
     Examples
     --------
-    Basic setup:
+    .. code-block:: python
+        # Basic setup:
+        >>> md.inversion = pyissm.model.classes.inversion.adm1qn3()
+        >>> md.inversion.iscontrol = 1
+        >>> md.inversion.maxsteps = 30
+        >>> md.inversion.gttol = 1e-5
 
-    >>> md.inversion = pyissm.model.classes.inversion.adm1qn3()
-    >>> md.inversion.iscontrol = 1
-    >>> md.inversion.maxsteps = 30
-    >>> md.inversion.gttol = 1e-5
-
-    Inherit settings from another instance:
-
-    >>> base = pyissm.model.classes.inversion.adm1qn3()
-    >>> base.maxiter = 60
-    >>> md.inversion = pyissm.model.classes.inversion.adm1qn3(other=base)
+        # Inherit settings from another instance:
+        >>> base = pyissm.model.classes.inversion.adm1qn3()
+        >>> base.maxiter = 60
+        >>> md.inversion = pyissm.model.classes.inversion.adm1qn3(other=base)
     """
-
+    
+    # Initialise with default parameters
     def __init__(self, other=None):
-        """
-        Initialize ADM1QN3 inversion parameters.
-
-        Parameters
-        ----------
-        other : object, optional
-            Object providing attribute overrides. Any attribute on ``other`` with the
-            same name as an attribute on this class will replace the default value.
-        """
-        # Defaults (MATLAB parity)
         self.iscontrol = 0
         self.maxsteps = 20
         self.maxiter = 40
@@ -926,19 +921,11 @@ class adm1qn3(class_registry.manage_state):
         self.dfmin_frac = 1.0
         self.gttol = 1e-4
 
-        # Inherit matching fields from provided class/object
+        # Inherit matching fields from provided class
         super().__init__(other)
 
+    # Define repr
     def __repr__(self):
-        """
-        Return a detailed, human-readable summary of ADM1QN3 parameters.
-
-        Returns
-        -------
-        str
-            Multi-line representation suitable for console inspection, following the
-            same style as other pyISSM classes.
-        """
         s = "   adm1qn3 inversion parameters:\n"
         s += f"{class_utils.fielddisplay(self, 'iscontrol', 'is inversion activated?')}\n"
         s += f"{class_utils.fielddisplay(self, 'maxsteps', 'maximum number of iterations (gradient evaluations)')}\n"
@@ -948,61 +935,38 @@ class adm1qn3(class_registry.manage_state):
         s += f"{class_utils.fielddisplay(self, 'gttol', 'relative gradient convergence criterion')}\n"
         return s
 
+    # Define class string
     def __str__(self):
-        """
-        Return a short identifier string.
-
-        Returns
-        -------
-        str
-            Short class identifier consistent with other inversion classes.
-        """
         return "ISSM - inversion.adm1qn3 Class"
 
-    def extrude(self, md):
+    # Extrude to 3D mesh
+    def _extrude(self, md):
         """
-        Extrude fields to a 3D mesh (no-op).
-
-        ADM1QN3 stores only scalar optimizer settings; there are no node/element fields
-        to project when moving from 2D to 3D. This method exists to keep a uniform
-        interface across model classes.
-
-        Parameters
-        ----------
-        md : Model
-            ISSM/pyISSM model instance.
-
-        Returns
-        -------
-        adm1qn3
-            Returns ``self`` for chaining.
+        Extrude inversion.tao fields to 3D
         """
+        warnings.warn('pyissm.model.classes.inversion.adm1qn3.extrude: 3D extrusion not implemented for adm1qn3. Returning unchanged (2D) adm1qn3 fields.')
         return self
 
-    def check_consistency(self, md, solution=None, analyses=None):
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
         """
-        Validate ADM1QN3 fields and installation prerequisites.
-
-        If inversion is disabled (``iscontrol == 0``), this method returns immediately
-        without checks. Otherwise it validates:
-
-        - that ISSM was compiled with M1QN3 support (when wrappers are available)
-        - scalar bounds and admissible ranges for optimizer parameters
+        Check consistency of the [inversion.adm1qn3] parameters.
 
         Parameters
         ----------
-        md : Model
-            ISSM/pyISSM model instance.
-        solution : str, optional
-            Present for API compatibility; not used by ADM1QN3.
-        analyses : any, optional
-            Present for API compatibility; not used by ADM1QN3.
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`pyissm.model.solution`
+            The solution object to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
 
-        Returns
+        Returns 
         -------
-        Model
-            The input model (possibly annotated with messages via ``md.check_message``).
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
         """
+
         if not self.iscontrol:
             return md
 
@@ -1019,50 +983,45 @@ class adm1qn3(class_registry.manage_state):
                 "skipping M1QN3 availability check."
             )
 
-        class_utils.check_field(md, fieldname="inversion.iscontrol", values=[0, 1])
-        class_utils.check_field(md, fieldname="inversion.maxsteps", scalar=True, ge=0)
-        class_utils.check_field(md, fieldname="inversion.maxiter", scalar=True, ge=0)
-        class_utils.check_field(md, fieldname="inversion.dxmin", scalar=True, gt=0)
-        class_utils.check_field(md, fieldname="inversion.dfmin_frac", scalar=True, ge=0.0, le=1.0)
-        class_utils.check_field(md, fieldname="inversion.gttol", scalar=True, gt=0)
+        class_utils.check_field(md, fieldname = "inversion.iscontrol", values = [0, 1])
+        class_utils.check_field(md, fieldname = "inversion.maxsteps", scalar = True, ge = 0)
+        class_utils.check_field(md, fieldname = "inversion.maxiter", scalar = True, ge = 0)
+        class_utils.check_field(md, fieldname = "inversion.dxmin", scalar = True, gt = 0)
+        class_utils.check_field(md, fieldname = "inversion.dfmin_frac", scalar = True, ge = 0.0, le = 1.0)
+        class_utils.check_field(md, fieldname = "inversion.gttol", scalar = True, gt = 0)
 
         return md
 
+    # Marshall method for saving the inversion.adm1qn3 parameters
     def marshall_class(self, fid, prefix, md=None):
         """
-        Serialize ADM1QN3 parameters to ISSM binary input.
-
-        This method writes:
-
-        - ``md.inversion.type = 4`` (ADM1QN3)
-        - ``iscontrol`` always
-        - if ``iscontrol == 1``, the optimizer parameters:
-          ``maxsteps``, ``maxiter``, ``dxmin``, ``dfmin_frac``, ``gttol``
+        Marshall [inversion.adm1qn3] parameters to a binary file.
 
         Parameters
         ----------
-        fid : file-like
-            Open file handle used for writing ISSM binary input.
-        prefix : str
-            Prefix used by ISSM for namespacing serialized fields.
-        md : Model, optional
-            ISSM/pyISSM model instance (unused here, kept for signature consistency).
-
+        fid : :class:`file object`
+            The file object to write the binary data to.
+        prefix : :class:`str`
+            Prefix string used for data identification in the binary file.
+        md : :class:`pyissm.model.Model`, optional
+            ISSM model object needed in some cases.
+            
         Returns
         -------
         None
         """
+
         # Inversion type ID for ADM1QN3
-        execute.WriteData(fid, prefix, name="md.inversion.type", data=4, format="Integer")
+        execute.WriteData(fid, prefix, name = "md.inversion.type", data = 4, format = "Integer")
 
         # Always write iscontrol
-        execute.WriteData(fid, prefix, obj=self, fieldname="iscontrol", format="Boolean")
+        execute.WriteData(fid, prefix, obj = self, fieldname = "iscontrol", format = "Boolean")
 
         if not self.iscontrol:
             return
 
-        execute.WriteData(fid, prefix, obj=self, fieldname="maxsteps", format="Integer")
-        execute.WriteData(fid, prefix, obj=self, fieldname="maxiter", format="Integer")
-        execute.WriteData(fid, prefix, obj=self, fieldname="dxmin", format="Double")
-        execute.WriteData(fid, prefix, obj=self, fieldname="dfmin_frac", format="Double")
-        execute.WriteData(fid, prefix, obj=self, fieldname="gttol", format="Double")
+        execute.WriteData(fid, prefix, obj=self, fieldname = "maxsteps", format = "Integer")
+        execute.WriteData(fid, prefix, obj=self, fieldname = "maxiter", format = "Integer")
+        execute.WriteData(fid, prefix, obj=self, fieldname = "dxmin", format = "Double")
+        execute.WriteData(fid, prefix, obj=self, fieldname = "dfmin_frac", format = "Double")
+        execute.WriteData(fid, prefix, obj=self, fieldname = "gttol", format = "Double")
