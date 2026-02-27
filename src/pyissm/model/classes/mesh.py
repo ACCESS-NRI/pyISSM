@@ -200,28 +200,28 @@ class mesh2d(class_registry.manage_state):
         """
 
         ## Write headers to file
-        execute.WriteData(fid, prefix, name = 'md.mesh.domain_type', data = 'Domain' + self.domain_type(), format = 'String')
-        execute.WriteData(fid, prefix, name = 'md.mesh.domain_dimension', data = self.dimension(), format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.mesh.elementtype', data = self.element_type(), format = 'String')
+        execute._write_model_field(fid, prefix, name = 'md.mesh.domain_type', data = 'Domain' + self.domain_type(), format = 'String')
+        execute._write_model_field(fid, prefix, name = 'md.mesh.domain_dimension', data = self.dimension(), format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.mesh.elementtype', data = self.element_type(), format = 'String')
 
         ## Write Integer fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'numberofelements', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'numberofvertices', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'average_vertex_connectivity', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'numberofelements', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'numberofvertices', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'average_vertex_connectivity', format = 'Integer')
 
         ## Write DoubleMat fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'x', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'y', format = 'DoubleMat', mattype = 1 )
-        execute.WriteData(fid, prefix, name = 'md.mesh.z', data = np.zeros(self.numberofvertices), format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'elements', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'vertexonboundary', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'segments', format = 'DoubleMat', mattype = 3)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'scale_factor', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'x', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'y', format = 'DoubleMat', mattype = 1 )
+        execute._write_model_field(fid, prefix, name = 'md.mesh.z', data = np.zeros(self.numberofvertices), format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'elements', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'vertexonboundary', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'segments', format = 'DoubleMat', mattype = 3)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'scale_factor', format = 'DoubleMat', mattype = 1)
         
         ## Write conditional fields
         if md.transient.isoceancoupling:
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'lat', format = 'DoubleMat', mattype = 1)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'long', format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'lat', format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'long', format = 'DoubleMat', mattype = 1)
 
 ## --------------------------------------------------------
 ## mesh.mesh2dvertical
@@ -427,24 +427,24 @@ class mesh2dvertical(class_registry.manage_state):
         """
 
         ## Write headers to file
-        execute.WriteData(fid, prefix, name = 'md.mesh.domain_type', data = 'Domain' + self.domain_type(), format = 'String')
-        execute.WriteData(fid, prefix, name = 'md.mesh.domain_dimension', data = self.dimension(), format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.mesh.elementtype', data = self.element_type(), format = 'String')
+        execute._write_model_field(fid, prefix, name = 'md.mesh.domain_type', data = 'Domain' + self.domain_type(), format = 'String')
+        execute._write_model_field(fid, prefix, name = 'md.mesh.domain_dimension', data = self.dimension(), format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.mesh.elementtype', data = self.element_type(), format = 'String')
 
         ## Write Integer fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'numberofelements', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'numberofvertices', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'average_vertex_connectivity', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'numberofelements', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'numberofvertices', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'average_vertex_connectivity', format = 'Integer')
 
         ## Write DoubleMat & BooleanMat fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'x', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'y', format = 'DoubleMat', mattype = 1 )
-        execute.WriteData(fid, prefix, name = 'md.mesh.z', data = np.zeros(self.numberofvertices), format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'elements', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'vertexonbase', format = 'BooleanMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'vertexonsurface', format = 'BooleanMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'vertexonboundary', format = 'BooleanMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'scale_factor', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'x', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'y', format = 'DoubleMat', mattype = 1 )
+        execute._write_model_field(fid, prefix, name = 'md.mesh.z', data = np.zeros(self.numberofvertices), format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'elements', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'vertexonbase', format = 'BooleanMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'vertexonsurface', format = 'BooleanMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'vertexonboundary', format = 'BooleanMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'scale_factor', format = 'DoubleMat', mattype = 1)
 
 ## --------------------------------------------------------
 ## mesh.mesh3dprisms
@@ -679,33 +679,33 @@ class mesh3dprisms(class_registry.manage_state):
         """
 
         ## Write headers to file
-        execute.WriteData(fid, prefix, name = 'md.mesh.domain_type', data = 'Domain' + self.domain_type(), format = 'String')
-        execute.WriteData(fid, prefix, name = 'md.mesh.domain_dimension', data = self.dimension(), format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.mesh.elementtype', data = self.element_type(), format = 'String')
+        execute._write_model_field(fid, prefix, name = 'md.mesh.domain_type', data = 'Domain' + self.domain_type(), format = 'String')
+        execute._write_model_field(fid, prefix, name = 'md.mesh.domain_dimension', data = self.dimension(), format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.mesh.elementtype', data = self.element_type(), format = 'String')
 
         ## Write Integer fields
         fieldnames = ['numberoflayers', 'numberofelements', 'numberofvertices', 'average_vertex_connectivity', 'numberofvertices2d', 'numberofelements2d']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Integer')
 
         ## Write DoubleMat & BooleanMat fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'x', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'y', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'z', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'elements', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'vertexonbase', format = 'BooleanMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'vertexonsurface', format = 'BooleanMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'vertexonboundary', format = 'BooleanMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'lowerelements', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'upperelements', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'elements2d', format = 'DoubleMat', mattype = 3)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'segments2d', format = 'DoubleMat', mattype = 3)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'scale_factor', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'x', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'y', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'z', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'elements', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'vertexonbase', format = 'BooleanMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'vertexonsurface', format = 'BooleanMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'vertexonboundary', format = 'BooleanMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'lowerelements', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'upperelements', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'elements2d', format = 'DoubleMat', mattype = 3)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'segments2d', format = 'DoubleMat', mattype = 3)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'scale_factor', format = 'DoubleMat', mattype = 1)
 
         ## Write conditional fields
         if md.transient.isoceancoupling:
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'lat', format = 'DoubleMat', mattype = 1)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'long', format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'lat', format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'long', format = 'DoubleMat', mattype = 1)
 
 ## --------------------------------------------------------
 ## mesh.mesh3dsurface
@@ -902,19 +902,19 @@ class mesh3dsurface(class_registry.manage_state):
         """
 
         ## Write headers to file
-        execute.WriteData(fid, prefix, name = 'md.mesh.domain_type', data = 'Domain' + self.domain_type(), format = 'String')
-        execute.WriteData(fid, prefix, name = 'md.mesh.domain_dimension', data = self.dimension(), format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.mesh.elementtype', data = self.element_type(), format = 'String')
+        execute._write_model_field(fid, prefix, name = 'md.mesh.domain_type', data = 'Domain' + self.domain_type(), format = 'String')
+        execute._write_model_field(fid, prefix, name = 'md.mesh.domain_dimension', data = self.dimension(), format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.mesh.elementtype', data = self.element_type(), format = 'String')
 
         ## Write Integer fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'numberofelements', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'numberofvertices', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'average_vertex_connectivity', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'numberofelements', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'numberofvertices', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'average_vertex_connectivity', format = 'Integer')
 
         ## Write DoubleMat fields
         fieldnames = ['x', 'y', 'z', 'lat', 'long', 'r', 'vertexonboundary']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
         
-        execute.WriteData(fid, prefix, name = 'md.mesh.z', data = np.zeros(self.numberofvertices), format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'elements', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, name = 'md.mesh.z', data = np.zeros(self.numberofvertices), format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'elements', format = 'DoubleMat', mattype = 2)

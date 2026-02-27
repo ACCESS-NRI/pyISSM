@@ -168,8 +168,8 @@ class groundingline(class_registry.manage_state):
         ## Write String fields
         fieldnames = ['migration', 'friction_interpolation', 'melt_interpolation']
         for fieldname in fieldnames:
-            execute.WriteData(fid, prefix, name = 'md.groundingline.' + fieldname, data = getattr(self, fieldname), format = 'String')
+            execute._write_model_field(fid, prefix, name = 'md.groundingline.' + fieldname, data = getattr(self, fieldname), format = 'String')
         
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'intrusion_distance', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, name = 'md.groundingline.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'intrusion_distance', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, name = 'md.groundingline.requested_outputs', data = self.process_outputs(md), format = 'StringArray')

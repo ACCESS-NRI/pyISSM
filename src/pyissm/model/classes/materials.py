@@ -169,14 +169,14 @@ class ice(class_registry.manage_state):
 
         ## Write headers to file
         if write_type:
-            execute.WriteData(fid, prefix, data = _material_registry['ice'].type, name = 'md.materials.type', format = 'Integer')
+            execute._write_model_field(fid, prefix, data = _material_registry['ice'].type, name = 'md.materials.type', format = 'Integer')
 
         ## Write Double fields
         fieldnames = ['rho_ice', 'rho_water', 'rho_freshwater', 'mu_water', 'heatcapacity',
                       'latentheat', 'thermalconductivity', 'temperateiceconductivity', 'meltingpoint', 'beta',
                       'mixed_layer_capacity', 'thermal_exchange_velocity', 'earth_density']
         for fieldname in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = fieldname, format = 'Double')
 
         ## Write conditional fields
         if (
@@ -201,12 +201,12 @@ class ice(class_registry.manage_state):
         else:
             mattype = 2
             tsl = md.mesh.numberofelements
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_B', format = 'DoubleMat', mattype = mattype, timeserieslength = tsl + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rheology_B', format = 'DoubleMat', mattype = mattype, timeserieslength = tsl + 1, yts = md.constants.yts)
 
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'effectiveconductivity_averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_n', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_law', format = 'String')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'effectiveconductivity_averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rheology_n', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rheology_law', format = 'String')
 
 ## ------------------------------------------------------
 ## materials.hydro
@@ -314,12 +314,12 @@ class hydro(class_registry.manage_state):
 
         ## Write headers to file
         if write_type:
-            execute.WriteData(fid, prefix, data = _material_registry['hydro'].type, name = 'md.materials.type', format = 'Integer')
+            execute._write_model_field(fid, prefix, data = _material_registry['hydro'].type, name = 'md.materials.type', format = 'Integer')
 
         ## Write fields (all consistent format)
         fieldnames = ['rho_ice', 'rho_water', 'rho_freshwater', 'earth_density']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double')
 
 ## ------------------------------------------------------
 ## materials.litho
@@ -506,17 +506,17 @@ class litho(class_registry.manage_state):
 
         ## Write headers to file
         if write_type:
-            execute.WriteData(fid, prefix, data = _material_registry['litho'].type, name = 'md.materials.type', format = 'Integer')
+            execute._write_model_field(fid, prefix, data = _material_registry['litho'].type, name = 'md.materials.type', format = 'Integer')
 
         ## Write DoubleMat fields
         fieldnames = ['radius', 'lame_mu', 'lame_lambda', 'issolid', 'density', 'viscosity', 'rheologymodel',
                       'burgers_viscosity', 'burgers_mu', 'ebm_alpha', 'ebm_delta', 'ebm_taul', 'ebm_tauh']
         for field in fieldnames:
-                execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 3)
+                execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 3)
         
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'numlayers', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.materials.earth_density', data = self.earth_density, format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'numlayers', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.materials.earth_density', data = self.earth_density, format = 'Double')
 
 ## ------------------------------------------------------
 ## materials.damageice
@@ -684,20 +684,20 @@ class damageice(class_registry.manage_state):
 
         ## Write headers to file
         if write_type:
-            execute.WriteData(fid, prefix, data = _material_registry['damageice'].type, name = 'md.materials.type', format = 'Integer')
+            execute._write_model_field(fid, prefix, data = _material_registry['damageice'].type, name = 'md.materials.type', format = 'Integer')
 
         ## Write Double fields
         fieldnames = ['rho_ice', 'rho_water', 'rho_freshwater', 'mu_water', 'heatcapacity', 'thermalconductivity',
                       'temperateiceconductivity', 'meltingpoint', 'latentheat',
                       'beta', 'mixed_layer_capacity', 'thermal_exchange_velocity', 'earth_density']
         for field in fieldnames:
-                execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+                execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double')
         
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'effectiveconductivity_averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_B', format = 'DoubleMat', mattype = 1, timeserieslength =  md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_n', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_law', format = 'String')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'effectiveconductivity_averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rheology_B', format = 'DoubleMat', mattype = 1, timeserieslength =  md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rheology_n', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rheology_law', format = 'String')
 
 ## ------------------------------------------------------
 ## materials.enhancedice
@@ -871,21 +871,21 @@ class enhancedice(class_registry.manage_state):
 
         ## Write headers to file
         if write_type:
-            execute.WriteData(fid, prefix, data = _material_registry['enhancedice'].type, name = 'md.materials.type', format = 'Integer')
+            execute._write_model_field(fid, prefix, data = _material_registry['enhancedice'].type, name = 'md.materials.type', format = 'Integer')
 
         ## Write Double fields
         fieldnames = ['rho_ice', 'rho_water', 'rho_freshwater', 'mu_water', 'heatcapacity', 'thermalconductivity',
                       'temperateiceconductivity', 'meltingpoint', 'latentheat',
                       'beta', 'mixed_layer_capacity', 'thermal_exchange_velocity', 'earth_density']
         for field in fieldnames:
-                execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+                execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double')
         
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'effectiveconductivity_averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_E', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_B', format = 'DoubleMat', mattype = 1, timeserieslength =  md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_n', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_law', format = 'String')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'effectiveconductivity_averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rheology_E', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rheology_B', format = 'DoubleMat', mattype = 1, timeserieslength =  md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rheology_n', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rheology_law', format = 'String')
 
 ## ------------------------------------------------------
 ## materials.estar
@@ -1059,21 +1059,21 @@ class estar(class_registry.manage_state):
 
         ## Write headers to file
         if write_type:
-            execute.WriteData(fid, prefix, data = _material_registry['estar'].type, name = 'md.materials.type', format = 'Integer')
+            execute._write_model_field(fid, prefix, data = _material_registry['estar'].type, name = 'md.materials.type', format = 'Integer')
 
         ## Write Double fields
         fieldnames = ['rho_ice', 'rho_water', 'rho_freshwater', 'mu_water', 'heatcapacity', 'thermalconductivity',
                       'temperateiceconductivity', 'meltingpoint', 'latentheat',
                       'beta', 'mixed_layer_capacity', 'thermal_exchange_velocity', 'earth_density']
         for field in fieldnames:
-                execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+                execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double')
         
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'effectiveconductivity_averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_B', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_Ec', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_Es', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rheology_law', format = 'String')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'effectiveconductivity_averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rheology_B', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rheology_Ec', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rheology_Es', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rheology_law', format = 'String')
 
 ## ------------------------------------------------------
 ## materials.composite

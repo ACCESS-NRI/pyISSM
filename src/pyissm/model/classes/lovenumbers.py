@@ -164,7 +164,7 @@ class lovenumbers(class_registry.manage_state):
         ## Write DoubleMat fields
         fieldname = ['h', 'k', 'l', 'th', 'tk', 'tl', 'pmtf_colinear', 'pmtf_ortho']
         for field in fieldname:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
 
         ## Write conditional fields
         if (self.istime):
@@ -172,8 +172,8 @@ class lovenumbers(class_registry.manage_state):
         else:
             scale = 1.0 / md.constants.yts
 
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'timefreq', format = 'DoubleMat', mattype = 1, scale = scale)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'timefreq', format = 'DoubleMat', mattype = 1, scale = scale)
 
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'tk2secular', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'istime', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'tk2secular', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'istime', format = 'Boolean')

@@ -169,4 +169,4 @@ class verbose(class_registry.manage_state):
         """
 
         ## Write fields
-        execute.WriteData(fid, prefix, name = 'md.verbose', data = self.VerboseToBinary(), format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.verbose', data = self.VerboseToBinary(), format = 'Integer')

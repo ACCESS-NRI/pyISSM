@@ -165,15 +165,15 @@ class default(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.basalforcings.model', data = 1, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.basalforcings.model', data = 1, format = 'Integer')
 
         ## Write scaled fields
         fieldnames = ['groundedice_melting_rate', 'floatingice_melting_rate', 'perturbation_melting_rate']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'geothermalflux', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'geothermalflux', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
 ## ------------------------------------------------------
 ## basalforcings.pico
@@ -367,27 +367,27 @@ class pico(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.basalforcings.model', data = 5, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.basalforcings.model', data = 5, format = 'Integer')
 
         ## Write Integer fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'num_basins', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'maxboxcount', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'num_basins', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'maxboxcount', format = 'Integer')
 
         ## Write Boolean fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'isplume', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'isplume', format = 'Boolean')
 
         ## Write DoubleMat fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'overturning_coeff', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'farocean_temperature', format = 'DoubleMat', timeserieslength = self.num_basins + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'farocean_salinity', format = 'DoubleMat', timeserieslength = self.num_basins + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'geothermalflux', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'groundedice_melting_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'overturning_coeff', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'farocean_temperature', format = 'DoubleMat', timeserieslength = self.num_basins + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'farocean_salinity', format = 'DoubleMat', timeserieslength = self.num_basins + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'geothermalflux', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'groundedice_melting_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
         ## Write Double fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'gamma_T', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'gamma_T', format = 'Double')
 
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'basin_id', data = self.basin_id - 1, format = 'IntMat', mattype = 2) # Change to 0-indexing
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'basin_id', data = self.basin_id - 1, format = 'IntMat', mattype = 2) # Change to 0-indexing
 
 ## ------------------------------------------------------
 ## basalforcings.linear
@@ -563,16 +563,16 @@ class linear(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.basalforcings.model', data = 2, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.basalforcings.model', data = 2, format = 'Integer')
 
         ## Write DoubleMat fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'perturbation_melting_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'groundedice_melting_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'geothermalflux', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'deepwater_melting_rate', format = 'DoubleMat', mattype = 3, timeserieslength = 2, scale = 1. / md.constants.yts, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'upperwater_melting_rate', format = 'DoubleMat', mattype = 3, timeserieslength = 2, scale = 1. / md.constants.yts, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'deepwater_elevation', format = 'DoubleMat', mattype = 3, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'upperwater_elevation', format = 'DoubleMat', mattype = 3, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'perturbation_melting_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'groundedice_melting_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'geothermalflux', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'deepwater_melting_rate', format = 'DoubleMat', mattype = 3, timeserieslength = 2, scale = 1. / md.constants.yts, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'upperwater_melting_rate', format = 'DoubleMat', mattype = 3, timeserieslength = 2, scale = 1. / md.constants.yts, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'deepwater_elevation', format = 'DoubleMat', mattype = 3, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'upperwater_elevation', format = 'DoubleMat', mattype = 3, yts = md.constants.yts)
 
 ## ------------------------------------------------------
 ## basalforcings.lineararma
@@ -864,29 +864,29 @@ class lineararma(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.basalforcings.model', data = 9, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.basalforcings.model', data = 9, format = 'Integer')
 
         ## Write Integer fields
         fieldnames = ['num_basins', 'num_params', 'num_breaks', 'ar_order', 'ma_order']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Integer')
 
         ## Write DoubleMat fields
-        execute.WriteData(fid, prefix, name = 'md.basalforcings.polynomialparams', data = polyParams_scaled_2d, format = 'DoubleMat')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'arlag_coefs', format = 'DoubleMat', yts =  md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'malag_coefs', format = 'DoubleMat', yts =  md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.basalforcings.datebreaks', data = dbreaks, format = 'DoubleMat', scale = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'deepwater_elevation', format = 'DoubleMat')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'upperwater_melting_rate', format = 'DoubleMat', scale = 1. / md.constants.yts, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'upperwater_elevation', format = 'DoubleMat')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'groundedice_melting_rate', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, scale = 1. / md.constants.yts, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'geothermalflux', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.basalforcings.polynomialparams', data = polyParams_scaled_2d, format = 'DoubleMat')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'arlag_coefs', format = 'DoubleMat', yts =  md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'malag_coefs', format = 'DoubleMat', yts =  md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.basalforcings.datebreaks', data = dbreaks, format = 'DoubleMat', scale = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'deepwater_elevation', format = 'DoubleMat')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'upperwater_melting_rate', format = 'DoubleMat', scale = 1. / md.constants.yts, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'upperwater_elevation', format = 'DoubleMat')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'groundedice_melting_rate', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, scale = 1. / md.constants.yts, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'geothermalflux', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
         ## Write IntMat fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'basin_id', data = self.basin_id - 1, format = 'IntMat', mattype = 2)  # 0-indexed
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'basin_id', data = self.basin_id - 1, format = 'IntMat', mattype = 2)  # 0-indexed
 
         ## Write Double fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'arma_timestep', format = 'Double', scale = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'arma_timestep', format = 'Double', scale = md.constants.yts)
 
 ## ------------------------------------------------------
 ## basalforcings.mismip
@@ -1058,16 +1058,16 @@ class mismip(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.basalforcings.model', data = 3, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.basalforcings.model', data = 3, format = 'Integer')
 
         ## Write DoubleMat fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'groundedice_melting_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'geothermalflux', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'groundedice_melting_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'geothermalflux', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         
         ## Write Double fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'meltrate_factor', format = 'Double', scale = 1. / md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'threshold_thickness', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'upperdepth_melt', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'meltrate_factor', format = 'Double', scale = 1. / md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'threshold_thickness', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'upperdepth_melt', format = 'Double')
 
 ## ------------------------------------------------------
 ## basalforcings.plume
@@ -1273,18 +1273,18 @@ class plume(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.basalforcings.model', data = 4, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.basalforcings.model', data = 4, format = 'Integer')
 
         ## Write DoubleMat fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'groundedice_melting_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'floatingice_melting_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'groundedice_melting_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'floatingice_melting_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         
         ## Write Double fields
         fieldnames = ['mantleconductivity', 'nusselt', 'dtbg', 'plumeradius', 'topplumedepth',
                       'bottomplumedepth', 'plumex', 'plumey', 'crustthickness', 'uppercrustthickness',
                       'uppercrustheat', 'lowercrustheat']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double')
 
 ## ------------------------------------------------------
 ## basalforcings.spatiallinear
@@ -1454,13 +1454,13 @@ class spatiallinear(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.basalforcings.model', data = 6, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.basalforcings.model', data = 6, format = 'Integer')
 
         ## Write DoubleMat fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'groundedice_melting_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'geothermalflux', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'deepwater_melting_rate', format = 'DoubleMat', scale = 1. / md.constants.yts, mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'deepwater_elevation', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'upperwater_melting_rate', format = 'DoubleMat', scale = 1. / md.constants.yts, mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'upperwater_elevation', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'perturbation_melting_rate', format = 'DoubleMat',  scale = 1. / md.constants.yts, mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'groundedice_melting_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'geothermalflux', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'deepwater_melting_rate', format = 'DoubleMat', scale = 1. / md.constants.yts, mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'deepwater_elevation', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'upperwater_melting_rate', format = 'DoubleMat', scale = 1. / md.constants.yts, mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'upperwater_elevation', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'perturbation_melting_rate', format = 'DoubleMat',  scale = 1. / md.constants.yts, mattype = 1)

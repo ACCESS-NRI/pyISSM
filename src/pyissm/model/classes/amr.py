@@ -180,7 +180,7 @@ class amr(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.amr.type', data = 1, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.amr.type', data = 1, format = 'Integer')
         
         ## Write double fields
         fieldnames = ['hmin', 'hmax', 'err', 'gradation', 'groundingline_resolution', 'groundingline_distance', 'icefront_resolution',
@@ -188,11 +188,11 @@ class amr(class_registry.manage_state):
                       'thicknesserror_maximum', 'deviatoricerror_resolution', 'deviatoricerror_threshold', 'deviatoricerror_groupthreshold',
                       'deviatoricerror_maximum']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double')
 
         ## Write integer fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'keepmetric', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'restart', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'keepmetric', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'restart', format = 'Integer')
 
         ## Write string fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'fieldname', format = 'String')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'fieldname', format = 'String')

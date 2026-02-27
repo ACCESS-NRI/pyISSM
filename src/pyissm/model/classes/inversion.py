@@ -238,36 +238,36 @@ class default(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.inversion.type', data = 0, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.inversion.type', data = 0, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'iscontrol', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'incomplete_adjoint', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'vel_obs', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'iscontrol', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'incomplete_adjoint', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'vel_obs', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts)
 
         ## Write conditional fields
         if self.iscontrol:
             
             ## Write DoubleMat fields
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'cost_functions_coefficients', format = 'DoubleMat', mattype = 1)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'gradient_scaling', format = 'DoubleMat', mattype = 3)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'min_parameters', format = 'DoubleMat', mattype = 3)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'max_parameters', format = 'DoubleMat', mattype = 3)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'step_threshold', format = 'DoubleMat', mattype = 3)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'vx_obs', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'vy_obs', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'vz_obs', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'thickness_obs', format = 'DoubleMat', mattype = 1)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'surface_obs', format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'cost_functions_coefficients', format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'gradient_scaling', format = 'DoubleMat', mattype = 3)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'min_parameters', format = 'DoubleMat', mattype = 3)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'max_parameters', format = 'DoubleMat', mattype = 3)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'step_threshold', format = 'DoubleMat', mattype = 3)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'vx_obs', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'vy_obs', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'vz_obs', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'thickness_obs', format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'surface_obs', format = 'DoubleMat', mattype = 1)
 
             ## Write other fields
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'cost_function_threshold', format = 'Double')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'nsteps', format = 'Integer')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'maxiter_per_step', format = 'IntMat', mattype = 3)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'control_parameters', format = 'StringArray')
-            execute.WriteData(fid, prefix, name = 'md.inversion.num_control_parameters', data = len(self.control_parameters), format = 'Integer')
-            execute.WriteData(fid, prefix, name = 'md.inversion.cost_functions', data = class_utils.marshall_inversion_cost_functions(self.cost_functions), format = 'StringArray')
-            execute.WriteData(fid, prefix, name = 'md.inversion.num_cost_functions', data = np.size(self.cost_functions), format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'cost_function_threshold', format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'nsteps', format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'maxiter_per_step', format = 'IntMat', mattype = 3)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'control_parameters', format = 'StringArray')
+            execute._write_model_field(fid, prefix, name = 'md.inversion.num_control_parameters', data = len(self.control_parameters), format = 'Integer')
+            execute._write_model_field(fid, prefix, name = 'md.inversion.cost_functions', data = class_utils.marshall_inversion_cost_functions(self.cost_functions), format = 'StringArray')
+            execute._write_model_field(fid, prefix, name = 'md.inversion.num_cost_functions', data = np.size(self.cost_functions), format = 'Integer')
 
 
 ## ------------------------------------------------------
@@ -498,43 +498,43 @@ class m1qn3(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.inversion.type', data = 2, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.inversion.type', data = 2, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'iscontrol', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'iscontrol', format = 'Boolean')
 
         ## Write conditional fields
         if self.iscontrol:
 
             ## Write DoubleMat fields
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'cost_functions_coefficients', format = 'DoubleMat', mattype = 1)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'min_parameters', format = 'DoubleMat', mattype = 3)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'max_parameters', format = 'DoubleMat', mattype = 3)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'vx_obs', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'vy_obs', format = 'DoubleMat', mattype = 1, scale =  1. / md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'vz_obs', format = 'DoubleMat', mattype = 1, scale =  1. / md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'vel_obs', format = 'DoubleMat', mattype = 1, scale =  1. / md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'cost_functions_coefficients', format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'min_parameters', format = 'DoubleMat', mattype = 3)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'max_parameters', format = 'DoubleMat', mattype = 3)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'vx_obs', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'vy_obs', format = 'DoubleMat', mattype = 1, scale =  1. / md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'vz_obs', format = 'DoubleMat', mattype = 1, scale =  1. / md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'vel_obs', format = 'DoubleMat', mattype = 1, scale =  1. / md.constants.yts)
 
             ## Write conditional mattype
             if np.size(self.thickness_obs) == md.mesh.numberofelements:
                 mattype = 2
             else:
                 mattype = 1
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'thickness_obs', format = 'DoubleMat', mattype = mattype)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'surface_obs', format = 'DoubleMat', mattype = mattype)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'thickness_obs', format = 'DoubleMat', mattype = mattype)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'surface_obs', format = 'DoubleMat', mattype = mattype)
 
             ## Write other fields
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'incomplete_adjoint', format = 'Boolean')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'control_scaling_factors', format = 'DoubleMat', mattype = 3)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'maxsteps', format = 'Integer')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'maxiter', format = 'Integer')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'dxmin', format = 'Double')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'dfmin_frac', format = 'Double')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'gttol', format = 'Double')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'control_parameters', format = 'StringArray')
-            execute.WriteData(fid, prefix, name = 'md.inversion.num_control_parameters', data = len(self.control_parameters), format = 'Integer')
-            execute.WriteData(fid, prefix, name = 'md.inversion.cost_functions', data = class_utils.marshall_inversion_cost_functions(self.cost_functions), format = 'StringArray')
-            execute.WriteData(fid, prefix, name = 'md.inversion.num_cost_functions', data = np.size(self.cost_functions), format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'incomplete_adjoint', format = 'Boolean')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'control_scaling_factors', format = 'DoubleMat', mattype = 3)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'maxsteps', format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'maxiter', format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'dxmin', format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'dfmin_frac', format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'gttol', format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'control_parameters', format = 'StringArray')
+            execute._write_model_field(fid, prefix, name = 'md.inversion.num_control_parameters', data = len(self.control_parameters), format = 'Integer')
+            execute._write_model_field(fid, prefix, name = 'md.inversion.cost_functions', data = class_utils.marshall_inversion_cost_functions(self.cost_functions), format = 'StringArray')
+            execute._write_model_field(fid, prefix, name = 'md.inversion.num_cost_functions', data = np.size(self.cost_functions), format = 'Integer')
 
 ## ------------------------------------------------------
 ## inversion.tao
@@ -808,10 +808,10 @@ class tao(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.inversion.type', data = 1, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.inversion.type', data = 1, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'iscontrol', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'iscontrol', format = 'Boolean')
 
         ## Write conditional fields
         if self.iscontrol:
@@ -819,27 +819,27 @@ class tao(class_registry.manage_state):
             ## Write Double fields
             fieldnames = ['fatol', 'frtol', 'gatol', 'grtol', 'gttol']
             for field in fieldnames:
-                execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+                execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double')
 
             ## Write DoubleMat fields
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'cost_functions_coefficients', format = 'DoubleMat', mattype = 1)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'min_parameters', format = 'DoubleMat', mattype = 3)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'max_parameters', format = 'DoubleMat', mattype = 3)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'vx_obs', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'vy_obs', format = 'DoubleMat', mattype = 1, scale =  1. / md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'vz_obs', format = 'DoubleMat', mattype = 1, scale =  1. / md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'thickness_obs', format = 'DoubleMat', mattype = 1)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'surface_obs', format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'cost_functions_coefficients', format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'min_parameters', format = 'DoubleMat', mattype = 3)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'max_parameters', format = 'DoubleMat', mattype = 3)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'vx_obs', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'vy_obs', format = 'DoubleMat', mattype = 1, scale =  1. / md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'vz_obs', format = 'DoubleMat', mattype = 1, scale =  1. / md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'thickness_obs', format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'surface_obs', format = 'DoubleMat', mattype = 1)
 
             ## Write other fields
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'incomplete_adjoint', format = 'Boolean')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'maxsteps', format = 'Integer')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'maxiter', format = 'Integer')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'algorithm', format = 'String')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'control_parameters', format = 'StringArray')
-            execute.WriteData(fid, prefix, name = 'md.inversion.num_control_parameters', data = len(self.control_parameters), format = 'Integer')
-            execute.WriteData(fid, prefix, name = 'md.inversion.cost_functions', data = class_utils.marshall_inversion_cost_functions(self.cost_functions), format = 'StringArray')
-            execute.WriteData(fid, prefix, name = 'md.inversion.num_cost_functions', data = np.size(self.cost_functions), format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'incomplete_adjoint', format = 'Boolean')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'maxsteps', format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'maxiter', format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'algorithm', format = 'String')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'control_parameters', format = 'StringArray')
+            execute._write_model_field(fid, prefix, name = 'md.inversion.num_control_parameters', data = len(self.control_parameters), format = 'Integer')
+            execute._write_model_field(fid, prefix, name = 'md.inversion.cost_functions', data = class_utils.marshall_inversion_cost_functions(self.cost_functions), format = 'StringArray')
+            execute._write_model_field(fid, prefix, name = 'md.inversion.num_cost_functions', data = np.size(self.cost_functions), format = 'Integer')
 
 ## ------------------------------------------------------
 ## inversion.adm1qn3
@@ -1012,16 +1012,16 @@ class adm1qn3(class_registry.manage_state):
         """
 
         # Inversion type ID for ADM1QN3
-        execute.WriteData(fid, prefix, name = "md.inversion.type", data = 4, format = "Integer")
+        execute._write_model_field(fid, prefix, name = "md.inversion.type", data = 4, format = "Integer")
 
         # Always write iscontrol
-        execute.WriteData(fid, prefix, obj = self, fieldname = "iscontrol", format = "Boolean")
+        execute._write_model_field(fid, prefix, obj = self, fieldname = "iscontrol", format = "Boolean")
 
         if not self.iscontrol:
             return
 
-        execute.WriteData(fid, prefix, obj=self, fieldname = "maxsteps", format = "Integer")
-        execute.WriteData(fid, prefix, obj=self, fieldname = "maxiter", format = "Integer")
-        execute.WriteData(fid, prefix, obj=self, fieldname = "dxmin", format = "Double")
-        execute.WriteData(fid, prefix, obj=self, fieldname = "dfmin_frac", format = "Double")
-        execute.WriteData(fid, prefix, obj=self, fieldname = "gttol", format = "Double")
+        execute._write_model_field(fid, prefix, obj=self, fieldname = "maxsteps", format = "Integer")
+        execute._write_model_field(fid, prefix, obj=self, fieldname = "maxiter", format = "Integer")
+        execute._write_model_field(fid, prefix, obj=self, fieldname = "dxmin", format = "Double")
+        execute._write_model_field(fid, prefix, obj=self, fieldname = "dfmin_frac", format = "Double")
+        execute._write_model_field(fid, prefix, obj=self, fieldname = "gttol", format = "Double")

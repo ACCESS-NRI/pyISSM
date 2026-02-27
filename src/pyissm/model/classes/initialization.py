@@ -304,14 +304,14 @@ class initialization(class_registry.manage_state):
             'waterfraction', 'sediment_head', 'epl_head', 'epl_thickness',
             'watercolumn', 'channelarea', 'hydraulic_potential', 'sample', 'debris']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
 
         # Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'vx', format = 'DoubleMat', mattype = 1, scale = 1 / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'vy', format = 'DoubleMat', mattype = 1, scale = 1 / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'vz', format = 'DoubleMat', mattype = 1, scale = 1 / md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'sealevel', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'age', format = 'DoubleMat', mattype = 1, scale = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'vx', format = 'DoubleMat', mattype = 1, scale = 1 / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'vy', format = 'DoubleMat', mattype = 1, scale = 1 / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'vz', format = 'DoubleMat', mattype = 1, scale = 1 / md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'sealevel', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'age', format = 'DoubleMat', mattype = 1, scale = md.constants.yts)
 
         # Write conditional fields
         if md.thermal.isenthalpy:
@@ -323,4 +323,4 @@ class initialization(class_registry.manage_state):
                 self.enthalpy[:] = md.materials.heatcapacity * (md.initialization.temperature - md.constants.referencetemperature)
                 self.enthalpy[pos] = md.materials.heatcapacity * (tpmp[pos] - md.constants.referencetemperature) + md.materials.latentheat * md.initialization.waterfraction[pos]
 
-            execute.WriteData(fid, prefix, name = 'md.initialization.enthalpy', data = self.enthalpy, format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, name = 'md.initialization.enthalpy', data = self.enthalpy, format = 'DoubleMat', mattype = 1)

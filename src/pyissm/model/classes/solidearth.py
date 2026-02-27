@@ -223,16 +223,16 @@ class earth(class_registry.manage_state):
             npartocean = 0
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'planetradius', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'transitions', format = 'MatArray')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'transfercount', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'partitionice', mattype = 1, format = 'DoubleMat')
-        execute.WriteData(fid, prefix, name = 'md.solidearth.npartice', data = npartice, format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'partitionhydro', mattype = 1, format = 'DoubleMat')
-        execute.WriteData(fid, prefix, name = 'md.solidearth.nparthydro', data = nparthydro, format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'partitionocean', mattype = 1, format = 'DoubleMat')
-        execute.WriteData(fid, prefix, name = 'md.solidearth.npartocean', data = npartocean, format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.solidearth.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'planetradius', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'transitions', format = 'MatArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'transfercount', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'partitionice', mattype = 1, format = 'DoubleMat')
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.npartice', data = npartice, format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'partitionhydro', mattype = 1, format = 'DoubleMat')
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.nparthydro', data = nparthydro, format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'partitionocean', mattype = 1, format = 'DoubleMat')
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.npartocean', data = npartocean, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
         ## Marshall sub-objects
         self.settings.marshall_class(fid, prefix, md)
@@ -241,12 +241,12 @@ class earth(class_registry.manage_state):
 
         ## Write conditional fields
         if self.external:
-            execute.WriteData(fid, prefix, name = 'md.solidearth.isexternal', data = 1, format = 'Integer')
+            execute._write_model_field(fid, prefix, name = 'md.solidearth.isexternal', data = 1, format = 'Integer')
 
             ## If external exists, it will contain a marshall_class() function.
             self.external.marshall_class(prefix, md, fid)
         else:
-            execute.WriteData(fid, prefix, name = 'md.solidearth.isexternal', data = 0, format = 'Integer')
+            execute._write_model_field(fid, prefix, name = 'md.solidearth.isexternal', data = 0, format = 'Integer')
 
 ## ------------------------------------------------------
 ## solidearth.europa
@@ -464,16 +464,16 @@ class europa(class_registry.manage_state):
             npartocean = 0
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'planetradius', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'transitions', format = 'MatArray')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'transfercount', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'partitionice', mattype = 1, format = 'DoubleMat')
-        execute.WriteData(fid, prefix, name = 'md.solidearth.npartice', data = npartice, format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'partitionhydro', mattype = 1, format = 'DoubleMat')
-        execute.WriteData(fid, prefix, name = 'md.solidearth.nparthydro', data = nparthydro, format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'partitionocean', mattype = 1, format = 'DoubleMat')
-        execute.WriteData(fid, prefix, name = 'md.solidearth.npartocean', data = npartocean, format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.solidearth.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'planetradius', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'transitions', format = 'MatArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'transfercount', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'partitionice', mattype = 1, format = 'DoubleMat')
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.npartice', data = npartice, format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'partitionhydro', mattype = 1, format = 'DoubleMat')
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.nparthydro', data = nparthydro, format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'partitionocean', mattype = 1, format = 'DoubleMat')
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.npartocean', data = npartocean, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
         ## Marshall sub-objects
         self.settings.marshall_class(fid, prefix, md)
@@ -482,12 +482,12 @@ class europa(class_registry.manage_state):
 
         ## Write conditional fields
         if self.external:
-            execute.WriteData(fid, prefix, name = 'md.solidearth.isexternal', data = 1, format = 'Integer')
+            execute._write_model_field(fid, prefix, name = 'md.solidearth.isexternal', data = 1, format = 'Integer')
 
             ## If external exists, it will contain a marshall_class() function.
             self.external.marshall_class(prefix, md, fid)
         else:
-            execute.WriteData(fid, prefix, name = 'md.solidearth.isexternal', data = 0, format = 'Integer')
+            execute._write_model_field(fid, prefix, name = 'md.solidearth.isexternal', data = 0, format = 'Integer')
 
 ## ------------------------------------------------------
 ## solidearth.settings
@@ -698,20 +698,20 @@ class settings(class_registry.manage_state):
         ## Write Double fields
         fieldnames = ['reltol', 'abstol', 'degacc']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, name = 'md.solidearth.settings.' + field, data = getattr(self, field), format = 'Double')
+            execute._write_model_field(fid, prefix, name = 'md.solidearth.settings.' + field, data = getattr(self, field), format = 'Double')
 
         ## Write Integer fields
         fieldnames = ['maxiter', 'runfrequency', 'horiz', 'sealevelloading', 'isgrd', 'compute_bp_grd', 'grdmodel', 'cross_section_shape']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, name = 'md.solidearth.settings.' + field, data = getattr(self, field), format = 'Integer')
+            execute._write_model_field(fid, prefix, name = 'md.solidearth.settings.' + field, data = getattr(self, field), format = 'Integer')
 
         ## Write Boolean fields
         fieldnames = ['selfattraction', 'elastic', 'viscous', 'rotation', 'grdocean', 'ocean_area_scaling']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, name = 'md.solidearth.settings.' + field, data = getattr(self, field), format = 'Boolean')
+            execute._write_model_field(fid, prefix, name = 'md.solidearth.settings.' + field, data = getattr(self, field), format = 'Boolean')
         
         ## Write other fields
-        execute.WriteData(fid, prefix, name = 'md.solidearth.settings.timeacc', data = getattr(self, 'timeacc'), format = 'Double', scale = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.settings.timeacc', data = getattr(self, 'timeacc'), format = 'Double', scale = md.constants.yts)
 
 ## ------------------------------------------------------
 ## solidearth.solution
@@ -857,9 +857,9 @@ class solution(class_registry.manage_state):
             geoid_rate = np.append(geoid_rate,time[:-1].reshape(1,-1),axis = 0)
 
         ## Write fields
-        execute.WriteData(fid, prefix, name = 'md.solidearth.external.nature', data = 0, format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.solidearth.external.displacementeast', data = displacementeast_rate, format = 'DoubleMat',  mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.solidearth.external.displacementup', data = displacementup_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.solidearth.external.displacementnorth', data = displacementnorth_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.solidearth.external.geoid', data = geoid_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.external.nature', data = 0, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.external.displacementeast', data = displacementeast_rate, format = 'DoubleMat',  mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.external.displacementup', data = displacementup_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.external.displacementnorth', data = displacementnorth_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.external.geoid', data = geoid_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 

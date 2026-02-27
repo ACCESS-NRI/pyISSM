@@ -109,4 +109,4 @@ class outputdefinition(class_registry.manage_state):
         
         ## Remove duplicates
         unique_data = np.unique(data)
-        execute.WriteData(fid, prefix, name = 'md.outputdefinition.list', data = unique_data, format = 'StringArray')
+        execute._write_model_field(fid, prefix, name = 'md.outputdefinition.list', data = unique_data, format = 'StringArray')

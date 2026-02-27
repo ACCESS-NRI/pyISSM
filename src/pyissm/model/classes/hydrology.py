@@ -280,24 +280,24 @@ class armapw(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.hydrology.model', data = 7, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.hydrology.model', data = 7, format = 'Integer')
 
         ## Write Integer fields
         fieldnames = ['num_basins', 'num_breaks', 'num_params', 'ar_order', 'ma_order']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Integer')
 
         ## Write DoubleMat fields
-        execute.WriteData(fid, prefix, name = 'md.hydrology.polynomialparams', data = polyParams_Scaled_2d, format = 'DoubleMat')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'arlag_coefs', format = 'DoubleMat', yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'malag_coefs', format = 'DoubleMat', yts = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.hydrology.datebreaks', data = dbreaks, format = 'DoubleMat', scale = md.constants.yts)
-        execute.WriteData(fid,prefix, name = 'md.hydrology.monthlyfactors', data = tempmonthlyfactors, format = 'DoubleMat')
+        execute._write_model_field(fid, prefix, name = 'md.hydrology.polynomialparams', data = polyParams_Scaled_2d, format = 'DoubleMat')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'arlag_coefs', format = 'DoubleMat', yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'malag_coefs', format = 'DoubleMat', yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.hydrology.datebreaks', data = dbreaks, format = 'DoubleMat', scale = md.constants.yts)
+        execute._write_model_field(fid,prefix, name = 'md.hydrology.monthlyfactors', data = tempmonthlyfactors, format = 'DoubleMat')
 
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'arma_timestep', format = 'Double', scale = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.hydrology.basin_id', data = self.basin_id - 1,  format = 'IntMat', mattype = 2)  # 0-indexed
-        execute.WriteData(fid, prefix, name = 'md.hydrology.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'arma_timestep', format = 'Double', scale = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.hydrology.basin_id', data = self.basin_id - 1,  format = 'IntMat', mattype = 2)  # 0-indexed
+        execute._write_model_field(fid, prefix, name = 'md.hydrology.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 
 ## ------------------------------------------------------
@@ -661,47 +661,47 @@ class dc(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.hydrology.model', data = 1, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.hydrology.model', data = 1, format = 'Integer')
 
         ## Write Integer fields
         fieldnames = ['penalty_lock', 'max_iter', 'steps_per_step', 'averaging', 'sedimentlimit_flag', 'transfer_flag', 'unconfined_flag']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Integer')
 
         ## Write Double fields
         fieldnames = ['water_compressibility', 'penalty_factor', 'rel_tol', 'sediment_compressibility', 'sediment_porosity', 'sediment_thickness']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double')
 
         ## Write DoubleMat fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'basal_moulin_input', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'spcsediment_head', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'sediment_transmitivity', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'mask_thawed_node', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'basal_moulin_input', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'spcsediment_head', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'sediment_transmitivity', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'mask_thawed_node', format = 'DoubleMat', mattype = 1)
 
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'isefficientlayer', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'step_adapt', format = 'Boolean')
-        execute.WriteData(fid, prefix, name = 'md.hydrology.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'isefficientlayer', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'step_adapt', format = 'Boolean')
+        execute._write_model_field(fid, prefix, name = 'md.hydrology.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
         ## Write conditional fields
         if self.sedimentlimit_flag == 1:
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'sedimentlimit', format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'sedimentlimit', format = 'Double')
 
         if self.transfer_flag == 1:
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'leakage_factor', format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'leakage_factor', format = 'Double')
 
         if self.isefficientlayer == 1:
             ## Write Double fields
             fieldnames = ['epl_compressibility', 'epl_porosity', 'epl_max_thickness', 'epl_initial_thickness', 'epl_colapse_thickness', 'epl_conductivity']
             for field in fieldnames:
-                execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+                execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double')
 
             ## Write other fields
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'spcepl_head', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'mask_eplactive_node', format = 'DoubleMat', mattype = 1)            
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'epl_thick_comp', format = 'Integer')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'eplflip_lock', format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'spcepl_head', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'mask_eplactive_node', format = 'DoubleMat', mattype = 1)            
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'epl_thick_comp', format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'eplflip_lock', format = 'Integer')
 
         
 ## ------------------------------------------------------
@@ -979,30 +979,30 @@ class glads(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.hydrology.model', data = 5, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.hydrology.model', data = 5, format = 'Integer')
 
         ## Write Double fields
         fieldnames = ['pressure_melt_coefficient', 'cavity_spacing', 'omega', 'sheet_alpha', 'sheet_beta',
                       'channel_sheet_width', 'channel_alpha', 'channel_beta', 'englacial_void_ratio']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double')
 
         ## Write DoubleMat fields
         fieldnames = ['sheet_conductivity', 'bump_height', 'rheology_B_base', 'channel_conductivity']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
 
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'spcphi', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'neumannflux', format = 'DoubleMat', mattype = 2, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'moulin_input', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'spcphi', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'neumannflux', format = 'DoubleMat', mattype = 2, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'moulin_input', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'isincludesheetthickness', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'ischannels', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'creep_open_flag', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'istransition', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'melt_flag', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.hydrology.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'isincludesheetthickness', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'ischannels', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'creep_open_flag', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'istransition', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'melt_flag', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.hydrology.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## hydrology.pism
@@ -1162,12 +1162,12 @@ class pism(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.hydrology.model', data = 4, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.hydrology.model', data = 4, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'drainage_rate', format = 'DoubleMat', mattype = 1, scale = 1. / (1000. * md.constants.yts))
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'watercolumn_max', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, name = 'md.hydrology.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'drainage_rate', format = 'DoubleMat', mattype = 1, scale = 1. / (1000. * md.constants.yts))
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'watercolumn_max', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, name = 'md.hydrology.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## hydrology.shakti
@@ -1381,23 +1381,23 @@ class shakti(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.hydrology.model', data = 3, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.hydrology.model', data = 3, format = 'Integer')
 
         ## Write DoubleMat fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'head', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'gap_height', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'bump_spacing', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'bump_height', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'reynolds', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'englacial_input', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'moulin_input', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'spchead', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'neumannflux', format = 'DoubleMat', mattype = 2, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'head', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'gap_height', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'bump_spacing', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'bump_height', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'reynolds', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'englacial_input', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'moulin_input', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'spchead', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'neumannflux', format = 'DoubleMat', mattype = 2, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
         
         ## Write Double fields
         fieldnames = ['gap_height_min', 'gap_height_max', 'relaxation']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double')
 
         ## Write conditional fields
         mattype, tsl = (1, md.mesh.numberofvertices + 1) if (
@@ -1409,10 +1409,10 @@ class shakti(class_registry.manage_state):
                     and np.shape(self.storage)[1] > 1)
             )
         ) else (2, md.mesh.numberofelements + 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'storage', format = 'DoubleMat', mattype = mattype, timeserieslength = tsl, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'storage', format = 'DoubleMat', mattype = mattype, timeserieslength = tsl, yts = md.constants.yts)
 
         ## Write other fields
-        execute.WriteData(fid, prefix, name = 'md.hydrology.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, name = 'md.hydrology.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## hydrology.shreve
@@ -1570,12 +1570,12 @@ class shreve(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.hydrology.model', data = 2, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.hydrology.model', data = 2, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'spcwatercolumn', format = 'DoubleMat', mattype = 1, timeserieslength =  md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'stabilization', format = 'Double')
-        execute.WriteData(fid, prefix, name = 'md.hydrology.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'spcwatercolumn', format = 'DoubleMat', mattype = 1, timeserieslength =  md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'stabilization', format = 'Double')
+        execute._write_model_field(fid, prefix, name = 'md.hydrology.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## hydrology.tws
@@ -1725,8 +1725,8 @@ class tws(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.hydrology.model', data = 6, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.hydrology.model', data = 6, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'spcwatercolumn', format = 'DoubleMat', mattype = 1, timeserieslength =  md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.hydrology.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'spcwatercolumn', format = 'DoubleMat', mattype = 1, timeserieslength =  md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.hydrology.requested_outputs', data = self.process_outputs(md), format = 'StringArray')

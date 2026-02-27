@@ -104,7 +104,7 @@ class nodalvalue(class_registry.manage_state):
         """
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'name', format = 'String')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'definitionstring', format = 'String')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'model_string', format = 'String')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'node', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'name', format = 'String')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'definitionstring', format = 'String')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'model_string', format = 'String')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'node', format = 'Integer')

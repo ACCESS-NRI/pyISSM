@@ -241,25 +241,25 @@ class damage(class_registry.manage_state):
         """
         
         ## Write Boolean fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'isdamage', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'isdamage', format = 'Boolean')
 
         ## If damage is enabled, write additional fields
         if self.isdamage:
             ## Write Integer fields
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'law', format = 'Integer')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'stabilization', format = 'Integer')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'maxiter', format = 'Integer')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'equiv_stress', format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'law', format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'stabilization', format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'maxiter', format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'equiv_stress', format = 'Integer')
 
             ## Write DoubleMat fields
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'D', format = 'DoubleMat', mattype = 1)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'spcdamage', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'D', format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'spcdamage', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
             ## Write Double fields
             fieldnames = ['max_damage', 'stress_threshold', 'stress_ubound', 'kappa', 'c1', 'c2', 'c3', 'c4', 'healing']
             for fieldname in fieldnames:
-                execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'Double')
+                execute._write_model_field(fid, prefix, obj = self, fieldname = fieldname, format = 'Double')
 
             ## Write other fields
-            execute.WriteData(fid, prefix, name = 'md.damage.elementinterp', data = self.elementinterp, format = 'String')
-            execute.WriteData(fid, prefix, name = 'md.damage.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+            execute._write_model_field(fid, prefix, name = 'md.damage.elementinterp', data = self.elementinterp, format = 'String')
+            execute._write_model_field(fid, prefix, name = 'md.damage.requested_outputs', data = self.process_outputs(md), format = 'StringArray')

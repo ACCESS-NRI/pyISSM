@@ -129,16 +129,16 @@ class issmsettings(class_registry.manage_state):
         """
         
         ## Write fields
-        execute.WriteData(fid, prefix, name = 'md.settings.results_on_nodes', data = self.results_on_nodes, format = 'StringArray')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'io_gather', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'lowmem', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'output_frequency', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'sb_coupling_frequency', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'checkpoint_frequency', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'solver_residue_threshold', format = 'Double')
+        execute._write_model_field(fid, prefix, name = 'md.settings.results_on_nodes', data = self.results_on_nodes, format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'io_gather', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'lowmem', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'output_frequency', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'sb_coupling_frequency', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'checkpoint_frequency', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'solver_residue_threshold', format = 'Double')
 
         ## Write conditional fields
         if self.waitonlock > 0:
-            execute.WriteData(fid, prefix, name = 'md.settings.waitonlock', data = True, format = 'Boolean')
+            execute._write_model_field(fid, prefix, name = 'md.settings.waitonlock', data = True, format = 'Boolean')
         else:
-            execute.WriteData(fid, prefix, name = 'md.settings.waitonlock', data = False, format = 'Boolean')
+            execute._write_model_field(fid, prefix, name = 'md.settings.waitonlock', data = False, format = 'Boolean')

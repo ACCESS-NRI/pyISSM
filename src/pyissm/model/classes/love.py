@@ -265,25 +265,25 @@ class default(class_registry.manage_state):
                       'n_temporal_iterations', 'forcing_type', 'inner_core_boundary', 'core_mantle_boundary',
                       'hypergeom_nalpha', 'hypergeom_nz']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj=self, fieldname=field, format='Integer')
+            execute._write_model_field(fid, prefix, obj=self, fieldname=field, format='Integer')
 
         ## Write Double fields
         fieldnames = ['g0', 'r0', 'mu0', 'Gravitational_Constant', 'underflow_tol', 'pw_threshold',
                       'max_integration_dr']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj=self, fieldname=field, format='Double')
+            execute._write_model_field(fid, prefix, obj=self, fieldname=field, format='Double')
 
         ## Write Boolean fields
         fieldnames = ['chandler_wobble', 'allow_layer_deletion', 'istemporal', 'complex_computation',
                       'quad_precision', 'love_kernels', 'debug']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj=self, fieldname=field, format='Boolean')
+            execute._write_model_field(fid, prefix, obj=self, fieldname=field, format='Boolean')
 
         ## Write DoubleMat fields
-        execute.WriteData(fid, prefix, obj=self, fieldname='frequencies', format='DoubleMat', mattype = 3)
-        execute.WriteData(fid, prefix, obj=self, fieldname='hypergeom_table1', format='DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj=self, fieldname='hypergeom_table2', format='DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj=self, fieldname='hypergeom_z', format='DoubleMat', mattype = 3)
+        execute._write_model_field(fid, prefix, obj=self, fieldname='frequencies', format='DoubleMat', mattype = 3)
+        execute._write_model_field(fid, prefix, obj=self, fieldname='hypergeom_table1', format='DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj=self, fieldname='hypergeom_table2', format='DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj=self, fieldname='hypergeom_z', format='DoubleMat', mattype = 3)
 
         
 ## ------------------------------------------------------
@@ -501,18 +501,18 @@ class fourier(class_registry.manage_state):
         fieldnames = ['nfreq', 'sh_nmax', 'sh_nmin', 'integration_steps_per_layer', 'n_temporal_iterations',
                       'forcing_type', 'inner_core_boundary', 'core_mantle_boundary']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj=self, fieldname=field, format='Integer')
+            execute._write_model_field(fid, prefix, obj=self, fieldname=field, format='Integer')
 
         ## Write Double fields
         fieldnames = ['g0', 'r0', 'mu0', 'Gravitational_Constant', 'underflow_tol', 'pw_threshold']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj=self, fieldname=field, format='Double')
+            execute._write_model_field(fid, prefix, obj=self, fieldname=field, format='Double')
 
         ## Write Boolean fields
         fieldnames = ['chandler_wobble', 'allow_layer_deletion', 'istemporal', 'complex_computation',
                       'love_kernels']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj=self, fieldname=field, format='Boolean')
+            execute._write_model_field(fid, prefix, obj=self, fieldname=field, format='Boolean')
 
         ## Write DoubleMat fields
-        execute.WriteData(fid, prefix, obj=self, fieldname='frequencies', format='DoubleMat', mattype = 3)
+        execute._write_model_field(fid, prefix, obj=self, fieldname='frequencies', format='DoubleMat', mattype = 3)
