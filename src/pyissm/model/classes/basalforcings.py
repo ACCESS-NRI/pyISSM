@@ -91,8 +91,8 @@ class default(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 
@@ -284,8 +284,8 @@ class pico(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 
@@ -486,8 +486,8 @@ class linear(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 
@@ -701,8 +701,8 @@ class lineararma(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 
@@ -976,8 +976,8 @@ class mismip(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 
@@ -1191,8 +1191,8 @@ class plume(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 
@@ -1383,8 +1383,8 @@ class spatiallinear(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 

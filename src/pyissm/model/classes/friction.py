@@ -101,8 +101,8 @@ class default(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 
@@ -273,8 +273,8 @@ class coulomb(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 
@@ -439,8 +439,8 @@ class coulomb2(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 
@@ -600,8 +600,8 @@ class hydro(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 
@@ -748,8 +748,8 @@ class josh(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 
@@ -889,8 +889,8 @@ class pism(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 
@@ -1027,8 +1027,8 @@ class regcoulomb(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 
@@ -1162,8 +1162,8 @@ class regcoulomb2(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 
@@ -1308,8 +1308,8 @@ class schoof(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 
@@ -1437,8 +1437,8 @@ class shakti(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 
@@ -1567,8 +1567,8 @@ class waterlayer(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 
@@ -1695,8 +1695,8 @@ class weertman(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 
