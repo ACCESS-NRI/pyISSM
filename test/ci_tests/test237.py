@@ -35,7 +35,7 @@ itemp = np.arange(0, md.timestepping.final_time, md.timestepping.time_step)
 md.thermal.spctemperature = np.vstack((md.thermal.spctemperature, itemp))
 
 md.initialization.temperature = md.smb.temperatures_lgm[0:md.mesh.numberofvertices, 0]  # * ones(md.mesh.numberofvertices, )
-md.smb.initialise(md)
+md.smb.initialize(md)
 
 # creating precipitation
 md.smb.precipitations_presentday = np.zeros((md.mesh.numberofvertices, 12))

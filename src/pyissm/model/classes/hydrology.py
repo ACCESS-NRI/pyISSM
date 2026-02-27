@@ -568,7 +568,7 @@ class dc(class_registry.manage_state):
         return md
     
     # Initialise empty fields of correct dimensions
-    def _initialize(self, md):
+    def initialize(self, md):
         """
         Initialise [hydrology.dc] empty fields.
 
@@ -580,8 +580,8 @@ class dc(class_registry.manage_state):
 
             >>> md.hydrology = pyissm.model.classes.hydrology.dc()
             # At this point, initial fields are np.nan
-            # After calling _initialize, they will be set to default shapes/values with warnings issued.
-            >>> md.hydrology._initialize(md)
+            # After calling initialize, they will be set to default shapes/values with warnings issued.
+            >>> md.hydrology.initialize(md)
         """
 
         self.epl_colapse_thickness = self.sediment_transmitivity / self.epl_conductivity
