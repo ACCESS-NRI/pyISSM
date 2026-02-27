@@ -75,12 +75,12 @@ class masstransport(class_registry.manage_state):
     def __repr__(self):
         s = '   Masstransport solution parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'spcthickness', 'thickness constraints (NaN means no constraint) [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isfreesurface', 'do we use free surfaces (FS only) or mass conservation'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'min_thickness', 'minimum ice thickness allowed [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'hydrostatic_adjustment', 'adjustment of ice shelves surface and bed elevations: ''Incremental'' or ''Absolute'' '))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'stabilization', '0: no stabilization, 1: artificial diffusion, 2: streamline upwinding, 3: discontinuous Galerkin, 4: flux corrected transport, 5: streamline upwind Petrov-Galerkin (SUPG)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'spcthickness', 'thickness constraints (NaN means no constraint) [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isfreesurface', 'do we use free surfaces (FS only) or mass conservation'))
+        s += '{}\n'.format(class_utils._field_display(self, 'min_thickness', 'minimum ice thickness allowed [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'hydrostatic_adjustment', 'adjustment of ice shelves surface and bed elevations: ''Incremental'' or ''Absolute'' '))
+        s += '{}\n'.format(class_utils._field_display(self, 'stabilization', '0: no stabilization, 1: artificial diffusion, 2: streamline upwinding, 3: discontinuous Galerkin, 4: flux corrected transport, 5: streamline upwind Petrov-Galerkin (SUPG)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string

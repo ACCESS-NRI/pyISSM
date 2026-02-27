@@ -98,23 +98,23 @@ class default(class_registry.manage_state):
     def __repr__(self):
         s = '   inversion parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'iscontrol', 'is inversion activated?'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'incomplete_adjoint', '1: linear viscosity, 0: non - linear viscosity'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'control_parameters', 'ex: {''FrictionCoefficient''}, or {''MaterialsRheologyBbar''}'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'nsteps', 'number of optimization searches'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'cost_functions', 'indicate the type of response for each optimization step'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'cost_functions_coefficients', 'cost_functions_coefficients applied to the misfit of each vertex and for each control_parameter'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'cost_function_threshold', 'misfit convergence criterion. Default is 1%, NaN if not applied'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'maxiter_per_step', 'maximum iterations during each optimization step'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'gradient_scaling', 'scaling factor on gradient direction during optimization, for each optimization step'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'step_threshold', 'decrease threshold for misfit, default is 30%'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'min_parameters', 'absolute minimum acceptable value of the inversed parameter on each vertex'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'max_parameters', 'absolute maximum acceptable value of the inversed parameter on each vertex'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'vx_obs', 'observed velocity x component [m/yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'vy_obs', 'observed velocity y component [m/yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'vel_obs', 'observed velocity magnitude [m/yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'thickness_obs', 'observed thickness [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'surface_obs', 'observed surface elevation [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'iscontrol', 'is inversion activated?'))
+        s += '{}\n'.format(class_utils._field_display(self, 'incomplete_adjoint', '1: linear viscosity, 0: non - linear viscosity'))
+        s += '{}\n'.format(class_utils._field_display(self, 'control_parameters', 'ex: {''FrictionCoefficient''}, or {''MaterialsRheologyBbar''}'))
+        s += '{}\n'.format(class_utils._field_display(self, 'nsteps', 'number of optimization searches'))
+        s += '{}\n'.format(class_utils._field_display(self, 'cost_functions', 'indicate the type of response for each optimization step'))
+        s += '{}\n'.format(class_utils._field_display(self, 'cost_functions_coefficients', 'cost_functions_coefficients applied to the misfit of each vertex and for each control_parameter'))
+        s += '{}\n'.format(class_utils._field_display(self, 'cost_function_threshold', 'misfit convergence criterion. Default is 1%, NaN if not applied'))
+        s += '{}\n'.format(class_utils._field_display(self, 'maxiter_per_step', 'maximum iterations during each optimization step'))
+        s += '{}\n'.format(class_utils._field_display(self, 'gradient_scaling', 'scaling factor on gradient direction during optimization, for each optimization step'))
+        s += '{}\n'.format(class_utils._field_display(self, 'step_threshold', 'decrease threshold for misfit, default is 30%'))
+        s += '{}\n'.format(class_utils._field_display(self, 'min_parameters', 'absolute minimum acceptable value of the inversed parameter on each vertex'))
+        s += '{}\n'.format(class_utils._field_display(self, 'max_parameters', 'absolute maximum acceptable value of the inversed parameter on each vertex'))
+        s += '{}\n'.format(class_utils._field_display(self, 'vx_obs', 'observed velocity x component [m/yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'vy_obs', 'observed velocity y component [m/yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'vel_obs', 'observed velocity magnitude [m/yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'thickness_obs', 'observed thickness [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'surface_obs', 'observed surface elevation [m]'))
         s += '{}\n'.format('Available cost functions:')
         s += '{}\n'.format('   101: SurfaceAbsVelMisfit')
         s += '{}\n'.format('   102: SurfaceRelVelMisfit')
@@ -362,23 +362,23 @@ class m1qn3(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   m1qn3 inversion parameters:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'iscontrol', 'is inversion activated?'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'incomplete_adjoint', '1: linear viscosity, 0: non - linear viscosity'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'control_parameters', 'ex: [''FrictionCoefficient''], or [''MaterialsRheologyBbar'']'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'control_scaling_factors', 'order of magnitude of each control (useful for multi - parameter optimization)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'maxsteps', 'maximum number of iterations (gradient computation)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'maxiter', 'maximum number of Function evaluation (forward run)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'dxmin', 'convergence criterion: two points less than dxmin from eachother (sup - norm) are considered identical'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'dfmin_frac', 'expected reduction of J during the first step (e.g., 0.3=30% reduction in cost function)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'gttol', '||g(X)||/||g(X0)|| (g(X0): gradient at initial guess X0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'cost_functions', 'indicate the type of response for each optimization step'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'cost_functions_coefficients', 'cost_functions_coefficients applied to the misfit of each vertex and for each control_parameter'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'min_parameters', 'absolute minimum acceptable value of the inversed parameter on each vertex'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'max_parameters', 'absolute maximum acceptable value of the inversed parameter on each vertex'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'vx_obs', 'observed velocity x component [m / yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'vy_obs', 'observed velocity y component [m / yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'vel_obs', 'observed velocity magnitude [m / yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'thickness_obs', 'observed thickness [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'iscontrol', 'is inversion activated?'))
+        s += '{}\n'.format(class_utils._field_display(self, 'incomplete_adjoint', '1: linear viscosity, 0: non - linear viscosity'))
+        s += '{}\n'.format(class_utils._field_display(self, 'control_parameters', 'ex: [''FrictionCoefficient''], or [''MaterialsRheologyBbar'']'))
+        s += '{}\n'.format(class_utils._field_display(self, 'control_scaling_factors', 'order of magnitude of each control (useful for multi - parameter optimization)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'maxsteps', 'maximum number of iterations (gradient computation)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'maxiter', 'maximum number of Function evaluation (forward run)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'dxmin', 'convergence criterion: two points less than dxmin from eachother (sup - norm) are considered identical'))
+        s += '{}\n'.format(class_utils._field_display(self, 'dfmin_frac', 'expected reduction of J during the first step (e.g., 0.3=30% reduction in cost function)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'gttol', '||g(X)||/||g(X0)|| (g(X0): gradient at initial guess X0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'cost_functions', 'indicate the type of response for each optimization step'))
+        s += '{}\n'.format(class_utils._field_display(self, 'cost_functions_coefficients', 'cost_functions_coefficients applied to the misfit of each vertex and for each control_parameter'))
+        s += '{}\n'.format(class_utils._field_display(self, 'min_parameters', 'absolute minimum acceptable value of the inversed parameter on each vertex'))
+        s += '{}\n'.format(class_utils._field_display(self, 'max_parameters', 'absolute maximum acceptable value of the inversed parameter on each vertex'))
+        s += '{}\n'.format(class_utils._field_display(self, 'vx_obs', 'observed velocity x component [m / yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'vy_obs', 'observed velocity y component [m / yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'vel_obs', 'observed velocity magnitude [m / yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'thickness_obs', 'observed thickness [m]'))
         s += '{}\n'.format('Available cost functions:')
         s += '{}\n'.format('   101: SurfaceAbsVelMisfit')
         s += '{}\n'.format('   102: SurfaceRelVelMisfit')
@@ -635,26 +635,26 @@ class tao(class_registry.manage_state):
     def __repr__(self):
         s = '   taoinversion parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'iscontrol', 'is inversion activated?'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'incomplete_adjoint', '1: linear viscosity, 0: non - linear viscosity'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'control_parameters', 'ex: {''FrictionCoefficient''}, or {''MaterialsRheologyBbar''}'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'maxsteps', 'maximum number of iterations (gradient computation)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'maxiter', 'maximum number of Function evaluation (forward run)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'fatol', 'convergence criterion: f(X) - f(X * ) (X: current iteration, X * : "true" solution, f: cost function)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'frtol', 'convergence criterion: |f(X) - f(X * )| / |f(X * )|'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'gatol', 'convergence criterion: ||g(X)|| (g: gradient of the cost function)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'grtol', 'convergence criterion: ||g(X)|| / |f(X)|'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'gttol', 'convergence criterion: ||g(X)|| / ||g(X0)|| (g(X0): gradient at initial guess X0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'algorithm', 'minimization algorithm: ''tao_blmvm'', ''tao_cg'', ''tao_lmvm'''))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'cost_functions', 'indicate the type of response for each optimization step'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'cost_functions_coefficients', 'cost_functions_coefficients applied to the misfit of each vertex and for each control_parameter'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'min_parameters', 'absolute minimum acceptable value of the inversed parameter on each vertex'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'max_parameters', 'absolute maximum acceptable value of the inversed parameter on each vertex'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'vx_obs', 'observed velocity x component [m / yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'vy_obs', 'observed velocity y component [m / yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'vel_obs', 'observed velocity magnitude [m / yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'thickness_obs', 'observed thickness [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'surface_obs', 'observed surface elevation [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'iscontrol', 'is inversion activated?'))
+        s += '{}\n'.format(class_utils._field_display(self, 'incomplete_adjoint', '1: linear viscosity, 0: non - linear viscosity'))
+        s += '{}\n'.format(class_utils._field_display(self, 'control_parameters', 'ex: {''FrictionCoefficient''}, or {''MaterialsRheologyBbar''}'))
+        s += '{}\n'.format(class_utils._field_display(self, 'maxsteps', 'maximum number of iterations (gradient computation)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'maxiter', 'maximum number of Function evaluation (forward run)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'fatol', 'convergence criterion: f(X) - f(X * ) (X: current iteration, X * : "true" solution, f: cost function)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'frtol', 'convergence criterion: |f(X) - f(X * )| / |f(X * )|'))
+        s += '{}\n'.format(class_utils._field_display(self, 'gatol', 'convergence criterion: ||g(X)|| (g: gradient of the cost function)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'grtol', 'convergence criterion: ||g(X)|| / |f(X)|'))
+        s += '{}\n'.format(class_utils._field_display(self, 'gttol', 'convergence criterion: ||g(X)|| / ||g(X0)|| (g(X0): gradient at initial guess X0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'algorithm', 'minimization algorithm: ''tao_blmvm'', ''tao_cg'', ''tao_lmvm'''))
+        s += '{}\n'.format(class_utils._field_display(self, 'cost_functions', 'indicate the type of response for each optimization step'))
+        s += '{}\n'.format(class_utils._field_display(self, 'cost_functions_coefficients', 'cost_functions_coefficients applied to the misfit of each vertex and for each control_parameter'))
+        s += '{}\n'.format(class_utils._field_display(self, 'min_parameters', 'absolute minimum acceptable value of the inversed parameter on each vertex'))
+        s += '{}\n'.format(class_utils._field_display(self, 'max_parameters', 'absolute maximum acceptable value of the inversed parameter on each vertex'))
+        s += '{}\n'.format(class_utils._field_display(self, 'vx_obs', 'observed velocity x component [m / yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'vy_obs', 'observed velocity y component [m / yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'vel_obs', 'observed velocity magnitude [m / yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'thickness_obs', 'observed thickness [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'surface_obs', 'observed surface elevation [m]'))
         s += '{}\n'.format('Available cost functions:')
         s += '{}\n'.format('   101: SurfaceAbsVelMisfit')
         s += '{}\n'.format('   102: SurfaceRelVelMisfit')
@@ -927,12 +927,12 @@ class adm1qn3(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = "   adm1qn3 inversion parameters:\n"
-        s += f"{class_utils.fielddisplay(self, 'iscontrol', 'is inversion activated?')}\n"
-        s += f"{class_utils.fielddisplay(self, 'maxsteps', 'maximum number of iterations (gradient evaluations)')}\n"
-        s += f"{class_utils.fielddisplay(self, 'maxiter', 'maximum number of function evaluations (forward runs)')}\n"
-        s += f"{class_utils.fielddisplay(self, 'dxmin', 'convergence threshold on parameter updates')}\n"
-        s += f"{class_utils.fielddisplay(self, 'dfmin_frac', 'expected reduction of objective during first step')}\n"
-        s += f"{class_utils.fielddisplay(self, 'gttol', 'relative gradient convergence criterion')}\n"
+        s += f"{class_utils._field_display(self, 'iscontrol', 'is inversion activated?')}\n"
+        s += f"{class_utils._field_display(self, 'maxsteps', 'maximum number of iterations (gradient evaluations)')}\n"
+        s += f"{class_utils._field_display(self, 'maxiter', 'maximum number of function evaluations (forward runs)')}\n"
+        s += f"{class_utils._field_display(self, 'dxmin', 'convergence threshold on parameter updates')}\n"
+        s += f"{class_utils._field_display(self, 'dfmin_frac', 'expected reduction of objective during first step')}\n"
+        s += f"{class_utils._field_display(self, 'gttol', 'relative gradient convergence criterion')}\n"
         return s
 
     # Define class string

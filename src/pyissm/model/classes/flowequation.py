@@ -105,22 +105,22 @@ class flowequation(class_registry.manage_state):
     def __repr__(self):
         s = '   flow equation parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isSIA', "is the Shallow Ice Approximation (SIA) used?"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isSSA', "is the Shelfy-Stream Approximation (SSA) used?"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isL1L2', "are L1L2 equations used?"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isMOLHO', "are MOno-layer Higher-Order (MOLHO) equations used?"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isHO', "is the Higher-Order (HO) approximation used?"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isFS', "are the Full-FS (FS) equations used?"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isNitscheBC', "is weakly imposed condition used?"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'FSNitscheGamma', "Gamma value for the Nitsche term (default: 1e6)"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'fe_SSA', "Finite Element for SSA: 'P1', 'P1bubble' 'P1bubblecondensed' 'P2'"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'fe_HO', "Finite Element for HO:  'P1', 'P1bubble', 'P1bubblecondensed', 'P1xP2', 'P2xP1', 'P2', 'P2bubble', 'P1xP3', 'P2xP4'"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'fe_FS', "Finite Element for FS:  'P1P1' (debugging only) 'P1P1GLS' 'MINIcondensed' 'MINI' 'TaylorHood' 'LATaylorHood' 'XTaylorHood'"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'vertex_equation', "flow equation for each vertex"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'element_equation', "flow equation for each element"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'borderSSA', "vertices on SSA's border (for tiling)"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'borderHO', "vertices on HO's border (for tiling)"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'borderFS', "vertices on FS' border (for tiling)"))
+        s += '{}\n'.format(class_utils._field_display(self, 'isSIA', "is the Shallow Ice Approximation (SIA) used?"))
+        s += '{}\n'.format(class_utils._field_display(self, 'isSSA', "is the Shelfy-Stream Approximation (SSA) used?"))
+        s += '{}\n'.format(class_utils._field_display(self, 'isL1L2', "are L1L2 equations used?"))
+        s += '{}\n'.format(class_utils._field_display(self, 'isMOLHO', "are MOno-layer Higher-Order (MOLHO) equations used?"))
+        s += '{}\n'.format(class_utils._field_display(self, 'isHO', "is the Higher-Order (HO) approximation used?"))
+        s += '{}\n'.format(class_utils._field_display(self, 'isFS', "are the Full-FS (FS) equations used?"))
+        s += '{}\n'.format(class_utils._field_display(self, 'isNitscheBC', "is weakly imposed condition used?"))
+        s += '{}\n'.format(class_utils._field_display(self, 'FSNitscheGamma', "Gamma value for the Nitsche term (default: 1e6)"))
+        s += '{}\n'.format(class_utils._field_display(self, 'fe_SSA', "Finite Element for SSA: 'P1', 'P1bubble' 'P1bubblecondensed' 'P2'"))
+        s += '{}\n'.format(class_utils._field_display(self, 'fe_HO', "Finite Element for HO:  'P1', 'P1bubble', 'P1bubblecondensed', 'P1xP2', 'P2xP1', 'P2', 'P2bubble', 'P1xP3', 'P2xP4'"))
+        s += '{}\n'.format(class_utils._field_display(self, 'fe_FS', "Finite Element for FS:  'P1P1' (debugging only) 'P1P1GLS' 'MINIcondensed' 'MINI' 'TaylorHood' 'LATaylorHood' 'XTaylorHood'"))
+        s += '{}\n'.format(class_utils._field_display(self, 'vertex_equation', "flow equation for each vertex"))
+        s += '{}\n'.format(class_utils._field_display(self, 'element_equation', "flow equation for each element"))
+        s += '{}\n'.format(class_utils._field_display(self, 'borderSSA', "vertices on SSA's border (for tiling)"))
+        s += '{}\n'.format(class_utils._field_display(self, 'borderHO', "vertices on HO's border (for tiling)"))
+        s += '{}\n'.format(class_utils._field_display(self, 'borderFS', "vertices on FS' border (for tiling)"))
         return s
 
     # Define class string

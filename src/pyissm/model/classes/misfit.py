@@ -80,15 +80,15 @@ class misfit(class_registry.manage_state):
     def __repr__(self):
         s = '   Misfit:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'name', 'identifier for this misfit response'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'definitionstring', 'string that identifies this output definition uniquely, from "Outputdefinition[1 - 10]"'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'model_string', 'string for field that is modeled'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'observation', 'observed field that we compare the model against'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'observation_string', 'observation string'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'local', 'is the response local to the elements, or global? (default is 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'timeinterpolation', 'interpolation routine used to interpolate misfit between two time steps (default is "nearestneighbor"'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'weights', 'weights (at vertices) to apply to the misfit'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'weights_string', 'string for weights for identification purposes'))
+        s += '{}\n'.format(class_utils._field_display(self, 'name', 'identifier for this misfit response'))
+        s += '{}\n'.format(class_utils._field_display(self, 'definitionstring', 'string that identifies this output definition uniquely, from "Outputdefinition[1 - 10]"'))
+        s += '{}\n'.format(class_utils._field_display(self, 'model_string', 'string for field that is modeled'))
+        s += '{}\n'.format(class_utils._field_display(self, 'observation', 'observed field that we compare the model against'))
+        s += '{}\n'.format(class_utils._field_display(self, 'observation_string', 'observation string'))
+        s += '{}\n'.format(class_utils._field_display(self, 'local', 'is the response local to the elements, or global? (default is 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'timeinterpolation', 'interpolation routine used to interpolate misfit between two time steps (default is "nearestneighbor"'))
+        s += '{}\n'.format(class_utils._field_display(self, 'weights', 'weights (at vertices) to apply to the misfit'))
+        s += '{}\n'.format(class_utils._field_display(self, 'weights_string', 'string for weights for identification purposes'))
         return s
 
     # Define class string

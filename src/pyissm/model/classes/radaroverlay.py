@@ -55,9 +55,9 @@ class radaroverlay(class_registry.manage_state):
     def __repr__(self):
         s = '   radaroverlay parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'pwr', 'radar power image (matrix)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'x', 'corresponding x coordinates [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'y', 'corresponding y coordinates [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'pwr', 'radar power image (matrix)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'x', 'corresponding x coordinates [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'y', 'corresponding y coordinates [m]'))
 
         return s
 

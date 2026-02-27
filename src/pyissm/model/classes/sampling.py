@@ -78,20 +78,20 @@ class sampling(class_registry.manage_state):
         s = '   Sampling parameters:\n'
 
         s += '      Parameters of PDE operator (kappa^2 I-Laplacian)^(alpha/2)(tau):\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'kappa', 'coefficient of the identity operator'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'tau', 'scaling coefficient of the solution (default: 1.0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'alpha', 'exponent in PDE operator, (default: 2.0, BiLaplacian covariance operator)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'kappa', 'coefficient of the identity operator'))
+        s += '{}\n'.format(class_utils._field_display(self, 'tau', 'scaling coefficient of the solution (default: 1.0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'alpha', 'exponent in PDE operator, (default: 2.0, BiLaplacian covariance operator)'))
         s += '\n'
         s += '      Parameters of Robin boundary conditions nabla () \\cdot normvec + beta ():\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'robin', 'Apply Robin boundary conditions (1 if applied and 0 for homogenous Neumann boundary conditions) (default: 0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'beta', 'Coefficient in Robin boundary conditions (to be defined for robin = 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'robin', 'Apply Robin boundary conditions (1 if applied and 0 for homogenous Neumann boundary conditions) (default: 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'beta', 'Coefficient in Robin boundary conditions (to be defined for robin = 1)'))
         s += '\n'
         s += '      Parameters for first-order autoregressive process (X_t = phi X_{t-1} + noise) (if transient):\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'phi', 'Temporal correlation factor (|phi|<1 for stationary process, phi = 1 for random walk process) (default 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'phi', 'Temporal correlation factor (|phi|<1 for stationary process, phi = 1 for random walk process) (default 0)'))
         s += '\n'
         s += '      Other parameters of stochastic sampler:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'seed', 'Seed for pseudorandom number generator (given seed if >=0 and random seed if <0) (default: -1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested (not implemented yet)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'seed', 'Seed for pseudorandom number generator (given seed if >=0 and random seed if <0) (default: -1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested (not implemented yet)'))
         return s
 
     # Define class string

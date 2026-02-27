@@ -85,18 +85,17 @@ class levelsetmisfit(class_registry.manage_state):
 
         # Inherit matching fields from provided class
         super().__init__(other)
-
     # Define repr
     def __repr__(self):
         s = "   levelsetmisfit:\n"
-        s += f"{class_utils.fielddisplay(self, 'name', 'identifier for this levelsetmisfit response')}\n"
-        s += f"{class_utils.fielddisplay(self, 'definitionstring', 'unique output definition string (e.g. Outputdefinition1)')}\n"
-        s += f"{class_utils.fielddisplay(self, 'model_string', 'string for field that is modeled')}\n"
-        s += f"{class_utils.fielddisplay(self, 'observation', 'observed field compared against the model')}\n"
-        s += f"{class_utils.fielddisplay(self, 'observation_string', 'identifier for observed field')}\n"
-        s += f"{class_utils.fielddisplay(self, 'weights', 'weights applied to the misfit')}\n"
-        s += f"{class_utils.fielddisplay(self, 'weights_string', 'identifier for weights')}\n"
-        s += f"{class_utils.fielddisplay(self, 'datatime', 'time (years from start) for data-model comparison')}\n"
+        s += '{}\n'.format(class_utils._field_display(self, 'name', 'identifier for this levelsetmisfit response'))
+        s += '{}\n'.format(class_utils._field_display(self, 'definitionstring', 'unique output definition string (e.g. Outputdefinition1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'model_string', 'string for field that is modeled'))
+        s += '{}\n'.format(class_utils._field_display(self, 'observation', 'observed field compared against the model'))
+        s += '{}\n'.format(class_utils._field_display(self, 'observation_string', 'identifier for observed field'))
+        s += '{}\n'.format(class_utils._field_display(self, 'weights', 'weights applied to the misfit'))
+        s += '{}\n'.format(class_utils._field_display(self, 'weights_string', 'identifier for weights'))
+        s += '{}\n'.format(class_utils._field_display(self, 'datatime', 'time (years from start) for data-model comparison'))
         return s
 
     # Define class string
@@ -335,15 +334,15 @@ class surfacesquare(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = "   surfacesquare:\n"
-        s += f"{class_utils.fielddisplay(self, 'name', 'identifier for this surfacesquare response')}\n"
-        s += f"{class_utils.fielddisplay(self, 'definitionstring', 'unique output definition string (e.g. Outputdefinition1)')}\n"
-        s += f"{class_utils.fielddisplay(self, 'surfaceid', '1: surface, 2: base')}\n"
-        s += f"{class_utils.fielddisplay(self, 'model_string', 'string for field that is modeled')}\n"
-        s += f"{class_utils.fielddisplay(self, 'observation', 'observed field compared against the model')}\n"
-        s += f"{class_utils.fielddisplay(self, 'observation_string', 'string identifying observed field')}\n"
-        s += f"{class_utils.fielddisplay(self, 'weights', 'weights (at vertices) applied to the misfit')}\n"
-        s += f"{class_utils.fielddisplay(self, 'weights_string', 'string identifying weights')}\n"
-        s += f"{class_utils.fielddisplay(self, 'datatime', 'time (years from start) for data-model comparison')}\n"
+        s += '{}\n'.format(class_utils._field_display(self, 'name', 'identifier for this surfacesquare response'))
+        s += '{}\n'.format(class_utils._field_display(self, 'definitionstring', 'unique output definition string (e.g. Outputdefinition1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'surfaceid', '1: surface, 2: base'))
+        s += '{}\n'.format(class_utils._field_display(self, 'model_string', 'string for field that is modeled'))
+        s += '{}\n'.format(class_utils._field_display(self, 'observation', 'observed field compared against the model'))
+        s += '{}\n'.format(class_utils._field_display(self, 'observation_string', 'string identifying observed field'))
+        s += '{}\n'.format(class_utils._field_display(self, 'weights', 'weights (at vertices) applied to the misfit'))
+        s += '{}\n'.format(class_utils._field_display(self, 'weights_string', 'string identifying weights'))
+        s += '{}\n'.format(class_utils._field_display(self, 'datatime', 'time (years from start) for data-model comparison'))
         return s
 
     # Define class string
@@ -561,11 +560,11 @@ class surfacesquaretransient(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = "   surfacesquaretransient:\n"
-        s += f"{class_utils.fielddisplay(self, 'name', 'identifier for this surfacesquaretransient response')}\n"
-        s += f"{class_utils.fielddisplay(self, 'definitionstring', 'unique output definition string (e.g. Outputdefinition1)')}\n"
-        s += f"{class_utils.fielddisplay(self, 'model_string', 'string for field that is modeled')}\n"
-        s += f"{class_utils.fielddisplay(self, 'observations', 'observed field time series compared against the model')}\n"
-        s += f"{class_utils.fielddisplay(self, 'weights', 'weights applied to the transient square misfit')}\n"
+        s += '{}\n'.format(class_utils._field_display(self, 'name', 'identifier for this surfacesquaretransient response'))
+        s += '{}\n'.format(class_utils._field_display(self, 'definitionstring', 'unique output definition string (e.g. Outputdefinition1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'model_string', 'string for field that is modeled'))
+        s += '{}\n'.format(class_utils._field_display(self, 'observations', 'observed field time series compared against the model'))
+        s += '{}\n'.format(class_utils._field_display(self, 'weights', 'weights applied to the transient square misfit'))
         return s
 
     # Define class string
@@ -799,15 +798,15 @@ class surfacelogvel(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = "   surfacelogvel:\n"
-        s += f"{class_utils.fielddisplay(self, 'name', 'identifier for this surfacelogvel response')}\n"
-        s += f"{class_utils.fielddisplay(self, 'definitionstring', 'unique output definition string (e.g. Outputdefinition1)')}\n"
-        s += f"{class_utils.fielddisplay(self, 'vxobs', 'observed Vx used for misfit')}\n"
-        s += f"{class_utils.fielddisplay(self, 'vxobs_string', 'identifier for observed Vx')}\n"
-        s += f"{class_utils.fielddisplay(self, 'vyobs', 'observed Vy used for misfit')}\n"
-        s += f"{class_utils.fielddisplay(self, 'vyobs_string', 'identifier for observed Vy')}\n"
-        s += f"{class_utils.fielddisplay(self, 'weights', 'weights applied to the misfit')}\n"
-        s += f"{class_utils.fielddisplay(self, 'weights_string', 'identifier for weights')}\n"
-        s += f"{class_utils.fielddisplay(self, 'datatime', 'time (years from start) for data-model comparison')}\n"
+        s += '{}\n'.format(class_utils._field_display(self, 'name', 'identifier for this surfacelogvel response'))
+        s += '{}\n'.format(class_utils._field_display(self, 'definitionstring', 'unique output definition string (e.g. Outputdefinition1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'vxobs', 'observed Vx used for misfit'))
+        s += '{}\n'.format(class_utils._field_display(self, 'vxobs_string', 'identifier for observed Vx'))
+        s += '{}\n'.format(class_utils._field_display(self, 'vyobs', 'observed Vy used for misfit'))
+        s += '{}\n'.format(class_utils._field_display(self, 'vyobs_string', 'identifier for observed Vy'))
+        s += '{}\n'.format(class_utils._field_display(self, 'weights', 'weights applied to the misfit'))
+        s += '{}\n'.format(class_utils._field_display(self, 'weights_string', 'identifier for weights'))
+        s += '{}\n'.format(class_utils._field_display(self, 'datatime', 'time (years from start) for data-model comparison'))
         return s
 
     # Define class string

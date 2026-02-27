@@ -52,11 +52,11 @@ class constants(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   constants parameters:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'g', 'gravitational acceleration [m/s^2]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'omega', 'angular velocity of Earth [rad/s]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'yts', 'number of seconds in a year [s/yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'referencetemperature', 'reference temperature used in the enthalpy model [K]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'gravitational_constant', 'Newtonian constant of gravitation [m^3/kg/s^2]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'g', 'gravitational acceleration [m/s^2]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'omega', 'angular velocity of Earth [rad/s]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'yts', 'number of seconds in a year [s/yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'referencetemperature', 'reference temperature used in the enthalpy model [K]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'gravitational_constant', 'Newtonian constant of gravitation [m^3/kg/s^2]'))
         return s
 
     # Define class string

@@ -120,40 +120,40 @@ class stressbalance(class_registry.manage_state):
         s = '   StressBalance solution parameters:\n'
 
         s += '      Convergence criteria:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'restol', 'mechanical equilibrium residual convergence criterion'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'reltol', 'velocity relative convergence criterion, NaN: not applied'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'abstol', 'velocity absolute convergence criterion, NaN: not applied'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isnewton', '0: Picard\'s fixed point, 1: Newton\'s method, 2: hybrid'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'maxiter', 'maximum number of nonlinear iterations'))
+        s += '{}\n'.format(class_utils._field_display(self, 'restol', 'mechanical equilibrium residual convergence criterion'))
+        s += '{}\n'.format(class_utils._field_display(self, 'reltol', 'velocity relative convergence criterion, NaN: not applied'))
+        s += '{}\n'.format(class_utils._field_display(self, 'abstol', 'velocity absolute convergence criterion, NaN: not applied'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isnewton', '0: Picard\'s fixed point, 1: Newton\'s method, 2: hybrid'))
+        s += '{}\n'.format(class_utils._field_display(self, 'maxiter', 'maximum number of nonlinear iterations'))
         s += '\n'
         s += '      boundary conditions:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'spcvx', 'x-axis velocity constraint (NaN means no constraint) [m / yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'spcvy', 'y-axis velocity constraint (NaN means no constraint) [m / yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'spcvz', 'z-axis velocity constraint (NaN means no constraint) [m / yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'spcvx', 'x-axis velocity constraint (NaN means no constraint) [m / yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'spcvy', 'y-axis velocity constraint (NaN means no constraint) [m / yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'spcvz', 'z-axis velocity constraint (NaN means no constraint) [m / yr]'))
         s += '\n'
         s += '      MOLHO boundary conditions:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'spcvx_base', 'x-axis basal velocity constraint (NaN means no constraint) [m / yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'spcvy_base', 'y-axis basal velocity constraint (NaN means no constraint) [m / yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'spcvx_shear', 'x-axis shear velocity constraint (NaN means no constraint) [m / yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'spcvy_shear', 'y-axis shear velocity constraint (NaN means no constraint) [m / yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'spcvx_base', 'x-axis basal velocity constraint (NaN means no constraint) [m / yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'spcvy_base', 'y-axis basal velocity constraint (NaN means no constraint) [m / yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'spcvx_shear', 'x-axis shear velocity constraint (NaN means no constraint) [m / yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'spcvy_shear', 'y-axis shear velocity constraint (NaN means no constraint) [m / yr]'))
         s += '\n'
         s += '      Rift options:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'rift_penalty_threshold', 'threshold for instability of mechanical constraints'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'rift_penalty_lock', 'number of iterations before rift penalties are locked'))
+        s += '{}\n'.format(class_utils._field_display(self, 'rift_penalty_threshold', 'threshold for instability of mechanical constraints'))
+        s += '{}\n'.format(class_utils._field_display(self, 'rift_penalty_lock', 'number of iterations before rift penalties are locked'))
         s += '\n'
         s += '      Penalty options:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'penalty_factor', 'offset used by penalties: penalty = Kmax * 10^offset'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'vertex_pairing', 'pairs of vertices that are penalized'))
+        s += '{}\n'.format(class_utils._field_display(self, 'penalty_factor', 'offset used by penalties: penalty = Kmax * 10^offset'))
+        s += '{}\n'.format(class_utils._field_display(self, 'vertex_pairing', 'pairs of vertices that are penalized'))
         s += '\n'
         s += '      Hydrology layer:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ishydrologylayer', '(SSA only) 0: no subglacial hydrology layer in driving stress, 1: hydrology layer in driving stress'));
+        s += '{}\n'.format(class_utils._field_display(self, 'ishydrologylayer', '(SSA only) 0: no subglacial hydrology layer in driving stress, 1: hydrology layer in driving stress'));
         s += '\n'
         s += '      Other:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'shelf_dampening', 'use dampening for floating ice ? Only for FS model'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'FSreconditioning', 'multiplier for incompressibility equation. Only for FS model'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'referential', 'local referential'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'loadingforce', 'loading force applied on each point [N/m^3]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'shelf_dampening', 'use dampening for floating ice ? Only for FS model'))
+        s += '{}\n'.format(class_utils._field_display(self, 'FSreconditioning', 'multiplier for incompressibility equation. Only for FS model'))
+        s += '{}\n'.format(class_utils._field_display(self, 'referential', 'local referential'))
+        s += '{}\n'.format(class_utils._field_display(self, 'loadingforce', 'loading force applied on each point [N/m^3]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string

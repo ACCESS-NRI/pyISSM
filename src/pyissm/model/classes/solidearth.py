@@ -103,15 +103,15 @@ class earth(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   solidearth inputs, forcings, and settings:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'planetradius', 'planet radius [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'transitions', 'indices into parts of the mesh that will be icecaps'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'transfercount', 'number of icecaps vertices are part of'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'partitionice', 'ice partition vector for barystatic contribution'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'partitionhydro', 'hydro partition vector for barystatic contribution'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'partitionocean', 'ocean partition vector for barystatic contribution'))
+        s += '{}\n'.format(class_utils._field_display(self, 'planetradius', 'planet radius [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'transitions', 'indices into parts of the mesh that will be icecaps'))
+        s += '{}\n'.format(class_utils._field_display(self, 'transfercount', 'number of icecaps vertices are part of'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'partitionice', 'ice partition vector for barystatic contribution'))
+        s += '{}\n'.format(class_utils._field_display(self, 'partitionhydro', 'hydro partition vector for barystatic contribution'))
+        s += '{}\n'.format(class_utils._field_display(self, 'partitionocean', 'ocean partition vector for barystatic contribution'))
         if not self.external:
-            s += '{}\n'.format(class_utils.fielddisplay(self, 'external', 'external solution, of the type solidearthsolution'))
+            s += '{}\n'.format(class_utils._field_display(self, 'external', 'external solution, of the type solidearthsolution'))
         return s
 
     # Define class string
@@ -344,15 +344,15 @@ class europa(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   solidearth inputs, forcings, and settings:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'planetradius', 'planet radius [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'transitions', 'indices into parts of the mesh that will be icecaps'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'transfercount', 'number of icecaps vertices are part of'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'partitionice', 'ice partition vector for barystatic contribution'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'partitionhydro', 'hydro partition vector for barystatic contribution'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'partitionocean', 'ocean partition vector for barystatic contribution'))
+        s += '{}\n'.format(class_utils._field_display(self, 'planetradius', 'planet radius [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'transitions', 'indices into parts of the mesh that will be icecaps'))
+        s += '{}\n'.format(class_utils._field_display(self, 'transfercount', 'number of icecaps vertices are part of'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'partitionice', 'ice partition vector for barystatic contribution'))
+        s += '{}\n'.format(class_utils._field_display(self, 'partitionhydro', 'hydro partition vector for barystatic contribution'))
+        s += '{}\n'.format(class_utils._field_display(self, 'partitionocean', 'ocean partition vector for barystatic contribution'))
         if not self.external:
-            s += '{}\n'.format(class_utils.fielddisplay(self, 'external', 'external solution, of the type solidearthsolution'))
+            s += '{}\n'.format(class_utils._field_display(self, 'external', 'external solution, of the type solidearthsolution'))
         return s
 
     # Define class string
@@ -606,23 +606,23 @@ class settings(class_registry.manage_state):
     def __repr__(self):
         s = '   solidearth settings:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'reltol', 'sea level change relative convergence criterion (default, NaN: not applied)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'abstol', 'sea level change absolute convergence criterion (default, NaN: not applied)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'maxiter', 'maximum number of nonlinear iterations'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'grdocean', 'does this planet have an ocean, if set to 1: global water mass is conserved in GRD module (default: 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ocean_area_scaling', 'correction for model representation of ocean area (default: No correction)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sealevelloading', 'enables surface loading from sea-level change (default: 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isgrd', 'compute GRD patterns (default: 1'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'compute_bp_grd', 'compute GRD patterns for bottom pressure loads (default 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'runfrequency', 'how many time steps we skip before we run solidearthsettings solver during transient (default: 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'selfattraction', 'enables surface mass load to perturb the gravity field'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'elastic', 'enables elastic deformation from surface loading'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'viscous', 'enables viscous deformation from surface loading'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'rotation', 'enables polar motion to feedback on the GRD fields'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'degacc', 'accuracy (default: .01 deg) for numerical discretization of the Green\'s functions'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'timeacc', 'time accuracy (default: 1 year) for numerical discretization of the Green\'s functions'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'grdmodel', 'type of deformation model, 0 for no GRD, 1 for spherical GRD model (SESAW model), 2 for half-space planar GRD (visco-elastic model from Ivins)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'cross_section_shape', '1: square-edged (default). 2: elliptical. See iedge in GiaDeflectionCore'))
+        s += '{}\n'.format(class_utils._field_display(self, 'reltol', 'sea level change relative convergence criterion (default, NaN: not applied)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'abstol', 'sea level change absolute convergence criterion (default, NaN: not applied)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'maxiter', 'maximum number of nonlinear iterations'))
+        s += '{}\n'.format(class_utils._field_display(self, 'grdocean', 'does this planet have an ocean, if set to 1: global water mass is conserved in GRD module (default: 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ocean_area_scaling', 'correction for model representation of ocean area (default: No correction)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sealevelloading', 'enables surface loading from sea-level change (default: 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isgrd', 'compute GRD patterns (default: 1'))
+        s += '{}\n'.format(class_utils._field_display(self, 'compute_bp_grd', 'compute GRD patterns for bottom pressure loads (default 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'runfrequency', 'how many time steps we skip before we run solidearthsettings solver during transient (default: 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'selfattraction', 'enables surface mass load to perturb the gravity field'))
+        s += '{}\n'.format(class_utils._field_display(self, 'elastic', 'enables elastic deformation from surface loading'))
+        s += '{}\n'.format(class_utils._field_display(self, 'viscous', 'enables viscous deformation from surface loading'))
+        s += '{}\n'.format(class_utils._field_display(self, 'rotation', 'enables polar motion to feedback on the GRD fields'))
+        s += '{}\n'.format(class_utils._field_display(self, 'degacc', 'accuracy (default: .01 deg) for numerical discretization of the Green\'s functions'))
+        s += '{}\n'.format(class_utils._field_display(self, 'timeacc', 'time accuracy (default: 1 year) for numerical discretization of the Green\'s functions'))
+        s += '{}\n'.format(class_utils._field_display(self, 'grdmodel', 'type of deformation model, 0 for no GRD, 1 for spherical GRD model (SESAW model), 2 for half-space planar GRD (visco-elastic model from Ivins)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'cross_section_shape', '1: square-edged (default). 2: elliptical. See iedge in GiaDeflectionCore'))
         return s
 
     # Define class string
@@ -788,10 +788,10 @@ class solution(class_registry.manage_state):
         s = '   solidearth solution:\n'
         s += '         units for time series is (yr)\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'displacementeast', 'solid-Earth Eastwards bedrock displacement series (m)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'displacementnorth', 'solid-Earth Northwards bedrock displacement time series (m)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'displacementup', 'solid-Earth bedrock uplift time series (m)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'geoid', 'solid-Earth geoid time series (m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'displacementeast', 'solid-Earth Eastwards bedrock displacement series (m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'displacementnorth', 'solid-Earth Northwards bedrock displacement time series (m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'displacementup', 'solid-Earth bedrock uplift time series (m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'geoid', 'solid-Earth geoid time series (m)'))
         return s
 
     # Define class string

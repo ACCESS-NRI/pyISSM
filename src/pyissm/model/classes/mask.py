@@ -53,8 +53,8 @@ class mask(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   mask parameters:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ice_levelset', 'presence of ice if < 0, icefront position if = 0, no ice if > 0'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ocean_levelset', 'presence of ocean if < 0, coastline/grounding line if = 0, no ocean if > 0'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ice_levelset', 'presence of ice if < 0, icefront position if = 0, no ice if > 0'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ocean_levelset', 'presence of ocean if < 0, coastline/grounding line if = 0, no ocean if > 0'))
         return s
 
     # Define class string

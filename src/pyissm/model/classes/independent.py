@@ -67,15 +67,15 @@ class independent(class_registry.manage_state):
     def __repr__(self):
         s = '   independent variable:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'name', 'variable name (must match corresponding String)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'type', 'type of variable (\'vertex\' or \'scalar\')'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'nods', 'size of independent variables'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'control_size', 'number of timesteps'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'min_parameters', 'absolute minimum acceptable value of the inversed parameter on each vertex'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'max_parameters', 'absolute maximum acceptable value of the inversed parameter on each vertex'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'control_scaling_factor', 'order of magnitude of each control (useful for multi-parameter optimization)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'fos_forward_index', 'index for fos_foward driver of ADOLC'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'fov_forward_indices', 'indices for fov_foward driver of ADOLC'))
+        s += '{}\n'.format(class_utils._field_display(self, 'name', 'variable name (must match corresponding String)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'type', 'type of variable (\'vertex\' or \'scalar\')'))
+        s += '{}\n'.format(class_utils._field_display(self, 'nods', 'size of independent variables'))
+        s += '{}\n'.format(class_utils._field_display(self, 'control_size', 'number of timesteps'))
+        s += '{}\n'.format(class_utils._field_display(self, 'min_parameters', 'absolute minimum acceptable value of the inversed parameter on each vertex'))
+        s += '{}\n'.format(class_utils._field_display(self, 'max_parameters', 'absolute maximum acceptable value of the inversed parameter on each vertex'))
+        s += '{}\n'.format(class_utils._field_display(self, 'control_scaling_factor', 'order of magnitude of each control (useful for multi-parameter optimization)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'fos_forward_index', 'index for fos_foward driver of ADOLC'))
+        s += '{}\n'.format(class_utils._field_display(self, 'fov_forward_indices', 'indices for fov_foward driver of ADOLC'))
         return s
 
     # Define class string

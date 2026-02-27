@@ -85,19 +85,19 @@ class armapw(class_registry.manage_state):
         s += 'subglacial water pressure is calculated as Pw=monthlyfactor[month]*(rho_water*g*bed+Pw_arma) where Pw_arma is the perturbation calculated as an ARMA process\n'
         s += 'polynomialparams includes the constant, linear trend, quadratic trend, etc. of the ARMA process\n'
         s += 'arlag_coefs and malag_coefs include the coefficients of the ARMA process\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'num_basins', 'number of different basins [unitless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'basin_id', 'basin number assigned to each element [unitless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'num_breaks', 'number of different breakpoints in the piecewise-polynomial (separating num_breaks+1 periods)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'num_params', 'number of different parameters in the piecewise-polynomial (1:intercept only, 2:with linear trend, 3:with quadratic trend, etc.)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'monthlyfactors', 'monthly multiplicative factor on the subglacial water pressure, specified per basin (size:[num_basins,12])'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'polynomialparams', 'coefficients for the polynomial (const,trend,quadratic,etc.),dim1 for basins,dim2 for periods,dim3 for orders, ex: polyparams=cat(num_params,intercepts,trendlinearcoefs,trendquadraticcoefs)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'datebreaks', 'dates at which the breakpoints in the piecewise polynomial occur (1 row per basin) [yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ar_order', 'order of the autoregressive model [unitless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ma_order', 'order of the moving-average model [unitless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'arma_timestep', 'time resolution of the ARMA model [yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'arlag_coefs', 'basin-specific vectors of AR lag coefficients [unitless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'malag_coefs', 'basin-specific vectors of MA lag coefficients [unitless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'List of requested outputs'))
+        s += '{}\n'.format(class_utils._field_display(self, 'num_basins', 'number of different basins [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'basin_id', 'basin number assigned to each element [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'num_breaks', 'number of different breakpoints in the piecewise-polynomial (separating num_breaks+1 periods)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'num_params', 'number of different parameters in the piecewise-polynomial (1:intercept only, 2:with linear trend, 3:with quadratic trend, etc.)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'monthlyfactors', 'monthly multiplicative factor on the subglacial water pressure, specified per basin (size:[num_basins,12])'))
+        s += '{}\n'.format(class_utils._field_display(self, 'polynomialparams', 'coefficients for the polynomial (const,trend,quadratic,etc.),dim1 for basins,dim2 for periods,dim3 for orders, ex: polyparams=cat(num_params,intercepts,trendlinearcoefs,trendquadraticcoefs)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'datebreaks', 'dates at which the breakpoints in the piecewise polynomial occur (1 row per basin) [yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ar_order', 'order of the autoregressive model [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ma_order', 'order of the moving-average model [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'arma_timestep', 'time resolution of the ARMA model [yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'arlag_coefs', 'basin-specific vectors of AR lag coefficients [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'malag_coefs', 'basin-specific vectors of MA lag coefficients [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'List of requested outputs'))
         return s
 
     # Define class string
@@ -433,51 +433,51 @@ class dc(class_registry.manage_state):
         s = '   hydrology Dual Porous Continuum Equivalent parameters:\n'
 
         s += '\t- general parameters\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'water_compressibility', 'compressibility of water [Pa^ - 1]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isefficientlayer', 'do we use an efficient drainage system [1: true 0: false]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'penalty_factor', 'exponent of the value used in the penalisation method [dimensionless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'penalty_lock', 'stabilize unstable constraints that keep zigzagging after n iteration (default is 0, no stabilization)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'rel_tol', 'tolerance of the nonlinear iteration for the transfer between layers [dimensionless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'max_iter', 'maximum number of nonlinear iteration'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'steps_per_step', 'number of hydrology steps per time step'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'step_adapt', 'adaptative sub stepping  [1: true 0: false] default is 0'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'averaging', 'averaging methods from short to long steps'))
+        s += '{}\n'.format(class_utils._field_display(self, 'water_compressibility', 'compressibility of water [Pa^ - 1]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isefficientlayer', 'do we use an efficient drainage system [1: true 0: false]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'penalty_factor', 'exponent of the value used in the penalisation method [dimensionless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'penalty_lock', 'stabilize unstable constraints that keep zigzagging after n iteration (default is 0, no stabilization)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'rel_tol', 'tolerance of the nonlinear iteration for the transfer between layers [dimensionless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'max_iter', 'maximum number of nonlinear iteration'))
+        s += '{}\n'.format(class_utils._field_display(self, 'steps_per_step', 'number of hydrology steps per time step'))
+        s += '{}\n'.format(class_utils._field_display(self, 'step_adapt', 'adaptative sub stepping  [1: true 0: false] default is 0'))
+        s += '{}\n'.format(class_utils._field_display(self, 'averaging', 'averaging methods from short to long steps'))
         s += '{}\n'.format('                   0: Arithmetic (default)')
         s += '{}\n'.format('                   1: Geometric')
         s += '{}\n'.format('                   2: Harmonic')
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'basal_moulin_input', 'water flux at a given point [m3 s - 1]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sedimentlimit_flag', 'what kind of upper limit is applied for the inefficient layer'))
+        s += '{}\n'.format(class_utils._field_display(self, 'basal_moulin_input', 'water flux at a given point [m3 s - 1]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sedimentlimit_flag', 'what kind of upper limit is applied for the inefficient layer'))
         s += '{}\n'.format('                   0: no limit')
         s += '{}\n'.format('                   1: user defined sedimentlimit')
         s += '{}\n'.format('                   2: hydrostatic pressure')
         s += '{}\n'.format('                   3: normal stress')
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sedimentlimit', 'user defined upper limit for the inefficient layer [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'transfer_flag', 'what kind of transfer method is applied between the layers'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sedimentlimit', 'user defined upper limit for the inefficient layer [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'transfer_flag', 'what kind of transfer method is applied between the layers'))
         s += '{}\n'.format('                   0: no transfer')
         s += '{}\n'.format('                   1: constant leakage factor: leakage_factor')
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'leakage_factor', 'user defined leakage factor [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'unconfined_flag', 'using an unconfined scheme or not (transitory)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'leakage_factor', 'user defined leakage factor [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'unconfined_flag', 'using an unconfined scheme or not (transitory)'))
         s += '{}\n'.format('                   0: Confined only')
         s += '{}\n'.format('                   1: Confined - Unconfined')
         s += '\t- for the sediment layer\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'spcsediment_head', 'sediment water head constraints (NaN means no constraint) [m above MSL]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sediment_compressibility', 'sediment compressibility [Pa^ - 1]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sediment_porosity', 'sediment [dimensionless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sediment_thickness', 'sediment thickness [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sediment_transmitivity', 'sediment transmitivity [m^2 / s]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'mask_thawed_node', 'IDS is deactivaed (0) on frozen nodes'))
+        s += '{}\n'.format(class_utils._field_display(self, 'spcsediment_head', 'sediment water head constraints (NaN means no constraint) [m above MSL]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sediment_compressibility', 'sediment compressibility [Pa^ - 1]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sediment_porosity', 'sediment [dimensionless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sediment_thickness', 'sediment thickness [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sediment_transmitivity', 'sediment transmitivity [m^2 / s]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'mask_thawed_node', 'IDS is deactivaed (0) on frozen nodes'))
         s += '\t- for the epl layer\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'spcepl_head', 'epl water head constraints (NaN means no constraint) [m above MSL]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'mask_eplactive_node', 'active (1) or not (0) EPL'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'epl_compressibility', 'epl compressibility [Pa^ - 1]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'epl_porosity', 'epl [dimensionless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'epl_max_thickness', 'epl maximal thickness [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'epl_initial_thickness', 'epl initial thickness [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'epl_colapse_thickness', 'epl colapsing thickness [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'epl_thick_comp', 'epl thickness computation flag'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'epl_conductivity', 'epl conductivity [m^2 / s]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'eplflip_lock', 'lock epl activity to avoid flip - floping (default is 0, no stabilization)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'spcepl_head', 'epl water head constraints (NaN means no constraint) [m above MSL]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'mask_eplactive_node', 'active (1) or not (0) EPL'))
+        s += '{}\n'.format(class_utils._field_display(self, 'epl_compressibility', 'epl compressibility [Pa^ - 1]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'epl_porosity', 'epl [dimensionless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'epl_max_thickness', 'epl maximal thickness [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'epl_initial_thickness', 'epl initial thickness [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'epl_colapse_thickness', 'epl colapsing thickness [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'epl_thick_comp', 'epl thickness computation flag'))
+        s += '{}\n'.format(class_utils._field_display(self, 'epl_conductivity', 'epl conductivity [m^2 / s]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'eplflip_lock', 'lock epl activity to avoid flip - floping (default is 0, no stabilization)'))
         return s
 
     # Define class string
@@ -815,30 +815,30 @@ class glads(class_registry.manage_state):
         s = '   GlaDS (hydrologyglads) solution parameters:\n'
 
         s += '\t--SHEET\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'pressure_melt_coefficient', 'Pressure melt coefficient (c_t) [K Pa^ - 1]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sheet_conductivity', 'sheet conductivity (k) [m^(7 / 4) kg^(- 1 / 2)]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sheet_alpha', 'First sheet-flow exponent (alpha_s) []'))  # TH
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sheet_beta', 'Second sheet-flow exponent (beta_s) []'))  # TH
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'cavity_spacing', 'cavity spacing (l_r) [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'bump_height', 'typical bump height (h_r) [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'omega', 'transition parameter (omega) []'))  # TH
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'rheology_B_base', 'ice rheology factor B at base of ice (B) [Pa s^(-1/3)]'))  # SE
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isincludesheetthickness', 'Do we add rho_w*g*h in effective pressure calculation? 1: yes, 0: no'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'creep_open_flag', 'Do we allow cavities to open by creep when N<0? 1: yes, 0: no'))
+        s += '{}\n'.format(class_utils._field_display(self, 'pressure_melt_coefficient', 'Pressure melt coefficient (c_t) [K Pa^ - 1]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sheet_conductivity', 'sheet conductivity (k) [m^(7 / 4) kg^(- 1 / 2)]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sheet_alpha', 'First sheet-flow exponent (alpha_s) []'))  # TH
+        s += '{}\n'.format(class_utils._field_display(self, 'sheet_beta', 'Second sheet-flow exponent (beta_s) []'))  # TH
+        s += '{}\n'.format(class_utils._field_display(self, 'cavity_spacing', 'cavity spacing (l_r) [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'bump_height', 'typical bump height (h_r) [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'omega', 'transition parameter (omega) []'))  # TH
+        s += '{}\n'.format(class_utils._field_display(self, 'rheology_B_base', 'ice rheology factor B at base of ice (B) [Pa s^(-1/3)]'))  # SE
+        s += '{}\n'.format(class_utils._field_display(self, 'isincludesheetthickness', 'Do we add rho_w*g*h in effective pressure calculation? 1: yes, 0: no'))
+        s += '{}\n'.format(class_utils._field_display(self, 'creep_open_flag', 'Do we allow cavities to open by creep when N<0? 1: yes, 0: no'))
         s += '\t--CHANNELS\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ischannels', 'Do we allow for channels? 1: yes, 0: no'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'channel_conductivity', 'channel conductivity (k_c) [m^(3 / 2) kg^(- 1 / 2)]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'channel_sheet_width', 'channel sheet width [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'channel_alpha', 'First channel-flow exponent (alpha_s) []'))  # TH
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'channel_beta', 'Second channel-flow exponent (beta_s) []'))  # TH
+        s += '{}\n'.format(class_utils._field_display(self, 'ischannels', 'Do we allow for channels? 1: yes, 0: no'))
+        s += '{}\n'.format(class_utils._field_display(self, 'channel_conductivity', 'channel conductivity (k_c) [m^(3 / 2) kg^(- 1 / 2)]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'channel_sheet_width', 'channel sheet width [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'channel_alpha', 'First channel-flow exponent (alpha_s) []'))  # TH
+        s += '{}\n'.format(class_utils._field_display(self, 'channel_beta', 'Second channel-flow exponent (beta_s) []'))  # TH
         s += '\t--OTHER\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'spcphi', 'Hydraulic potential Dirichlet constraints [Pa]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'neumannflux', 'water flux applied along the model boundary (m^2 / s)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'moulin_input', 'moulin input (Q_s) [m^3 / s]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'englacial_void_ratio', 'englacial void ratio (e_v)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'melt_flag', 'User specified basal melt? 0: no (default), 1: use md.basalforcings.groundedice_melting_rate'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'istransition', 'do we use standard [0, default] or transition model [1]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'spcphi', 'Hydraulic potential Dirichlet constraints [Pa]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'neumannflux', 'water flux applied along the model boundary (m^2 / s)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'moulin_input', 'moulin input (Q_s) [m^3 / s]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'englacial_void_ratio', 'englacial void ratio (e_v)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'melt_flag', 'User specified basal melt? 0: no (default), 1: use md.basalforcings.groundedice_melting_rate'))
+        s += '{}\n'.format(class_utils._field_display(self, 'istransition', 'do we use standard [0, default] or transition model [1]'))
         return s
 
     # Define class string
@@ -1049,9 +1049,9 @@ class pism(class_registry.manage_state):
     def __repr__(self):
         s = '   hydrologypism solution parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'drainage_rate', 'fixed drainage rate [mm / yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'watercolumn_max', 'maximum water column height [m], recommended default: 2 m'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'drainage_rate', 'fixed drainage rate [mm / yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'watercolumn_max', 'maximum water column height [m], recommended default: 2 m'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -1247,20 +1247,20 @@ class shakti(class_registry.manage_state):
     def __repr__(self):
         s = '   hydrologyshakti solution parameters:'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'head', 'subglacial hydrology water head (m)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'gap_height', 'height of gap separating ice to bed (m)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'gap_height_min', 'minimum allowed gap height (m)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'gap_height_max', 'minimum allowed gap height (m)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'bump_spacing', 'characteristic bedrock bump spacing (m)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'bump_height', 'characteristic bedrock bump height (m)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'englacial_input', 'liquid water input from englacial to subglacial system (m / yr)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'moulin_input', 'liquid water input from moulins (at the vertices) to subglacial system (m^3 / s)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'reynolds', 'Reynolds'' number'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'neumannflux', 'water flux applied along the model boundary (m^2 / s)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'spchead', 'water head constraints (NaN means no constraint) (m)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'relaxation', 'under - relaxation coefficient for nonlinear iteration'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'storage', 'englacial storage coefficient (void ratio)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'head', 'subglacial hydrology water head (m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'gap_height', 'height of gap separating ice to bed (m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'gap_height_min', 'minimum allowed gap height (m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'gap_height_max', 'minimum allowed gap height (m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'bump_spacing', 'characteristic bedrock bump spacing (m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'bump_height', 'characteristic bedrock bump height (m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'englacial_input', 'liquid water input from englacial to subglacial system (m / yr)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'moulin_input', 'liquid water input from moulins (at the vertices) to subglacial system (m^3 / s)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'reynolds', 'Reynolds'' number'))
+        s += '{}\n'.format(class_utils._field_display(self, 'neumannflux', 'water flux applied along the model boundary (m^2 / s)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'spchead', 'water head constraints (NaN means no constraint) (m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'relaxation', 'under - relaxation coefficient for nonlinear iteration'))
+        s += '{}\n'.format(class_utils._field_display(self, 'storage', 'englacial storage coefficient (void ratio)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -1459,9 +1459,9 @@ class shreve(class_registry.manage_state):
     def __repr__(self):
         s = '   hydrologyshreve solution parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'spcwatercolumn', 'water thickness constraints (NaN means no constraint) [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'stabilization', 'artificial diffusivity (default: 1). can be more than 1 to increase diffusivity.'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'spcwatercolumn', 'water thickness constraints (NaN means no constraint) [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'stabilization', 'artificial diffusivity (default: 1). can be more than 1 to increase diffusivity.'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -1619,8 +1619,8 @@ class tws(class_registry.manage_state):
     def __repr__(self):
         s = '   hydrologytws solution parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'spcwatercolumn', 'water thickness constraints (NaN means no constraint) [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'spcwatercolumn', 'water thickness constraints (NaN means no constraint) [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string

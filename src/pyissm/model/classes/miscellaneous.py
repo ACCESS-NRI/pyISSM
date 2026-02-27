@@ -56,9 +56,9 @@ class miscellaneous(class_registry.manage_state):
     def __repr__(self):
         s = '   miscellaneous parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'notes', 'notes in a cell of strings'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'name', 'model name'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'dummy', 'empty field to store some data'))
+        s += '{}\n'.format(class_utils._field_display(self, 'notes', 'notes in a cell of strings'))
+        s += '{}\n'.format(class_utils._field_display(self, 'name', 'model name'))
+        s += '{}\n'.format(class_utils._field_display(self, 'dummy', 'empty field to store some data'))
         return s
 
     # Define class string

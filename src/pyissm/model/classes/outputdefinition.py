@@ -50,7 +50,7 @@ class outputdefinition(class_registry.manage_state):
     def __repr__(self):
         s = '   Output definitions:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'definitions', 'List of potential outputs that can be requested, but which need additional data to be defined'))
+        s += '{}\n'.format(class_utils._field_display(self, 'definitions', 'List of potential outputs that can be requested, but which need additional data to be defined'))
         return s
 
     # Define class string

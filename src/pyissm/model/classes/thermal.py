@@ -90,18 +90,18 @@ class thermal(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   Thermal solution parameters:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'spctemperature', 'temperature constraints (NaN means no constraint) [K]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'stabilization', '0: no, 1: artificial_diffusivity, 2: SUPG'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'maxiter', 'maximum number of non linear iterations'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'reltol', 'relative tolerance criterion'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'penalty_lock', 'stabilize unstable thermal constraints that keep zigzagging after n iteration (default is 0, no stabilization)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'penalty_threshold', 'threshold to declare convergence of thermal solution (default is 0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isenthalpy', 'use an enthalpy formulation to include temperate ice (default is 0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isdynamicbasalspc', 'enable dynamic setting of basal forcing. required for enthalpy formulation (default is 0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isdrainicecolumn', 'wether waterfraction drainage is enabled for enthalpy formulation (default is 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'watercolumn_upperlimit', 'upper limit of basal watercolumn for enthalpy formulation (default is 1000m)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'fe', 'Finite Element type: ''P1'' (default), ''P1xP2'''))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'spctemperature', 'temperature constraints (NaN means no constraint) [K]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'stabilization', '0: no, 1: artificial_diffusivity, 2: SUPG'))
+        s += '{}\n'.format(class_utils._field_display(self, 'maxiter', 'maximum number of non linear iterations'))
+        s += '{}\n'.format(class_utils._field_display(self, 'reltol', 'relative tolerance criterion'))
+        s += '{}\n'.format(class_utils._field_display(self, 'penalty_lock', 'stabilize unstable thermal constraints that keep zigzagging after n iteration (default is 0, no stabilization)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'penalty_threshold', 'threshold to declare convergence of thermal solution (default is 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isenthalpy', 'use an enthalpy formulation to include temperate ice (default is 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isdynamicbasalspc', 'enable dynamic setting of basal forcing. required for enthalpy formulation (default is 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isdrainicecolumn', 'wether waterfraction drainage is enabled for enthalpy formulation (default is 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'watercolumn_upperlimit', 'upper limit of basal watercolumn for enthalpy formulation (default is 1000m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'fe', 'Finite Element type: ''P1'' (default), ''P1xP2'''))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string

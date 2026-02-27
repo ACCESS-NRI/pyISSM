@@ -73,19 +73,19 @@ class debris(class_registry.manage_state):
     def __repr__(self):
         s = '   debris solution parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self,'spcthickness','debris thickness constraints (NaN means no constraint) [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self,'min_thickness','minimum debris thickness allowed [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self,'packingfraction','fraction of debris covered in the ice'))
-        s += '{}\n'.format(class_utils.fielddisplay(self,'stabilization','0: no stabilization, 1: artificial diffusion, 2: streamline upwinding, 3: streamline upwind Petrov-Galerkin (SUPG)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self,'removalmodel','frontal removal of debris. 0: no removal, 1: Slope-triggered debris removal, 2: driving-stress triggered debris removal'))
-        s += '{}\n'.format(class_utils.fielddisplay(self,'displacementmodel','debris displacement. 0: no displacement, 1: ...'))
-        s += '{}\n'.format(class_utils.fielddisplay(self,'max_displacementvelocity','maximum velocity of debris transport (v_ice + v_displacement) (m/a)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self,'removal_slope_threshold','critical slope (degrees) for removalmodel (1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self,'removal_stress_threshold','critical stress (Pa) for removalmodel (2)'))
+        s += '{}\n'.format(class_utils._field_display(self,'spcthickness','debris thickness constraints (NaN means no constraint) [m]'))
+        s += '{}\n'.format(class_utils._field_display(self,'min_thickness','minimum debris thickness allowed [m]'))
+        s += '{}\n'.format(class_utils._field_display(self,'packingfraction','fraction of debris covered in the ice'))
+        s += '{}\n'.format(class_utils._field_display(self,'stabilization','0: no stabilization, 1: artificial diffusion, 2: streamline upwinding, 3: streamline upwind Petrov-Galerkin (SUPG)'))
+        s += '{}\n'.format(class_utils._field_display(self,'removalmodel','frontal removal of debris. 0: no removal, 1: Slope-triggered debris removal, 2: driving-stress triggered debris removal'))
+        s += '{}\n'.format(class_utils._field_display(self,'displacementmodel','debris displacement. 0: no displacement, 1: ...'))
+        s += '{}\n'.format(class_utils._field_display(self,'max_displacementvelocity','maximum velocity of debris transport (v_ice + v_displacement) (m/a)'))
+        s += '{}\n'.format(class_utils._field_display(self,'removal_slope_threshold','critical slope (degrees) for removalmodel (1)'))
+        s += '{}\n'.format(class_utils._field_display(self,'removal_stress_threshold','critical stress (Pa) for removalmodel (2)'))
 
         s += '\n      {}\n'.format('Penalty options:')
-        s += '{}\n'.format(class_utils.fielddisplay(self,'vertex_pairing','pairs of vertices that are penalized'))
-        s += '{}\n'.format(class_utils.fielddisplay(self,'requested_outputs','additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self,'vertex_pairing','pairs of vertices that are penalized'))
+        s += '{}\n'.format(class_utils._field_display(self,'requested_outputs','additional outputs requested'))
         return s
 
     # Define class string

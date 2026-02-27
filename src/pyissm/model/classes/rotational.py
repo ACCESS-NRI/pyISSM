@@ -53,9 +53,9 @@ class rotational(class_registry.manage_state):
     def __repr__(self):
         s = '   rotational parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'equatorialmoi', 'mean equatorial moment of inertia [kg m^2]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'polarmoi', 'polar moment of inertia [kg m^2]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'angularvelocity', 'mean rotational velocity of earth [per second]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'equatorialmoi', 'mean equatorial moment of inertia [kg m^2]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'polarmoi', 'polar moment of inertia [kg m^2]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'angularvelocity', 'mean rotational velocity of earth [per second]'))
         return s
 
     # Define class string

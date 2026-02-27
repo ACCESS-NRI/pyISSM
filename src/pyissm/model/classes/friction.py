@@ -65,13 +65,13 @@ class default(class_registry.manage_state):
         s = 'Basal shear stress parameters: Sigma_b = coefficient^2 * Neff ^r * |u_b|^(s - 1) * u_b,\n'
         s += '(effective stress Neff = rho_ice * g * thickness + rho_water * g * base, r = q / p and s = 1 / p)\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficient', 'friction coefficient [SI]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'p', 'p exponent'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'q', 'q exponent'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coupling', 'Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'linearize', '0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coefficient', 'friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'p', 'p exponent'))
+        s += '{}\n'.format(class_utils._field_display(self, 'q', 'q exponent'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coupling', 'Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'linearize', '0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
         return s
 
     # Define class string
@@ -234,13 +234,13 @@ class coulomb(class_registry.manage_state):
         s = 'Basal shear stress parameters: Sigma_b = min(coefficient^2 * Neff ^r * |u_b|^(s - 1) * u_b,\n'
         s += 'coefficientcoulomb^2 * Neff), (effective stress Neff = rho_ice * g * thickness + rho_water * g * bed, r = q / p and s = 1 / p).\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficient', 'power law (Weertman) friction coefficient [SI]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficientcoulomb', 'Coulomb friction coefficient [SI]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'p', 'p exponent'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'q', 'q exponent'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coupling', 'Coupling flag: 0 for default, 1 for forcing(provide md.friction.effective_pressure)  and 2 for coupled(not implemented yet)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coefficient', 'power law (Weertman) friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coefficientcoulomb', 'Coulomb friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'p', 'p exponent'))
+        s += '{}\n'.format(class_utils._field_display(self, 'q', 'q exponent'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coupling', 'Coupling flag: 0 for default, 1 for forcing(provide md.friction.effective_pressure)  and 2 for coupled(not implemented yet)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
         return s
 
     # Define class string
@@ -400,13 +400,13 @@ class coulomb2(class_registry.manage_state):
         s = 'Basal shear stress parameters: Sigma_b = min(coefficient^2 * Neff ^r * |u_b|^(s - 1) * u_b,\n'
         s += 'coefficientcoulomb^2 * Neff), (effective stress Neff = rho_ice * g * thickness + rho_water * g * bed, r = q / p and s = 1 / p).\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficient', 'power law (Weertman) friction coefficient [SI]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficientcoulomb', 'Coulomb friction coefficient [SI]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'p', 'p exponent'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'q', 'q exponent'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coupling', 'Coupling flag: 0 for default, 1 for forcing(provide md.friction.effective_pressure)  and 2 for coupled(not implemented yet)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coefficient', 'power law (Weertman) friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coefficientcoulomb', 'Coulomb friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'p', 'p exponent'))
+        s += '{}\n'.format(class_utils._field_display(self, 'q', 'q exponent'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coupling', 'Coupling flag: 0 for default, 1 for forcing(provide md.friction.effective_pressure)  and 2 for coupled(not implemented yet)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
         return s
 
     # Define class string
@@ -562,12 +562,12 @@ class hydro(class_registry.manage_state):
     def __repr__(self):
         s = 'Effective Pressure based friction law described in Gagliardini 2007\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coupling', 'Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'q', 'friction law exponent q >= 1'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'C', 'friction law max value (Iken bound)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'As', 'Sliding Parameter without cavitation [m Pa^ - n s^ - 1]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coupling', 'Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'q', 'friction law exponent q >= 1'))
+        s += '{}\n'.format(class_utils._field_display(self, 'C', 'friction law max value (Iken bound)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'As', 'Sliding Parameter without cavitation [m Pa^ - n s^ - 1]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
         return s
 
     # Define class string
@@ -717,11 +717,11 @@ class josh(class_registry.manage_state):
         s = 'Basal shear stress parameters: Sigma_b = coefficient^2 * Neff ^r * |u_b|^(s - 1) * u_b,\n'
         s += '(effective stress Neff = rho_ice * g * thickness + rho_water * g * base, r = q / p and s = 1 / p)\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficient', 'friction coefficient [SI]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'pressure_adjusted_temperature', 'friction pressure_adjusted_temperature (T - Tpmp) [K]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'gamma', '(T - Tpmp)/gamma [K]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficient_max', 'effective friction C = min(coefficient_max, sqrt(exp(T_b(modern) - T_b(t))/gamma) * coefficient)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coefficient', 'friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'pressure_adjusted_temperature', 'friction pressure_adjusted_temperature (T - Tpmp) [K]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'gamma', '(T - Tpmp)/gamma [K]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coefficient_max', 'effective friction C = min(coefficient_max, sqrt(exp(T_b(modern) - T_b(t))/gamma) * coefficient)'))
         return s
 
     # Define class string
@@ -857,12 +857,12 @@ class pism(class_registry.manage_state):
     def __repr__(self):
         s = 'Basal shear stress parameters for the PISM friction law (See Aschwanden et al. 2016 for more details)\n'
 
-        s += "{}\n".format(class_utils.fielddisplay(self, 'pseudoplasticity_exponent', 'pseudoplasticity exponent [dimensionless]'))
-        s += "{}\n".format(class_utils.fielddisplay(self, 'threshold_speed', 'threshold speed [m / yr]'))
-        s += "{}\n".format(class_utils.fielddisplay(self, 'delta', 'lower limit of the effective pressure, expressed as a fraction of overburden pressure [dimensionless]'))
-        s += "{}\n".format(class_utils.fielddisplay(self, 'void_ratio', 'void ratio at a reference effective pressure [dimensionless]'))
-        s += "{}\n".format(class_utils.fielddisplay(self, 'till_friction_angle', 'till friction angle [deg], recommended default: 30 deg'))
-        s += "{}\n".format(class_utils.fielddisplay(self, 'sediment_compressibility_coefficient', 'coefficient of compressibility of the sediment [dimensionless], recommended default: 0.12'))
+        s += "{}\n".format(class_utils._field_display(self, 'pseudoplasticity_exponent', 'pseudoplasticity exponent [dimensionless]'))
+        s += "{}\n".format(class_utils._field_display(self, 'threshold_speed', 'threshold speed [m / yr]'))
+        s += "{}\n".format(class_utils._field_display(self, 'delta', 'lower limit of the effective pressure, expressed as a fraction of overburden pressure [dimensionless]'))
+        s += "{}\n".format(class_utils._field_display(self, 'void_ratio', 'void ratio at a reference effective pressure [dimensionless]'))
+        s += "{}\n".format(class_utils._field_display(self, 'till_friction_angle', 'till friction angle [deg], recommended default: 30 deg'))
+        s += "{}\n".format(class_utils._field_display(self, 'sediment_compressibility_coefficient', 'coefficient of compressibility of the sediment [dimensionless], recommended default: 0.12'))
         return s
 
     # Define class string
@@ -998,9 +998,9 @@ class regcoulomb(class_registry.manage_state):
         s += '      tau_b = -  ____________________________\n'
         s += '                     (|u|/u0 + 1)^(1/m)      \n'
         s += '\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'C', 'friction coefficient [SI]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'm', 'm exponent (set to m = 3 in original paper)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'u0', 'velocity controlling plastic limit'))
+        s += '{}\n'.format(class_utils._field_display(self, 'C', 'friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'm', 'm exponent (set to m = 3 in original paper)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'u0', 'velocity controlling plastic limit'))
         return s
 
     # Define class string
@@ -1131,10 +1131,10 @@ class regcoulomb2(class_registry.manage_state):
         s += '      tau_b = -  ____________________________\n'
         s += '                   (|u| + (K*N)^m)^(1/m)     \n'
         s += '\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'C', 'friction coefficient [SI]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'm', 'm exponent'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'K', '(K * N) ^ m to be velocity controlling plastic limit'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'C', 'friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'm', 'm exponent'))
+        s += '{}\n'.format(class_utils._field_display(self, 'K', '(K * N) ^ m to be velocity controlling plastic limit'))
+        s += '{}\n'.format(class_utils._field_display(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
         return s
 
     # Define class string
@@ -1273,12 +1273,12 @@ class schoof(class_registry.manage_state):
         s += '      tau_b = - _____________________________   u_b   \n'
         s += '               (1+(C^2/(Cmax N))^1/m |u_b| )^m          \n'
         s += '\n'
-        s += "{}\n".format(class_utils.fielddisplay(self, 'C', 'friction coefficient [SI]'))
-        s += "{}\n".format(class_utils.fielddisplay(self, 'Cmax', 'Iken\'s bound (typically between 0.17 and 0.84) [SI]'))
-        s += "{}\n".format(class_utils.fielddisplay(self, 'm', 'm exponent (generally taken as m = 1/n = 1/3)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coupling', 'Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
-        s += "{}\n".format(class_utils.fielddisplay(self, 'effective_pressure_limit', 'fNeff do not allow to fall below a certain limit: effective_pressure_limit*rho_ice*g*thickness (default 0)'))
+        s += "{}\n".format(class_utils._field_display(self, 'C', 'friction coefficient [SI]'))
+        s += "{}\n".format(class_utils._field_display(self, 'Cmax', 'Iken\'s bound (typically between 0.17 and 0.84) [SI]'))
+        s += "{}\n".format(class_utils._field_display(self, 'm', 'm exponent (generally taken as m = 1/n = 1/3)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coupling', 'Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
+        s += "{}\n".format(class_utils._field_display(self, 'effective_pressure_limit', 'fNeff do not allow to fall below a certain limit: effective_pressure_limit*rho_ice*g*thickness (default 0)'))
         return s
 
     # Define class string
@@ -1411,7 +1411,7 @@ class shakti(class_registry.manage_state):
         s = 'Basal shear stress parameters: Sigma_b = coefficient^2 * Neff * u_b\n'
 
         s += '(effective stress Neff = rho_ice * g * thickness + rho_water * g * (head - b))\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficient', 'friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coefficient', 'friction coefficient [SI]'))
         return s
 
     # Define class string
@@ -1534,11 +1534,11 @@ class waterlayer(class_registry.manage_state):
     def __repr__(self):
         s = 'Basal shear stress parameters: tau_b = coefficient^2 * Neff ^r * |u_b|^(s - 1) * u_b * 1 / f(T)\n(effective stress Neff = rho_ice * g * thickness + rho_water * g * (bed + water_layer), r = q / p and s = 1 / p)\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficient', 'frictiontemp coefficient [SI]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'f', 'f variable for effective pressure'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'p', 'p exponent'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'q', 'q exponent'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'water_layer', 'water thickness at the base of the ice (m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coefficient', 'frictiontemp coefficient [SI]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'f', 'f variable for effective pressure'))
+        s += '{}\n'.format(class_utils._field_display(self, 'p', 'p exponent'))
+        s += '{}\n'.format(class_utils._field_display(self, 'q', 'q exponent'))
+        s += '{}\n'.format(class_utils._field_display(self, 'water_layer', 'water thickness at the base of the ice (m)'))
         return s
 
     # Define class string
@@ -1666,9 +1666,9 @@ class weertman(class_registry.manage_state):
     def __repr__(self):
         s = 'Weertman sliding law parameters: Sigma_b = C^(- 1 / m) * |u_b|^(1 / m - 1) * u_b\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'C', 'friction coefficient [SI]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'm', 'm exponent'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'linearize', '0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'C', 'friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'm', 'm exponent'))
+        s += '{}\n'.format(class_utils._field_display(self, 'linearize', '0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0)'))
         return s
 
     # Define class string

@@ -54,11 +54,11 @@ class geometry(class_registry.manage_state):
     def __repr__(self):
         s = '   geometry parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'surface', 'ice upper surface elevation [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'thickness', 'ice thickness [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'base', 'ice base elevation [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'bed', 'bed elevation [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'hydrostatic_ratio', 'hydrostatic ratio for floating ice'))
+        s += '{}\n'.format(class_utils._field_display(self, 'surface', 'ice upper surface elevation [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'thickness', 'ice thickness [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'base', 'ice base elevation [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'bed', 'bed elevation [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'hydrostatic_ratio', 'hydrostatic ratio for floating ice'))
         return s
 
     # Define class string

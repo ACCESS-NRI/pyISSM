@@ -69,11 +69,11 @@ class regionaloutput(class_registry.manage_state):
     def __repr__(self):
         s = '   regionaloutput parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'name', 'identifier for this regional response'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'definitionstring', 'string that identifies this output definition uniquely, from Outputdefinition[1 - 100]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'outputnamestring', 'string that identifies the type of output you want, eg. IceVolume, TotalSmb, GroudedArea'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'mask', 'mask vectorial field which identifies the region of interest (value > 0 will be included)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'maskexpstring', 'name of Argus file that can be passed in to define the regional mask'))
+        s += '{}\n'.format(class_utils._field_display(self, 'name', 'identifier for this regional response'))
+        s += '{}\n'.format(class_utils._field_display(self, 'definitionstring', 'string that identifies this output definition uniquely, from Outputdefinition[1 - 100]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'outputnamestring', 'string that identifies the type of output you want, eg. IceVolume, TotalSmb, GroudedArea'))
+        s += '{}\n'.format(class_utils._field_display(self, 'mask', 'mask vectorial field which identifies the region of interest (value > 0 will be included)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'maskexpstring', 'name of Argus file that can be passed in to define the regional mask'))
         return s
 
     # Define class string

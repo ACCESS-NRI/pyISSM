@@ -68,15 +68,15 @@ class levelset(class_registry.manage_state):
     def __repr__(self):
         s = '   Level-set parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'stabilization', '0: No Stabilization - No stabilization techniques applied.'))
+        s += '{}\n'.format(class_utils._field_display(self, 'stabilization', '0: No Stabilization - No stabilization techniques applied.'))
         s += '{}\n'.format('                             1: Artificial Diffusivity - Most stable, but least accurate.')
         s += '{}\n'.format('                             2: Streamline Upwinding')
         s += '{}\n'.format('                             5: SUPG - Most accurate, but may be unstable in some applications.')
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'spclevelset', 'Levelset constraints (NaN means no constraint)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'reinit_frequency', 'Amount of time steps after which the levelset function in re-initialized'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'kill_icebergs', 'remove floating icebergs to prevent rigid body motions (1: true, 0: false)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'migration_max', 'maximum allowed migration rate (m/a)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'fe', 'Finite Element type: \'P1\' (default), or \'P2\''))
+        s += '{}\n'.format(class_utils._field_display(self, 'spclevelset', 'Levelset constraints (NaN means no constraint)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'reinit_frequency', 'Amount of time steps after which the levelset function in re-initialized'))
+        s += '{}\n'.format(class_utils._field_display(self, 'kill_icebergs', 'remove floating icebergs to prevent rigid body motions (1: true, 0: false)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'migration_max', 'maximum allowed migration rate (m/a)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'fe', 'Finite Element type: \'P1\' (default), or \'P2\''))
         return s
 
     # Define class string
