@@ -34,7 +34,7 @@ class steadystate(class_registry.manage_state):
         Returns a detailed string representation of the steadystate parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -87,7 +87,7 @@ class steadystate(class_registry.manage_state):
         return md
 
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -111,8 +111,8 @@ class steadystate(class_registry.manage_state):
         outputs = []
 
         ## Set default_outputs
-        _, stressbalance_defaults = md.stressbalance.process_outputs(md, return_default_outputs = True)
-        _, thermal_defaults = md.thermal.process_outputs(md, return_default_outputs = True)
+        _, stressbalance_defaults = md.stressbalance._process_outputs(md, return_default_outputs = True)
+        _, thermal_defaults = md.thermal._process_outputs(md, return_default_outputs = True)
         default_outputs = stressbalance_defaults + thermal_defaults
 
         ## Loop through all requested outputs
@@ -152,6 +152,6 @@ class steadystate(class_registry.manage_state):
         ## Write fields
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'reltol', format = 'Double')
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'maxiter', format = 'Integer')
-        execute._write_model_field(fid, prefix, name = 'md.steadystate.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, name = 'md.steadystate.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
 

@@ -40,7 +40,7 @@ class default(class_registry.manage_state):
         Returns a detailed string representation of the SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -116,7 +116,7 @@ class default(class_registry.manage_state):
         return self
     
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -184,7 +184,7 @@ class default(class_registry.manage_state):
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'mass_balance', format = 'DoubleMat', scale = 1. / md.constants.yts, mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.arma
@@ -253,7 +253,7 @@ class arma(class_registry.manage_state):
         Returns a detailed string representation of the ARMA SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -435,7 +435,7 @@ class arma(class_registry.manage_state):
         return self
 
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -595,7 +595,7 @@ class arma(class_registry.manage_state):
         ## Write other fields
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'arma_timestep', format = 'Double', scale = md.constants.yts)
         execute._write_model_field(fid, prefix, name = 'md.smb.basin_id', data = self.basin_id - 1, format = 'IntMat', mattype = 2)  # 0-indexed
-        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.components
@@ -638,7 +638,7 @@ class components(class_registry.manage_state):
         Returns a detailed string representation of the component SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -736,7 +736,7 @@ class components(class_registry.manage_state):
         return self
     
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -806,7 +806,7 @@ class components(class_registry.manage_state):
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'evaporation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
 
 ## ------------------------------------------------------
@@ -888,7 +888,7 @@ class d18opdd(class_registry.manage_state):
         Returns a detailed string representation of the delta-18-O PDD SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -1040,7 +1040,7 @@ class d18opdd(class_registry.manage_state):
         return self
     
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -1117,7 +1117,7 @@ class d18opdd(class_registry.manage_state):
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'sealev', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
         ## Write conditional fields
         if self.isd18opd:
@@ -1255,7 +1255,7 @@ class gemb(class_registry.manage_state):
         Returns a detailed string representation of the GEMB SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -1645,7 +1645,7 @@ class gemb(class_registry.manage_state):
         return self
 
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -1800,7 +1800,7 @@ class gemb(class_registry.manage_state):
         if md.timestepping.__class__.__name__ == 'timesteppingadaptive':
             raise IOError('GEMB cannot be run with adaptive timestepping.  Check class type of md.timestepping')
 
-        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.gradients
@@ -1845,7 +1845,7 @@ class gradients(class_registry.manage_state):
         Returns a detailed string representation of the gradient SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -1935,7 +1935,7 @@ class gradients(class_registry.manage_state):
         return self
     
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -2005,7 +2005,7 @@ class gradients(class_registry.manage_state):
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'b_neg', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.gradientscomponents
@@ -2054,7 +2054,7 @@ class gradientscomponents(class_registry.manage_state):
         Returns a detailed string representation of the gradient components SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -2147,7 +2147,7 @@ class gradientscomponents(class_registry.manage_state):
         return self
     
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -2227,7 +2227,7 @@ class gradientscomponents(class_registry.manage_state):
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'runoffalti', format = 'Double')
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.gradientsela
@@ -2274,7 +2274,7 @@ class gradientsela(class_registry.manage_state):
         Returns a detailed string representation of the ELA gradient SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -2365,7 +2365,7 @@ class gradientsela(class_registry.manage_state):
         return self
     
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -2439,7 +2439,7 @@ class gradientsela(class_registry.manage_state):
         ## Write other fields
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.henning
@@ -2477,7 +2477,7 @@ class henning(class_registry.manage_state):
         Returns a detailed string representation of the Henning SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -2552,7 +2552,7 @@ class henning(class_registry.manage_state):
         return self
 
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -2620,7 +2620,7 @@ class henning(class_registry.manage_state):
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'smbref', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.meltcomponents
@@ -2665,7 +2665,7 @@ class meltcomponents(class_registry.manage_state):
         Returns a detailed string representation of the melt components SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -2777,7 +2777,7 @@ class meltcomponents(class_registry.manage_state):
         return self
 
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -2848,7 +2848,7 @@ class meltcomponents(class_registry.manage_state):
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'refreeze', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.pdd
@@ -2928,7 +2928,7 @@ class pdd(class_registry.manage_state):
         Returns a detailed string representation of the PDD SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -3106,7 +3106,7 @@ class pdd(class_registry.manage_state):
         return self
 
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -3181,7 +3181,7 @@ class pdd(class_registry.manage_state):
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'rlapslgm', format = 'Double')
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
         ## Write conditional fields
         if (self.isdelta18o == 0 and self.ismungsm == 0):
@@ -3269,7 +3269,7 @@ class pddSicopolis(class_registry.manage_state):
         Returns a detailed string representation of the SICOPOLIS PDD SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -3405,7 +3405,7 @@ class pddSicopolis(class_registry.manage_state):
         return self
 
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -3485,7 +3485,7 @@ class pddSicopolis(class_registry.manage_state):
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'smb_corr', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.semic
@@ -3710,7 +3710,7 @@ class semic(class_registry.manage_state):
         return self
 
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -3807,4 +3807,4 @@ class semic(class_registry.manage_state):
         execute._write_model_field(fid, prefix, obj = self, fieldname = 's0gcm', format = 'DoubleMat', mattype = 1)
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'rdl', format = 'Double')
-        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
