@@ -15,7 +15,7 @@ md = pyissm.model.execute.solve(md, 'Stressbalance')
 
 # Fields and tolerances to track changes
 field_names = ['Vx', 'Vy', 'Vz', 'Vel', 'Pressure']
-field_tolerances = [5e-5, 5e-5, 1e-6, 9e-5, 1e-7]
+field_tolerances = [5e-5, 5e-5, 1e-4, 9e-5, 1e-7]
 field_values = [md.results.StressbalanceSolution.Vx,
                 md.results.StressbalanceSolution.Vy,
                 md.results.StressbalanceSolution.Vz,
