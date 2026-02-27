@@ -112,7 +112,7 @@ class esa(class_registry.manage_state):
 
 
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -179,4 +179,4 @@ class esa(class_registry.manage_state):
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'hemisphere', format = 'Integer')
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'degacc', format = 'Double')
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'transitions', format = 'MatArray')
-        execute._write_model_field(fid, prefix, name = 'md.esa.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, name = 'md.esa.requested_outputs', data = self._process_outputs(md), format = 'StringArray')

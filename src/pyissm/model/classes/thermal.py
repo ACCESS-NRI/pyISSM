@@ -156,7 +156,7 @@ class thermal(class_registry.manage_state):
         return md
     
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -238,4 +238,4 @@ class thermal(class_registry.manage_state):
         ## Write other fields
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'spctemperature', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'fe', format = 'String')
-        execute._write_model_field(fid, prefix, name = 'md.thermal.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, name = 'md.thermal.requested_outputs', data = self._process_outputs(md), format = 'StringArray')

@@ -60,7 +60,7 @@ class earth(class_registry.manage_state):
         Returns a detailed string representation of the solid earth parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -146,7 +146,7 @@ class earth(class_registry.manage_state):
         return md
 
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -232,7 +232,7 @@ class earth(class_registry.manage_state):
         execute._write_model_field(fid, prefix, name = 'md.solidearth.nparthydro', data = nparthydro, format = 'Integer')
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'partitionocean', mattype = 1, format = 'DoubleMat')
         execute._write_model_field(fid, prefix, name = 'md.solidearth.npartocean', data = npartocean, format = 'Integer')
-        execute._write_model_field(fid, prefix, name = 'md.solidearth.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
         ## Marshall sub-objects
         self.settings.marshall_class(fid, prefix, md)
@@ -300,7 +300,7 @@ class europa(class_registry.manage_state):
         Returns a detailed string representation of the solid body parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -387,7 +387,7 @@ class europa(class_registry.manage_state):
         return md
     
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -473,7 +473,7 @@ class europa(class_registry.manage_state):
         execute._write_model_field(fid, prefix, name = 'md.solidearth.nparthydro', data = nparthydro, format = 'Integer')
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'partitionocean', mattype = 1, format = 'DoubleMat')
         execute._write_model_field(fid, prefix, name = 'md.solidearth.npartocean', data = npartocean, format = 'Integer')
-        execute._write_model_field(fid, prefix, name = 'md.solidearth.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
         ## Marshall sub-objects
         self.settings.marshall_class(fid, prefix, md)

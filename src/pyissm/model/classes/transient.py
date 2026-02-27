@@ -64,7 +64,7 @@ class transient(class_registry.manage_state):
         Returns a detailed string representation of the transient parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -163,7 +163,7 @@ class transient(class_registry.manage_state):
         return md
 
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -259,4 +259,4 @@ class transient(class_registry.manage_state):
         ## Write other fields
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'isoceancoupling', format = 'Integer')
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'amr_frequency', format = 'Integer')
-        execute._write_model_field(fid, prefix, name = 'md.transient.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, name = 'md.transient.requested_outputs', data = self._process_outputs(md), format = 'StringArray')

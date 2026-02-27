@@ -175,7 +175,7 @@ class damage(class_registry.manage_state):
         return md
     
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -262,4 +262,4 @@ class damage(class_registry.manage_state):
 
             ## Write other fields
             execute._write_model_field(fid, prefix, name = 'md.damage.elementinterp', data = self.elementinterp, format = 'String')
-            execute._write_model_field(fid, prefix, name = 'md.damage.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+            execute._write_model_field(fid, prefix, name = 'md.damage.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
