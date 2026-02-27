@@ -16,11 +16,14 @@ dependencies:
   - attrs>=23.0
   - pyyaml>=6.0
 
+  # Jupyter kernel support
+  - ipykernel
+
   # Common packaging/install tooling
   - pip>=25
   - setuptools>=61.0
   - wheel
 
-  # If you want editable installs / local dev workflows
+  # Run pip install for pyISSM itself 
   - pip:
-    - -e .
+    - .
