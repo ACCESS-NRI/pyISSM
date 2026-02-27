@@ -104,7 +104,7 @@ class default(class_registry.manage_state):
         return md
     
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):
+    def _initialize(self, md):
         """
         Initialise empty fields in smb.default.
         """
@@ -405,7 +405,7 @@ class arma(class_registry.manage_state):
         return md
     
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):
+    def _initialize(self, md):
         """
         Initialise empty fields in smb.arma.
         """
@@ -716,7 +716,7 @@ class components(class_registry.manage_state):
         return md
 
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):
+    def _initialize(self, md):
         """
         Initialise empty fields in smb.components.
         """
@@ -1024,7 +1024,7 @@ class d18opdd(class_registry.manage_state):
         return md
     
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):
+    def _initialize(self, md):
         """
         Initialise empty fields in smb.d18opdd.
         """
@@ -1636,7 +1636,7 @@ class gemb(class_registry.manage_state):
         return md
 
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):
+    def _initialize(self, md):
         """
         Initialise empty fields in smb.gemb.
         """
@@ -1926,7 +1926,7 @@ class gradients(class_registry.manage_state):
         return md
     
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):
+    def _initialize(self, md):
         """
         Initialise empty fields in smb.gradients.
         """
@@ -2138,7 +2138,7 @@ class gradientscomponents(class_registry.manage_state):
         return md
     
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):
+    def _initialize(self, md):
         """
         Initialise empty fields in smb.gradientscomponents.
         """
@@ -2356,7 +2356,7 @@ class gradientsela(class_registry.manage_state):
         return md
     
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):   
+    def _initialize(self, md):   
         """
         Initialise empty fields in smb.gradientsela.
         """
@@ -2540,7 +2540,7 @@ class henning(class_registry.manage_state):
         return md
     
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):
+    def _initialize(self, md):
         """
         Initialise empty fields in smb.henning.
         """
@@ -2753,7 +2753,7 @@ class meltcomponents(class_registry.manage_state):
         return md
     
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):
+    def _initialize(self, md):
         """
         Initialise empty fields in smb.meltcomponents.
         """
@@ -3090,7 +3090,7 @@ class pdd(class_registry.manage_state):
         return md
     
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):
+    def _initialize(self, md):
         """
         Initialise empty fields in smb.pdd.
         """
@@ -3377,7 +3377,7 @@ class pddSicopolis(class_registry.manage_state):
         return md
     
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):
+    def _initialize(self, md):
         """
         Initialise empty fields in smb.pddSicopolis.
         """
@@ -3684,7 +3684,7 @@ class semic(class_registry.manage_state):
         return md
     
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):
+    def _initialize(self, md):
         """
         Initialise empty fields in smb.semic.
         """
