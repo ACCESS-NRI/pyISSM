@@ -137,16 +137,16 @@ class default(class_registry.manage_state):
         """
         Extrude [inversion.default] fields to 3D
         """
-        self.vx_obs = mesh.project_3d(md, vector = self.vx_obs, type = 'node')
-        self.vy_obs = mesh.project_3d(md, vector = self.vy_obs, type = 'node')
-        self.vel_obs = mesh.project_3d(md, vector = self.vel_obs, type = 'node')
-        self.thickness_obs = mesh.project_3d(md, vector = self.thickness_obs, type = 'node')
+        self.vx_obs = mesh._project_3d(md, vector = self.vx_obs, type = 'node')
+        self.vy_obs = mesh._project_3d(md, vector = self.vy_obs, type = 'node')
+        self.vel_obs = mesh._project_3d(md, vector = self.vel_obs, type = 'node')
+        self.thickness_obs = mesh._project_3d(md, vector = self.thickness_obs, type = 'node')
         if not np.any(np.isnan(self.cost_functions_coefficients)):
-            self.cost_functions_coefficients = mesh.project_3d(md, vector = self.cost_functions_coefficients, type = 'node')
+            self.cost_functions_coefficients = mesh._project_3d(md, vector = self.cost_functions_coefficients, type = 'node')
         if not np.any(np.isnan(self.min_parameters)):
-            self.min_parameters = mesh.project_3d(md, vector = self.min_parameters, type = 'node')
+            self.min_parameters = mesh._project_3d(md, vector = self.min_parameters, type = 'node')
         if not np.any(np.isnan(self.max_parameters)):
-            self.max_parameters = mesh.project_3d(md, vector = self.max_parameters, type = 'node')
+            self.max_parameters = mesh._project_3d(md, vector = self.max_parameters, type = 'node')
             
         return self
 
@@ -401,16 +401,16 @@ class m1qn3(class_registry.manage_state):
         """
         Extrude [inversion.m1qn3] fields to 3D
         """
-        self.vx_obs = mesh.project_3d(md, vector = self.vx_obs, type = 'node')
-        self.vy_obs = mesh.project_3d(md, vector = self.vy_obs, type = 'node')
-        self.vel_obs = mesh.project_3d(md, vector = self.vel_obs, type = 'node')
-        self.thickness_obs = mesh.project_3d(md, vector = self.thickness_obs, type = 'node')
+        self.vx_obs = mesh._project_3d(md, vector = self.vx_obs, type = 'node')
+        self.vy_obs = mesh._project_3d(md, vector = self.vy_obs, type = 'node')
+        self.vel_obs = mesh._project_3d(md, vector = self.vel_obs, type = 'node')
+        self.thickness_obs = mesh._project_3d(md, vector = self.thickness_obs, type = 'node')
         if not np.any(np.isnan(self.cost_functions_coefficients)):
-            self.cost_functions_coefficients = mesh.project_3d(md, vector = self.cost_functions_coefficients, type = 'node')
+            self.cost_functions_coefficients = mesh._project_3d(md, vector = self.cost_functions_coefficients, type = 'node')
         if not np.any(np.isnan(self.min_parameters)):
-            self.min_parameters = mesh.project_3d(md, vector = self.min_parameters, type = 'node')
+            self.min_parameters = mesh._project_3d(md, vector = self.min_parameters, type = 'node')
         if not np.any(np.isnan(self.max_parameters)):
-            self.max_parameters = mesh.project_3d(md, vector = self.max_parameters, type = 'node')
+            self.max_parameters = mesh._project_3d(md, vector = self.max_parameters, type = 'node')
             
         return self
     
@@ -677,19 +677,19 @@ class tao(class_registry.manage_state):
         """
         Extrude [inversion.tao] fields to 3D
         """
-        self.vx_obs = mesh.project_3d(md, vector = self.vx_obs, type = 'node')
-        self.vy_obs = mesh.project_3d(md, vector = self.vy_obs, type = 'node')
-        self.vel_obs = mesh.project_3d(md, vector = self.vel_obs, type = 'node')
-        self.thickness_obs = mesh.project_3d(md, vector = self.thickness_obs, type = 'node')
+        self.vx_obs = mesh._project_3d(md, vector = self.vx_obs, type = 'node')
+        self.vy_obs = mesh._project_3d(md, vector = self.vy_obs, type = 'node')
+        self.vel_obs = mesh._project_3d(md, vector = self.vel_obs, type = 'node')
+        self.thickness_obs = mesh._project_3d(md, vector = self.thickness_obs, type = 'node')
         
         if np.size(self.cost_functions_coefficients) > 1:
-            self.cost_functions_coefficients = mesh.project_3d(md, vector = self.cost_functions_coefficients, type = 'node')
+            self.cost_functions_coefficients = mesh._project_3d(md, vector = self.cost_functions_coefficients, type = 'node')
 
         if np.size(self.min_parameters) > 1:
-            self.min_parameters = mesh.project_3d(md, vector = self.min_parameters, type = 'node')
+            self.min_parameters = mesh._project_3d(md, vector = self.min_parameters, type = 'node')
 
         if np.size(self.max_parameters) > 1:
-            self.max_parameters = mesh.project_3d(md, vector = self.max_parameters, type = 'node')
+            self.max_parameters = mesh._project_3d(md, vector = self.max_parameters, type = 'node')
             
         return self
     

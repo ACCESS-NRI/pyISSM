@@ -133,11 +133,11 @@ class flowequation(class_registry.manage_state):
         """
         Extrude flowequation fields to 3D
         """
-        self.element_equation = mesh.project_3d(md, vector = self.element_equation, type = 'element')
-        self.vertex_equation = mesh.project_3d(md, vector = self.vertex_equation, type = 'node')
-        self.borderSSA = mesh.project_3d(md, vector = self.borderSSA, type = 'node')
-        self.borderHO = mesh.project_3d(md, vector = self.borderHO, type = 'node')
-        self.borderFS = mesh.project_3d(md, vector = self.borderFS, type = 'node')
+        self.element_equation = mesh._project_3d(md, vector = self.element_equation, type = 'element')
+        self.vertex_equation = mesh._project_3d(md, vector = self.vertex_equation, type = 'node')
+        self.borderSSA = mesh._project_3d(md, vector = self.borderSSA, type = 'node')
+        self.borderHO = mesh._project_3d(md, vector = self.borderHO, type = 'node')
+        self.borderFS = mesh._project_3d(md, vector = self.borderFS, type = 'node')
             
         return self
     

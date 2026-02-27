@@ -112,18 +112,18 @@ class levelsetmisfit(class_registry.manage_state):
         # weights
         if np.size(self.weights) > 1:
             if not np.all(np.isnan(self.weights)):
-                self.weights = mesh.project_3d(md, vector=self.weights, type="node")
+                self.weights = mesh._project_3d(md, vector=self.weights, type="node")
         else:
             if not np.isnan(self.weights):
-                self.weights = mesh.project_3d(md, vector=self.weights, type="node")
+                self.weights = mesh._project_3d(md, vector=self.weights, type="node")
 
         # observation
         if np.size(self.observation) > 1:
             if not np.all(np.isnan(self.observation)):
-                self.observation = mesh.project_3d(md, vector=self.observation, type="node")
+                self.observation = mesh._project_3d(md, vector=self.observation, type="node")
         else:
             if not np.isnan(self.observation):
-                self.observation = mesh.project_3d(md, vector=self.observation, type="node")
+                self.observation = mesh._project_3d(md, vector=self.observation, type="node")
 
         return self
 
@@ -359,17 +359,17 @@ class surfacesquare(class_registry.manage_state):
         # Treat "unset" as scalar NaN or arrays that are all-NaN
         if np.size(self.weights) > 1:
             if not np.all(np.isnan(self.weights)):
-                self.weights = mesh.project_3d(md, vector=self.weights, type="node")
+                self.weights = mesh._project_3d(md, vector=self.weights, type="node")
         else:
             if not np.isnan(self.weights):
-                self.weights = mesh.project_3d(md, vector=self.weights, type="node")
+                self.weights = mesh._project_3d(md, vector=self.weights, type="node")
 
         if np.size(self.observation) > 1:
             if not np.all(np.isnan(self.observation)):
-                self.observation = mesh.project_3d(md, vector=self.observation, type="node")
+                self.observation = mesh._project_3d(md, vector=self.observation, type="node")
         else:
             if not np.isnan(self.observation):
-                self.observation = mesh.project_3d(md, vector=self.observation, type="node")
+                self.observation = mesh._project_3d(md, vector=self.observation, type="node")
 
         return self
 
@@ -581,18 +581,18 @@ class surfacesquaretransient(class_registry.manage_state):
         # weights
         if np.size(self.weights) > 1:
             if not np.all(np.isnan(self.weights)):
-                self.weights = mesh.project_3d(md, vector=self.weights, type="node")
+                self.weights = mesh._project_3d(md, vector=self.weights, type="node")
         else:
             if not np.isnan(self.weights):
-                self.weights = mesh.project_3d(md, vector=self.weights, type="node")
+                self.weights = mesh._project_3d(md, vector=self.weights, type="node")
 
         # observations
         if np.size(self.observations) > 1:
             if not np.all(np.isnan(self.observations)):
-                self.observations = mesh.project_3d(md, vector=self.observations, type="node")
+                self.observations = mesh._project_3d(md, vector=self.observations, type="node")
         else:
             if not np.isnan(self.observations):
-                self.observations = mesh.project_3d(md, vector=self.observations, type="node")
+                self.observations = mesh._project_3d(md, vector=self.observations, type="node")
 
         return self
 
@@ -823,18 +823,18 @@ class surfacelogvel(class_registry.manage_state):
         # weights
         if np.size(self.weights) > 1:
             if not np.all(np.isnan(self.weights)):
-                self.weights = mesh.project_3d(md, vector=self.weights, type="node")
+                self.weights = mesh._project_3d(md, vector=self.weights, type="node")
         else:
             if not np.isnan(self.weights):
-                self.weights = mesh.project_3d(md, vector=self.weights, type="node")
+                self.weights = mesh._project_3d(md, vector=self.weights, type="node")
 
         # vxobs (MATLAB projects only vxobs)
         if np.size(self.vxobs) > 1:
             if not np.all(np.isnan(self.vxobs)):
-                self.vxobs = mesh.project_3d(md, vector=self.vxobs, type="node")
+                self.vxobs = mesh._project_3d(md, vector=self.vxobs, type="node")
         else:
             if not np.isnan(self.vxobs):
-                self.vxobs = mesh.project_3d(md, vector=self.vxobs, type="node")
+                self.vxobs = mesh._project_3d(md, vector=self.vxobs, type="node")
 
         return self
 

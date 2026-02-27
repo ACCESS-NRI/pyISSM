@@ -89,7 +89,7 @@ class levelset(class_registry.manage_state):
         """
         Extrude levelset fields to 3D
         """
-        self.spclevelset = mesh.project_3d(md, vector = self.spclevelset, type = 'node')
+        self.spclevelset = mesh._project_3d(md, vector = self.spclevelset, type = 'node')
             
         return self
 

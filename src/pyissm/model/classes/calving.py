@@ -61,7 +61,7 @@ class default(class_registry.manage_state):
         """
         Extrude [calving.default] fields to 3D
         """
-        self.calvingrate = mesh.project_3d(md, vector = self.calvingrate, type = 'node')
+        self.calvingrate = mesh._project_3d(md, vector = self.calvingrate, type = 'node')
             
         return self
 
@@ -417,7 +417,7 @@ class levermann(class_registry.manage_state):
         """
         Extrude [calving.levermann] fields to 3D
         """
-        self.coeff = mesh.project_3d(md, vector = self.coeff, type = 'node')
+        self.coeff = mesh._project_3d(md, vector = self.coeff, type = 'node')
             
         return self
     

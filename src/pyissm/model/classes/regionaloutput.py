@@ -86,7 +86,7 @@ class regionaloutput(class_registry.manage_state):
         """
         Extrude regionaloutput fields to 3D mesh
         """
-        self.mask = mesh.project_3d(md, vector = self.mask, type = 'node')
+        self.mask = mesh._project_3d(md, vector = self.mask, type = 'node')
 
         return self
 

@@ -70,11 +70,11 @@ class geometry(class_registry.manage_state):
         """
         Extrude geometry fields to 3D mesh
         """
-        self.surface = mesh.project_3d(md, vector = self.surface, type = 'node')
-        self.thickness = mesh.project_3d(md, vector = self.thickness, type = 'node')
-        self.hydrostatic_ratio = mesh.project_3d(md, vector = self.hydrostatic_ratio, type = 'node')
-        self.base = mesh.project_3d(md, vector = self.base, type = 'node')
-        self.bed = mesh.project_3d(md, vector = self.bed, type = 'node')
+        self.surface = mesh._project_3d(md, vector = self.surface, type = 'node')
+        self.thickness = mesh._project_3d(md, vector = self.thickness, type = 'node')
+        self.hydrostatic_ratio = mesh._project_3d(md, vector = self.hydrostatic_ratio, type = 'node')
+        self.base = mesh._project_3d(md, vector = self.base, type = 'node')
+        self.bed = mesh._project_3d(md, vector = self.bed, type = 'node')
         
         return self
     

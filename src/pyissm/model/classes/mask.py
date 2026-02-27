@@ -67,8 +67,8 @@ class mask(class_registry.manage_state):
         """
         Extrude mask fields to 3D
         """
-        self.ice_levelset = mesh.project_3d(md, vector = self.ice_levelset, type = 'node')
-        self.ocean_levelset = mesh.project_3d(md, vector = self.ocean_levelset, type = 'node')
+        self.ice_levelset = mesh._project_3d(md, vector = self.ice_levelset, type = 'node')
+        self.ocean_levelset = mesh._project_3d(md, vector = self.ocean_levelset, type = 'node')
         
         return self
     
