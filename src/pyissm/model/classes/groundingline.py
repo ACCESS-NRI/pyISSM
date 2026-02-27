@@ -87,11 +87,11 @@ class groundingline(class_registry.manage_state):
             The model object with any consistency errors noted.
         """
 
-        class_utils.check_field(md, fieldname = 'groundingline.migration', values = ['None', 'SubelementMigration', 'AggressiveMigration', 'SoftMigration', 'Contact', 'GroundingOnly'])
-        class_utils.check_field(md, fieldname = 'groundingline.friction_interpolation', values = ['SubelementFriction1', 'SubelementFriction2', 'NoFrictionOnPartiallyFloating'])
-        class_utils.check_field(md, fieldname = 'groundingline.melt_interpolation', values = ['NoMeltOnPartiallyFloating', 'FullMeltOnPartiallyFloating', 'SubelementMelt1', 'SubelementMelt2', 'IntrusionMelt'])
-        class_utils.check_field(md, fieldname = 'groundingline.intrusion_distance', ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'groundingline.requested_outputs', string_list = True)
+        class_utils._check_field(md, fieldname = 'groundingline.migration', values = ['None', 'SubelementMigration', 'AggressiveMigration', 'SoftMigration', 'Contact', 'GroundingOnly'])
+        class_utils._check_field(md, fieldname = 'groundingline.friction_interpolation', values = ['SubelementFriction1', 'SubelementFriction2', 'NoFrictionOnPartiallyFloating'])
+        class_utils._check_field(md, fieldname = 'groundingline.melt_interpolation', values = ['NoMeltOnPartiallyFloating', 'FullMeltOnPartiallyFloating', 'SubelementMelt1', 'SubelementMelt2', 'IntrusionMelt'])
+        class_utils._check_field(md, fieldname = 'groundingline.intrusion_distance', ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'groundingline.requested_outputs', string_list = True)
 
         if(not self.migration == 'None' and md.transient.isgroundingline and solution == 'TransientSolution'):
             if np.any(np.isnan(md.geometry.bed)):

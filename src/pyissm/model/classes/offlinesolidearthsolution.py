@@ -71,10 +71,10 @@ class offlinesolidearthsolution(class_registry.manage_state):
         if ('SealevelchangeAnalysis' not in analyses) or ((solution=='TransientSolution') and (md.solidearth.settings.isgrd==1)): 
             print('pyissm.model.classes.offlinesolidearthsolution.check_consistency: trying to run GRD patterns while supplying an offline solution for those patterns!')
             return md 
-        class_utils.check_field(md, fieldname = 'solidearth.external.displacementeast', timeseries = True, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.external.displacementnorth', timeseries = True, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.external.displacementup',  timeseries = True, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.external.geoid', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.external.displacementeast', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.external.displacementnorth', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.external.displacementup',  timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.external.geoid', timeseries = True, allow_inf = False)
 
         return md
 

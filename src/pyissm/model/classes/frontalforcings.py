@@ -93,9 +93,9 @@ class default(class_registry.manage_state):
         if (solution != 'TransientSolution') or (not md.transient.ismovingfront):
             return md
 
-        class_utils.check_field(md, fieldname = 'frontalforcings.meltingrate', timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'frontalforcings.meltingrate', timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
         if not np.isnan(md.frontalforcings.ablationrate):
-            class_utils.check_field(md, fieldname = 'frontalforcings.ablationrate', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.ablationrate', timeseries = True, allow_nan = False, allow_inf = False)
             
         return md
     
@@ -222,10 +222,10 @@ class rignot(class_registry.manage_state):
         if (solution != 'TransientSolution') or (not md.transient.ismovingfront):
             return md
 
-        class_utils.check_field(md, fieldname = 'frontalforcings.num_basins', scalar = True, gt = 0, allow_nan = True, allow_inf = True)
-        class_utils.check_field(md, fieldname = 'frontalforcings.basin_id', ge = 0, le = md.frontalforcings.num_basins, size = (md.mesh.numberofelements, ), allow_inf = False)
-        class_utils.check_field(md, fieldname = 'frontalforcings.subglacial_discharge', timeseries = True, ge = 0, allow_nan = False, allow_inf = True)
-        class_utils.check_field(md, fieldname = 'frontalforcings.thermalforcing', timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'frontalforcings.num_basins', scalar = True, gt = 0, allow_nan = True, allow_inf = True)
+        class_utils._check_field(md, fieldname = 'frontalforcings.basin_id', ge = 0, le = md.frontalforcings.num_basins, size = (md.mesh.numberofelements, ), allow_inf = False)
+        class_utils._check_field(md, fieldname = 'frontalforcings.subglacial_discharge', timeseries = True, ge = 0, allow_nan = False, allow_inf = True)
+        class_utils._check_field(md, fieldname = 'frontalforcings.thermalforcing', timeseries = True, allow_nan = False, allow_inf = False)
 
         return md
     
@@ -448,29 +448,29 @@ class rignotarma(class_registry.manage_state):
         nbrk  = md.frontalforcings.num_breaks
         nMbrk = md.frontalforcings.monthlyvals_numbreaks
 
-        class_utils.check_field(md, fieldname = 'frontalforcings.num_basins', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'frontalforcings.num_params', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'frontalforcings.num_breaks', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'frontalforcings.basin_id', ge = 0, le = md.frontalforcings.num_basins, size = (md.mesh.numberofelements, ), allow_inf = False)
-        class_utils.check_field(md, fieldname = 'frontalforcings.subglacial_discharge', timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'frontalforcings.num_basins', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'frontalforcings.num_params', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'frontalforcings.num_breaks', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'frontalforcings.basin_id', ge = 0, le = md.frontalforcings.num_basins, size = (md.mesh.numberofelements, ), allow_inf = False)
+        class_utils._check_field(md, fieldname = 'frontalforcings.subglacial_discharge', timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
         
         if len(np.shape(self.polynomialparams)) == 1:
             self.polynomialparams = np.array([[self.polynomialparams]])
         if(nbas>1 and nbrk>=1 and nprm>1):
-            class_utils.check_field(md, fieldname = 'frontalforcings.polynomialparams', size = (nbas, nbrk+1, nprm), numel = nbas*(nbrk+1)*nprm, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.polynomialparams', size = (nbas, nbrk+1, nprm), numel = nbas*(nbrk+1)*nprm, allow_nan = False, allow_inf = False)
         elif(nbas==1):
-            class_utils.check_field(md, fieldname = 'frontalforcings.polynomialparams', size = (nprm, nbrk+1), numel = nbas*(nbrk+1)*nprm, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.polynomialparams', size = (nprm, nbrk+1), numel = nbas*(nbrk+1)*nprm, allow_nan = False, allow_inf = False)
         elif(nbrk==0):
-            class_utils.check_field(md, fieldname = 'frontalforcings.polynomialparams', size = (nbas, nprm), numel = nbas*(nbrk+1)*nprm, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.polynomialparams', size = (nbas, nprm), numel = nbas*(nbrk+1)*nprm, allow_nan = False, allow_inf = False)
         elif(nprm==1):
-            class_utils.check_field(md, fieldname = 'frontalforcings.polynomialparams', size = (nbas, nbrk), numel = nbas*(nbrk+1)*nprm, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'frontalforcings.ar_order', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'frontalforcings.ma_order', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'frontalforcings.arma_timestep', scalar = True, ge = md.timestepping.time_step, allow_nan = False, allow_inf = False) # ARMA time step cannot be finer than ISSM timestep
-        class_utils.check_field(md, fieldname = 'frontalforcings.arlag_coefs', size = (md.frontalforcings.num_basins, md.frontalforcings.ar_order), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'frontalforcings.malag_coefs', size = (md.frontalforcings.num_basins, md.frontalforcings.ma_order), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.polynomialparams', size = (nbas, nbrk), numel = nbas*(nbrk+1)*nprm, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'frontalforcings.ar_order', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'frontalforcings.ma_order', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'frontalforcings.arma_timestep', scalar = True, ge = md.timestepping.time_step, allow_nan = False, allow_inf = False) # ARMA time step cannot be finer than ISSM timestep
+        class_utils._check_field(md, fieldname = 'frontalforcings.arlag_coefs', size = (md.frontalforcings.num_basins, md.frontalforcings.ar_order), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'frontalforcings.malag_coefs', size = (md.frontalforcings.num_basins, md.frontalforcings.ma_order), allow_nan = False, allow_inf = False)
         if(nbrk>0):
-            class_utils.check_field(md, fieldname = 'frontalforcings.datebreaks', size = (nbas, nbrk), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.datebreaks', size = (nbas, nbrk), allow_nan = False, allow_inf = False)
         elif(np.size(md.frontalforcings.datebreaks)==0 or np.all(np.isnan(md.frontalforcings.datebreaks))):
             pass
         else:
@@ -487,55 +487,55 @@ class rignotarma(class_registry.manage_state):
         else:
             isMonthlyTrend = False
         if(isMonthly):
-            class_utils.check_field(md, fieldname = 'frontalforcings.monthlyvals_numbreaks', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.monthlyvals_numbreaks', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
             if(nbas>1 and nMbrk>=1):
-                class_utils.check_field(md, fieldname = 'frontalforcings.monthlyvals_intercepts', size = (nbas, 12, nMbrk+1), numel = nbas*(nMbrk+1)*12, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'frontalforcings.monthlyvals_intercepts', size = (nbas, 12, nMbrk+1), numel = nbas*(nMbrk+1)*12, allow_nan = False, allow_inf = False)
                 if(isMonthlyTrend):
-                    class_utils.check_field(md, fieldname = 'frontalforcings.monthlyvals_trends', size = (nbas, 12, nMbrk+1), numel = nbas*(nMbrk+1)*12, allow_nan = False, allow_inf = False)
+                    class_utils._check_field(md, fieldname = 'frontalforcings.monthlyvals_trends', size = (nbas, 12, nMbrk+1), numel = nbas*(nMbrk+1)*12, allow_nan = False, allow_inf = False)
             elif(nbas==1):
-               class_utils.check_field(md, fieldname = 'frontalforcings.monthlyvals_intercepts', size = (nMbrk+1, 12), numel = nbas*(nMbrk+1)*12, allow_nan = False, allow_inf = False)
+               class_utils._check_field(md, fieldname = 'frontalforcings.monthlyvals_intercepts', size = (nMbrk+1, 12), numel = nbas*(nMbrk+1)*12, allow_nan = False, allow_inf = False)
                if(isMonthlyTrend):
-                  class_utils.check_field(md, fieldname = 'frontalforcings.monthlyvals_trends', size = (nMbrk+1, 12), numel = nbas*(nMbrk+1)*12, allow_nan = False, allow_inf = False)
+                  class_utils._check_field(md, fieldname = 'frontalforcings.monthlyvals_trends', size = (nMbrk+1, 12), numel = nbas*(nMbrk+1)*12, allow_nan = False, allow_inf = False)
             elif(nMbrk==0):
-               class_utils.check_field(md, fieldname = 'frontalforcings.monthlyvals_intercepts', size = (nbas, 12), numel = nbas*(nMbrk+1)+12, allow_nan = False, allow_inf = False)
+               class_utils._check_field(md, fieldname = 'frontalforcings.monthlyvals_intercepts', size = (nbas, 12), numel = nbas*(nMbrk+1)+12, allow_nan = False, allow_inf = False)
                if(isMonthlyTrend):
-                  class_utils.check_field(md, fieldname = 'frontalforcings.monthlyvals_trends', size = (nbas, 12), numel = nbas*(nMbrk+1)*12, allow_nan = False, allow_inf = False)
+                  class_utils._check_field(md, fieldname = 'frontalforcings.monthlyvals_trends', size = (nbas, 12), numel = nbas*(nMbrk+1)*12, allow_nan = False, allow_inf = False)
         if(nMbrk>0):
-            class_utils.check_field(md, fieldname = 'frontalforcings.monthlyvals_datebreaks', size = (nbas,nMbrk), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.monthlyvals_datebreaks', size = (nbas,nMbrk), allow_nan = False, allow_inf = False)
         elif(np.size(md.frontalforcings.monthlyvals_datebreaks)==0 or np.all(np.isnan(md.frontalforcings.monthlyvals_datebreaks))):
             pass
         else:
             raise RuntimeError('md.frontalforcings.monthlyvals_numbreaks is 0 but md.frontalforcings.monthlyvals_datebreaks is not empty')
 
         ### Chacking subglacial discharge ###
-        class_utils.check_field(md, fieldname = 'frontalforcings.isdischargearma', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'frontalforcings.isdischargearma', scalar = True, values = [0, 1])
         if(self.isdischargearma==0):
-            class_utils.check_field(md, fieldname = 'frontalforcings.subglacial_discharge', timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.subglacial_discharge', timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
         else:
             sdnbrk  = md.frontalforcings.sd_num_breaks
             sdnprm  = md.frontalforcings.sd_num_params
-            class_utils.check_field(md, fieldname = 'frontalforcings.sd_ar_order', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'frontalforcings.sd_ma_order',scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'frontalforcings.sd_arma_timestep', scalar = True, ge = max(1, md.timestepping.time_step), allow_nan = False, allow_inf = False) #ARMA time step cannot be finer than ISSM timestep and annual timestep
-            class_utils.check_field(md, fieldname = 'frontalforcings.sd_arlag_coefs', size = (md.frontalforcings.num_basins, md.frontalforcings.sd_ar_order), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'frontalforcings.sd_malag_coefs', size = (md.frontalforcings.num_basins, md.frontalforcings.sd_ma_order), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'frontalforcings.sd_monthlyfrac', size = (md.frontalforcings.num_basins, 12), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.sd_ar_order', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.sd_ma_order',scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.sd_arma_timestep', scalar = True, ge = max(1, md.timestepping.time_step), allow_nan = False, allow_inf = False) #ARMA time step cannot be finer than ISSM timestep and annual timestep
+            class_utils._check_field(md, fieldname = 'frontalforcings.sd_arlag_coefs', size = (md.frontalforcings.num_basins, md.frontalforcings.sd_ar_order), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.sd_malag_coefs', size = (md.frontalforcings.num_basins, md.frontalforcings.sd_ma_order), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.sd_monthlyfrac', size = (md.frontalforcings.num_basins, 12), allow_nan = False, allow_inf = False)
             if(np.any(abs(np.sum(self.sd_monthlyfrac,axis=1)-1)>1e-3)):
                 raise RuntimeError('the 12 entries for each basin of md.frontalforcings.sd_monthlyfrac should add up to 1')
-            class_utils.check_field(md, fieldname = 'frontalforcings.sd_num_params', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'frontalforcings.sd_num_breaks', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.sd_num_params', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.sd_num_breaks', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
             if len(np.shape(self.sd_polynomialparams)) == 1:
                 self.sd_polynomialparams = np.array([[self.sd_polynomialparams]])
             if(nbas>1 and sdnbrk>=1 and sdnprm>1):
-                class_utils.check_field(md, fieldname = 'frontalforcings.sd_polynomialparams', size = (nbas, sdnbrk+1, sdnprm), numel = nbas*(sdnbrk+1)*sdnprm, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'frontalforcings.sd_polynomialparams', size = (nbas, sdnbrk+1, sdnprm), numel = nbas*(sdnbrk+1)*sdnprm, allow_nan = False, allow_inf = False)
             elif(nbas==1):
-                class_utils.check_field(md, fieldname = 'frontalforcings.sd_polynomialparams', size = (nprm, nbrk+1), numel = nbas*(sdnbrk+1)*sdnprm, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'frontalforcings.sd_polynomialparams', size = (nprm, nbrk+1), numel = nbas*(sdnbrk+1)*sdnprm, allow_nan = False, allow_inf = False)
             elif(sdnbrk==0):
-                class_utils.check_field(md, fieldname = 'frontalforcings.sd_polynomialparams', size = (nbas, sdnprm), numel = nbas*(sdnbrk+1)*sdnprm, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'frontalforcings.sd_polynomialparams', size = (nbas, sdnprm), numel = nbas*(sdnbrk+1)*sdnprm, allow_nan = False, allow_inf = False)
             elif(sdnprm==1):
-                class_utils.check_field(md, fieldname = 'frontalforcings.sd_polynomialparams', size = (nbas, sdnbrk), numel = nbas*(sdnbrk+1)*sdnprm, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'frontalforcings.sd_polynomialparams', size = (nbas, sdnbrk), numel = nbas*(sdnbrk+1)*sdnprm, allow_nan = False, allow_inf = False)
             if(sdnbrk>0):
-                class_utils.check_field(md, fieldname = 'frontalforcings.sd_datebreaks', size = (nbas, sdnbrk), allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'frontalforcings.sd_datebreaks', size = (nbas, sdnbrk), allow_nan = False, allow_inf = False)
             elif(np.size(md.frontalforcings.sd_datebreaks)==0 or np.all(np.isnan(md.frontalforcings.sd_datebreaks))):
                 pass
             else:

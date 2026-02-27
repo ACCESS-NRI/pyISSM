@@ -142,34 +142,34 @@ class armapw(class_registry.manage_state):
         nprm = md.hydrology.num_params
         nbrk = md.hydrology.num_breaks
         
-        class_utils.check_field(md, fieldname = 'hydrology.num_basins', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.num_params', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.num_breaks', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.basin_id', ge = 0, le = md.hydrology.num_basins, size = (md.mesh.numberofelements, ))
+        class_utils._check_field(md, fieldname = 'hydrology.num_basins', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.num_params', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.num_breaks', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.basin_id', ge = 0, le = md.hydrology.num_basins, size = (md.mesh.numberofelements, ))
 
         # Check if monthlyfactors are provided
         if(np.size(md.hydrology.monthlyfactors)>1 or np.all(np.isnan(md.hydrology.monthlyfactors))==False):
-            class_utils.check_field(md, fieldname = 'hydrology.monthlyfactors',size = (md.hydrology.num_basins, 12), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'hydrology.monthlyfactors',size = (md.hydrology.num_basins, 12), allow_nan = False, allow_inf = False)
             if(np.any(md.hydrology.monthlyfactors!=1) and md.timestepping.time_step>=1):
                 raise RuntimeError('pyissm.model.classes.hydrology.armapw.check_consistency: md.timestepping.time_step is too large to use pyissm.model.classes.hydrology.armapw() with monthlyfactors')
 
         if len(np.shape(self.polynomialparams)) == 1:
             self.polynomialparams = np.array([[self.polynomialparams]])
         if(nbas>1 and nbrk>=1 and nprm>1):
-            class_utils.check_field(md, fieldname = 'hydrology.polynomialparams', size = (nbas, nbrk+1, nprm), numel = nbas*(nbrk+1)*nprm, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'hydrology.polynomialparams', size = (nbas, nbrk+1, nprm), numel = nbas*(nbrk+1)*nprm, allow_nan = False, allow_inf = False)
         elif(nbas==1):
-            class_utils.check_field(md, fieldname = 'hydrology.polynomialparams',size = (nprm, nbrk+1), numel = nbas*(nbrk+1)*nprm, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'hydrology.polynomialparams',size = (nprm, nbrk+1), numel = nbas*(nbrk+1)*nprm, allow_nan = False, allow_inf = False)
         elif(nbrk==0):
-            class_utils.check_field(md, fieldname = 'hydrology.polynomialparams', size = (nbas, nprm), numel = nbas*(nbrk+1)*nprm, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'hydrology.polynomialparams', size = (nbas, nprm), numel = nbas*(nbrk+1)*nprm, allow_nan = False, allow_inf = False)
         elif(nprm==1):
-            class_utils.check_field(md, fieldname = 'hydrology.polynomialparams', size = (nbas, nbrk+1), numel = nbas*(nbrk+1)*nprm, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.ar_order', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.ma_order', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.arma_timestep', scalar = True, ge = md.timestepping.time_step, allow_nan = False, allow_inf = False) # Autoregression time step cannot be finer than ISSM timestep
-        class_utils.check_field(md, fieldname = 'hydrology.arlag_coefs', size = (md.hydrology.num_basins, md.hydrology.ar_order), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.malag_coefs', size = (md.hydrology.num_basins, md.hydrology.ma_order), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'hydrology.polynomialparams', size = (nbas, nbrk+1), numel = nbas*(nbrk+1)*nprm, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.ar_order', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.ma_order', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.arma_timestep', scalar = True, ge = md.timestepping.time_step, allow_nan = False, allow_inf = False) # Autoregression time step cannot be finer than ISSM timestep
+        class_utils._check_field(md, fieldname = 'hydrology.arlag_coefs', size = (md.hydrology.num_basins, md.hydrology.ar_order), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.malag_coefs', size = (md.hydrology.num_basins, md.hydrology.ma_order), allow_nan = False, allow_inf = False)
         if(nbrk>0):
-            class_utils.check_field(md, fieldname = 'hydrology.datebreaks', size = (nbas, nbrk), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'hydrology.datebreaks', size = (nbas, nbrk), allow_nan = False, allow_inf = False)
         elif(np.size(md.hydrology.datebreaks)==0 or np.all(np.isnan(md.hydrology.datebreaks))):
             pass
         else:
@@ -524,46 +524,46 @@ class dc(class_registry.manage_state):
         if 'HydrologyDCInefficientAnalysis' not in analyses and 'HydrologyDCEfficientAnalysis' not in analyses:
             return md
 
-        class_utils.check_field(md, fieldname = 'hydrology.water_compressibility', scalar = True, gt = 0.)
-        class_utils.check_field(md, fieldname = 'hydrology.isefficientlayer', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'hydrology.penalty_factor', scalar = True, gt = 0)
-        class_utils.check_field(md, fieldname = 'hydrology.penalty_lock', scalar = True, ge = 0.)
-        class_utils.check_field(md, fieldname = 'hydrology.rel_tol', scalar = True, gt = 0.)
-        class_utils.check_field(md, fieldname = 'hydrology.max_iter', scalar = True, gt = 0.)
-        class_utils.check_field(md, fieldname = 'hydrology.steps_per_step', scalar = True, ge = 1)
-        class_utils.check_field(md, fieldname = 'hydrology.step_adapt', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'hydrology.averaging', scalar = True, values = [0, 1, 2])
-        class_utils.check_field(md, fieldname = 'hydrology.sedimentlimit_flag', scalar = True, values = [0, 1, 2, 3])
-        class_utils.check_field(md, fieldname = 'hydrology.transfer_flag', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'hydrology.unconfined_flag', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'hydrology.requested_outputs', string_list = True)
+        class_utils._check_field(md, fieldname = 'hydrology.water_compressibility', scalar = True, gt = 0.)
+        class_utils._check_field(md, fieldname = 'hydrology.isefficientlayer', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'hydrology.penalty_factor', scalar = True, gt = 0)
+        class_utils._check_field(md, fieldname = 'hydrology.penalty_lock', scalar = True, ge = 0.)
+        class_utils._check_field(md, fieldname = 'hydrology.rel_tol', scalar = True, gt = 0.)
+        class_utils._check_field(md, fieldname = 'hydrology.max_iter', scalar = True, gt = 0.)
+        class_utils._check_field(md, fieldname = 'hydrology.steps_per_step', scalar = True, ge = 1)
+        class_utils._check_field(md, fieldname = 'hydrology.step_adapt', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'hydrology.averaging', scalar = True, values = [0, 1, 2])
+        class_utils._check_field(md, fieldname = 'hydrology.sedimentlimit_flag', scalar = True, values = [0, 1, 2, 3])
+        class_utils._check_field(md, fieldname = 'hydrology.transfer_flag', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'hydrology.unconfined_flag', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'hydrology.requested_outputs', string_list = True)
 
         if self.sedimentlimit_flag == 1:
-            class_utils.check_field(md, fieldname = 'hydrology.sedimentlimit', scalar = True, gt = 0.)
+            class_utils._check_field(md, fieldname = 'hydrology.sedimentlimit', scalar = True, gt = 0.)
 
         if self.transfer_flag == 1:
-            class_utils.check_field(md, fieldname = 'hydrology.leakage_factor', scalar = True, gt = 0.)
+            class_utils._check_field(md, fieldname = 'hydrology.leakage_factor', scalar = True, gt = 0.)
 
-        class_utils.check_field(md, fieldname = 'hydrology.basal_moulin_input', timeseries = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.spcsediment_head', timeseries = True, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.sediment_compressibility', scalar = True, gt = 0.)
-        class_utils.check_field(md, fieldname = 'hydrology.sediment_porosity', scalar = True, gt = 0.)
-        class_utils.check_field(md, fieldname = 'hydrology.sediment_thickness', scalar = True, gt = 0.)
-        class_utils.check_field(md, fieldname = 'hydrology.sediment_transmitivity', size = (md.mesh.numberofvertices, ), ge = 0)
-        class_utils.check_field(md, fieldname = 'hydrology.mask_thawed_node', size = (md.mesh.numberofvertices, ), values = [0, 1])
+        class_utils._check_field(md, fieldname = 'hydrology.basal_moulin_input', timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.spcsediment_head', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.sediment_compressibility', scalar = True, gt = 0.)
+        class_utils._check_field(md, fieldname = 'hydrology.sediment_porosity', scalar = True, gt = 0.)
+        class_utils._check_field(md, fieldname = 'hydrology.sediment_thickness', scalar = True, gt = 0.)
+        class_utils._check_field(md, fieldname = 'hydrology.sediment_transmitivity', size = (md.mesh.numberofvertices, ), ge = 0)
+        class_utils._check_field(md, fieldname = 'hydrology.mask_thawed_node', size = (md.mesh.numberofvertices, ), values = [0, 1])
         if self.isefficientlayer == 1:
-            class_utils.check_field(md, fieldname = 'hydrology.spcepl_head', timeseries = True, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'hydrology.mask_eplactive_node', size = (md.mesh.numberofvertices, ), values = [0, 1])
-            class_utils.check_field(md, fieldname = 'hydrology.epl_compressibility', scalar = True, gt = 0.)
-            class_utils.check_field(md, fieldname = 'hydrology.epl_porosity', scalar = True, gt = 0.)
-            class_utils.check_field(md, fieldname = 'hydrology.epl_max_thickness', scalar = True, gt = 0.)
-            class_utils.check_field(md, fieldname = 'hydrology.epl_initial_thickness', scalar = True, gt = 0.)
-            class_utils.check_field(md, fieldname = 'hydrology.epl_colapse_thickness', scalar = True, gt = 0.)
-            class_utils.check_field(md, fieldname = 'hydrology.epl_thick_comp', scalar = True, values = [0, 1])
-            class_utils.check_field(md, fieldname = 'hydrology.eplflip_lock', scalar = True, ge = 0.)
+            class_utils._check_field(md, fieldname = 'hydrology.spcepl_head', timeseries = True, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'hydrology.mask_eplactive_node', size = (md.mesh.numberofvertices, ), values = [0, 1])
+            class_utils._check_field(md, fieldname = 'hydrology.epl_compressibility', scalar = True, gt = 0.)
+            class_utils._check_field(md, fieldname = 'hydrology.epl_porosity', scalar = True, gt = 0.)
+            class_utils._check_field(md, fieldname = 'hydrology.epl_max_thickness', scalar = True, gt = 0.)
+            class_utils._check_field(md, fieldname = 'hydrology.epl_initial_thickness', scalar = True, gt = 0.)
+            class_utils._check_field(md, fieldname = 'hydrology.epl_colapse_thickness', scalar = True, gt = 0.)
+            class_utils._check_field(md, fieldname = 'hydrology.epl_thick_comp', scalar = True, values = [0, 1])
+            class_utils._check_field(md, fieldname = 'hydrology.eplflip_lock', scalar = True, ge = 0.)
             if self.epl_colapse_thickness > self.epl_initial_thickness:
                 md.check_message('Colapsing thickness for EPL larger than initial thickness')
-            class_utils.check_field(md, fieldname = 'hydrology.epl_conductivity', scalar = True, gt = 0.)
+            class_utils._check_field(md, fieldname = 'hydrology.epl_conductivity', scalar = True, gt = 0.)
 
         return md
     
@@ -885,35 +885,35 @@ class glads(class_registry.manage_state):
             return md
 
         # Sheet
-        class_utils.check_field(md, fieldname = 'hydrology.pressure_melt_coefficient', scalar = True, ge = 0)
-        class_utils.check_field(md, fieldname = 'hydrology.sheet_conductivity', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.cavity_spacing', scalar = True, gt = 0)
-        class_utils.check_field(md, fieldname = 'hydrology.bump_height', size = (md.mesh.numberofvertices, ), ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.omega', scalar = True, ge = 0)
-        class_utils.check_field(md, fieldname = 'hydrology.sheet_alpha', scalar = True, gt = 0) 
-        class_utils.check_field(md, fieldname = 'hydrology.sheet_beta', scalar = True, gt = 0) 
-        class_utils.check_field(md, fieldname = 'hydrology.rheology_B_base', size = (md.mesh.numberofvertices, ), ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.isincludesheetthickness', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'hydrology.creep_open_flag', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'hydrology.rheology_B_base', size = (md.mesh.numberofvertices, ), ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.pressure_melt_coefficient', scalar = True, ge = 0)
+        class_utils._check_field(md, fieldname = 'hydrology.sheet_conductivity', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.cavity_spacing', scalar = True, gt = 0)
+        class_utils._check_field(md, fieldname = 'hydrology.bump_height', size = (md.mesh.numberofvertices, ), ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.omega', scalar = True, ge = 0)
+        class_utils._check_field(md, fieldname = 'hydrology.sheet_alpha', scalar = True, gt = 0) 
+        class_utils._check_field(md, fieldname = 'hydrology.sheet_beta', scalar = True, gt = 0) 
+        class_utils._check_field(md, fieldname = 'hydrology.rheology_B_base', size = (md.mesh.numberofvertices, ), ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.isincludesheetthickness', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'hydrology.creep_open_flag', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'hydrology.rheology_B_base', size = (md.mesh.numberofvertices, ), ge = 0, allow_nan = False, allow_inf = False)
 
         # Channels
-        class_utils.check_field(md, fieldname = 'hydrology.ischannels', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'hydrology.channel_conductivity', size = (md.mesh.numberofvertices, ), gt = 0)
-        class_utils.check_field(md, fieldname = 'hydrology.channel_sheet_width', scalar = True, ge = 0)
-        class_utils.check_field(md, fieldname = 'hydrology.channel_alpha', scalar = True,  gt = 0) 
-        class_utils.check_field(md, fieldname = 'hydrology.channel_beta', scalar = True, gt = 0) 
+        class_utils._check_field(md, fieldname = 'hydrology.ischannels', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'hydrology.channel_conductivity', size = (md.mesh.numberofvertices, ), gt = 0)
+        class_utils._check_field(md, fieldname = 'hydrology.channel_sheet_width', scalar = True, ge = 0)
+        class_utils._check_field(md, fieldname = 'hydrology.channel_alpha', scalar = True,  gt = 0) 
+        class_utils._check_field(md, fieldname = 'hydrology.channel_beta', scalar = True, gt = 0) 
 
         # Other
-        class_utils.check_field(md, fieldname = 'hydrology.spcphi', timeseries = True, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.englacial_void_ratio', scalar = True, ge = 0)
-        class_utils.check_field(md, fieldname = 'hydrology.moulin_input', timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.neumannflux', timeseries = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.requested_outputs', string_list = True)
-        class_utils.check_field(md, fieldname = 'hydrology.melt_flag', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'hydrology.istransition', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'hydrology.spcphi', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.englacial_void_ratio', scalar = True, ge = 0)
+        class_utils._check_field(md, fieldname = 'hydrology.moulin_input', timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.neumannflux', timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.requested_outputs', string_list = True)
+        class_utils._check_field(md, fieldname = 'hydrology.melt_flag', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'hydrology.istransition', scalar = True, values = [0, 1])
         if self.melt_flag == 1 or self.melt_flag == 2:
-            class_utils.check_field(md, fieldname = 'basalforcings.groundedice_melting_rate', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'basalforcings.groundedice_melting_rate', timeseries = True, allow_nan = False, allow_inf = False)
         
         return md
     # Process requested outputs, expanding 'default' to appropriate outputs
@@ -1092,9 +1092,9 @@ class pism(class_registry.manage_state):
         if 'HydrologyPismAnalysis' not in analyses:
             return md
 
-        class_utils.check_field(md, fieldname = 'hydrology.drainage_rate', size = (md.mesh.numberofvertices, ), ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.watercolumn_max', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.requested_outputs', string_list = True)
+        class_utils._check_field(md, fieldname = 'hydrology.drainage_rate', size = (md.mesh.numberofvertices, ), ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.watercolumn_max', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.requested_outputs', string_list = True)
 
         return md
 
@@ -1301,20 +1301,20 @@ class shakti(class_registry.manage_state):
         if 'HydrologyShaktiAnalysis' not in analyses:
             return md
 
-        class_utils.check_field(md, fieldname = 'hydrology.head', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.gap_height', size = (md.mesh.numberofelements, ), ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.gap_height_min', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.gap_height_max', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.bump_spacing', size = (md.mesh.numberofelements, ), gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.bump_height', size = (md.mesh.numberofelements, ), ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.englacial_input', timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.moulin_input', timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.reynolds', size = (md.mesh.numberofelements, ), gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.neumannflux', timeseries = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.spchead', timeseries = True, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.relaxation', ge = 0)
-        class_utils.check_field(md, fieldname = 'hydrology.storage', size = 'universal', ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.requested_outputs', string_list = 1)
+        class_utils._check_field(md, fieldname = 'hydrology.head', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.gap_height', size = (md.mesh.numberofelements, ), ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.gap_height_min', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.gap_height_max', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.bump_spacing', size = (md.mesh.numberofelements, ), gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.bump_height', size = (md.mesh.numberofelements, ), ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.englacial_input', timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.moulin_input', timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.reynolds', size = (md.mesh.numberofelements, ), gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.neumannflux', timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.spchead', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.relaxation', ge = 0)
+        class_utils._check_field(md, fieldname = 'hydrology.storage', size = 'universal', ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.requested_outputs', string_list = 1)
 
         return md
     
@@ -1502,8 +1502,8 @@ class shreve(class_registry.manage_state):
         if 'HydrologyShreveAnalysis' not in analyses or (solution == 'TransientSolution' and not md.transient.ishydrology):
             return md
 
-        class_utils.check_field(md, fieldname = 'hydrology.spcwatercolumn', timeseries = True, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'hydrology.stabilization', ge = 0)
+        class_utils._check_field(md, fieldname = 'hydrology.spcwatercolumn', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.stabilization', ge = 0)
         
         return md
 
@@ -1660,7 +1660,7 @@ class tws(class_registry.manage_state):
         # Early return if required analysis not present
         if 'HydrologyTwsAnalysis' not in analyses:
             return
-        class_utils.check_field(md, fieldname = 'hydrology.spcwatercolumn', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.spcwatercolumn', timeseries = True, allow_inf = False)
     
     # Process requested outputs, expanding 'default' to appropriate outputs
     def process_outputs(self,

@@ -134,7 +134,7 @@ class earth(class_registry.manage_state):
         if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc):
             return md
 
-        class_utils.check_field(md, fieldname = 'solidearth.requested_outputs', string_list = True)
+        class_utils._check_field(md, fieldname = 'solidearth.requested_outputs', string_list = True)
 
         settings.check_consistency(md, solution, analyses)
         lovenumbers.check_consistency(md, solution, analyses)
@@ -375,7 +375,7 @@ class europa(class_registry.manage_state):
         if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc):
             return md
 
-        class_utils.check_field(md, fieldname = 'solidearth.requested_outputs', string_list = True)
+        class_utils._check_field(md, fieldname = 'solidearth.requested_outputs', string_list = True)
 
         settings.check_consistency(md, solution, analyses)
         lovenumbers.check_consistency(md, solution, analyses)
@@ -645,15 +645,15 @@ class settings(class_registry.manage_state):
         if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc):
             return md
 
-        class_utils.check_field(md, fieldname = 'solidearth.settings.reltol', scalar = True)
-        class_utils.check_field(md, fieldname = 'solidearth.settings.abstol', scalar = True)
-        class_utils.check_field(md, fieldname = 'solidearth.settings.maxiter', scalar = True, ge = 1)
-        class_utils.check_field(md, fieldname = 'solidearth.settings.runfrequency', scalar = True, ge = 1)
-        class_utils.check_field(md, fieldname = 'solidearth.settings.degacc', scalar = True, ge = 1e-10)
-        class_utils.check_field(md, fieldname = 'solidearth.settings.timeacc', scalar = True, gt = 0)
-        class_utils.check_field(md, fieldname = 'solidearth.settings.horiz', values = [0, 1], allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.settings.grdmodel', ge = 0, le = 2)
-        class_utils.check_field(md, fieldname = 'solidearth.settings.cross_section_shape', scalar = True, values = [1, 2])
+        class_utils._check_field(md, fieldname = 'solidearth.settings.reltol', scalar = True)
+        class_utils._check_field(md, fieldname = 'solidearth.settings.abstol', scalar = True)
+        class_utils._check_field(md, fieldname = 'solidearth.settings.maxiter', scalar = True, ge = 1)
+        class_utils._check_field(md, fieldname = 'solidearth.settings.runfrequency', scalar = True, ge = 1)
+        class_utils._check_field(md, fieldname = 'solidearth.settings.degacc', scalar = True, ge = 1e-10)
+        class_utils._check_field(md, fieldname = 'solidearth.settings.timeacc', scalar = True, gt = 0)
+        class_utils._check_field(md, fieldname = 'solidearth.settings.horiz', values = [0, 1], allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.settings.grdmodel', ge = 0, le = 2)
+        class_utils._check_field(md, fieldname = 'solidearth.settings.cross_section_shape', scalar = True, values = [1, 2])
 
         if self.elastic and not self.selfattraction:
             raise Exception('pyissm.model.classes.solidearth.settings.check_consistency: need selfattraction on if elastic flag is set')
@@ -810,10 +810,10 @@ class solution(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        class_utils.check_field(md, fieldname = 'solidearth.external.displacementeast', timeseries = True, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.external.displacementnorth', timeseries = True, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.external.displacementup', timeseries = True, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.external.geoid', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.external.displacementeast', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.external.displacementnorth', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.external.displacementup', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.external.geoid', timeseries = True, allow_inf = False)
 
         return md
 

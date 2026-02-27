@@ -105,15 +105,15 @@ class sampling(class_registry.manage_state):
         if 'SamplingAnalysis' not in analyses:
             return md
 
-        class_utils.check_field(md, fieldname = 'sampling.kappa', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'sampling.tau', gt = 0, numel = 1, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'sampling.robin', numel = 1, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'sampling.kappa', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'sampling.tau', gt = 0, numel = 1, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'sampling.robin', numel = 1, values = [0, 1])
         if md.sampling.robin:
-            class_utils.check_field(md, fieldname = 'sampling.beta', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'sampling.beta', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
     
-        class_utils.check_field(md, fieldname = 'sampling.alpha', numel = 1, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'sampling.seed', numel = 1, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'sampling.requested_outputs', string_list = True)
+        class_utils._check_field(md, fieldname = 'sampling.alpha', numel = 1, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'sampling.seed', numel = 1, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'sampling.requested_outputs', string_list = True)
 
         return md
     

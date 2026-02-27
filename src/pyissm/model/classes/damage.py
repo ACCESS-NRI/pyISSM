@@ -147,26 +147,26 @@ class damage(class_registry.manage_state):
             The model object with any consistency errors noted.
         """
 
-        class_utils.check_field(md, fieldname = "damage.isdamage", scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = "damage.isdamage", scalar = True, values = [0, 1])
 
         if self.isdamage:
-            class_utils.check_field(md, fieldname = "damage.D", ge = 0, le = self.max_damage, size = (md.mesh.numberofvertices, ))
-            class_utils.check_field(md, fieldname = "damage.max_damage", ge = 0, lt = 1)
-            class_utils.check_field(md, fieldname = "damage.law", scalar = True, values = [0, 1, 2, 3])
-            class_utils.check_field(md, fieldname = "damage.spcdamage", allow_inf = True, timeseries = True)
-            class_utils.check_field(md, fieldname = "damage.stabilization", scalar = True, values = [0, 1, 2, 4])
-            class_utils.check_field(md, fieldname = "damage.maxiter", ge = 0)
-            class_utils.check_field(md, fieldname = "damage.elementinterp", values = ["P1", "P2"])
-            class_utils.check_field(md, fieldname = "damage.stress_threshold", ge = 0)
-            class_utils.check_field(md, fieldname = "damage.stress_ubound", ge = 0)
-            class_utils.check_field(md, fieldname = "damage.kappa", gt = 1)
-            class_utils.check_field(md, fieldname = "damage.healing", ge = 0)
-            class_utils.check_field(md, fieldname = "damage.c1", ge = 0)
-            class_utils.check_field(md, fieldname = "damage.c2", ge = 0)
-            class_utils.check_field(md, fieldname = "damage.c3", ge = 0)
-            class_utils.check_field(md, fieldname = "damage.c4", ge = 0)
-            class_utils.check_field(md, fieldname = "damage.equiv_stress", scalar = True, values = [0, 1])
-            class_utils.check_field(md, fieldname = "damage.requested_outputs", string_list = True)
+            class_utils._check_field(md, fieldname = "damage.D", ge = 0, le = self.max_damage, size = (md.mesh.numberofvertices, ))
+            class_utils._check_field(md, fieldname = "damage.max_damage", ge = 0, lt = 1)
+            class_utils._check_field(md, fieldname = "damage.law", scalar = True, values = [0, 1, 2, 3])
+            class_utils._check_field(md, fieldname = "damage.spcdamage", allow_inf = True, timeseries = True)
+            class_utils._check_field(md, fieldname = "damage.stabilization", scalar = True, values = [0, 1, 2, 4])
+            class_utils._check_field(md, fieldname = "damage.maxiter", ge = 0)
+            class_utils._check_field(md, fieldname = "damage.elementinterp", values = ["P1", "P2"])
+            class_utils._check_field(md, fieldname = "damage.stress_threshold", ge = 0)
+            class_utils._check_field(md, fieldname = "damage.stress_ubound", ge = 0)
+            class_utils._check_field(md, fieldname = "damage.kappa", gt = 1)
+            class_utils._check_field(md, fieldname = "damage.healing", ge = 0)
+            class_utils._check_field(md, fieldname = "damage.c1", ge = 0)
+            class_utils._check_field(md, fieldname = "damage.c2", ge = 0)
+            class_utils._check_field(md, fieldname = "damage.c3", ge = 0)
+            class_utils._check_field(md, fieldname = "damage.c4", ge = 0)
+            class_utils._check_field(md, fieldname = "damage.equiv_stress", scalar = True, values = [0, 1])
+            class_utils._check_field(md, fieldname = "damage.requested_outputs", string_list = True)
 
         elif self.law != 0:
             if solution == "DamageEvolutionSolution":

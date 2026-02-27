@@ -118,17 +118,17 @@ class lovenumbers(class_registry.manage_state):
         if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc):
             return
         
-        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.h', allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.k', allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.l', allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.th', allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.tk', allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.tl', allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.tk2secular', allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.pmtf_colinear', allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.pmtf_ortho', allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.timefreq', allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.istime', values = [0, 1], allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.lovenumbers.h', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.lovenumbers.k', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.lovenumbers.l', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.lovenumbers.th', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.lovenumbers.tk', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.lovenumbers.tl', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.lovenumbers.tk2secular', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.lovenumbers.pmtf_colinear', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.lovenumbers.pmtf_ortho', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.lovenumbers.timefreq', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.lovenumbers.istime', values = [0, 1], allow_nan = False, allow_inf = False)
 
         # Check that love numbers are provided at the same level of accuracy
         if (self.h.shape[0] != self.k.shape[0]) or (self.h.shape[0] != self.l.shape[0]):

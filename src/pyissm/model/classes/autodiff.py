@@ -123,32 +123,32 @@ class autodiff(class_registry.manage_state):
             The model object with any consistency errors noted.
         """
         
-        class_utils.check_field(md, fieldname = "autodiff.isautodiff", scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = "autodiff.isautodiff", scalar = True, values = [0, 1])
         
         # Early return if autodiff is not activated
         if not self.isautodiff:
             return md
     
         # Buffer sizes
-        class_utils.check_field(md, fieldname = "autodiff.obufsize", ge = 524288)
-        class_utils.check_field(md, fieldname = "autodiff.lbufsize", ge = 524288)
-        class_utils.check_field(md, fieldname = "autodiff.cbufsize", ge = 524288)
-        class_utils.check_field(md, fieldname = "autodiff.tbufsize", ge = 524288)
+        class_utils._check_field(md, fieldname = "autodiff.obufsize", ge = 524288)
+        class_utils._check_field(md, fieldname = "autodiff.lbufsize", ge = 524288)
+        class_utils._check_field(md, fieldname = "autodiff.cbufsize", ge = 524288)
+        class_utils._check_field(md, fieldname = "autodiff.tbufsize", ge = 524288)
 
         # Garbage collector options
-        class_utils.check_field(md, fieldname = "autodiff.gcTriggerRatio", ge = 2.0)
-        class_utils.check_field(md, fieldname = "autodiff.gcTriggerMaxSize", ge = 65536)
-        class_utils.check_field(md, fieldname = "autodiff.tapeAlloc", ge = 0)
+        class_utils._check_field(md, fieldname = "autodiff.gcTriggerRatio", ge = 2.0)
+        class_utils._check_field(md, fieldname = "autodiff.gcTriggerMaxSize", ge = 65536)
+        class_utils._check_field(md, fieldname = "autodiff.tapeAlloc", ge = 0)
 
         # Memory and time output flags (single element, either 0 or 1)
-        class_utils.check_field(md, fieldname = "autodiff.outputTapeMemory", scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = "autodiff.outputTime", scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = "autodiff.outputTapeMemory", scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = "autodiff.outputTime", scalar = True, values = [0, 1])
 
         # Memory reduction options
-        class_utils.check_field(md, fieldname = "autodiff.enablePreaccumulation", ge = 0)
+        class_utils._check_field(md, fieldname = "autodiff.enablePreaccumulation", ge = 0)
 
         # Driver field (must be one of allowed strings)
-        class_utils.check_field(
+        class_utils._check_field(
             md,
             fieldname = "autodiff.driver",
             values = [

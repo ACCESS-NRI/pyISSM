@@ -69,9 +69,9 @@ class rotational(class_registry.manage_state):
         if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc):
             return md
         
-        class_utils.check_field(md, fieldname = 'solidearth.rotational.equatorialmoi', allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.rotational.polarmoi', allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.rotational.angularvelocity', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.rotational.equatorialmoi', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.rotational.polarmoi', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.rotational.angularvelocity', allow_nan = False, allow_inf = False)
         
         return md
 

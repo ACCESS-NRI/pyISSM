@@ -70,7 +70,7 @@ class outputdefinition(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        class_utils.check_field(md, fieldname = 'outputdefinition.definitions', string_list = True)
+        class_utils._check_field(md, fieldname = 'outputdefinition.definitions', string_list = True)
         
         # Loop over definitions and check their consistency
         for definition in self.definitions:

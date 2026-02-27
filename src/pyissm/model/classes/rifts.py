@@ -80,7 +80,7 @@ class rifts(class_registry.manage_state):
                 #We have segments with rift markers, but no rift structure!
                 md.check_message("model should be processed for rifts (run meshprocessrifts)!")
             for i, rift in enumerate(self.riftstruct):
-                class_utils.check_field(md, fieldname = "rifts.riftstruct[{}]['fill']".format(i), values = ['Water', 'Air', 'Ice', 'Melange', 0, 1, 2, 3])
+                class_utils._check_field(md, fieldname = "rifts.riftstruct[{}]['fill']".format(i), values = ['Water', 'Air', 'Ice', 'Melange', 0, 1, 2, 3])
         else:
             valid_structure = np.any(~np.isnan(self.riftstruct)) if isinstance(self.riftstruct, np.ndarray) else True
             if self.riftstruct and valid_structure:

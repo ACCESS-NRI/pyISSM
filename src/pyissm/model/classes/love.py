@@ -192,37 +192,37 @@ class default(class_registry.manage_state):
         if 'LoveAnalysis' not in analyses:
             return md
 
-        class_utils.check_field(md, fieldname = 'love.nfreq', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.frequencies', numel = md.love.nfreq, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.sh_nmax', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.sh_nmin', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.g0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.r0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.mu0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.Gravitational_Constant', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.chandler_wobble', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'love.allow_layer_deletion', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'love.underflow_tol', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.pw_threshold', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.min_integration_steps', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.integration_scheme', scalar = True, ge = 0, le = 2, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.max_integration_dr', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.love_kernels', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'love.forcing_type', scalar = True, gt = 0, le = 12, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.complex_computation', scalar = True, values = [0, 1], allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.istemporal', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'love.hypergeom_nalpha', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.hypergeom_nz', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.hypergeom_z', numel = md.love.hypergeom_nz, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.hypergeom_table1', numel = md.love.hypergeom_nz * md.love.hypergeom_nalpha, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.hypergeom_table2', numel = md.love.hypergeom_nz * md.love.hypergeom_nalpha, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.nfreq', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.frequencies', numel = md.love.nfreq, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.sh_nmax', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.sh_nmin', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.g0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.r0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.mu0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.Gravitational_Constant', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.chandler_wobble', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'love.allow_layer_deletion', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'love.underflow_tol', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.pw_threshold', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.min_integration_steps', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.integration_scheme', scalar = True, ge = 0, le = 2, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.max_integration_dr', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.love_kernels', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'love.forcing_type', scalar = True, gt = 0, le = 12, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.complex_computation', scalar = True, values = [0, 1], allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.istemporal', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'love.hypergeom_nalpha', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.hypergeom_nz', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.hypergeom_z', numel = md.love.hypergeom_nz, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.hypergeom_table1', numel = md.love.hypergeom_nz * md.love.hypergeom_nalpha, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.hypergeom_table2', numel = md.love.hypergeom_nz * md.love.hypergeom_nalpha, allow_nan = False, allow_inf = False)
 
         if np.any(md.materials.rheologymodel) == 2 and md.love.hypergeom_nz <= 1:
             raise RuntimeError('EBM rheology requested but hypergeometric table has fewer then 2 frequency values')
 
         if md.love.istemporal:
-            class_utils.check_field(md, fieldname = 'love.n_temporal_iterations', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'love.time', numel = md.love.nfreq / 2 / md.love.n_temporal_iterations, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'love.n_temporal_iterations', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'love.time', numel = md.love.nfreq / 2 / md.love.n_temporal_iterations, allow_nan = False, allow_inf = False)
         if md.love.sh_nmin <= 1 and (md.love.forcing_type == 1 or md.love.forcing_type == 5 or md.love.forcing_type == 9):
             raise RuntimeError('Degree 1 not supported for forcing type {}. Use sh_min >= 2 for this kind of calculation.'.format(md.love.forcing_type))
 
@@ -235,9 +235,9 @@ class default(class_registry.manage_state):
 
         mat = np.where(np.array(md.materials.nature) == 'litho')[0]
         if md.love.forcing_type <= 4:
-            class_utils.check_field(md, fieldname = 'love.inner_core_boundary', scalar = True, gt = 0, le = md.materials[mat].numlayers, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'love.inner_core_boundary', scalar = True, gt = 0, le = md.materials[mat].numlayers, allow_nan = False, allow_inf = False)
         elif md.love.forcing_type <= 8:
-            class_utils.check_field(md, fieldname = 'love.core_mantle_boundary', scalar = True, gt = 0, le = md.materials[mat].numlayers, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'love.core_mantle_boundary', scalar = True, gt = 0, le = md.materials[mat].numlayers, allow_nan = False, allow_inf = False)
 
         return md
     
@@ -439,27 +439,27 @@ class fourier(class_registry.manage_state):
         if 'LoveAnalysis' not in analyses:
             return md
 
-        class_utils.check_field(md, fieldname = 'love.nfreq', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.frequencies', numel = md.love.nfreq, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.sh_nmax', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.sh_nmin', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.g0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.r0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.mu0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.Gravitational_Constant', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.chandler_wobble', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'love.allow_layer_deletion', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'love.underflow_tol', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.pw_threshold', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.integration_steps_per_layer', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.love_kernels', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'love.forcing_type', scalar = True, gt = 0, le = 12, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.complex_computation', scalar = True, values = [0, 1], allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.istemporal', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'love.nfreq', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.frequencies', numel = md.love.nfreq, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.sh_nmax', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.sh_nmin', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.g0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.r0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.mu0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.Gravitational_Constant', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.chandler_wobble', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'love.allow_layer_deletion', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'love.underflow_tol', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.pw_threshold', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.integration_steps_per_layer', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.love_kernels', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'love.forcing_type', scalar = True, gt = 0, le = 12, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.complex_computation', scalar = True, values = [0, 1], allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.istemporal', values = [0, 1])
 
         if md.love.istemporal:
-            class_utils.check_field(md, fieldname = 'love.n_temporal_iterations', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'love.time', numel = md.love.nfreq / 2 / md.love.n_temporal_iterations, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'love.n_temporal_iterations', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'love.time', numel = md.love.nfreq / 2 / md.love.n_temporal_iterations, allow_nan = False, allow_inf = False)
         if md.love.sh_nmin <= 1 and (md.love.forcing_type == 1 or md.love.forcing_type == 5 or md.love.forcing_type == 9):
             raise RuntimeError('Degree 1 not supported for forcing type {}. Use sh_min >= 2 for this kind of calculation.'.format(md.love.forcing_type))
 
@@ -472,9 +472,9 @@ class fourier(class_registry.manage_state):
 
         mat = np.where(np.array(md.materials.nature) == 'litho')[0]
         if md.love.forcing_type <= 4:
-            class_utils.check_field(md, fieldname = 'love.inner_core_boundary', scalar = True, gt = 0, le = md.materials[mat].numlayers, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'love.inner_core_boundary', scalar = True, gt = 0, le = md.materials[mat].numlayers, allow_nan = False, allow_inf = False)
         elif md.love.forcing_type <= 8:
-            class_utils.check_field(md, fieldname = 'love.core_mantle_boundary', scalar = True, gt = 0, le = md.materials[mat].numlayers, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'love.core_mantle_boundary', scalar = True, gt = 0, le = md.materials[mat].numlayers, allow_nan = False, allow_inf = False)
 
         return md
     

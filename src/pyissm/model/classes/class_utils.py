@@ -681,7 +681,7 @@ def _check_timeseries(md, field, fieldname, kind, message=None):
             sorted_check(field[-1, :])
 
 
-def check_field(
+def _check_field(
     md,
     field = None,
     fieldname = None,

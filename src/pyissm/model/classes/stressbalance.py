@@ -234,22 +234,22 @@ class stressbalance(class_registry.manage_state):
         if solution == 'TransientSolution' and not md.transient.isstressbalance:
             return md
 
-        class_utils.check_field(md, fieldname = 'stressbalance.spcvx', timeseries = True, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'stressbalance.spcvy', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'stressbalance.spcvx', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'stressbalance.spcvy', timeseries = True, allow_inf = False)
         if md.mesh.domain_type() == '3D':
-            class_utils.check_field(md, fieldname = 'stressbalance.spcvz', timeseries = True, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'stressbalance.restol', scalar = True, gt = 0)
-        class_utils.check_field(md, fieldname = 'stressbalance.reltol', scalar = True)
-        class_utils.check_field(md, fieldname = 'stressbalance.abstol', scalar = True)
-        class_utils.check_field(md, fieldname = 'stressbalance.ishydrologylayer', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'stressbalance.isnewton', scalar = True, values = [0, 1, 2])
-        class_utils.check_field(md, fieldname = 'stressbalance.FSreconditioning', scalar = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'stressbalance.maxiter', scalar = True, ge = 1)
-        class_utils.check_field(md, fieldname = 'stressbalance.referential', size = (md.mesh.numberofvertices, 6))
-        class_utils.check_field(md, fieldname = 'stressbalance.loadingforce', size = (md.mesh.numberofvertices, 3))
-        class_utils.check_field(md, fieldname = 'stressbalance.requested_outputs', string_list = True)
+            class_utils._check_field(md, fieldname = 'stressbalance.spcvz', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'stressbalance.restol', scalar = True, gt = 0)
+        class_utils._check_field(md, fieldname = 'stressbalance.reltol', scalar = True)
+        class_utils._check_field(md, fieldname = 'stressbalance.abstol', scalar = True)
+        class_utils._check_field(md, fieldname = 'stressbalance.ishydrologylayer', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'stressbalance.isnewton', scalar = True, values = [0, 1, 2])
+        class_utils._check_field(md, fieldname = 'stressbalance.FSreconditioning', scalar = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'stressbalance.maxiter', scalar = True, ge = 1)
+        class_utils._check_field(md, fieldname = 'stressbalance.referential', size = (md.mesh.numberofvertices, 6))
+        class_utils._check_field(md, fieldname = 'stressbalance.loadingforce', size = (md.mesh.numberofvertices, 3))
+        class_utils._check_field(md, fieldname = 'stressbalance.requested_outputs', string_list = True)
         if not np.any(np.isnan(self.vertex_pairing)) and len(self.vertex_pairing) > 0:
-            class_utils.check_field(md, fieldname = 'stressbalance.vertex_pairing', ge = 0)
+            class_utils._check_field(md, fieldname = 'stressbalance.vertex_pairing', ge = 0)
         # Singular solution
         if (not np.any(np.logical_or(np.logical_not(np.isnan(md.stressbalance.spcvx)), np.logical_not(np.isnan(md.stressbalance.spcvy))))) & (not np.any(md.mask.ocean_levelset>0)):
             print('\n !!! Warning: no spc applied, model might not be well posed if no basal friction is applied, check for solution crash\n')
@@ -268,10 +268,10 @@ class stressbalance(class_registry.manage_state):
             if np.any(np.logical_not(np.isnan(md.stressbalance.referential[pos, :]))):
                 md.check_message('no referential should be specified for basal vertices of grounded ice')
         if md.flowequation.isMOLHO:
-            class_utils.check_field(md, fieldname = 'stressbalance.spcvx_base', timeseries = True, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'stressbalance.spcvy_base', timeseries = True, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'stressbalance.spcvx_shear', timeseries = True, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'stressbalance.spcvy_shear', timeseries = True, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'stressbalance.spcvx_base', timeseries = True, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'stressbalance.spcvy_base', timeseries = True, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'stressbalance.spcvx_shear', timeseries = True, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'stressbalance.spcvy_shear', timeseries = True, allow_inf = False)
             
         return md
     

@@ -82,7 +82,7 @@ class steadystate(class_registry.manage_state):
         if np.isnan(md.stressbalance.reltol):
             md.check_message("for a steadystate computation, stressbalance.reltol (relative convergence criterion) must be defined!")
 
-        class_utils.check_field(md, fieldname = 'steadystate.requested_outputs', string_list = True)
+        class_utils._check_field(md, fieldname = 'steadystate.requested_outputs', string_list = True)
 
         return md
 

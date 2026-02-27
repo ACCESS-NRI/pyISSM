@@ -111,8 +111,8 @@ class independent(class_registry.manage_state):
             if self.nods == 0:
                 raise TypeError('pyissm.model.classes.independent.check_consistency: nods should be set to the size of the independent variable')
             
-            class_utils.check_field(md, field = self.fov_forward_indices, ge = 1, le = self.nods, message = "pyissm.model.classes.independent.check_consistency: fov_forward_indices should be between 1 and nods (inclusive).")
+            class_utils._check_field(md, field = self.fov_forward_indices, ge = 1, le = self.nods, message = "pyissm.model.classes.independent.check_consistency: fov_forward_indices should be between 1 and nods (inclusive).")
         
-        md = class_utils.check_field(md, field = self.control_scaling_factor, scalar = True, gt = 0., allow_nan = False, allow_inf = False, message = "pyissm.model.classes.independent.check_consistency: control_scaling_factor should be a positive scalar value.")
+        md = class_utils._check_field(md, field = self.control_scaling_factor, scalar = True, gt = 0., allow_nan = False, allow_inf = False, message = "pyissm.model.classes.independent.check_consistency: control_scaling_factor should be a positive scalar value.")
 
         return md

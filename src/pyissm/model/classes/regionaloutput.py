@@ -110,8 +110,8 @@ class regionaloutput(class_registry.manage_state):
             x = 'Outputdefinition' + str(i)
             OutputdefinitionStringArray.append(x)
 
-        class_utils.check_field(md, field = self.definitionstring, values = OutputdefinitionStringArray)
-        class_utils.check_field(md, field = self.mask, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, field = self.definitionstring, values = OutputdefinitionStringArray)
+        class_utils._check_field(md, field = self.mask, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         
         return md
     

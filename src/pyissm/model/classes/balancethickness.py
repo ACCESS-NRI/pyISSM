@@ -91,9 +91,9 @@ class balancethickness(class_registry.manage_state):
         if solution != 'Balancethickness':
             return md
             
-        class_utils.check_field(md, fieldname = "balancethickness.spcthickness")
-        class_utils.check_field(md, fieldname = "balancethickness.thickening_rate", size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "balancethickness.stabilization", scalar = True, values = [0, 1, 2, 3])
+        class_utils._check_field(md, fieldname = "balancethickness.spcthickness")
+        class_utils._check_field(md, fieldname = "balancethickness.thickening_rate", size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "balancethickness.stabilization", scalar = True, values = [0, 1, 2, 3])
 
         return md
 

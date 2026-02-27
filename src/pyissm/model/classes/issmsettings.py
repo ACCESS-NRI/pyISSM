@@ -98,14 +98,14 @@ class issmsettings(class_registry.manage_state):
             The model object with any consistency errors noted.
         """
 
-        class_utils.check_field(md, fieldname = 'settings.results_on_nodes', string_list = True)
-        class_utils.check_field(md, fieldname = 'settings.io_gather', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'settings.lowmem', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'settings.output_frequency', scalar = True, ge = 1)
-        class_utils.check_field(md, fieldname = 'settings.sb_coupling_frequency', scalar = True, ge = 1)
-        class_utils.check_field(md, fieldname = 'settings.checkpoint_frequency', scalar = True, ge = 0)
-        class_utils.check_field(md, fieldname = 'settings.waitonlock', scalar = True)
-        class_utils.check_field(md, fieldname = 'settings.solver_residue_threshold', scalar = True, gt = 0)
+        class_utils._check_field(md, fieldname = 'settings.results_on_nodes', string_list = True)
+        class_utils._check_field(md, fieldname = 'settings.io_gather', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'settings.lowmem', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'settings.output_frequency', scalar = True, ge = 1)
+        class_utils._check_field(md, fieldname = 'settings.sb_coupling_frequency', scalar = True, ge = 1)
+        class_utils._check_field(md, fieldname = 'settings.checkpoint_frequency', scalar = True, ge = 0)
+        class_utils._check_field(md, fieldname = 'settings.waitonlock', scalar = True)
+        class_utils._check_field(md, fieldname = 'settings.solver_residue_threshold', scalar = True, gt = 0)
 
         return md
 

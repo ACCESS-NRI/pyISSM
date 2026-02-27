@@ -68,7 +68,7 @@ class miscellaneous(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        class_utils.check_field(md, fieldname = 'miscellaneous.name', allow_empty = False)
+        class_utils._check_field(md, fieldname = 'miscellaneous.name', allow_empty = False)
         return md
 
     # Marshall method for saving the miscellaneous parameters

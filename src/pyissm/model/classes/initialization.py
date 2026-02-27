@@ -184,25 +184,25 @@ class initialization(class_registry.manage_state):
         if 'StressbalanceAnalysis' in analyses and not solution == 'TransientSolution' and not md.transient.isstressbalance:
             if not np.any(np.isnan(md.initialization.vx)) and not np.any(np.isnan(md.initialization.vy)):
                 if np.size(md.initialization.vx) > 1 or np.size(md.initialization.vy) > 1:
-                    class_utils.check_field(md, fieldname = "initialization.vx", allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices,))
-                    class_utils.check_field(md, fieldname = "initialization.vy", allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices,))
+                    class_utils._check_field(md, fieldname = "initialization.vx", allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices,))
+                    class_utils._check_field(md, fieldname = "initialization.vy", allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices,))
 
         ## MasstransportAnalysis
         if 'MasstransportAnalysis' in analyses and not solution == 'TransientSolution' and not md.transient.ismasstransport:
-            class_utils.check_field(md, fieldname = "initialization.vx", allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices,))
-            class_utils.check_field(md, fieldname = "initialization.vy", allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices,))
+            class_utils._check_field(md, fieldname = "initialization.vx", allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices,))
+            class_utils._check_field(md, fieldname = "initialization.vy", allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices,))
 
         ## OceantransportAnalysis
         if 'OceantransportAnalysis' in analyses:
             if solution == 'TransientSolution' and md.transient.isslc and md.transient.isoceantransport:
-                class_utils.check_field(md, fieldname = "initialization.bottompressure", allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices,))
-                class_utils.check_field(md, fieldname = "initialization.dsl", allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices,))
-                class_utils.check_field(md, fieldname = 'initialization.str', sclara = True, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = "initialization.bottompressure", allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices,))
+                class_utils._check_field(md, fieldname = "initialization.dsl", allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices,))
+                class_utils._check_field(md, fieldname = 'initialization.str', sclara = True, allow_nan = False, allow_inf = False)
         
         ## BalancethicknessAnalysis
         if 'BalancethicknessAnalysis' in analyses and solution == 'BalancethicknessSolution':
-            class_utils.check_field(md, fieldname = 'initialization.vx', size = (md.mesh.numberofvertices,), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'initialization.vy', size = (md.mesh.numberofvertices,), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'initialization.vx', size = (md.mesh.numberofvertices,), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'initialization.vy', size = (md.mesh.numberofvertices,), allow_nan = False, allow_inf = False)
             # Triangle with zero velocity
             vx_sum = np.sum(np.abs(md.initialization.vx[md.mesh.elements - 1]), axis=1)
             vy_sum = np.sum(np.abs(md.initialization.vy[md.mesh.elements - 1]), axis=1)
@@ -212,72 +212,72 @@ class initialization(class_registry.manage_state):
         
         ## ThermalAnalysis
         if 'ThermalAnalysis' in analyses and not solution == 'TransientSolution' and not md.transient.isthermal:
-            class_utils.check_field(md, fieldname = 'initialization.vx', allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices,))
-            class_utils.check_field(md, fieldname = 'initialization.vy', allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices,))
-            class_utils.check_field(md, fieldname = 'initialization.temperature', allow_nan = False, allow_inf = False, size = 'universal')
+            class_utils._check_field(md, fieldname = 'initialization.vx', allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices,))
+            class_utils._check_field(md, fieldname = 'initialization.vy', allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices,))
+            class_utils._check_field(md, fieldname = 'initialization.temperature', allow_nan = False, allow_inf = False, size = 'universal')
             if md.mesh.dimension() == 3:
-                class_utils.check_field(md, fieldname = 'initialization.vz', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'initialization.pressure', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'initialization.vz', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'initialization.pressure', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         
         ## EnthalpyAnalysis
         if 'EnthalpyAnalysis' in analyses and md.thermal.isenthalpy:
-            class_utils.check_field(md, fieldname = 'initialization.waterfraction', size = (md.mesh.numberofvertices, ), ge = 0)
-            class_utils.check_field(md, fieldname = 'initialization.watercolumn', size = (md.mesh.numberofvertices, ), ge = 0)
+            class_utils._check_field(md, fieldname = 'initialization.waterfraction', size = (md.mesh.numberofvertices, ), ge = 0)
+            class_utils._check_field(md, fieldname = 'initialization.watercolumn', size = (md.mesh.numberofvertices, ), ge = 0)
             # pos = np.nonzero(md.initialization.waterfraction > 0.)[0]
             # if(pos.size):
-            #     class_utils.check_field(md, fieldname = 'delta Tpmp', field = np.absolute(md.initialization.temperature[pos] - (md.materials.meltingpoint - md.materials.beta * md.initialization.pressure[pos])), lt = 1e-11, message = 'set temperature to pressure melting point at locations with waterfraction > 0')
+            #     class_utils._check_field(md, fieldname = 'delta Tpmp', field = np.absolute(md.initialization.temperature[pos] - (md.materials.meltingpoint - md.materials.beta * md.initialization.pressure[pos])), lt = 1e-11, message = 'set temperature to pressure melting point at locations with waterfraction > 0')
         
         ## HydrologyShreveAnalysis
         if 'HydrologyShreveAnalysis' in analyses:
             if isinstance(md.hydrology, hydrology.shreve):
                 if (solution == 'TransientSolution' and md.transient.ishydrology) or solution == 'HydrologySolution':
-                    class_utils.check_field(md, fieldname = 'initialization.watercolumn', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+                    class_utils._check_field(md, fieldname = 'initialization.watercolumn', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         
         ## HydrologyTwsAnalysis
         if 'HydrologyTwsAnalysis' in analyses:
             if isinstance(md.hydrology, hydrology.tws):
-                class_utils.check_field(md, fieldname = 'initialization.watercolumn', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'initialization.watercolumn', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         
         ## SealevelchangeAnalysis
         if 'SealevelchangeAnalysis' in analyses:
             if solution == 'TransientSolution' and md.transient.isslc:
-                class_utils.check_field(md, fieldname = 'initialization.sealevel', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'initialization.sealevel', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         
         ## HydrologyGlaDSAnalysis
         if 'HydrologyGlaDSAnalysis' in analyses:
             if isinstance(md.hydrology, hydrology.glads):
-                class_utils.check_field(md, fieldname = 'initialization.watercolumn', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-                class_utils.check_field(md, fieldname = 'initialization.hydraulic_potential', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-                class_utils.check_field(md, fieldname = 'initialization.channelarea', ge = 0, size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'initialization.watercolumn', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'initialization.hydraulic_potential', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'initialization.channelarea', ge = 0, size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
         
         ## HydrologyDC (Inefficient/Efficient)
         if 'HydrologyDCInefficientAnalysis' in analyses:
             if isinstance(md.hydrology, hydrology.dc):
-                class_utils.check_field(md, fieldname = 'initialization.sediment_head', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'initialization.sediment_head', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         
         
         if 'HydrologyDCEfficientAnalysis' in analyses:
             if isinstance(md.hydrology, hydrology.dc):
                 if md.hydrology.isefficientlayer:
-                    class_utils.check_field(md, fieldname = 'initialization.epl_head', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-                    class_utils.check_field(md, fieldname = 'initialization.epl_thickness', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+                    class_utils._check_field(md, fieldname = 'initialization.epl_head', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+                    class_utils._check_field(md, fieldname = 'initialization.epl_thickness', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         
         ## SamplingAnalysis
         if 'SamplingAnalysis' in analyses and not solution == 'TransientSolution' and not md.transient.issampling:
             if np.any(np.isnan(md.initialization.sample)):
-                class_utils.check_field(md, fieldname = 'initialization.sample', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'initialization.sample', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         
         ## DebrisAnalysis
         if 'DebrisAnalysis' in analyses:
             if not np.isnan(md.initialization.debris):
                 if (solution == 'TransientSolution' and md.transient.ishydrology) or solution == 'HydrologySolution':
-                    class_utils.check_field(md, fieldname = 'initialization.debris', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+                    class_utils._check_field(md, fieldname = 'initialization.debris', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         
         ## AgeAnalysis
         if 'AgeAnalysis' in analyses:
             if not np.isnan(md.initialization.age):
                 if (solution == 'TransientSolution' and md.transient.ishydrology) or solution == 'HydrologySolution':
-                    class_utils.check_field(md, fieldname = 'initialization.age', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+                    class_utils._check_field(md, fieldname = 'initialization.age', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         return md
 
     # Marshall method for saving the initialization parameters

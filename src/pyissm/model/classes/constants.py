@@ -84,11 +84,11 @@ class constants(class_registry.manage_state):
             The model object with any consistency errors noted.
         """
 
-        class_utils.check_field(md, fieldname = 'constants.g', ge = 0, scalar = True) # We allow 0 for validation tests
-        class_utils.check_field(md, fieldname = 'constants.omega', ge = 0, scalar = True)
-        class_utils.check_field(md, fieldname = 'constants.yts', ge = 0, scalar = True)
-        class_utils.check_field(md, fieldname = 'constants.referencetemperature', scalar = True)
-        class_utils.check_field(md, fieldname = 'constants.gravitational_constant', scalar = True)
+        class_utils._check_field(md, fieldname = 'constants.g', ge = 0, scalar = True) # We allow 0 for validation tests
+        class_utils._check_field(md, fieldname = 'constants.omega', ge = 0, scalar = True)
+        class_utils._check_field(md, fieldname = 'constants.yts', ge = 0, scalar = True)
+        class_utils._check_field(md, fieldname = 'constants.referencetemperature', scalar = True)
+        class_utils._check_field(md, fieldname = 'constants.gravitational_constant', scalar = True)
 
         return md
 
