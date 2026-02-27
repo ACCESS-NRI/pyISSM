@@ -841,6 +841,7 @@ class Model():
         md.calving.extrude(md)
         md.frontalforcings.extrude(md)
         md.hydrology.extrude(md)
+        md.cf.extrude(md)
         md.debris.extrude(md)
         md.solidearth.extrude(md)
         md.dsl.extrude(md)
