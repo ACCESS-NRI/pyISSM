@@ -57,7 +57,7 @@ class default(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
         Extrude [calving.default] fields to 3D
         """
@@ -179,11 +179,11 @@ class crevassedepth(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
         Extrude [calving.crevassedepth] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.calving.crevassedepth.extrude: 3D extrusion not implemented for calving.crevassedepth. Returning unchanged (2D) calving fields.')
+        warnings.warn('pyissm.model.classes.calving.crevassedepth._extrude: 3D extrusion not implemented for calving.crevassedepth. Returning unchanged (2D) calving fields.')
             
         return self
     
@@ -300,11 +300,11 @@ class dev(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
         Extrude [calving.dev] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.calving.dev.extrude: 3D extrusion not implemented for calving.dev. Returning unchanged (2D) calving fields.')
+        warnings.warn('pyissm.model.classes.calving.dev._extrude: 3D extrusion not implemented for calving.dev. Returning unchanged (2D) calving fields.')
             
         return self
     
@@ -413,7 +413,7 @@ class levermann(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
         Extrude [calving.levermann] fields to 3D
         """
@@ -524,11 +524,11 @@ class minthickness(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
         Extrude [calving.minthickness] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.calving.minthickness.extrude: 3D extrusion not implemented for calving.minthickness. Returning unchanged (2D) calving fields.')
+        warnings.warn('pyissm.model.classes.calving.minthickness._extrude: 3D extrusion not implemented for calving.minthickness. Returning unchanged (2D) calving fields.')
             
         return self
     
@@ -683,11 +683,11 @@ class parameterization(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
         Extrude [calving.parameterization] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.calving.parameterization.extrude: 3D extrusion not implemented for calving.parameterization. Returning unchanged (2D) calving fields.')
+        warnings.warn('pyissm.model.classes.calving.parameterization._extrude: 3D extrusion not implemented for calving.parameterization. Returning unchanged (2D) calving fields.')
             
         return self
 
@@ -819,11 +819,11 @@ class vonmises(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
         Extrude [calving.vonmises] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.calving.vonmises.extrude: 3D extrusion not implemented for calving.vonmises. Returning unchanged (2D) calving fields.')
+        warnings.warn('pyissm.model.classes.calving.vonmises._extrude: 3D extrusion not implemented for calving.vonmises. Returning unchanged (2D) calving fields.')
             
         return self
     

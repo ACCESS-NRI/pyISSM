@@ -106,9 +106,9 @@ class armapw(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude hydrology.armapw fields to 3D
+        Extrude [hydrology.armapw] fields to 3D
         """
         self.basin_id = mesh.project_3d(md, vector = self.basin_id, type = 'element')
             
@@ -486,9 +486,9 @@ class dc(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude hydrology.dc fields to 3D
+        Extrude [hydrology.dc] fields to 3D
         """
         self.spcsediment_head = mesh.project_3d(md, vector = self.spcsediment_head, type = 'node', layer = 1)
         self.sediment_transmitivity = mesh.project_3d(md, vector = self.sediment_transmitivity, type = 'node', layer = 1)
@@ -848,9 +848,9 @@ class glads(class_registry.manage_state):
 
     # Extrude to 3D mesh
     # TODO: Confirm that extrude() is necessary for hydrology.glads. No extrude() exists for MATLAB.
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude hydrology.glads fields to 3D
+        Extrude [hydrology.glads] fields to 3D
         """
         self.sheet_conductivity = mesh.project_3d(md, vector = self.sheet_conductivity, type = 'node', layer = 1)
         self.bump_height = mesh.project_3d(md, vector = self.bump_height, type = 'node', layer = 1)
@@ -1060,11 +1060,11 @@ class pism(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude hydrology.pism fields to 3D
+        Extrude [hydrology.pism] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.hydrology.pism.extrude: 3D extrusion not implemented for hydrology.pism. Returning unchanged (2D) hydrology fields.')
+        warnings.warn('pyissm.model.classes.hydrology.pism._extrude: 3D extrusion not implemented for hydrology.pism. Returning unchanged (2D) hydrology fields.')
 
         return self
     
@@ -1269,11 +1269,11 @@ class shakti(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude hydrology.shakti fields to 3D
+        Extrude [hydrology.shakti] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.hydrology.shakti.extrude: 3D extrusion not implemented for hydrology.shakti. Returning unchanged (2D) hydrology fields.')
+        warnings.warn('pyissm.model.classes.hydrology.shakti._extrude: 3D extrusion not implemented for hydrology.shakti. Returning unchanged (2D) hydrology fields.')
 
         return self
     
@@ -1470,11 +1470,11 @@ class shreve(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude hydrology.shreve fields to 3D
+        Extrude [hydrology.shreve] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.hydrology.shreve.extrude: 3D extrusion not implemented for hydrology.shreve. Returning unchanged (2D) hydrology fields.')
+        warnings.warn('pyissm.model.classes.hydrology.shreve._extrude: 3D extrusion not implemented for hydrology.shreve. Returning unchanged (2D) hydrology fields.')
 
         return self
     
@@ -1629,11 +1629,11 @@ class tws(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude hydrology.tws fields to 3D
+        Extrude [hydrology.tws] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.hydrology.tws.extrude: 3D extrusion not implemented for hydrology.tws. Returning unchanged (2D) hydrology fields.')
+        warnings.warn('pyissm.model.classes.hydrology.tws._extrude: 3D extrusion not implemented for hydrology.tws. Returning unchanged (2D) hydrology fields.')
 
         return self
     

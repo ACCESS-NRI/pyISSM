@@ -71,7 +71,7 @@ class default(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
         Extrude [basalforcings.default] fields to 3D
         """
@@ -265,7 +265,7 @@ class pico(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
         Extrude [basalforcings.pico] fields to 3D
         """
@@ -467,7 +467,7 @@ class linear(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
         Extrude [basalforcings.linear] fields to 3D
         """
@@ -684,11 +684,11 @@ class lineararma(class_registry.manage_state):
         s = 'ISSM - basalforcings.lineararma Class'
 
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
         Extrude [basalforcings.lineararma] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.basalforcings.lineararma.extrude: 3D extrusion not implemented for basalforcings.lineararma. Returning unchanged (2D) basalforcing fields.')        
+        warnings.warn('pyissm.model.classes.basalforcings.lineararma._extrude: 3D extrusion not implemented for basalforcings.lineararma. Returning unchanged (2D) basalforcing fields.')        
 
         return self
 
@@ -958,7 +958,7 @@ class mismip(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
         Extrude [basalforcings.mismip] fields to 3D
         """
@@ -1173,7 +1173,7 @@ class plume(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
         Extrude [basalforcings.plume] fields to 3D
         """
@@ -1360,9 +1360,9 @@ class spatiallinear(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude basalforcings.spatiallinear fields to 3D
+        Extrude [basalforcings.spatiallinear] fields to 3D
         """
         self.groundedice_melting_rate = mesh.project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1) 
         self.deepwater_melting_rate = mesh.project_3d(md, vector = self.deepwater_melting_rate, type = 'node', layer = 1) 

@@ -60,9 +60,9 @@ class default(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude frontalforcings.default fields to 3D
+        Extrude [frontalforcings.default] fields to 3D
         """
         self.meltingrate = mesh.project_3d(md, vector = self.meltingrate, type = 'node')
         self.ablationrate = mesh.project_3d(md, vector = self.ablationrate, type = 'node')
@@ -190,11 +190,11 @@ class rignot(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude frontalforcings.rignot fields to 3D
+        Extrude [frontalforcings.rignot] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.frontalforcings.rignot.extrude: 3D extrusion not implemented for frontalforcings.rignot. Returning unchanged (2D) frontalforcing fields.')
+        warnings.warn('pyissm.model.classes.frontalforcings.rignot._extrude: 3D extrusion not implemented for frontalforcings.rignot. Returning unchanged (2D) frontalforcing fields.')
             
         return self
     
@@ -409,11 +409,11 @@ class rignotarma(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude frontalforcings.rignotarma fields to 3D
+        Extrude [frontalforcings.rignotarma] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.frontalforcings.rignotarma.extrude: 3D extrusion not implemented for frontalforcings.rignotarma. Returning unchanged (2D) frontalforcing fields.')
+        warnings.warn('pyissm.model.classes.frontalforcings.rignotarma._extrude: 3D extrusion not implemented for frontalforcings.rignotarma. Returning unchanged (2D) frontalforcing fields.')
             
         return self
     

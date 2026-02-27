@@ -80,9 +80,9 @@ class default(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude friction.default fields to 3D
+        Extrude [friction.default] fields to 3D
         """
         self.coefficient = mesh.project_3d(md, vector = self.coefficient, type = 'node', layer = 1)
         self.p = mesh.project_3d(md, vector = self.p, type = 'element')
@@ -249,9 +249,9 @@ class coulomb(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude friction.coulomb fields to 3D
+        Extrude [friction.coulomb] fields to 3D
         """
         self.coefficient = mesh.project_3d(md, vector = self.coefficient, type = 'node',  layer = 1)
         self.coefficientcoulomb = mesh.project_3d(md, vector = self.coefficientcoulomb, type = 'node', layer = 1)
@@ -260,7 +260,7 @@ class coulomb(class_registry.manage_state):
         if self.coupling == 1:
             self.effective_pressure = mesh.project_3d(md, vector = self.effective_pressure, type = 'node', layer = 1)
         elif self.coupling >= 2:
-            raise ValueError('pyissm.model.classes.friction.coulomb.extrude: md.friction.coupling >= 2 not implemented yet.')
+            raise ValueError('pyissm.model.classes.friction.coulomb._extrude: md.friction.coupling >= 2 not implemented yet.')
             
         return self
     
@@ -415,9 +415,9 @@ class coulomb2(class_registry.manage_state):
         return s
 
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude friction.coulomb2 fields to 3D
+        Extrude [friction.coulomb2] fields to 3D
         """
         self.coefficient = mesh.project_3d(md, vector = self.coefficient, type = 'node',  layer = 1)
         self.coefficientcoulomb = mesh.project_3d(md, vector = self.coefficientcoulomb, type = 'node', layer = 1)
@@ -426,7 +426,7 @@ class coulomb2(class_registry.manage_state):
         if self.coupling == 1:
             self.effective_pressure = mesh.project_3d(md, vector = self.effective_pressure, type = 'node', layer = 1)
         elif self.coupling >= 2:
-            raise ValueError('pyissm.model.classes.friction.coulomb2.extrude: md.friction.coupling >= 2 not implemented yet.')
+            raise ValueError('pyissm.model.classes.friction.coulomb2._extrude: md.friction.coupling >= 2 not implemented yet.')
             
         return self
     
@@ -576,9 +576,9 @@ class hydro(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude friction.hydro fields to 3D
+        Extrude [friction.hydro] fields to 3D
         """
         self.q = mesh.project_3d(md, vector = self.q, type = 'element')
         self.C = mesh.project_3d(md, vector = self.C, type = 'element')
@@ -587,7 +587,7 @@ class hydro(class_registry.manage_state):
         if self.coupling in [3, 4]:
             self.effective_pressure = mesh.project_3d(md, vector = self.effective_pressure, type = 'node', layer = 1)
         elif self.coupling > 2:
-            raise ValueError('pyissm.model.classes.friction.hydro.extrude: md.friction.coupling > 4 not implemented yet.')
+            raise ValueError('pyissm.model.classes.friction.hydro._extrude: md.friction.coupling > 4 not implemented yet.')
             
         return self
     
@@ -730,9 +730,9 @@ class josh(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude friction.josh fields to 3D
+        Extrude [friction.josh] fields to 3D
         """
         self.coefficient = mesh.project_3d(md, vector = self.coefficient, type = 'node', layer = 1)
         self.pressure_adjusted_temperature = mesh.project_3d(md, vector = self.pressure_adjusted_temperature, type = 'node', layer = 1)
@@ -871,9 +871,9 @@ class pism(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude friction.pism fields to 3D
+        Extrude [friction.pism] fields to 3D
         """
         self.till_friction_angle = mesh.project_3d(md, vector = self.till_friction_angle, type = 'node', layer = 1)
         self.sediment_compressibility_coefficient = mesh.project_3d(md, vector = self.sediment_compressibility_coefficient, type = 'node', layer = 1)
@@ -1009,9 +1009,9 @@ class regcoulomb(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude friction.regcoloumb fields to 3D
+        Extrude [friction.regcoulomb] fields to 3D
         """
         self.C = mesh.project_3d(md, vector = self.C, type = 'node')
         self.m = mesh.project_3d(md, vector = self.m, type = 'element')
@@ -1143,9 +1143,9 @@ class regcoulomb2(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude friction.regcoloumb2 fields to 3D
+        Extrude [friction.regcoulomb2] fields to 3D
         """
         self.C = mesh.project_3d(md, vector = self.C, type = 'node')
         self.m = mesh.project_3d(md, vector = self.m, type = 'element')
@@ -1287,9 +1287,9 @@ class schoof(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude friction.schoof fields to 3D
+        Extrude [friction.schoof] fields to 3D
         """
         self.C = mesh.project_3d(md, vector = self.C, type = 'node')
         self.Cmax = mesh.project_3d(md, vector = self.Cmax, type = 'node')
@@ -1420,9 +1420,9 @@ class shakti(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude friction.shakti fields to 3D
+        Extrude [friction.shakti] fields to 3D
         """
         self.coefficient = mesh.project_3d(md, vector = self.coefficient, type = 'node', layer = 1)
             
@@ -1547,13 +1547,13 @@ class waterlayer(class_registry.manage_state):
         return s
 
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude friction.schoof fields to 3D
+        Extrude [friction.waterlayer] fields to 3D
         """
         self.coefficient = mesh.project_3d(md, vector = self.coefficient, type = 'node', layer = '1')
         self.p = mesh.project_3d(md, vector = self.p, type = 'element')
-        self.p = mesh.project_3d(md, vector = self.q, type = 'element')
+        self.q = mesh.project_3d(md, vector = self.q, type = 'element')
         self.water_layer = mesh.project_3d(md, vector = self.water_layer, type = 'node', layer = 1)
             
         return self
@@ -1677,12 +1677,12 @@ class weertman(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude friction.weertman fields to 3D
+        Extrude [friction.weertman] fields to 3D
         """
         self.C = mesh.project_3d(md, vector = self.C, type = 'node', layer = 1)
-        self.m = mesh.project_3d(md, vector = self.p, type = 'element')
+        self.m = mesh.project_3d(md, vector = self.m, type = 'element')
 
         return self
     

@@ -81,7 +81,8 @@ class regionaloutput(class_registry.manage_state):
         s = 'ISSM - regionaloutput Class'
         return s
     
-    def extrude(self, md):
+    # Extrude to 3D mesh
+    def _extrude(self, md):
         """
         Extrude regionaloutput fields to 3D mesh
         """

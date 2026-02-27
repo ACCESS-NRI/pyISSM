@@ -56,11 +56,11 @@ class default(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude qmu.default fields to 3D
+        Extrude [qmu.default] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.qmu.default.extrude: 3D extrusion not implemented for qmu.default. Returning unchanged (2D) qmu fields.')
+        warnings.warn('pyissm.model.classes.qmu.default._extrude: 3D extrusion not implemented for qmu.default. Returning unchanged (2D) qmu fields.')
 
         return self
     
@@ -132,11 +132,11 @@ class statistics(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude qmu.statistics fields to 3D
+        Extrude [qmu.statistics] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.qmu.statistics.extrude: 3D extrusion not implemented for qmu.statistics. Returning unchanged (2D) qmu fields.')
+        warnings.warn('pyissm.model.classes.qmu.statistics._extrude: 3D extrusion not implemented for qmu.statistics. Returning unchanged (2D) qmu fields.')
 
         return self
 
