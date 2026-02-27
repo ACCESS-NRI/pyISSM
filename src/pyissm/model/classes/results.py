@@ -338,7 +338,7 @@ class solutionstep(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = ''
-        width = class_utils.getlongestfieldname(self)
+        width = class_utils._get_longest_fieldname(self)
         for key, value in self.__dict__.items():
             s += '    {:{width}s}: {}\n'.format(key, value, width=width)
         return s

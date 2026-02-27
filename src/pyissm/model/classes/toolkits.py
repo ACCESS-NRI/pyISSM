@@ -84,7 +84,7 @@ class toolkits(class_registry.manage_state):
     def __repr__(self):
         s = "List of toolkits options per analysis:\n\n"
         for analysis in list(vars(self).keys()):
-            s += "{}\n".format(class_utils.fielddisplay(self, analysis, ''))
+            s += "{}\n".format(class_utils._field_display(self, analysis, ''))
         return s
 
     # Define class string

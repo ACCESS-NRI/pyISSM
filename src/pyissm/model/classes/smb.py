@@ -40,7 +40,7 @@ class default(class_registry.manage_state):
         Returns a detailed string representation of the SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -64,13 +64,13 @@ class default(class_registry.manage_state):
     def __repr__(self):
         s = '   surface forcings parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'mass_balance', 'surface mass balance [m/yr ice eq]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'steps_per_step', 'number of smb steps per time step'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'averaging', 'averaging methods from short to long steps'))
+        s += '{}\n'.format(class_utils._field_display(self, 'mass_balance', 'surface mass balance [m/yr ice eq]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'steps_per_step', 'number of smb steps per time step'))
+        s += '{}\n'.format(class_utils._field_display(self, 'averaging', 'averaging methods from short to long steps'))
         s += '\t\t{}\n'.format('0: Arithmetic (default)')
         s += '\t\t{}\n'.format('1: Geometric')
         s += '\t\t{}\n'.format('2: Harmonic')
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -79,11 +79,11 @@ class default(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.default fields to 3D
+        Extrude [smb.default] fields to 3D
         """
-        self.mass_balance = mesh.project_3d(md, vector = self.mass_balance, type = 'node')
+        self.mass_balance = mesh._project_3d(md, vector = self.mass_balance, type = 'node')
             
         return self
     
@@ -94,17 +94,17 @@ class default(class_registry.manage_state):
             return
         
         if 'MasstransportAnalysis' in analyses:
-            class_utils.check_field(md, fieldname = 'smb.mass_balance', timeseries= True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.mass_balance', timeseries= True, allow_nan = False, allow_inf = False)
         if 'BalancethicknessAnalysis' in analyses:
-            class_utils.check_field(md, fieldname = 'smb.mass_balance', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
-        class_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
-        class_utils.check_field(md, fieldname = 'smb.requested_outputs', string_list = True)
+            class_utils._check_field(md, fieldname = 'smb.mass_balance', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+        class_utils._check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
+        class_utils._check_field(md, fieldname = 'smb.requested_outputs', string_list = True)
         
         return md
     
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):
+    def initialize(self, md):
         """
         Initialise empty fields in smb.default.
         """
@@ -116,7 +116,7 @@ class default(class_registry.manage_state):
         return self
     
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -178,13 +178,13 @@ class default(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 1, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 1, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'mass_balance', format = 'DoubleMat', scale = 1. / md.constants.yts, mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'mass_balance', format = 'DoubleMat', scale = 1. / md.constants.yts, mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.arma
@@ -253,7 +253,7 @@ class arma(class_registry.manage_state):
         Returns a detailed string representation of the ARMA SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -292,26 +292,26 @@ class arma(class_registry.manage_state):
     def __repr__(self):
         s = '   surface forcings parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'num_basins', 'number of different basins [unitless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'basin_id', 'basin number assigned to each element [unitless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'num_breaks', 'number of different breakpoints in the piecewise-polynomial (separating num_breaks+1 periods)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'num_params', 'number of different parameters in the piecewise-polynomial (1:intercept only, 2:with linear trend, 3:with quadratic trend, etc.)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'polynomialparams', 'coefficients for the polynomial (const,trend,quadratic,etc.),dim1 for basins,dim2 for periods,dim3 for orders, ex: polyparams=cat(num_params,intercepts,trendlinearcoefs,trendquadraticcoefs)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'datebreaks', 'dates at which the breakpoints in the piecewise polynomial occur (1 row per basin) [yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ar_order', 'order of the autoregressive model [unitless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ma_order', 'order of the moving-average model [unitless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'arma_timestep', 'time resolution of the ARMA model [yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'arlag_coefs', 'basin-specific vectors of AR lag coefficients [unitless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'malag_coefs', 'basin-specific vectors of MA lag coefficients [unitless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'lapserates', 'basin-specific SMB lapse rates applied in each elevation bin, 1 row per basin, 1 column per bin, dimension 3 can be of size 12 to prescribe monthly varying values [m ice eq yr^-1 m^-1] (default: no lapse rate)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'elevationbins', 'basin-specific separations between elevation bins, 1 row per basin, 1 column per limit between bins, dimension 3 can be of size 12 to prescribe monthly varying values [m] (default: no basin separation)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'refelevation', 'basin-specific reference elevations at which SMB is calculated, and from which SMB is downscaled using lapserates (default: basin mean elevation) [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'steps_per_step', 'number of smb steps per time step'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'averaging', 'averaging methods from short to long steps'))
+        s += '{}\n'.format(class_utils._field_display(self, 'num_basins', 'number of different basins [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'basin_id', 'basin number assigned to each element [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'num_breaks', 'number of different breakpoints in the piecewise-polynomial (separating num_breaks+1 periods)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'num_params', 'number of different parameters in the piecewise-polynomial (1:intercept only, 2:with linear trend, 3:with quadratic trend, etc.)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'polynomialparams', 'coefficients for the polynomial (const,trend,quadratic,etc.),dim1 for basins,dim2 for periods,dim3 for orders, ex: polyparams=cat(num_params,intercepts,trendlinearcoefs,trendquadraticcoefs)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'datebreaks', 'dates at which the breakpoints in the piecewise polynomial occur (1 row per basin) [yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ar_order', 'order of the autoregressive model [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ma_order', 'order of the moving-average model [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'arma_timestep', 'time resolution of the ARMA model [yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'arlag_coefs', 'basin-specific vectors of AR lag coefficients [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'malag_coefs', 'basin-specific vectors of MA lag coefficients [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'lapserates', 'basin-specific SMB lapse rates applied in each elevation bin, 1 row per basin, 1 column per bin, dimension 3 can be of size 12 to prescribe monthly varying values [m ice eq yr^-1 m^-1] (default: no lapse rate)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'elevationbins', 'basin-specific separations between elevation bins, 1 row per basin, 1 column per limit between bins, dimension 3 can be of size 12 to prescribe monthly varying values [m] (default: no basin separation)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'refelevation', 'basin-specific reference elevations at which SMB is calculated, and from which SMB is downscaled using lapserates (default: basin mean elevation) [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'steps_per_step', 'number of smb steps per time step'))
+        s += '{}\n'.format(class_utils._field_display(self, 'averaging', 'averaging methods from short to long steps'))
         s += '\t\t{}\n'.format('0: Arithmetic (default)')
         s += '\t\t{}\n'.format('1: Geometric')
         s += '\t\t{}\n'.format('2: Harmonic')
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -320,11 +320,11 @@ class arma(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.arma fields to 3D
+        Extrude [smb.arma]fields to 3D
         """
-        warnings.warn('pyissm.model.classes.smb.arma.extrude: 3D extrusion not implemented for smb.arma. Returning unchanged (2D) smb fields.')
+        warnings.warn('pyissm.model.classes.smb.arma._extrude: 3D extrusion not implemented for smb.arma. Returning unchanged (2D) smb fields.')
             
         return self
     
@@ -334,26 +334,26 @@ class arma(class_registry.manage_state):
             nbas = md.smb.num_basins
             nprm = md.smb.num_params
             nbrk = md.smb.num_breaks
-            class_utils.check_field(md, fieldname = 'smb.num_basins', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.num_params', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.num_breaks', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.basin_id', ge = 0, le = md.smb.num_basins, size = (md.mesh.numberofelements, ), allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.num_basins', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.num_params', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.num_breaks', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.basin_id', ge = 0, le = md.smb.num_basins, size = (md.mesh.numberofelements, ), allow_inf = False)
 
             if nbas > 1 and nbrk >= 1 and nprm > 1:
-                class_utils.check_field(md, fieldname = 'smb.polynomialparams', size = (nbas, nbrk + 1, nprm), numel = nbas * (nbrk + 1) * nprm, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.polynomialparams', size = (nbas, nbrk + 1, nprm), numel = nbas * (nbrk + 1) * nprm, allow_nan = False, allow_inf = False)
             elif nbas == 1:
-                class_utils.check_field(md, fieldname = 'smb.polynomialparams', size = (nprm, nbrk + 1), numel = nbas * (nbrk + 1) * nprm, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.polynomialparams', size = (nprm, nbrk + 1), numel = nbas * (nbrk + 1) * nprm, allow_nan = False, allow_inf = False)
             elif nbrk == 0:
-                class_utils.check_field(md, fieldname = 'smb.polynomialparams', size = (nbas, nprm), numel = nbas * (nbrk + 1) * nprm, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.polynomialparams', size = (nbas, nprm), numel = nbas * (nbrk + 1) * nprm, allow_nan = False, allow_inf = False)
             elif nprm == 1:
-                class_utils.check_field(md, fieldname = 'smb.polynomialparams', size = (nbas, nbrk), numel = nbas * (nbrk + 1) * nprm, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.ar_order', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.ma_order', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.arma_timestep', scalar = True, ge = md.timestepping.time_step, allow_nan = False, allow_inf = False) # Autoregression time step cannot be finer than ISSM timestep
-            class_utils.check_field(md, fieldname = 'smb.arlag_coefs', size = (nbas, md.smb.ar_order), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.malag_coefs', size = (nbas, md.smb.ma_order), allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.polynomialparams', size = (nbas, nbrk), numel = nbas * (nbrk + 1) * nprm, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.ar_order', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.ma_order', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.arma_timestep', scalar = True, ge = md.timestepping.time_step, allow_nan = False, allow_inf = False) # Autoregression time step cannot be finer than ISSM timestep
+            class_utils._check_field(md, fieldname = 'smb.arlag_coefs', size = (nbas, md.smb.ar_order), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.malag_coefs', size = (nbas, md.smb.ma_order), allow_nan = False, allow_inf = False)
             if nbrk > 0:
-                class_utils.check_field(md, fieldname = 'smb.datebreaks', size = (nbas, nbrk), allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.datebreaks', size = (nbas, nbrk), allow_nan = False, allow_inf = False)
             elif np.size(md.smb.datebreaks) == 0 or np.all(np.isnan(md.smb.datebreaks)):
                 pass
             else:
@@ -362,7 +362,7 @@ class arma(class_registry.manage_state):
             if np.any(np.isnan(self.refelevation) is False) or np.size(self.refelevation) > 1:
                 if len(np.shape(self.refelevation)) == 1:
                     self.refelevation = np.array([self.refelevation])
-                class_utils.check_field(md, fieldname = 'smb.refelevation', size = (1, nbas), numel = nbas, ge = 0, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.refelevation', size = (1, nbas), numel = nbas, ge = 0, allow_nan = False, allow_inf = False)
 
             if (np.any(np.isnan(self.lapserates) is False) or np.size(self.lapserates) > 1):
                 nbas = md.smb.num_basins
@@ -377,8 +377,8 @@ class arma(class_registry.manage_state):
                 ntmlapse = np.shape(self.lapserates)[2]
                 if len(np.shape(self.elevationbins)) < 3:
                     self.elevationbins = np.reshape(self.elevationbins,[nbas,max(1,nbins-1),ntmlapse])
-                class_utils.check_field(md, fieldname = 'smb.lapserates', size = (nbas, nbins, ntmlapse), numel = md.smb.num_basins * nbins * ntmlapse, allow_nan = False, allow_inf = False)
-                class_utils.check_field(md, fieldname = 'smb.elevationbins', size = (nbas,max(1,nbins-1),ntmlapse), numel = nbas*max(1,nbins-1)*ntmlapse, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.lapserates', size = (nbas, nbins, ntmlapse), numel = md.smb.num_basins * nbins * ntmlapse, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.elevationbins', size = (nbas,max(1,nbins-1),ntmlapse), numel = nbas*max(1,nbins-1)*ntmlapse, allow_nan = False, allow_inf = False)
                 for rr in range(nbas):
                     if(np.all(self.elevationbins[rr,0:-1]<=self.elevationbins[rr,1:])==False):
                         raise TypeError('pyissm.model.classes.smb.arma.check_consistency: md.smb.elevationbins should have rows in order of increasing elevation')
@@ -395,17 +395,17 @@ class arma(class_registry.manage_state):
                     nbins = np.shape(self.lapserates)[1]
                 nbins = nbins - 1
                 ntmlapse = np.shape(self.lapserates)[2]
-                class_utils.check_field(md, fieldname = 'smb.lapserates', size = (nbas, nbins * ntmlapse), numel = nbas * nbins * ntmlapse, allow_inf = False)
-                class_utils.check_field(md, fieldname = 'smb.elevationbins', size = (nbas, max(1, nbins - 1) * ntmlapse), numel = nbas * max(1, nbins - 1) * ntmlapse, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.lapserates', size = (nbas, nbins * ntmlapse), numel = nbas * nbins * ntmlapse, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.elevationbins', size = (nbas, max(1, nbins - 1) * ntmlapse), numel = nbas * max(1, nbins - 1) * ntmlapse, allow_nan = False, allow_inf = False)
 
-        class_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
-        class_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
-        class_utils.check_field(md, fieldname = 'smb.requested_outputs', string_list = True)
+        class_utils._check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+        class_utils._check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
+        class_utils._check_field(md, fieldname = 'smb.requested_outputs', string_list = True)
 
         return md
     
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):
+    def initialize(self, md):
         """
         Initialise empty fields in smb.arma.
         """
@@ -435,7 +435,7 @@ class arma(class_registry.manage_state):
         return self
 
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -575,27 +575,27 @@ class arma(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 13, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 13, format = 'Integer')
 
         ## Write Integer fields
         fieldnames = ['num_basins', 'num_breaks', 'num_params', 'ar_order', 'ma_order', 'steps_per_step', 'averaging']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.smb.num_bins', data = nbins, format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.num_bins', data = nbins, format = 'Integer')
 
         ## Write DoubleMat fields
-        execute.WriteData(fid, prefix, name = 'md.smb.polynomialparams', data = polyParams_scaled_2d,  format = 'DoubleMat')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'arlag_coefs', format = 'DoubleMat', yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'malag_coefs', format = 'DoubleMat', yts = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.smb.datebreaks', data = dbreaks, format = 'DoubleMat', scale = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.smb.lapserates', data = temp_lapse_rates_2d, format = 'DoubleMat', scale = 1. / md.constants.yts, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.smb.elevationbins', data = temp_elevation_bins_2d, format = 'DoubleMat')
-        execute.WriteData(fid, prefix, name = 'md.smb.refelevation', data = temp_ref_elevation, format = 'DoubleMat')
+        execute._write_model_field(fid, prefix, name = 'md.smb.polynomialparams', data = polyParams_scaled_2d,  format = 'DoubleMat')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'arlag_coefs', format = 'DoubleMat', yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'malag_coefs', format = 'DoubleMat', yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.smb.datebreaks', data = dbreaks, format = 'DoubleMat', scale = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.smb.lapserates', data = temp_lapse_rates_2d, format = 'DoubleMat', scale = 1. / md.constants.yts, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.smb.elevationbins', data = temp_elevation_bins_2d, format = 'DoubleMat')
+        execute._write_model_field(fid, prefix, name = 'md.smb.refelevation', data = temp_ref_elevation, format = 'DoubleMat')
 
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'arma_timestep', format = 'Double', scale = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.smb.basin_id', data = self.basin_id - 1, format = 'IntMat', mattype = 2)  # 0-indexed
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'arma_timestep', format = 'Double', scale = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.smb.basin_id', data = self.basin_id - 1, format = 'IntMat', mattype = 2)  # 0-indexed
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.components
@@ -638,7 +638,7 @@ class components(class_registry.manage_state):
         Returns a detailed string representation of the component SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -672,15 +672,15 @@ class components(class_registry.manage_state):
     def __repr__(self):
         s = '   surface forcings parameters (SMB=accumulation-runoff-evaporation) :\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'accumulation', 'accumulated snow [m/yr ice eq]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'runoff', 'amount of ice melt lost from the ice column [m/yr ice eq]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'evaporation', 'mount of ice lost to evaporative processes [m/yr ice eq]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'steps_per_step', 'number of smb steps per time step'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'averaging', 'averaging methods from short to long steps'))
+        s += '{}\n'.format(class_utils._field_display(self, 'accumulation', 'accumulated snow [m/yr ice eq]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'runoff', 'amount of ice melt lost from the ice column [m/yr ice eq]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'evaporation', 'mount of ice lost to evaporative processes [m/yr ice eq]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'steps_per_step', 'number of smb steps per time step'))
+        s += '{}\n'.format(class_utils._field_display(self, 'averaging', 'averaging methods from short to long steps'))
         s += '\t\t{}\n'.format('0: Arithmetic (default)')
         s += '\t\t{}\n'.format('1: Geometric')
         s += '\t\t{}\n'.format('2: Harmonic')
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -689,34 +689,34 @@ class components(class_registry.manage_state):
         return s
 
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.components fields to 3D
+        Extrude [smb.components]fields to 3D
         """
-        self.accumulation = mesh.project_3d(md, vector = self.accumulation, type = 'node')
-        self.runoff = mesh.project_3d(md, vector = self.runoff, type = 'node')
-        self.evaporation = mesh.project_3d(md, vector = self.evaporation, type = 'node')
+        self.accumulation = mesh._project_3d(md, vector = self.accumulation, type = 'node')
+        self.runoff = mesh._project_3d(md, vector = self.runoff, type = 'node')
+        self.evaporation = mesh._project_3d(md, vector = self.evaporation, type = 'node')
             
         return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         if 'MasstransportAnalysis' in analyses:
-            class_utils.check_field(md, fieldname = 'smb.accumulation', timeseries = True, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.runoff', timeseries = True, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.evaporation', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.accumulation', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.runoff', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.evaporation', timeseries = True, allow_nan = False, allow_inf = False)
         if 'BalancethicknessAnalysis' in analyses:
-            class_utils.check_field(md, fieldname = 'smb.accumulation', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.runoff', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.evaporation', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
-        class_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
-        class_utils.check_field(md, fieldname = 'smb.requested_outputs', string_list = True)
+            class_utils._check_field(md, fieldname = 'smb.accumulation', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.runoff', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.evaporation', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+        class_utils._check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
+        class_utils._check_field(md, fieldname = 'smb.requested_outputs', string_list = True)
 
         return md
 
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):
+    def initialize(self, md):
         """
         Initialise empty fields in smb.components.
         """
@@ -736,7 +736,7 @@ class components(class_registry.manage_state):
         return self
     
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -798,15 +798,15 @@ class components(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 2, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 2, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'accumulation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'runoff', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'evaporation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'accumulation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'runoff', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'evaporation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
 
 ## ------------------------------------------------------
@@ -888,7 +888,7 @@ class d18opdd(class_registry.manage_state):
         Returns a detailed string representation of the delta-18-O PDD SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -935,29 +935,29 @@ class d18opdd(class_registry.manage_state):
     def __repr__(self):
         s = '   surface forcings parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isd18opd', 'is delta18o parametrisation from present day temperature and precipitation activated (0 or 1, default is 0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'issetpddfac', 'is user passing in defined pdd factors (0 or 1, default is 0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'desfac', 'desertification elevation factor (between 0 and 1, default is 0.5) [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 's0p', 'should be set to elevation from precip source (between 0 and a few 1000s m, default is 0) [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 's0t', 'should be set to elevation from temperature source (between 0 and a few 1000s m, default is 0) [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'rlaps', 'present day lapse rate [degree/km]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'temperatures_presentday', 'monthly present day surface temperatures [K], required if delta18o/mungsm is activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'precipitations_presentday', 'monthly surface precipitation [m/yr water eq], required if delta18o or mungsm is activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'istemperaturescaled', 'if delta18o parametrisation from present day temperature and precipitation is activated, is temperature scaled to delta18o value? (0 or 1, default is 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isprecipscaled', 'if delta18o parametrisation from present day temperature and precipitation is activated, is precipitation scaled to delta18o value? (0 or 1, default is 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'temperatures_reconstructed', 'monthly historical surface temperatures [K], required if delta18o/mungsm/d18opd is activated and istemperaturescaled is not activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'precipitations_reconstructed', 'monthly historical precipitation [m/yr water eq], required if delta18o/mungsm/d18opd is activated and isprecipscaled is not activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'delta18o', 'delta18o [per mil], required if pdd is activated and delta18o activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'dpermil', 'degree per mil, required if d18opd is activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'f', 'precip/temperature scaling factor, required if d18opd is activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'pddfac_snow', 'Pdd factor for snow for all the domain [mm ice equiv/day/degree C]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'pddfac_ice', 'Pdd factor for ice for all the domain [mm ice equiv/day/degree C]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'steps_per_step', 'number of smb steps per time step'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'averaging', 'averaging methods from short to long steps'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isd18opd', 'is delta18o parametrisation from present day temperature and precipitation activated (0 or 1, default is 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'issetpddfac', 'is user passing in defined pdd factors (0 or 1, default is 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'desfac', 'desertification elevation factor (between 0 and 1, default is 0.5) [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 's0p', 'should be set to elevation from precip source (between 0 and a few 1000s m, default is 0) [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 's0t', 'should be set to elevation from temperature source (between 0 and a few 1000s m, default is 0) [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'rlaps', 'present day lapse rate [degree/km]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'temperatures_presentday', 'monthly present day surface temperatures [K], required if delta18o/mungsm is activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'precipitations_presentday', 'monthly surface precipitation [m/yr water eq], required if delta18o or mungsm is activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'istemperaturescaled', 'if delta18o parametrisation from present day temperature and precipitation is activated, is temperature scaled to delta18o value? (0 or 1, default is 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isprecipscaled', 'if delta18o parametrisation from present day temperature and precipitation is activated, is precipitation scaled to delta18o value? (0 or 1, default is 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'temperatures_reconstructed', 'monthly historical surface temperatures [K], required if delta18o/mungsm/d18opd is activated and istemperaturescaled is not activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'precipitations_reconstructed', 'monthly historical precipitation [m/yr water eq], required if delta18o/mungsm/d18opd is activated and isprecipscaled is not activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'delta18o', 'delta18o [per mil], required if pdd is activated and delta18o activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'dpermil', 'degree per mil, required if d18opd is activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'f', 'precip/temperature scaling factor, required if d18opd is activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'pddfac_snow', 'Pdd factor for snow for all the domain [mm ice equiv/day/degree C]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'pddfac_ice', 'Pdd factor for ice for all the domain [mm ice equiv/day/degree C]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'steps_per_step', 'number of smb steps per time step'))
+        s += '{}\n'.format(class_utils._field_display(self, 'averaging', 'averaging methods from short to long steps'))
         s += '\t\t{}\n'.format('0: Arithmetic (default)')
         s += '\t\t{}\n'.format('1: Geometric')
         s += '\t\t{}\n'.format('2: Harmonic')
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -966,65 +966,65 @@ class d18opdd(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.d18opdd fields to 3D
+        Extrude [smb.d18opdd] fields to 3D
         """
         if self.isd18opd:
-            self.temperatures_presentday = mesh.project_3d(md, vector = self.temperatures_presentday, type = 'node')
+            self.temperatures_presentday = mesh._project_3d(md, vector = self.temperatures_presentday, type = 'node')
         if self.isd18opd:
-            self.precipitations_presentday = mesh.project_3d(md, vector = self.precipitations_presentday, type = 'node')
+            self.precipitations_presentday = mesh._project_3d(md, vector = self.precipitations_presentday, type = 'node')
         if self.istemperaturescaled == 0:
-            self.temperatures_reconstructed = mesh.project_3d(md, vector = self.temperatures_reconstructed, type = 'node')
+            self.temperatures_reconstructed = mesh._project_3d(md, vector = self.temperatures_reconstructed, type = 'node')
         if self.isprecipscaled == 0:
-            self.precipitations_reconstructed = mesh.project_3d(md, vector = self.precipitations_reconstructed, type = 'node')
-        self.s0p = mesh.project_3d(md, vector = self.s0p, type = 'node')
-        self.s0t = mesh.project_3d(md, vector = self.s0t, type = 'node')            
+            self.precipitations_reconstructed = mesh._project_3d(md, vector = self.precipitations_reconstructed, type = 'node')
+        self.s0p = mesh._project_3d(md, vector = self.s0p, type = 'node')
+        self.s0t = mesh._project_3d(md, vector = self.s0t, type = 'node')            
 
         return self
     
     def checkconsistency(self, md, solution, analyses):
         if 'MasstransportAnalysis' in analyses:
-            class_utils.check_field(md, fieldname = 'smb.desfac', le = 1, scalar = True)
-            class_utils.check_field(md, fieldname = 'smb.s0p', size = (md.mesh.numberofvertices, ), ge = 0, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.s0t', size = (md.mesh.numberofvertices, ), ge = 0, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.rlaps', ge = 0, scalar = True)
-            class_utils.check_field(md, fieldname = 'smb.rlapslgm', ge = 0, scalar = True)
-            class_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
-            class_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
+            class_utils._check_field(md, fieldname = 'smb.desfac', le = 1, scalar = True)
+            class_utils._check_field(md, fieldname = 'smb.s0p', size = (md.mesh.numberofvertices, ), ge = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.s0t', size = (md.mesh.numberofvertices, ), ge = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.rlaps', ge = 0, scalar = True)
+            class_utils._check_field(md, fieldname = 'smb.rlapslgm', ge = 0, scalar = True)
+            class_utils._check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+            class_utils._check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
 
             if self.isd18opd:
                 lent = float(np.size(self.temperatures_presentday, 1))
                 lenp = float(np.size(self.precipitations_presentday, 1))
                 multt = np.ceil(lent / 12.) * 12.
                 multp = np.ceil(lenp / 12.) * 12.
-                class_utils.check_field(md, fieldname = 'smb.temperatures_presentday', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
-                class_utils.check_field(md, fieldname = 'smb.precipitations_presentday', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.temperatures_presentday', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.precipitations_presentday', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
 
                 if self.istemperaturescaled == 0:
                     lent = float(np.size(self.temperatures_reconstructed, 1))
                     multt = np.ceil(lent / 12.) * 12.
-                    class_utils.check_field(md, fieldname = 'smb.temperatures_reconstructed', timeseries = True, size = (md.mesh.numberofvertices + 1, multt), allow_nan = False, allow_inf = False)
+                    class_utils._check_field(md, fieldname = 'smb.temperatures_reconstructed', timeseries = True, size = (md.mesh.numberofvertices + 1, multt), allow_nan = False, allow_inf = False)
 
                 if self.isprecipscaled == 0:
                     lenp = float(np.size(self.precipitations_reconstructed, 1))
                     multp = np.ceil(lent / 12.) * 12.
-                    class_utils.check_field(md, fieldname = 'smb.precipitations_reconstructed', timeseries = True, size =  (md.mesh.numberofvertices + 1, multp), allow_nan = False, allow_inf = False)
+                    class_utils._check_field(md, fieldname = 'smb.precipitations_reconstructed', timeseries = True, size =  (md.mesh.numberofvertices + 1, multp), allow_nan = False, allow_inf = False)
 
-                class_utils.check_field(md, fieldname = 'smb.delta18o', singletimeseries = True, size = (2, np.nan), allow_nan = False, allow_inf = False)
-                class_utils.check_field(md, fieldname = 'smb.dpermil', ge = 0, scalar = True)
-                class_utils.check_field(md, fieldname = 'smb.f', ge = 0, scalar = True)
+                class_utils._check_field(md, fieldname = 'smb.delta18o', singletimeseries = True, size = (2, np.nan), allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.dpermil', ge = 0, scalar = True)
+                class_utils._check_field(md, fieldname = 'smb.f', ge = 0, scalar = True)
 
             if self.issetpddfac:
-                class_utils.check_field(md, fieldname = 'smb.pddfac_snow', ge = 0, allow_nan = False, allow_inf = False)
-                class_utils.check_field(md, fieldname = 'smb.pddfac_ice', ge = 0, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.pddfac_snow', ge = 0, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.pddfac_ice', ge = 0, allow_nan = False, allow_inf = False)
 
-        class_utils.check_field(md, fieldname = 'masstransport.requested_outputs', string_list = True)
+        class_utils._check_field(md, fieldname = 'masstransport.requested_outputs', string_list = True)
 
         return md
     
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):
+    def initialize(self, md):
         """
         Initialise empty fields in smb.d18opdd.
         """
@@ -1040,7 +1040,7 @@ class d18opdd(class_registry.manage_state):
         return self
     
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -1102,42 +1102,42 @@ class d18opdd(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 5, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 5, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'ismungsm', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'isd18opd', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'issetpddfac', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'desfac', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 's0p', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 's0t', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rlapslgm', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'Tdiff', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'sealev', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'ismungsm', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'isd18opd', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'issetpddfac', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'desfac', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 's0p', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 's0t', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rlapslgm', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'Tdiff', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'sealev', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
         ## Write conditional fields
         if self.isd18opd:
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'temperatures_presentday', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitations_presentday', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'istemperaturescaled', format = 'Boolean')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'isprecipscaled', format = 'Boolean')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'delta18o', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'dpermil', format = 'Double')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'f', format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'temperatures_presentday', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'precipitations_presentday', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'istemperaturescaled', format = 'Boolean')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'isprecipscaled', format = 'Boolean')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'delta18o', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'dpermil', format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'f', format = 'Double')
 
             if self.istemperaturescaled == 0:
-                execute.WriteData(fid, prefix, obj = self, fieldname = 'temperatures_reconstructed', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+                execute._write_model_field(fid, prefix, obj = self, fieldname = 'temperatures_reconstructed', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
             if self.isprecipscaled == 0:
-                execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitations_reconstructed', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+                execute._write_model_field(fid, prefix, obj = self, fieldname = 'precipitations_reconstructed', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
         if self.issetpddfac:
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'pddfac_snow', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'pddfac_ice', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'pddfac_snow', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'pddfac_ice', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
 ## ------------------------------------------------------
 ## smb.gemb
@@ -1255,7 +1255,7 @@ class gemb(class_registry.manage_state):
         Returns a detailed string representation of the GEMB SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -1370,99 +1370,99 @@ class gemb(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   surface forcings for SMB GEMB model :\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isgraingrowth', 'run grain growth module (default true)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isalbedo', 'run albedo module (default true)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isshortwave', 'run short wave module (default true)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isthermal', 'run thermal module (default true)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isaccumulation', 'run accumulation module (default true)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ismelt', 'run melting  module (default true)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isdensification', 'run densification module (default true)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isturbulentflux', 'run turbulant heat fluxes module (default true)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isconstrainsurfaceT', 'constrain surface temperatures to air temperature, turn off EC and surface flux contribution to surface temperature change (default false)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isdeltaLWup', 'set to true to invoke a bias in the long wave upward spatially, specified by dulwrfValue (default false)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self,'ismappedforcing','set to true if forcing grid does not match model mesh, mapping specified by mappedforcingpoint (default false)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self,'isprecipforcingremapped','set to true if ismappedforcing is true and precip should be downscaled from native grid (Default value is true)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self,'iscompressedforcing','set to true to compress the input matrices when writing to binary (default false)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'Ta', '2 m air temperature, in Kelvin'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'V', 'wind speed (m s-1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'dswrf', 'downward shortwave radiation flux [W/m^2]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'dswdiffrf', 'downward diffusive portion of shortwave radiation flux (default to 0) [W/m^2]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'dlwrf', 'downward longwave radiation flux [W/m^2]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'P', 'precipitation [mm w.e. / m^2]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'eAir', 'screen level vapor pressure [Pa]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'pAir', 'surface pressure [Pa]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'Tmean', 'mean annual temperature [K]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'C', 'mean annual snow accumulation [kg m-2 yr-1]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'Vmean', 'mean annual temperature [m s-1] (default 10 m/s)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'Tz', 'height above ground at which temperature (T) was sampled [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'Vz', 'height above ground at which wind (V) eas sampled [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'zTop', 'depth over which grid length is constant at the top of the snopack (default 10) [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'dzTop', 'initial top vertical grid spacing (default .05) [m] '))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'dzMin', 'initial min vertical allowable grid spacing (default dzMin/2) [m] '))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'zMax', 'initial max model depth (default is min(thickness, 500)) [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'zMin', 'initial min model depth (default is min(thickness, 30)) [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'zY', 'stretch grid cells bellow top_z by a [top_dz * y ^ (cells bellow top_z)]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'InitDensityScaling', ['initial scaling factor multiplying the density of ice', 'which describes the density of the snowpack.']))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ThermoDeltaTScaling', 'scaling factor to multiply the thermal diffusion timestep (delta t)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'outputFreq', 'output frequency in days (default is monthly, 30)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'adThresh', 'Apply aIdx method to all areas with densities below this value, or else apply direct input value from aValue, allowing albedo to be altered.'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'aIdx', ['method for calculating albedo and subsurface absorption (default is 1)',
+        s += '{}\n'.format(class_utils._field_display(self, 'isgraingrowth', 'run grain growth module (default true)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isalbedo', 'run albedo module (default true)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isshortwave', 'run short wave module (default true)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isthermal', 'run thermal module (default true)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isaccumulation', 'run accumulation module (default true)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ismelt', 'run melting  module (default true)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isdensification', 'run densification module (default true)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isturbulentflux', 'run turbulant heat fluxes module (default true)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isconstrainsurfaceT', 'constrain surface temperatures to air temperature, turn off EC and surface flux contribution to surface temperature change (default false)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isdeltaLWup', 'set to true to invoke a bias in the long wave upward spatially, specified by dulwrfValue (default false)'))
+        s += '{}\n'.format(class_utils._field_display(self,'ismappedforcing','set to true if forcing grid does not match model mesh, mapping specified by mappedforcingpoint (default false)'))
+        s += '{}\n'.format(class_utils._field_display(self,'isprecipforcingremapped','set to true if ismappedforcing is true and precip should be downscaled from native grid (Default value is true)'))
+        s += '{}\n'.format(class_utils._field_display(self,'iscompressedforcing','set to true to compress the input matrices when writing to binary (default false)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'Ta', '2 m air temperature, in Kelvin'))
+        s += '{}\n'.format(class_utils._field_display(self, 'V', 'wind speed (m s-1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'dswrf', 'downward shortwave radiation flux [W/m^2]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'dswdiffrf', 'downward diffusive portion of shortwave radiation flux (default to 0) [W/m^2]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'dlwrf', 'downward longwave radiation flux [W/m^2]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'P', 'precipitation [mm w.e. / m^2]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'eAir', 'screen level vapor pressure [Pa]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'pAir', 'surface pressure [Pa]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'Tmean', 'mean annual temperature [K]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'C', 'mean annual snow accumulation [kg m-2 yr-1]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'Vmean', 'mean annual temperature [m s-1] (default 10 m/s)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'Tz', 'height above ground at which temperature (T) was sampled [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'Vz', 'height above ground at which wind (V) eas sampled [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'zTop', 'depth over which grid length is constant at the top of the snopack (default 10) [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'dzTop', 'initial top vertical grid spacing (default .05) [m] '))
+        s += '{}\n'.format(class_utils._field_display(self, 'dzMin', 'initial min vertical allowable grid spacing (default dzMin/2) [m] '))
+        s += '{}\n'.format(class_utils._field_display(self, 'zMax', 'initial max model depth (default is min(thickness, 500)) [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'zMin', 'initial min model depth (default is min(thickness, 30)) [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'zY', 'stretch grid cells bellow top_z by a [top_dz * y ^ (cells bellow top_z)]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'InitDensityScaling', ['initial scaling factor multiplying the density of ice', 'which describes the density of the snowpack.']))
+        s += '{}\n'.format(class_utils._field_display(self, 'ThermoDeltaTScaling', 'scaling factor to multiply the thermal diffusion timestep (delta t)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'outputFreq', 'output frequency in days (default is monthly, 30)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'adThresh', 'Apply aIdx method to all areas with densities below this value, or else apply direct input value from aValue, allowing albedo to be altered.'))
+        s += '{}\n'.format(class_utils._field_display(self, 'aIdx', ['method for calculating albedo and subsurface absorption (default is 1)',
             '0: direct input from aValue parameter',
             '1: effective grain radius [Gardner & Sharp, 2009]',
             '2: effective grain radius [Brun et al., 1992; LeFebre et al., 2003], with swIdx=1, SW penetration follows grain size in 3 spectral bands (Brun et al., 1992)',
             '3: density and cloud amount [Greuell & Konzelmann, 1994]',
             '4: exponential time decay & wetness [Bougamont & Bamber, 2005]']))
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'dulwrfValue', 'Specified bias to be applied to the outward long wave radiation at every element (W/m-2, +upward)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'teValue', 'Outward longwave radiation thermal emissivity forcing at every element (default in code is 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'teThresh', ['Apply eIdx method to all areas with effective grain radius above this value (mm),', 'or else apply direct input value from teValue, allowing emissivity to be altered.']))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'eIdx', ['method for calculating emissivity (default is 1)',
+        s += '{}\n'.format(class_utils._field_display(self, 'dulwrfValue', 'Specified bias to be applied to the outward long wave radiation at every element (W/m-2, +upward)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'teValue', 'Outward longwave radiation thermal emissivity forcing at every element (default in code is 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'teThresh', ['Apply eIdx method to all areas with effective grain radius above this value (mm),', 'or else apply direct input value from teValue, allowing emissivity to be altered.']))
+        s += '{}\n'.format(class_utils._field_display(self, 'eIdx', ['method for calculating emissivity (default is 1)',
             '0: direct input from teValue parameter, no use of teThresh',
             '1: default value of 1, in areas with grain radius below teThresh',
             '2: default value of 1, in areas with grain radius below teThresh and areas of dry snow (not bare ice or wet) at the surface']))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'tcIdx', ['method for calculating thermal conductivity (default is 1)',
+        s += '{}\n'.format(class_utils._field_display(self, 'tcIdx', ['method for calculating thermal conductivity (default is 1)',
             '1: after Sturm et al, 1997',
             '2: after Calonne et al., 2011']))
 
-        s += '{}\n'.format(class_utils.fielddisplay(self,'mappedforcingpoint','Mapping of which forcing point will map to each mesh element for ismappedforcing option (integer). Size number of elements.'))
-        s += '{}\n'.format(class_utils.fielddisplay(self,'mappedforcingelevation','The elevation of each mapped forcing location (m above sea level) for ismappedforcing option. Size number of forcing points.'))
-        s += '{}\n'.format(class_utils.fielddisplay(self,'lapseTaValue','Temperature lapse rate of each mapped forcing location, if forcing has different grid and should be remapped for ismappedforcing option. (Default value is -0.006 K m-1., vector of mapping points)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self,'lapsedlwrfValue','Longwave down lapse rate of each mapped forcing location, if forcing has different grid and should be remapped for ismappedforcing option. (Default value is -0.032 W m-2 m-1., vector of mapping points)'))
+        s += '{}\n'.format(class_utils._field_display(self,'mappedforcingpoint','Mapping of which forcing point will map to each mesh element for ismappedforcing option (integer). Size number of elements.'))
+        s += '{}\n'.format(class_utils._field_display(self,'mappedforcingelevation','The elevation of each mapped forcing location (m above sea level) for ismappedforcing option. Size number of forcing points.'))
+        s += '{}\n'.format(class_utils._field_display(self,'lapseTaValue','Temperature lapse rate of each mapped forcing location, if forcing has different grid and should be remapped for ismappedforcing option. (Default value is -0.006 K m-1., vector of mapping points)'))
+        s += '{}\n'.format(class_utils._field_display(self,'lapsedlwrfValue','Longwave down lapse rate of each mapped forcing location, if forcing has different grid and should be remapped for ismappedforcing option. (Default value is -0.032 W m-2 m-1., vector of mapping points)'))
 
         # Snow properties init
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'Dzini', 'Initial cell depth when restart [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'Dini', 'Initial snow density when restart [kg m-3]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'Reini', 'Initial grain size when restart [mm]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'Gdnini', 'Initial grain dricity when restart [-]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'Gspini', 'Initial grain sphericity when restart [-]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ECini', 'Initial evaporation/condensation when restart [kg m-2]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'Wini', 'Initial snow water content when restart [kg m-2]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'Aini', 'Initial albedo when restart [-]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'Adiffini', 'Initial diffusive radiation albedo when restart (default to 1) [-]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'Tini', 'Initial snow temperature when restart [K]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'Sizeini', 'Initial number of layers when restart [-]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'Dzini', 'Initial cell depth when restart [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'Dini', 'Initial snow density when restart [kg m-3]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'Reini', 'Initial grain size when restart [mm]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'Gdnini', 'Initial grain dricity when restart [-]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'Gspini', 'Initial grain sphericity when restart [-]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ECini', 'Initial evaporation/condensation when restart [kg m-2]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'Wini', 'Initial snow water content when restart [kg m-2]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'Aini', 'Initial albedo when restart [-]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'Adiffini', 'Initial diffusive radiation albedo when restart (default to 1) [-]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'Tini', 'Initial snow temperature when restart [K]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'Sizeini', 'Initial number of layers when restart [-]'))
 
         # Additional albedo parameters
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'aValue', 'Albedo forcing at every element'))
+        s += '{}\n'.format(class_utils._field_display(self, 'aValue', 'Albedo forcing at every element'))
         if (self.aIdx in (1, 2) if isinstance(self.aIdx, int) 
             else list(self.aIdx) == [1, 2] if isinstance(self.aIdx, (list, np.ndarray)) 
             else False):
-            s += '{}\n'.format(class_utils.fielddisplay(self, 'aSnow', 'new snow albedo (0.64 - 0.89)'))
-            s += '{}\n'.format(class_utils.fielddisplay(self, 'aIce', 'albedo of ice (0.27-0.58)'))
+            s += '{}\n'.format(class_utils._field_display(self, 'aSnow', 'new snow albedo (0.64 - 0.89)'))
+            s += '{}\n'.format(class_utils._field_display(self, 'aIce', 'albedo of ice (0.27-0.58)'))
             if self.aIdx == 1:
-                s += '{}\n'.format(class_utils.fielddisplay(self,'szaValue','Solar Zenith Angle [degree]'))
-                s += '{}\n'.format(class_utils.fielddisplay(self,'cotValue','Cloud Optical Thickness'))
-                s += '{}\n'.format(class_utils.fielddisplay(self,'ccsnowValue','concentration of light absorbing carbon for snow [ppm1]'))
-                s += '{}\n'.format(class_utils.fielddisplay(self,'cciceValue','concentration of light absorbing carbon for ice [ppm1]'))
+                s += '{}\n'.format(class_utils._field_display(self,'szaValue','Solar Zenith Angle [degree]'))
+                s += '{}\n'.format(class_utils._field_display(self,'cotValue','Cloud Optical Thickness'))
+                s += '{}\n'.format(class_utils._field_display(self,'ccsnowValue','concentration of light absorbing carbon for snow [ppm1]'))
+                s += '{}\n'.format(class_utils._field_display(self,'cciceValue','concentration of light absorbing carbon for ice [ppm1]'))
         elif self.aIdx == 3:
-            s += '{}\n'.format(class_utils.fielddisplay(self, 'cldFrac', 'average cloud amount'))
+            s += '{}\n'.format(class_utils._field_display(self, 'cldFrac', 'average cloud amount'))
         elif self.aIdx == 4:
-            s += '{}\n'.format(class_utils.fielddisplay(self, 't0wet', 'time scale for wet snow (15-21.9) [d]'))
-            s += '{}\n'.format(class_utils.fielddisplay(self, 't0dry', 'warm snow timescale (30) [d]'))
-            s += '{}\n'.format(class_utils.fielddisplay(self, 'K', 'time scale temperature coef. (7) [d]'))
+            s += '{}\n'.format(class_utils._field_display(self, 't0wet', 'time scale for wet snow (15-21.9) [d]'))
+            s += '{}\n'.format(class_utils._field_display(self, 't0dry', 'warm snow timescale (30) [d]'))
+            s += '{}\n'.format(class_utils._field_display(self, 'K', 'time scale temperature coef. (7) [d]'))
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'swIdx', 'apply all SW to top grid cell (0) or allow SW to penetrate surface (1) [default 0, if swIdx=1 and aIdx=2 function of effective radius (Brun et al., 1992) or else dependent on snow density (taken from Bassford, 2002)]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'denIdx', ['densification model to use (default is 2):',
+        s += '{}\n'.format(class_utils._field_display(self, 'swIdx', 'apply all SW to top grid cell (0) or allow SW to penetrate surface (1) [default 0, if swIdx=1 and aIdx=2 function of effective radius (Brun et al., 1992) or else dependent on snow density (taken from Bassford, 2002)]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'denIdx', ['densification model to use (default is 2):',
             '1 = emperical model of Herron and Langway (1980)',
             '2 = semi-emperical model of Anthern et al. (2010)',
             '3 = DO NOT USE: physical model from Appix B of Anthern et al. (2010)',
@@ -1470,19 +1470,19 @@ class gemb(class_registry.manage_state):
             '5 = DO NOT USE: modified emperical model (4) by Helsen et al. (2008)',
             '6 = Antarctica semi-emperical model of Ligtenberg et al. (2011)',
             '7 = Greenland semi-emperical model of Kuipers Munneke et al. (2015)']))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'dsnowIdx', ['model for fresh snow accumulation density (default is 1):',
+        s += '{}\n'.format(class_utils._field_display(self, 'dsnowIdx', ['model for fresh snow accumulation density (default is 1):',
             '0 = Original GEMB value, 150 kg/m^3',
             '1 = Antarctica value of fresh snow density, 350 kg/m^3',
             '2 = Greenland value of fresh snow density, 315 kg/m^3, Fausto et al. (2018)',
             '3 = Antarctica model of Kaspers et al. (2004), Make sure to set Vmean accurately',
             '4 = Greenland model of Kuipers Munneke et al. (2015)']))
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'steps_per_step', 'number of smb steps per time step'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'averaging', 'averaging methods from short to long steps'))
+        s += '{}\n'.format(class_utils._field_display(self, 'steps_per_step', 'number of smb steps per time step'))
+        s += '{}\n'.format(class_utils._field_display(self, 'averaging', 'averaging methods from short to long steps'))
         s += '\t\t{}\n'.format('0: Arithmetic (default)')
         s += '\t\t{}\n'.format('1: Geometric')
         s += '\t\t{}\n'.format('2: Harmonic')
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
     
     # Define class string
@@ -1491,152 +1491,152 @@ class gemb(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.gemb fields to 3D
+        Extrude [smb.gemb] fields to 3D
         """
         if np.shape(self.Ta)[0] == md.mesh.numberofelements or np.shape(self.Ta)[0] == md.mesh.numberofelements + 1 :
-            self.Ta = mesh.project_3d(md, vector = self.Ta, type = 'element')
-            self.V = mesh.project_3d(md, vector = self.V, type = 'element')
-            self.dswrf = mesh.project_3d(md, vector = self.dswrf, type = 'element')
-            self.dlwrf = mesh.project_3d(md, vector = self.dlwrf, type = 'element')
-            self.P = mesh.project_3d(md, vector = self.P, type = 'element')
-            self.eAir = mesh.project_3d(md, vector = self.eAir, type = 'element')
-            self.pAir = mesh.project_3d(md, vector = self.pAir, type = 'element')
+            self.Ta = mesh._project_3d(md, vector = self.Ta, type = 'element')
+            self.V = mesh._project_3d(md, vector = self.V, type = 'element')
+            self.dswrf = mesh._project_3d(md, vector = self.dswrf, type = 'element')
+            self.dlwrf = mesh._project_3d(md, vector = self.dlwrf, type = 'element')
+            self.P = mesh._project_3d(md, vector = self.P, type = 'element')
+            self.eAir = mesh._project_3d(md, vector = self.eAir, type = 'element')
+            self.pAir = mesh._project_3d(md, vector = self.pAir, type = 'element')
 
         if not np.isnan(self.Dzini):
-            self.Dzini=mesh.project_3d(md,vector = self.Dzini, type = 'element')
+            self.Dzini=mesh._project_3d(md,vector = self.Dzini, type = 'element')
         if not np.isnan(self.Dini):
-            self.Dini=mesh.project_3d(md,vector = self.Dini, type = 'element')
+            self.Dini=mesh._project_3d(md,vector = self.Dini, type = 'element')
         if not np.isnan(self.Reini):
-            self.Reini=mesh.project_3d(md, vector = self.Reini, type = 'element')
+            self.Reini=mesh._project_3d(md, vector = self.Reini, type = 'element')
         if not np.isnan(self.Gdnini):
-            self.Gdnini=mesh.project_3d(md, vector = self.Gdnini, type = 'element')
+            self.Gdnini=mesh._project_3d(md, vector = self.Gdnini, type = 'element')
         if not np.isnan(self.Gspini):
-            self.Gspini=mesh.project_3d(md, vector = self.Gspini, type = 'element')
+            self.Gspini=mesh._project_3d(md, vector = self.Gspini, type = 'element')
         if not np.isnan(self.ECini):
-            self.ECini=mesh.project_3d(md, vector = self.ECini, type = 'element')
+            self.ECini=mesh._project_3d(md, vector = self.ECini, type = 'element')
         if not np.isnan(self.Wini):
-            self.Wini=mesh.project_3d(md, vector = self.Wini, type = 'element')
+            self.Wini=mesh._project_3d(md, vector = self.Wini, type = 'element')
         if not np.isnan(self.Aini):
-            self.Aini=mesh.project_3d(md, vector = self.Aini, type = 'element')
+            self.Aini=mesh._project_3d(md, vector = self.Aini, type = 'element')
         if not np.isnan(self.Adiffini):
-            self.Adiffini=mesh.project_3d(md, vector = self.Adiffini, type = 'element')
+            self.Adiffini=mesh._project_3d(md, vector = self.Adiffini, type = 'element')
         if not np.isnan(self.Tini):
-            self.Tini=mesh.project_3d(md, vector = self.Tini, type = 'element')
+            self.Tini=mesh._project_3d(md, vector = self.Tini, type = 'element')
 
         if not np.isnan(self.dswdiffrf):
-            self.dswdiffrf=mesh.project_3d(md, vector = self.dswdiffrf, type = 'element')
+            self.dswdiffrf=mesh._project_3d(md, vector = self.dswdiffrf, type = 'element')
         if not np.isnan(self.szaValue):
-            self.szaValue=mesh.project_3d(md, vector = self.szaValue, type = 'element')
+            self.szaValue=mesh._project_3d(md, vector = self.szaValue, type = 'element')
         if not np.isnan(self.cotValue):
-            self.cotValue=mesh.project_3d(md, vector = self.cotValue, type = 'element')
+            self.cotValue=mesh._project_3d(md, vector = self.cotValue, type = 'element')
         if not np.isnan(self.ccsnowValue):
-            self.ccsnowValue=mesh.project_3d(md, vector = self.ccsnowValue, type = 'element')
+            self.ccsnowValue=mesh._project_3d(md, vector = self.ccsnowValue, type = 'element')
         if not np.isnan(self.cciceValue):
-            self.cciceValue=mesh.project_3d(md, vector = self.cciceValue, type = 'element')
+            self.cciceValue=mesh._project_3d(md, vector = self.cciceValue, type = 'element')
 
         if not np.isnan(self.aValue):
-            self.aValue = mesh.project_3d(md, vector = self.aValue, type = 'element')
+            self.aValue = mesh._project_3d(md, vector = self.aValue, type = 'element')
         if not np.isnan(self.teValue):
-            self.teValue = mesh.project_3d(md, vector = self.teValue, type = 'element')
+            self.teValue = mesh._project_3d(md, vector = self.teValue, type = 'element')
         if not np.isnan(self.mappedforcingpoint):
-            self.mappedforcingpoint = mesh.project_3d(md, vector = self.mappedforcingpoint, type = 'element')
+            self.mappedforcingpoint = mesh._project_3d(md, vector = self.mappedforcingpoint, type = 'element')
         
         return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
 
-        class_utils.check_field(md, fieldname = 'smb.isgraingrowth', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'smb.isalbedo', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'smb.isshortwave', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'smb.isthermal', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'smb.isaccumulation', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'smb.ismelt', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'smb.isdensification', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'smb.isturbulentflux', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'smb.isdeltaLWup', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'smb.isconstrainsurfaceT', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'smb.ismappedforcing', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'smb.isprecipforcingremapped', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'smb.iscompressedforcing', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'smb.isgraingrowth', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'smb.isalbedo', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'smb.isshortwave', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'smb.isthermal', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'smb.isaccumulation', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'smb.ismelt', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'smb.isdensification', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'smb.isturbulentflux', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'smb.isdeltaLWup', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'smb.isconstrainsurfaceT', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'smb.ismappedforcing', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'smb.isprecipforcingremapped', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'smb.iscompressedforcing', values = [0, 1])
 
         sizeta=np.shape(self.Ta)
-        class_utils.check_field(md, fieldname = 'smb.Ta', mappedtimeseries = True, gt = 273-100, lt = 273+100, allow_nan = False, allow_inf = False) #-100/100 celsius min/max value
-        class_utils.check_field(md, fieldname = 'smb.V', mappedtimeseries = True, ge = 0, lt = 45, size = sizeta, allow_nan = False, allow_inf = False) #max 500 km/h
-        class_utils.check_field(md, fieldname = 'smb.dswrf', mappedtimeseries = True, ge = 0, le = 1400, size = sizeta, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'smb.dswdiffrf', mappedtimeseries = True, ge = 0, le = 1400, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'smb.dlwrf', mappedtimeseries = True, size = sizeta, ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'smb.P', mappedtimeseries = True, ge = 0, le = 200, size = sizeta, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'smb.eAir', mappedtimeseries = True, size = sizeta, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.Ta', mappedtimeseries = True, gt = 273-100, lt = 273+100, allow_nan = False, allow_inf = False) #-100/100 celsius min/max value
+        class_utils._check_field(md, fieldname = 'smb.V', mappedtimeseries = True, ge = 0, lt = 45, size = sizeta, allow_nan = False, allow_inf = False) #max 500 km/h
+        class_utils._check_field(md, fieldname = 'smb.dswrf', mappedtimeseries = True, ge = 0, le = 1400, size = sizeta, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.dswdiffrf', mappedtimeseries = True, ge = 0, le = 1400, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.dlwrf', mappedtimeseries = True, size = sizeta, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.P', mappedtimeseries = True, ge = 0, le = 200, size = sizeta, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.eAir', mappedtimeseries = True, size = sizeta, allow_nan = False, allow_inf = False)
 
-        class_utils.check_field(md, fieldname = 'smb.Tmean', size = (sizeta[0]-1, ), gt = 273-100, lt = 273+100, allow_nan = False, allow_inf = False) #-100/100 celsius min/max value
-        class_utils.check_field(md, fieldname = 'smb.C', size = (sizeta[0]-1, ), gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'smb.Vmean', size = (sizeta[0]-1, ), ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'smb.Tz', size =  (sizeta[0]-1, ), ge = 0, le = 5000, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'smb.Vz', size = (sizeta[0]-1, ), ge = 0, le = 5000, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.Tmean', size = (sizeta[0]-1, ), gt = 273-100, lt = 273+100, allow_nan = False, allow_inf = False) #-100/100 celsius min/max value
+        class_utils._check_field(md, fieldname = 'smb.C', size = (sizeta[0]-1, ), gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.Vmean', size = (sizeta[0]-1, ), ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.Tz', size =  (sizeta[0]-1, ), ge = 0, le = 5000, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.Vz', size = (sizeta[0]-1, ), ge = 0, le = 5000, allow_nan = False, allow_inf = False)
 
-        class_utils.check_field(md, fieldname = 'smb.teValue', timeseries = True, ge = 0, le = 1, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'smb.dulwrfValue', timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.teValue', timeseries = True, ge = 0, le = 1, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.dulwrfValue', timeseries = True, allow_nan = False, allow_inf = False)
 
         if self.ismappedforcing:
-            class_utils.check_field(md, fieldname = 'smb.mappedforcingpoint', size = (md.mesh.numberofelements, ), gt = 0, le = (sizeta[0]-1, ), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.mappedforcingelevation', size = (sizeta[0]-1, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.mappedforcingpoint', size = (md.mesh.numberofelements, ), gt = 0, le = (sizeta[0]-1, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.mappedforcingelevation', size = (sizeta[0]-1, ), allow_nan = False, allow_inf = False)
             if np.prod(np.shape(self.lapseTaValue)) == 1:
                 warnings.warn('pyissm.model.classes.smb.gemb: smb.lapseTaValue is now a vector of mapped elements. Set to md.smb.lapseTaValue * np.ones(np.shape(md.smb.mappedforcingelevation))')
             if np.prod(np.shape(self.lapsedlwrfValue)) == 1:
                 warnings.warn('pyissm.model.classes.smb.gemb: smb.lapsedlwrfValue is now a vector of mapped elements. Set to md.smb.lapsedlwrfValue * np.ones(np.shape(md.smb.mappedforcingelevation))')
-            class_utils.check_field(md, fieldname = 'smb.lapseTaValue', size = (sizeta[0]-1, ), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.lapsedlwrfValue', size = (sizeta[0]-1, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.lapseTaValue', size = (sizeta[0]-1, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.lapsedlwrfValue', size = (sizeta[0]-1, ), allow_nan = False, allow_inf = False)
 
-        class_utils.check_field(md, fieldname = 'smb.aIdx', values = [0, 1, 2, 3, 4], allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'smb.eIdx', values = [0, 1, 2], allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'smb.tcIdx', values = [1, 2], allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'smb.swIdx', values = [0, 1], allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'smb.denIdx', values = [1, 2, 3, 4, 5, 6, 7], allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'smb.dsnowIdx', values = [0, 1, 2, 3, 4], allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.aIdx', values = [0, 1, 2, 3, 4], allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.eIdx', values = [0, 1, 2], allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.tcIdx', values = [1, 2], allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.swIdx', values = [0, 1], allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.denIdx', values = [1, 2, 3, 4, 5, 6, 7], allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.dsnowIdx', values = [0, 1, 2, 3, 4], allow_nan = False, allow_inf = False)
 
-        class_utils.check_field(md, fieldname = 'smb.zTop', ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'smb.dzTop', gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'smb.dzMin', gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'smb.zY', ge = 1, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'smb.outputFreq', gt = 0, lt = 10 * 365, allow_nan = False, allow_inf = False)  #10 years max
-        class_utils.check_field(md, fieldname = 'smb.InitDensityScaling', ge = 0, le = 1, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'smb.ThermoDeltaTScaling', ge = 0, le = 1, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'smb.adThresh', ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'smb.teThresh', ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.zTop', ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.dzTop', gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.dzMin', gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.zY', ge = 1, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.outputFreq', gt = 0, lt = 10 * 365, allow_nan = False, allow_inf = False)  #10 years max
+        class_utils._check_field(md, fieldname = 'smb.InitDensityScaling', ge = 0, le = 1, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.ThermoDeltaTScaling', ge = 0, le = 1, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.adThresh', ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.teThresh', ge = 0, allow_nan = False, allow_inf = False)
         
-        class_utils.check_field(md, fieldname = 'smb.aValue', timeseries = True, ge = 0, le = 1, allow_nan = False, allow_inf = True)
+        class_utils._check_field(md, fieldname = 'smb.aValue', timeseries = True, ge = 0, le = 1, allow_nan = False, allow_inf = True)
         if (self.aIdx in (1, 2) if isinstance(self.aIdx, int) 
             else list(self.aIdx) == [1, 2] if isinstance(self.aIdx, (list, np.ndarray)) 
             else False):
-            class_utils.check_field(md, fieldname = 'smb.aSnow', ge = 0.64, le = 0.89, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.aIce', ge = 0.27, le = 0.58, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.aSnow', ge = 0.64, le = 0.89, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.aIce', ge = 0.27, le = 0.58, allow_nan = False, allow_inf = False)
             if self.aIdx == 1:
-                class_utils.check_field(md, fieldname = 'smb.szaValue', timeseries = True, ge = 0, le = 90, allow_nan = False, allow_inf = False)
-                class_utils.check_field(md, fieldname = 'smb.cotValue', timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
-                class_utils.check_field(md, fieldname = 'smb.ccsnowValue', timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
-                class_utils.check_field(md, fieldname = 'smb.cciceValue', timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.szaValue', timeseries = True, ge = 0, le = 90, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.cotValue', timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.ccsnowValue', timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.cciceValue', timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
         elif self.aIdx == 3:
-            class_utils.check_field(md, fieldname = 'smb.cldFrac', ge = 0, le = 1, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.cldFrac', ge = 0, le = 1, allow_nan = False, allow_inf = False)
         elif self.aIdx == 4:
-            class_utils.check_field(md, fieldname = 'smb.t0wet', ge = 15, le = 21.9, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.t0dry', ge = 30, le = 30, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.K', ge = 7, le = 7, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.t0wet', ge = 15, le = 21.9, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.t0dry', ge = 30, le = 30, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.K', ge = 7, le = 7, allow_nan = False, allow_inf = False)
 
         # Check zTop is < local thickness
         he = np.sum(md.geometry.thickness[md.mesh.elements - 1], axis=1) / np.size(md.mesh.elements, 1)
         if np.any(he < self.zTop):
             raise IOError('SMBgemb consistency check error: zTop should be smaller than local ice thickness')
-        class_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
-        class_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
-        class_utils.check_field(md, fieldname = 'smb.requested_outputs', string_list = True)
+        class_utils._check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+        class_utils._check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
+        class_utils._check_field(md, fieldname = 'smb.requested_outputs', string_list = True)
 
         return md
 
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):
+    def initialize(self, md):
         """
         Initialise empty fields in smb.gemb.
         """
@@ -1645,7 +1645,7 @@ class gemb(class_registry.manage_state):
         return self
 
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -1707,14 +1707,14 @@ class gemb(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 8, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 8, format = 'Integer')
 
         ## Write Boolean fields
         fieldnames = ['isgraingrowth', 'isalbedo', 'isshortwave', 'isthermal', 'isaccumulation',
                       'ismelt', 'isdensification', 'isturbulentflux', 'isconstrainsurfaceT',
                       'isdeltaLWup', 'ismappedforcing', 'isprecipforcingremapped']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Boolean')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Boolean')
 
         ## Write conditional compressed forcing fields
         if self.iscompressedforcing:
@@ -1724,46 +1724,46 @@ class gemb(class_registry.manage_state):
 
         fieldnames = ['Ta', 'V', 'dswrf', 'dswdiffrf', 'dlwrf', 'P', 'eAir', 'pAir']
         for field in fieldnames:
-            execute.WriteData(fid,prefix, obj = self, fieldname = field, format = writetype, mattype = 2, timeserieslength = np.shape(self.Ta)[0], yts = md.constants.yts)
+            execute._write_model_field(fid,prefix, obj = self, fieldname = field, format = writetype, mattype = 2, timeserieslength = np.shape(self.Ta)[0], yts = md.constants.yts)
 
         ## Write DoubleMat fields
         fieldnames = ['Tmean', 'C', 'Vmean', 'Tz', 'Vz', 'zTop', 'dzTop', 'dzMin', 'zY', 'zMax', 'zMin']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 2)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 2)
 
         ## Write Integer fields
         fieldnames = ['aIdx', 'eIdx', 'tcIdx', 'swIdx', 'denIdx', 'dsnowIdx']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Integer')
 
         ## Write Double fields
         fieldnames = ['InitDensityScaling', 'ThermoDeltaTScaling', 'outputFreq', 'aSnow', 'aIce',
                       'cldFrac', 't0wet', 't0dry', 'K', 'adThresh', 'teThresh']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double')
 
         ## Write DoubleMat fields
             ## mattype = 2
         fieldnames = ['aValue', 'teValue', 'dulwrfValue', 'szaValue', 'cotValue', 'ccsnowValue', 'cciceValue']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 2, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 2, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
 
             ## mattype = 3
         fieldnames = ['Dzini', 'Dini', 'Reini', 'Gdnini', 'Gspini', 'Wini', 'Aini', 'Adiffini', 'Tini']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 3)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 3)
 
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'Sizeini', format = 'IntMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'ECini', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'Sizeini', format = 'IntMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'ECini', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
 
         if self.ismappedforcing:
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'mappedforcingpoint', format ='IntMat', mattype = 2)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'mappedforcingelevation', format ='DoubleMat', mattype = 3)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'lapseTaValue', format ='DoubleMat', mattype = 3)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'lapsedlwrfValue', format ='DoubleMat', mattype = 3)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'mappedforcingpoint', format ='IntMat', mattype = 2)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'mappedforcingelevation', format ='DoubleMat', mattype = 3)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'lapseTaValue', format ='DoubleMat', mattype = 3)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'lapsedlwrfValue', format ='DoubleMat', mattype = 3)
 
         ## Calculate dt from forcings
         ## NOTE: Taken from $ISSM_DIR/src/m/classes/SMBgemb.py
@@ -1791,7 +1791,7 @@ class gemb(class_registry.manage_state):
         dtime = np.diff(time, n=1, axis=0)
         dt = min(dtime)
 
-        execute.WriteData(fid, prefix, name = 'md.smb.dt', data = dt, format = 'Double', scale = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.smb.dt', data = dt, format = 'Double', scale = md.constants.yts)
         
         # Check if smb_dt goes evenly into transient core time step
         if (md.timestepping.time_step % dt >= 1e-10):
@@ -1800,7 +1800,7 @@ class gemb(class_registry.manage_state):
         if md.timestepping.__class__.__name__ == 'timesteppingadaptive':
             raise IOError('GEMB cannot be run with adaptive timestepping.  Check class type of md.timestepping')
 
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.gradients
@@ -1845,7 +1845,7 @@ class gradients(class_registry.manage_state):
         Returns a detailed string representation of the gradient SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -1882,17 +1882,17 @@ class gradients(class_registry.manage_state):
     def __repr__(self):
         s = '   surface forcings parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'issmbgradients', 'is smb gradients method activated (0 or 1, default is 0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'href', 'reference elevation from which deviation is used to calculate SMB adjustment in smb gradients method'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'smbref', 'reference smb from which deviation is calculated in smb gradients method [m/yr ice equiv]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'b_pos', 'slope of hs - smb regression line for accumulation regime required if smb gradients is activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'b_neg', 'slope of hs - smb regression line for ablation regime required if smb gradients is activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'steps_per_step', 'number of smb steps per time step'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'averaging', 'averaging methods from short to long steps'))
+        s += '{}\n'.format(class_utils._field_display(self, 'issmbgradients', 'is smb gradients method activated (0 or 1, default is 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'href', 'reference elevation from which deviation is used to calculate SMB adjustment in smb gradients method'))
+        s += '{}\n'.format(class_utils._field_display(self, 'smbref', 'reference smb from which deviation is calculated in smb gradients method [m/yr ice equiv]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'b_pos', 'slope of hs - smb regression line for accumulation regime required if smb gradients is activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'b_neg', 'slope of hs - smb regression line for ablation regime required if smb gradients is activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'steps_per_step', 'number of smb steps per time step'))
+        s += '{}\n'.format(class_utils._field_display(self, 'averaging', 'averaging methods from short to long steps'))
         s += '\t\t{}\n'.format('0: Arithmetic (default)')
         s += '\t\t{}\n'.format('1: Geometric')
         s += '\t\t{}\n'.format('2: Harmonic')
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -1901,32 +1901,32 @@ class gradients(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.gradients fields to 3D
+        Extrude [smb.gradients] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.smb.gradients.extrude: 3D extrusion not implemented for smb.gradients. Returning unchanged (2D) smb fields.')
+        warnings.warn('pyissm.model.classes.smb.gradients._extrude: 3D extrusion not implemented for smb.gradients. Returning unchanged (2D) smb fields.')
             
         return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         if 'MasstransportAnalysis' in analyses:
-            class_utils.check_field(md, fieldname = 'smb.href', timeseries = True, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.smbref', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.href', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.smbref', timeseries = True, allow_nan = False, allow_inf = False)
             if np.max(np.max(np.abs(md.smb.smbref[0:-1,]))) < 1:
                 print('!!! Warning: SMBgradients now expects smbref to be in m/yr ice eq. instead of mm/yr water eq.')
-            class_utils.check_field(md, fieldname = 'smb.b_pos', timeseries = True, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.b_neg', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.b_pos', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.b_neg', timeseries = True, allow_nan = False, allow_inf = False)
 
-        class_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
-        class_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
-        class_utils.check_field(md, fieldname = 'masstransport.requested_outputs', string_list = True)
+        class_utils._check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+        class_utils._check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
+        class_utils._check_field(md, fieldname = 'masstransport.requested_outputs', string_list = True)
 
         return md
     
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):
+    def initialize(self, md):
         """
         Initialise empty fields in smb.gradients.
         """
@@ -1935,7 +1935,7 @@ class gradients(class_registry.manage_state):
         return self
     
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -1997,15 +1997,15 @@ class gradients(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 6, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 6, format = 'Integer')
 
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'href', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'smbref', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'b_pos', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'b_neg', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'href', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'smbref', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'b_pos', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'b_neg', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.gradientscomponents
@@ -2054,7 +2054,7 @@ class gradientscomponents(class_registry.manage_state):
         Returns a detailed string representation of the gradient components SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -2092,19 +2092,19 @@ class gradientscomponents(class_registry.manage_state):
     def __repr__(self):
         s = '   surface forcings parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'issmbgradients', 'is smb gradients method activated (0 or 1, default is 0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'accuref', ' reference value of the accumulation'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'accualti', ' Altitude at which the accumulation is equal to the reference value'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'accugrad', ' Gradient of the variation of the accumulation (0 for uniform accumulation)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'runoffref', ' reference value of the runoff m w.e. y-1 (temperature times ddf)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'runoffalti', ' Altitude at which the runoff is equal to the reference value'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'runoffgrad', ' Gradient of the variation of the runoff (0 for uniform runoff) m w.e. m-1 y-1 (lapse rate times ddf)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'steps_per_step', 'number of smb steps per time step'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'averaging', 'averaging methods from short to long steps'))
+        s += '{}\n'.format(class_utils._field_display(self, 'issmbgradients', 'is smb gradients method activated (0 or 1, default is 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'accuref', ' reference value of the accumulation'))
+        s += '{}\n'.format(class_utils._field_display(self, 'accualti', ' Altitude at which the accumulation is equal to the reference value'))
+        s += '{}\n'.format(class_utils._field_display(self, 'accugrad', ' Gradient of the variation of the accumulation (0 for uniform accumulation)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'runoffref', ' reference value of the runoff m w.e. y-1 (temperature times ddf)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'runoffalti', ' Altitude at which the runoff is equal to the reference value'))
+        s += '{}\n'.format(class_utils._field_display(self, 'runoffgrad', ' Gradient of the variation of the runoff (0 for uniform runoff) m w.e. m-1 y-1 (lapse rate times ddf)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'steps_per_step', 'number of smb steps per time step'))
+        s += '{}\n'.format(class_utils._field_display(self, 'averaging', 'averaging methods from short to long steps'))
         s += '\t\t{}\n'.format('0: Arithmetic (default)')
         s += '\t\t{}\n'.format('1: Geometric')
         s += '\t\t{}\n'.format('2: Harmonic')
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -2113,32 +2113,32 @@ class gradientscomponents(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.gradientscomponents fields to 3D
+        Extrude [smb.gradientscomponents] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.smb.gradientscomponents.extrude: 3D extrusion not implemented for smb.gradientscomponents. Returning unchanged (2D) smb fields.')
+        warnings.warn('pyissm.model.classes.smb.gradientscomponents._extrude: 3D extrusion not implemented for smb.gradientscomponents. Returning unchanged (2D) smb fields.')
             
         return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         if 'MasstransportAnalysis' in analyses:
-            class_utils.check_field(md, fieldname = 'smb.accualti', scalar = True, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.accuref', singletimeseries = True, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.accugrad', singletimeseries = True, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.runoffalti', scalar = True, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.runoffref', singletimeseries = True, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.runoffgrad', singletimeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.accualti', scalar = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.accuref', singletimeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.accugrad', singletimeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.runoffalti', scalar = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.runoffref', singletimeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.runoffgrad', singletimeseries = True, allow_nan = False, allow_inf = False)
 
-        class_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
-        class_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
-        class_utils.check_field(md, fieldname = 'masstransport.requested_outputs', string_list = True)
+        class_utils._check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+        class_utils._check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
+        class_utils._check_field(md, fieldname = 'masstransport.requested_outputs', string_list = True)
         
         return md
     
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):
+    def initialize(self, md):
         """
         Initialise empty fields in smb.gradientscomponents.
         """
@@ -2147,7 +2147,7 @@ class gradientscomponents(class_registry.manage_state):
         return self
     
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -2214,20 +2214,20 @@ class gradientscomponents(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 11, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 11, format = 'Integer')
 
         ## Write DoubleMat fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'accuref', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts, scale = 1. / md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'accugrad', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts, scale = 1. / md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'runoffref', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts, scale = 1. / md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'runoffgrad', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts, scale = 1. / md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'accuref', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts, scale = 1. / md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'accugrad', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts, scale = 1. / md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'runoffref', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts, scale = 1. / md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'runoffgrad', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts, scale = 1. / md.constants.yts)
         
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'accualti', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'runoffalti', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'accualti', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'runoffalti', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.gradientsela
@@ -2274,7 +2274,7 @@ class gradientsela(class_registry.manage_state):
         Returns a detailed string representation of the ELA gradient SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -2313,17 +2313,17 @@ class gradientsela(class_registry.manage_state):
         s = '   surface forcings parameters:\n'
 
         s += '\n   SMB gradients ela parameters:'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ela', ' equilibrium line altitude from which deviation is used to calculate smb using the smb gradients ela method [m a.s.l.]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'b_pos', ' vertical smb gradient (dB/dz) above ela'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'b_neg', ' vertical smb gradient (dB/dz) below ela'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'b_max', ' upper cap on smb rate, default: 9999 (no cap) [m ice eq./yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'b_min', ' lower cap on smb rate, default: -9999 (no cap) [m ice eq./yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'steps_per_step', 'number of smb steps per time step'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'averaging', 'averaging methods from short to long steps'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ela', ' equilibrium line altitude from which deviation is used to calculate smb using the smb gradients ela method [m a.s.l.]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'b_pos', ' vertical smb gradient (dB/dz) above ela'))
+        s += '{}\n'.format(class_utils._field_display(self, 'b_neg', ' vertical smb gradient (dB/dz) below ela'))
+        s += '{}\n'.format(class_utils._field_display(self, 'b_max', ' upper cap on smb rate, default: 9999 (no cap) [m ice eq./yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'b_min', ' lower cap on smb rate, default: -9999 (no cap) [m ice eq./yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'steps_per_step', 'number of smb steps per time step'))
+        s += '{}\n'.format(class_utils._field_display(self, 'averaging', 'averaging methods from short to long steps'))
         s += '\t\t{}\n'.format('0: Arithmetic (default)')
         s += '\t\t{}\n'.format('1: Geometric')
         s += '\t\t{}\n'.format('2: Harmonic')
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -2332,31 +2332,31 @@ class gradientsela(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.gradientsela fields to 3D
+        Extrude [smb.gradientsela] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.smb.gradientsela.extrude: 3D extrusion not implemented for smb.gradientsela. Returning unchanged (2D) smb fields.')
+        warnings.warn('pyissm.model.classes.smb.gradientsela._extrude: 3D extrusion not implemented for smb.gradientsela. Returning unchanged (2D) smb fields.')
             
         return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         if 'MasstransportAnalysis' in analyses:
-            class_utils.check_field(md, fieldname = 'smb.ela', timeseries = True, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.b_pos', timeseries = True, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.b_neg', timeseries = True, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.b_max', timeseries = True, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.b_min', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.ela', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.b_pos', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.b_neg', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.b_max', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.b_min', timeseries = True, allow_nan = False, allow_inf = False)
 
-        class_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
-        class_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
-        class_utils.check_field(md, fieldname = 'smb.requested_outputs', string_list = True)
+        class_utils._check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+        class_utils._check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
+        class_utils._check_field(md, fieldname = 'smb.requested_outputs', string_list = True)
 
         return md
     
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):   
+    def initialize(self, md):   
         """
         Initialise empty fields in smb.gradientsela.
         """
@@ -2365,7 +2365,7 @@ class gradientsela(class_registry.manage_state):
         return self
     
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -2427,19 +2427,19 @@ class gradientsela(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 9, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 9, format = 'Integer')
 
         ## Write DoubleMat fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'ela', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'b_pos', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'b_neg', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'b_max', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'b_min', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'ela', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'b_pos', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'b_neg', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'b_max', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'b_min', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.henning
@@ -2477,7 +2477,7 @@ class henning(class_registry.manage_state):
         Returns a detailed string representation of the Henning SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -2502,13 +2502,13 @@ class henning(class_registry.manage_state):
     def __repr__(self):
         s = '   surface forcings parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'smbref', 'reference smb from which deviation is calculated [m/yr ice eq]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'steps_per_step', 'number of smb steps per time step'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'averaging', 'averaging methods from short to long steps'))
+        s += '{}\n'.format(class_utils._field_display(self, 'smbref', 'reference smb from which deviation is calculated [m/yr ice eq]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'steps_per_step', 'number of smb steps per time step'))
+        s += '{}\n'.format(class_utils._field_display(self, 'averaging', 'averaging methods from short to long steps'))
         s += '\t\t{}\n'.format('0: Arithmetic (default)')
         s += '\t\t{}\n'.format('1: Geometric')
         s += '\t\t{}\n'.format('2: Harmonic')
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -2517,11 +2517,11 @@ class henning(class_registry.manage_state):
         return s
         
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.henning fields to 3D
+        Extrude [smb.henning] fields to 3D
         """
-        self.smbref = mesh.project_3d(md, vector = self.smbref, type = 'node')
+        self.smbref = mesh._project_3d(md, vector = self.smbref, type = 'node')
             
         return self
     
@@ -2530,17 +2530,17 @@ class henning(class_registry.manage_state):
         if solution == 'TransientSolution' and not md.transient.issmb:
             return
         if 'MasstransportAnalysis' in analyses:
-            class_utils.check_field(md, fieldname = 'smb.mass_balance', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.mass_balance', timeseries = True, allow_nan = False, allow_inf = False)
         if 'BalancethicknessAnalysis' in analyses:
-            class_utils.check_field(md, fieldname = 'smb.mass_balance', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
-        class_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
-        class_utils.check_field(md, fieldname = 'smb.requested_outputs', string_list = True)
+            class_utils._check_field(md, fieldname = 'smb.mass_balance', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+        class_utils._check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
+        class_utils._check_field(md, fieldname = 'smb.requested_outputs', string_list = True)
 
         return md
     
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):
+    def initialize(self, md):
         """
         Initialise empty fields in smb.henning.
         """
@@ -2552,7 +2552,7 @@ class henning(class_registry.manage_state):
         return self
 
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -2614,13 +2614,13 @@ class henning(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 7, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 7, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'smbref', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'smbref', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.meltcomponents
@@ -2665,7 +2665,7 @@ class meltcomponents(class_registry.manage_state):
         Returns a detailed string representation of the melt components SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -2703,16 +2703,16 @@ class meltcomponents(class_registry.manage_state):
     def __repr__(self):
         s = '   surface forcings parameters with melt (SMB = accumulation-evaporation-melt+refreeze):\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'accumulation', 'accumulated snow [m/yr ice eq]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'evaporation', 'mount of ice lost to evaporative processes [m/yr ice eq]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'melt', 'amount of ice melt in the ice column [m/yr ice eq]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'refreeze', 'amount of ice melt refrozen in the ice column [m/yr ice eq]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'steps_per_step', 'number of smb steps per time step'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'averaging', 'averaging methods from short to long steps'))
+        s += '{}\n'.format(class_utils._field_display(self, 'accumulation', 'accumulated snow [m/yr ice eq]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'evaporation', 'mount of ice lost to evaporative processes [m/yr ice eq]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'melt', 'amount of ice melt in the ice column [m/yr ice eq]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'refreeze', 'amount of ice melt refrozen in the ice column [m/yr ice eq]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'steps_per_step', 'number of smb steps per time step'))
+        s += '{}\n'.format(class_utils._field_display(self, 'averaging', 'averaging methods from short to long steps'))
         s += '\t\t{}\n'.format('0: Arithmetic (default)')
         s += '\t\t{}\n'.format('1: Geometric')
         s += '\t\t{}\n'.format('2: Harmonic')
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -2721,39 +2721,39 @@ class meltcomponents(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.meltcomponents fields to 3D
+        Extrude [smb.meltcomponents] fields to 3D
         """
-        self.accumulation = mesh.project_3d(md, vector = self.accumulation, type = 'node')
-        self.evaporation = mesh.project_3d(md, vector = self.evaporation, type = 'node')
-        self.melt = mesh.project_3d(md, vector = self.melt, type = 'node')
-        self.refreeze = mesh.project_3d(md, vector = self.refreeze, type = 'node')
+        self.accumulation = mesh._project_3d(md, vector = self.accumulation, type = 'node')
+        self.evaporation = mesh._project_3d(md, vector = self.evaporation, type = 'node')
+        self.melt = mesh._project_3d(md, vector = self.melt, type = 'node')
+        self.refreeze = mesh._project_3d(md, vector = self.refreeze, type = 'node')
             
         return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         if 'MasstransportAnalysis' in analyses:
-            class_utils.check_field(md, fieldname = 'smb.accumulation', timeseries = True, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.evaporation', timeseries = True, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.refreeze', timeseries = True, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.melt', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.accumulation', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.evaporation', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.refreeze', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.melt', timeseries = True, allow_nan = False, allow_inf = False)
 
         if 'BalancethicknessAnalysis' in analyses:
-            class_utils.check_field(md, fieldname = 'smb.accumulation', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.evaporation', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.refreeze', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.melt', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.accumulation', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.evaporation', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.refreeze', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.melt', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
 
-        class_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
-        class_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
-        class_utils.check_field(md, fieldname = 'smb.requested_outputs', string_list = 1)
+        class_utils._check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+        class_utils._check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
+        class_utils._check_field(md, fieldname = 'smb.requested_outputs', string_list = 1)
 
         return md
     
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):
+    def initialize(self, md):
         """
         Initialise empty fields in smb.meltcomponents.
         """
@@ -2777,7 +2777,7 @@ class meltcomponents(class_registry.manage_state):
         return self
 
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -2839,16 +2839,16 @@ class meltcomponents(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 3, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 3, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'accumulation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'evaporation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'melt', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'refreeze', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'accumulation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'evaporation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'melt', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'refreeze', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.pdd
@@ -2928,7 +2928,7 @@ class pdd(class_registry.manage_state):
         Returns a detailed string representation of the PDD SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -2980,37 +2980,37 @@ class pdd(class_registry.manage_state):
     def __repr__(self):
         s = '   surface forcings parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isdelta18o', 'is temperature and precipitation delta18o parametrisation activated (0 or 1, default is 0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ismungsm', 'is temperature and precipitation mungsm parametrisation activated (0 or 1, default is 0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'issetpddfac', 'is user passing in defined pdd factors (0 or 1, default is 0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'desfac', 'desertification elevation factor (between 0 and 1, default is 0.5) [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 's0p', 'should be set to elevation from precip source (between 0 and a few 1000s m, default is 0) [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 's0t', 'should be set to elevation from temperature source (between 0 and a few 1000s m, default is 0) [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'rlaps', 'present day lapse rate [degree/km]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'rlapslgm', 'LGM lapse rate [degree/km]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'monthlytemperatures', 'monthly surface temperatures [K], required if pdd is activated and delta18o not activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'precipitation', 'monthly surface precipitation [m/yr water eq], required if pdd is activated and delta18o or mungsm not activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'delta18o', 'delta18o [per mil], required if pdd is activated and delta18o activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'delta18o_surface', 'surface elevation of the delta18o site, required if pdd is activated and delta18o activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'temperatures_presentday', 'monthly present day surface temperatures [K], required if delta18o/mungsm is activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'temperatures_lgm', 'monthly LGM surface temperatures [K], required if delta18o or mungsm is activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'precipitations_presentday', 'monthly surface precipitation [m/yr water eq], required if delta18o or mungsm is activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'precipitations_lgm', 'monthly surface precipitation [m/yr water eq], required if delta18o or mungsm is activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'Tdiff', 'time interpolation parameter for temperature, 1D(year), required if mungsm is activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sealev', 'sea level [m], 1D(year), required if mungsm is activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'temperatures_presentday', 'monthly present day surface temperatures [K], required if delta18o/mungsm is activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'temperatures_lgm', 'monthly LGM surface temperatures [K], required if delta18o or mungsm is activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'precipitations_presentday', 'monthly surface precipitation [m/yr water eq], required if delta18o or mungsm is activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'precipitations_lgm', 'monthly surface precipitation [m/yr water eq], required if delta18o or mungsm is activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'Pfac', 'time interpolation parameter for precipitation, 1D(year), required if mungsm is activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'Tdiff', 'time interpolation parameter for temperature, 1D(year), required if mungsm is activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sealev', 'sea level [m], 1D(year), required if mungsm is activated'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'steps_per_step', 'number of smb steps per time step'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'averaging', 'averaging methods from short to long steps'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isdelta18o', 'is temperature and precipitation delta18o parametrisation activated (0 or 1, default is 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ismungsm', 'is temperature and precipitation mungsm parametrisation activated (0 or 1, default is 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'issetpddfac', 'is user passing in defined pdd factors (0 or 1, default is 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'desfac', 'desertification elevation factor (between 0 and 1, default is 0.5) [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 's0p', 'should be set to elevation from precip source (between 0 and a few 1000s m, default is 0) [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 's0t', 'should be set to elevation from temperature source (between 0 and a few 1000s m, default is 0) [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'rlaps', 'present day lapse rate [degree/km]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'rlapslgm', 'LGM lapse rate [degree/km]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'monthlytemperatures', 'monthly surface temperatures [K], required if pdd is activated and delta18o not activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'precipitation', 'monthly surface precipitation [m/yr water eq], required if pdd is activated and delta18o or mungsm not activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'delta18o', 'delta18o [per mil], required if pdd is activated and delta18o activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'delta18o_surface', 'surface elevation of the delta18o site, required if pdd is activated and delta18o activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'temperatures_presentday', 'monthly present day surface temperatures [K], required if delta18o/mungsm is activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'temperatures_lgm', 'monthly LGM surface temperatures [K], required if delta18o or mungsm is activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'precipitations_presentday', 'monthly surface precipitation [m/yr water eq], required if delta18o or mungsm is activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'precipitations_lgm', 'monthly surface precipitation [m/yr water eq], required if delta18o or mungsm is activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'Tdiff', 'time interpolation parameter for temperature, 1D(year), required if mungsm is activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sealev', 'sea level [m], 1D(year), required if mungsm is activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'temperatures_presentday', 'monthly present day surface temperatures [K], required if delta18o/mungsm is activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'temperatures_lgm', 'monthly LGM surface temperatures [K], required if delta18o or mungsm is activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'precipitations_presentday', 'monthly surface precipitation [m/yr water eq], required if delta18o or mungsm is activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'precipitations_lgm', 'monthly surface precipitation [m/yr water eq], required if delta18o or mungsm is activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'Pfac', 'time interpolation parameter for precipitation, 1D(year), required if mungsm is activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'Tdiff', 'time interpolation parameter for temperature, 1D(year), required if mungsm is activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sealev', 'sea level [m], 1D(year), required if mungsm is activated'))
+        s += '{}\n'.format(class_utils._field_display(self, 'steps_per_step', 'number of smb steps per time step'))
+        s += '{}\n'.format(class_utils._field_display(self, 'averaging', 'averaging methods from short to long steps'))
         s += '\t\t{}\n'.format('0: Arithmetic (default)')
         s += '\t\t{}\n'.format('1: Geometric')
         s += '\t\t{}\n'.format('2: Harmonic')
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -3019,32 +3019,32 @@ class pdd(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.pdd fields to 3D
+        Extrude [smb.pdd] fields to 3D
         """
         if not (self.isdelta18o and self.ismungsm):
-            self.precipitation = mesh.project_3d(md, vector = self.precipitation, type = 'node')
-            self.monthlytemperatures = mesh.project_3d(md, vector = self.monthlytemperatures, type = 'node')
+            self.precipitation = mesh._project_3d(md, vector = self.precipitation, type = 'node')
+            self.monthlytemperatures = mesh._project_3d(md, vector = self.monthlytemperatures, type = 'node')
 
         if self.isdelta18o:
-            self.temperatures_lgm = mesh.project_3d(md, vector = self.temperatures_lgm, type = 'node')
-            self.temperatures_presentday = mesh.project_3d(md, vector = self.temperatures_presentday, type = 'node')
-            self.precipitations_presentday = mesh.project_3d(md, vector = self.precipitations_presentday, type = 'node')
-            self.precipitations_lgm = mesh.project_3d(md, vector = self.precipitations_lgm, type = 'node')
+            self.temperatures_lgm = mesh._project_3d(md, vector = self.temperatures_lgm, type = 'node')
+            self.temperatures_presentday = mesh._project_3d(md, vector = self.temperatures_presentday, type = 'node')
+            self.precipitations_presentday = mesh._project_3d(md, vector = self.precipitations_presentday, type = 'node')
+            self.precipitations_lgm = mesh._project_3d(md, vector = self.precipitations_lgm, type = 'node')
 
         if self.ismungsm:
-            self.temperatures_lgm = mesh.project_3d(md, vector = self.temperatures_lgm, type = 'node')
-            self.temperatures_presentday = mesh.project_3d(md, vector = self.temperatures_presentday, type = 'node')
-            self.precipitations_presentday = mesh.project_3d(md, vector = self.precipitations_presentday, type = 'node')
-            self.precipitations_lgm = mesh.project_3d(md, vector = self.precipitations_lgm, type = 'node')
+            self.temperatures_lgm = mesh._project_3d(md, vector = self.temperatures_lgm, type = 'node')
+            self.temperatures_presentday = mesh._project_3d(md, vector = self.temperatures_presentday, type = 'node')
+            self.precipitations_presentday = mesh._project_3d(md, vector = self.precipitations_presentday, type = 'node')
+            self.precipitations_lgm = mesh._project_3d(md, vector = self.precipitations_lgm, type = 'node')
 
         if self.issetpddfac:
-            self.pddfac_snow = mesh.project_3d(md, vector = self.pddfac_snow, type = 'node')
+            self.pddfac_snow = mesh._project_3d(md, vector = self.pddfac_snow, type = 'node')
         if self.issetpddfac:
-            self.pddfac_ice = mesh.project_3d(md, vector = self.pddfac_ice, type = 'node')
-        self.s0p = mesh.project_3d(md, vector = self.s0p, type = 'node')
-        self.s0t = mesh.project_3d(md, vector = self.s0t, type = 'node')
+            self.pddfac_ice = mesh._project_3d(md, vector = self.pddfac_ice, type = 'node')
+        self.s0p = mesh._project_3d(md, vector = self.s0p, type = 'node')
+        self.s0t = mesh._project_3d(md, vector = self.s0t, type = 'node')
             
         return self
     
@@ -3052,45 +3052,45 @@ class pdd(class_registry.manage_state):
     def check_consistency(self, md, solution, analyses):
 
         if 'MasstransportAnalysis' in analyses:
-            class_utils.check_field(md, fieldname = 'smb.desfac', le = 1, scalar = True)
-            class_utils.check_field(md, fieldname = 'smb.s0p', ge = 0, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.s0t', ge = 0, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.rlaps', ge = 0, scalar = True)
-            class_utils.check_field(md, fieldname = 'smb.rlapslgm', ge = 0, scalar = True)
+            class_utils._check_field(md, fieldname = 'smb.desfac', le = 1, scalar = True)
+            class_utils._check_field(md, fieldname = 'smb.s0p', ge = 0, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.s0t', ge = 0, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.rlaps', ge = 0, scalar = True)
+            class_utils._check_field(md, fieldname = 'smb.rlapslgm', ge = 0, scalar = True)
 
             if (self.isdelta18o == 0 and self.ismungsm == 0):
-                class_utils.check_field(md, fieldname = 'smb.monthlytemperatures', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
-                class_utils.check_field(md, fieldname = 'smb.precipitation', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.monthlytemperatures', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.precipitation', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
             elif self.isdelta18o:
-                class_utils.check_field(md, fieldname = 'smb.delta18o', size = (2, np.nan, ), singletimeseries = True, allow_nan = False, allow_inf = False)
-                class_utils.check_field(md, fieldname = 'smb.delta18o_surface', size = (2, np.nan, ), singletimeseries = True, allow_nan = False, allow_inf = False)
-                class_utils.check_field(md, fieldname = 'smb.temperatures_presentday', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
-                class_utils.check_field(md, fieldname = 'smb.temperatures_lgm', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
-                class_utils.check_field(md, fieldname = 'smb.precipitations_presentday', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
-                class_utils.check_field(md, fieldname = 'smb.precipitations_lgm', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
-                class_utils.check_field(md, fieldname = 'smb.Tdiff', size = (2, np.nan), singletimeseries = True, allow_nan = False, allow_inf = False)
-                class_utils.check_field(md, fieldname = 'smb.sealev', size = (2, np.nan), singletimeseries = True, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.delta18o', size = (2, np.nan, ), singletimeseries = True, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.delta18o_surface', size = (2, np.nan, ), singletimeseries = True, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.temperatures_presentday', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.temperatures_lgm', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.precipitations_presentday', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.precipitations_lgm', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.Tdiff', size = (2, np.nan), singletimeseries = True, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.sealev', size = (2, np.nan), singletimeseries = True, allow_nan = False, allow_inf = False)
             elif self.ismungsm:
-                class_utils.check_field(md, fieldname = 'smb.temperatures_presentday', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
-                class_utils.check_field(md, fieldname = 'smb.temperatures_lgm', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
-                class_utils.check_field(md, fieldname = 'smb.precipitations_presentday', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
-                class_utils.check_field(md, fieldname = 'smb.precipitations_lgm', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
-                class_utils.check_field(md, fieldname = 'smb.Pfac', size = (2, np.nan), singletimeseries = True, allow_nan = False, allow_inf = False)
-                class_utils.check_field(md, fieldname = 'smb.Tdiff', size = (2, np.nan), singletimeseries = True, allow_nan = False, allow_inf = False)
-                class_utils.check_field(md, fieldname = 'smb.sealev', size = (2, np.nan), singletimeseries = True, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.temperatures_presentday', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.temperatures_lgm', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.precipitations_presentday', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.precipitations_lgm', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.Pfac', size = (2, np.nan), singletimeseries = True, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.Tdiff', size = (2, np.nan), singletimeseries = True, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.sealev', size = (2, np.nan), singletimeseries = True, allow_nan = False, allow_inf = False)
 
             if self.issetpddfac:
-                class_utils.check_field(md, fieldname = 'smb.pddfac_snow', ge = 0, allow_nan = False, allow_inf = False)
-                class_utils.check_field(md, fieldname = 'smb.pddfac_ice', ge = 0, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.pddfac_snow', ge = 0, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'smb.pddfac_ice', ge = 0, allow_nan = False, allow_inf = False)
 
-        class_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
-        class_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
-        class_utils.check_field(md, fieldname = 'masstransport.requested_outputs', string_list = 1)
+        class_utils._check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+        class_utils._check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
+        class_utils._check_field(md, fieldname = 'masstransport.requested_outputs', string_list = 1)
 
         return md
     
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):
+    def initialize(self, md):
         """
         Initialise empty fields in smb.pdd.
         """
@@ -3106,7 +3106,7 @@ class pdd(class_registry.manage_state):
         return self
 
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -3168,46 +3168,46 @@ class pdd(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 4, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 4, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'isdelta18o', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'ismungsm', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'issetpddfac', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'desfac', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 's0p', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 's0t', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rlapslgm', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'isdelta18o', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'ismungsm', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'issetpddfac', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'desfac', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 's0p', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 's0t', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rlapslgm', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
         ## Write conditional fields
         if (self.isdelta18o == 0 and self.ismungsm == 0):
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'monthlytemperatures', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'monthlytemperatures', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'precipitation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         elif self.isdelta18o:
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'temperatures_presentday', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'temperatures_lgm', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitations_presentday', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitations_lgm', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'delta18o_surface', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'delta18o', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'Tdiff', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'sealev', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'temperatures_presentday', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'temperatures_lgm', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'precipitations_presentday', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'precipitations_lgm', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'delta18o_surface', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'delta18o', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'Tdiff', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'sealev', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
         elif self.ismungsm:
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'temperatures_presentday', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'temperatures_lgm', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitations_presentday', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitations_lgm', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'Pfac', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'Tdiff', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'sealev', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'temperatures_presentday', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'temperatures_lgm', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'precipitations_presentday', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'precipitations_lgm', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'Pfac', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'Tdiff', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'sealev', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
 
         if self.issetpddfac:
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'pddfac_snow', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'pddfac_ice', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'pddfac_snow', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'pddfac_ice', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
 ## ------------------------------------------------------
 ## smb.pddSicopolis
@@ -3269,7 +3269,7 @@ class pddSicopolis(class_registry.manage_state):
         Returns a detailed string representation of the SICOPOLIS PDD SMB parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -3317,24 +3317,24 @@ class pddSicopolis(class_registry.manage_state):
     def __repr__(self):
         s = '   surface forcings parameters:\n'
         s += '   SICOPOLIS PDD scheme (Calov & Greve, 2005):\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'monthlytemperatures', 'monthly surface temperatures [K]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'precipitation', 'monthly surface precipitation [m/yr water eq]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'temperature_anomaly', 'anomaly to monthly reference temperature (additive [K])'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'precipitation_anomaly', 'anomaly to monthly precipitation (multiplicative, e.g. q = q0*exp(0.070458*DeltaT) after Huybrechts (2002)) [no unit])'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'smb_corr', 'correction of smb after PDD call [m/a]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 's0p', 'should be set to elevation from precip source (between 0 and a few 1000s m, default is 0) [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 's0t', 'should be set to elevation from temperature source (between 0 and a few 1000s m, default is 0) [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'rlaps', 'present day lapse rate (default is 7.4 degree/km)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'desfac', 'desertification elevation factor (default is -log(2.0)/1000)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isfirnwarming', 'is firnwarming (Reeh 1991) activated (0 or 1, default is 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'pdd_fac_ice', 'Pdd factor for ice for all the domain [mm ice equiv/day/decgree C]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'pdd_fac_snow', 'Pdd factor for snow for all the domain [mm ice equiv/day/decgree C]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'steps_per_step', 'number of smb steps per time step'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'averaging', 'averaging methods from short to long steps'))
+        s += '{}\n'.format(class_utils._field_display(self, 'monthlytemperatures', 'monthly surface temperatures [K]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'precipitation', 'monthly surface precipitation [m/yr water eq]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'temperature_anomaly', 'anomaly to monthly reference temperature (additive [K])'))
+        s += '{}\n'.format(class_utils._field_display(self, 'precipitation_anomaly', 'anomaly to monthly precipitation (multiplicative, e.g. q = q0*exp(0.070458*DeltaT) after Huybrechts (2002)) [no unit])'))
+        s += '{}\n'.format(class_utils._field_display(self, 'smb_corr', 'correction of smb after PDD call [m/a]'))
+        s += '{}\n'.format(class_utils._field_display(self, 's0p', 'should be set to elevation from precip source (between 0 and a few 1000s m, default is 0) [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 's0t', 'should be set to elevation from temperature source (between 0 and a few 1000s m, default is 0) [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'rlaps', 'present day lapse rate (default is 7.4 degree/km)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'desfac', 'desertification elevation factor (default is -log(2.0)/1000)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isfirnwarming', 'is firnwarming (Reeh 1991) activated (0 or 1, default is 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'pdd_fac_ice', 'Pdd factor for ice for all the domain [mm ice equiv/day/decgree C]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'pdd_fac_snow', 'Pdd factor for snow for all the domain [mm ice equiv/day/decgree C]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'steps_per_step', 'number of smb steps per time step'))
+        s += '{}\n'.format(class_utils._field_display(self, 'averaging', 'averaging methods from short to long steps'))
         s += '\t\t{}\n'.format('0: Arithmetic (default)')
         s += '\t\t{}\n'.format('1: Geometric')
         s += '\t\t{}\n'.format('2: Harmonic')
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested (TemperaturePDD, SmbAccumulation, SmbMelt)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested (TemperaturePDD, SmbAccumulation, SmbMelt)'))
         return s
 
     # Define class string
@@ -3343,17 +3343,17 @@ class pddSicopolis(class_registry.manage_state):
         return s
 
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.pddSicopolis fields to 3D
+        Extrude [smb.pddSicopolis] fields to 3D
         """
-        self.precipitation = mesh.project_3d(md, vector = self.precipitation, type = 'node')
-        self.monthlytemperatures = mesh.project_3d(md, vector = self.monthlytemperatures, type = 'node')
-        self.temperature_anomaly = mesh.project_3d(md, vector = self.temperature_anomaly, type = 'node')
-        self.precipitation_anomaly = mesh.project_3d(md, vector = self.precipitation_anomaly, type = 'node')
-        self.smb_corr = mesh.project_3d(md, vector = self.smb_corr, type = 'node')
-        self.s0p = mesh.project_3d(md, vector = self.s0p, type = 'node')
-        self.s0t = mesh.project_3d(md, vector = self.s0t, type = 'node')
+        self.precipitation = mesh._project_3d(md, vector = self.precipitation, type = 'node')
+        self.monthlytemperatures = mesh._project_3d(md, vector = self.monthlytemperatures, type = 'node')
+        self.temperature_anomaly = mesh._project_3d(md, vector = self.temperature_anomaly, type = 'node')
+        self.precipitation_anomaly = mesh._project_3d(md, vector = self.precipitation_anomaly, type = 'node')
+        self.smb_corr = mesh._project_3d(md, vector = self.smb_corr, type = 'node')
+        self.s0p = mesh._project_3d(md, vector = self.s0p, type = 'node')
+        self.s0t = mesh._project_3d(md, vector = self.s0t, type = 'node')
             
         return self
     
@@ -3362,22 +3362,22 @@ class pddSicopolis(class_registry.manage_state):
         if solution == 'TransientSolution' and not md.transient.issmb:
             return
         if 'MasstransportAnalysis' in analyses:
-            class_utils.check_field(md, fieldname = 'smb.desfac', le = 1, scalar = True)
-            class_utils.check_field(md, fieldname = 'smb.s0p', ge = 0, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.s0t', ge = 0, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.rlaps', ge = 0, scalar = True)
-            class_utils.check_field(md, fieldname = 'smb.monthlytemperatures', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.precipitation', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'smb.pdd_fac_ice', gt = 0, scalar = True)
-            class_utils.check_field(md, fieldname = 'smb.pdd_fac_snow', gt = 0, scalar = True)
-        class_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
-        class_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
-        class_utils.check_field(md, fieldname = 'smb.requested_outputs', string_list = 1)
+            class_utils._check_field(md, fieldname = 'smb.desfac', le = 1, scalar = True)
+            class_utils._check_field(md, fieldname = 'smb.s0p', ge = 0, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.s0t', ge = 0, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.rlaps', ge = 0, scalar = True)
+            class_utils._check_field(md, fieldname = 'smb.monthlytemperatures', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.precipitation', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.pdd_fac_ice', gt = 0, scalar = True)
+            class_utils._check_field(md, fieldname = 'smb.pdd_fac_snow', gt = 0, scalar = True)
+        class_utils._check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+        class_utils._check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
+        class_utils._check_field(md, fieldname = 'smb.requested_outputs', string_list = 1)
         
         return md
     
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):
+    def initialize(self, md):
         """
         Initialise empty fields in smb.pddSicopolis.
         """
@@ -3405,7 +3405,7 @@ class pddSicopolis(class_registry.manage_state):
         return self
 
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -3467,25 +3467,25 @@ class pddSicopolis(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 10, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 10, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'isfirnwarming', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'desfac', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 's0p', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 's0t', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'pdd_fac_ice', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'pdd_fac_snow', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'monthlytemperatures', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'temperature_anomaly', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitation_anomaly', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'smb_corr', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'isfirnwarming', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'desfac', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 's0p', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 's0t', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'pdd_fac_ice', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'pdd_fac_snow', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'monthlytemperatures', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'precipitation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'temperature_anomaly', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'precipitation_anomaly', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'smb_corr', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.semic
@@ -3548,39 +3548,39 @@ class semic(class_registry.manage_state):
         s += '   smb and temperatures are updated every year\n'
         s += '\n   SEMIC parameters:\n'
         s += '{}\n'.format((self, 'dailysnowfall', 'daily surface dailysnowfall [m/s]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'dailyrainfall', 'daily surface dailyrainfall [m/s]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'dailydsradiation', 'daily downwelling shortwave radiation [W/m2]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'dailydlradiation', 'daily downwelling longwave radiation [W/m2]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'dailywindspeed', 'daily surface wind speed [m/s]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'dailypressure', 'daily surface pressure [Pa]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'dailyairdensity', 'daily air density [kg/m3]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'dailyairhumidity', 'daily air specific humidity [kg/kg]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'rlaps', 'present day lapse rate (default is 7.4 [degree/km]; Erokhina et al. 2017)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'desfac', 'desertification elevation factor (default is -log(2.0)/1000 [1/m]; Vizcaino et al. 2010)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'rdl', 'longwave downward radiation decrease (default is 29 [W/m^2/km]; Marty et al. 2002)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 's0gcm', 'GCM reference elevation; (default is 0) [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ismethod','method for calculating SMB with SEMIC. Default version of SEMIC is really slow. 0: steady, 1: transient (default: 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'dailyrainfall', 'daily surface dailyrainfall [m/s]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'dailydsradiation', 'daily downwelling shortwave radiation [W/m2]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'dailydlradiation', 'daily downwelling longwave radiation [W/m2]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'dailywindspeed', 'daily surface wind speed [m/s]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'dailypressure', 'daily surface pressure [Pa]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'dailyairdensity', 'daily air density [kg/m3]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'dailyairhumidity', 'daily air specific humidity [kg/kg]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'rlaps', 'present day lapse rate (default is 7.4 [degree/km]; Erokhina et al. 2017)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'desfac', 'desertification elevation factor (default is -log(2.0)/1000 [1/m]; Vizcaino et al. 2010)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'rdl', 'longwave downward radiation decrease (default is 29 [W/m^2/km]; Marty et al. 2002)'))
+        s += '{}\n'.format(class_utils._field_display(self, 's0gcm', 'GCM reference elevation; (default is 0) [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ismethod','method for calculating SMB with SEMIC. Default version of SEMIC is really slow. 0: steady, 1: transient (default: 0)'))
         if self.ismethod: # transient mode
-            s += '{}\n'.format(class_utils.fielddisplay(self,'desfacElevation','desertification elevation (default is 2000 m; Vizcaino et al. 2010)'))
-            s += '{}\n'.format(class_utils.fielddisplay(self,'Tamp','amplitude of diurnal cycle [K]'))
-            s += '{}\n'.format(class_utils.fielddisplay(self,'albedo','initial albedo [no unit]'))
-            s += '{}\n'.format(class_utils.fielddisplay(self,'albedo_snow','initial albedo for snow [no unit]'))
-            s += '{}\n'.format(class_utils.fielddisplay(self,'hice','initial thickness of ice [unit: m]'))
-            s += '{}\n'.format(class_utils.fielddisplay(self,'hsnow','initial thickness of snow [unit: m]'))
-            s += '{}\n'.format(class_utils.fielddisplay(self,'mask','masking for albedo. 0: ocean, 1: land, 2: ice (default: 2)'))
-            s += '{}\n'.format(class_utils.fielddisplay(self,'qmr','initial net energy difference between melt and refreeze in SEMIC [unit: W m^{-2}]. This variable can be set with zeros because net energy difference between melt and refreeze is dissipated fast.'))
-            s += '{}\n'.format(class_utils.fielddisplay(self,'hcrit','critical snow height for albedo [unit: m]'))
-            s += '{}\n'.format(class_utils.fielddisplay(self,'rcrit','critical refreezing height for albedo [no unit]'))
+            s += '{}\n'.format(class_utils._field_display(self,'desfacElevation','desertification elevation (default is 2000 m; Vizcaino et al. 2010)'))
+            s += '{}\n'.format(class_utils._field_display(self,'Tamp','amplitude of diurnal cycle [K]'))
+            s += '{}\n'.format(class_utils._field_display(self,'albedo','initial albedo [no unit]'))
+            s += '{}\n'.format(class_utils._field_display(self,'albedo_snow','initial albedo for snow [no unit]'))
+            s += '{}\n'.format(class_utils._field_display(self,'hice','initial thickness of ice [unit: m]'))
+            s += '{}\n'.format(class_utils._field_display(self,'hsnow','initial thickness of snow [unit: m]'))
+            s += '{}\n'.format(class_utils._field_display(self,'mask','masking for albedo. 0: ocean, 1: land, 2: ice (default: 2)'))
+            s += '{}\n'.format(class_utils._field_display(self,'qmr','initial net energy difference between melt and refreeze in SEMIC [unit: W m^{-2}]. This variable can be set with zeros because net energy difference between melt and refreeze is dissipated fast.'))
+            s += '{}\n'.format(class_utils._field_display(self,'hcrit','critical snow height for albedo [unit: m]'))
+            s += '{}\n'.format(class_utils._field_display(self,'rcrit','critical refreezing height for albedo [no unit]'))
 
             s += '\nSEMIC albedo parameters.\n'
-            s += '{}\n'.format(class_utils.fielddisplay(self,'albedo_scheme','albedo scheme for SEMIC. 0: none, 1: slater, 2: denby, 3: isba, 4: alex (default is 0)'))
-            s += '{}\n'.format(class_utils.fielddisplay(self,'alb_smax','maximum snow albedo (default: 0.79)'))
-            s += '{}\n'.format(class_utils.fielddisplay(self,'alb_smin','minimum snow albedo (default: 0.6)'))
-            s += '{}\n'.format(class_utils.fielddisplay(self,'albi','background albedo for bare ice (default: 0.41)'))
-            s += '{}\n'.format(class_utils.fielddisplay(self,'albl','background albedo for bare land (default: 0.07)'))
+            s += '{}\n'.format(class_utils._field_display(self,'albedo_scheme','albedo scheme for SEMIC. 0: none, 1: slater, 2: denby, 3: isba, 4: alex (default is 0)'))
+            s += '{}\n'.format(class_utils._field_display(self,'alb_smax','maximum snow albedo (default: 0.79)'))
+            s += '{}\n'.format(class_utils._field_display(self,'alb_smin','minimum snow albedo (default: 0.6)'))
+            s += '{}\n'.format(class_utils._field_display(self,'albi','background albedo for bare ice (default: 0.41)'))
+            s += '{}\n'.format(class_utils._field_display(self,'albl','background albedo for bare land (default: 0.07)'))
             
-            s += '{}\n'.format(class_utils.fielddisplay(self,'isdesertification','enable or disable desertification of Vizcaino et al. (2010). 0: off, 1: on (default: 1)'))
-            s += '{}\n'.format(class_utils.fielddisplay(self,'isLWDcorrect','enable or disable downward longwave correction of Marty et al. (2002). 0: off, 1: on (default: 1)'))
+            s += '{}\n'.format(class_utils._field_display(self,'isdesertification','enable or disable desertification of Vizcaino et al. (2010). 0: off, 1: on (default: 1)'))
+            s += '{}\n'.format(class_utils._field_display(self,'isLWDcorrect','enable or disable downward longwave correction of Marty et al. (2002). 0: off, 1: on (default: 1)'))
         # albedo_scheme - 0: none, 1: slater, 2: isba, 3: denby, 4: alex.
         if self.albedo_scheme == 0:
             s += '\n\tSEMIC snow albedo parameter of None.\n'
@@ -3593,32 +3593,32 @@ class semic(class_registry.manage_state):
             s += '\t         tm = f*(tsurf-tmin) (tmin <= tsurf < 273.15)\n'
             s += '\t         0 (tsurf < tmin)\n'
             s += '\t   f = 1/(273.15-tmin)\n'
-            s += '{}\n'.format(class_utils.fielddisplay(self, 'tmin', 'minimum temperature for which albedo decline become effective. (default: 263.15 K)[unit: K])'))
-            s += '{}\n'.format(class_utils.fielddisplay(self, 'tmax', 'maxmium temperature for which albedo decline become effective. This value should be fixed. (default: 273.15 K)[unit: K])'))
+            s += '{}\n'.format(class_utils._field_display(self, 'tmin', 'minimum temperature for which albedo decline become effective. (default: 263.15 K)[unit: K])'))
+            s += '{}\n'.format(class_utils._field_display(self, 'tmax', 'maxmium temperature for which albedo decline become effective. This value should be fixed. (default: 273.15 K)[unit: K])'))
         elif self.albedo_scheme == 2:
             s += '\n\tSEMIC snow albedo parameters of Denby et al. (2002 Tellus)\n'
-            s += '{}\n'.format(class_utils.fielddisplay(self,'mcrit','critical melt rate (defaut: 6e-8) [unit: m/sec]'))
+            s += '{}\n'.format(class_utils._field_display(self,'mcrit','critical melt rate (defaut: 6e-8) [unit: m/sec]'))
         elif self.albedo_scheme == 3:
             s += '\n\tSEMIC snow albedo parameters of ISB (Douville et al., 1995).\n'
-            s += '{}\n'.format(class_utils.fielddisplay(self, 'mcrit', 'critical melt rate (default: 6e-8) [unit: m/sec]'))
-            s += '{}\n'.format(class_utils.fielddisplay(self, 'wcrit', 'critical liquid water content (default: 15) [unit: kg/m2]'))
-            s += '{}\n'.format(class_utils.fielddisplay(self, 'tau_a', 'dry albedo decline [unit: 1/day]'))
-            s += '{}\n'.format(class_utils.fielddisplay(self, 'tau_f', 'wet albedo decline [unit: 1/day]'))
+            s += '{}\n'.format(class_utils._field_display(self, 'mcrit', 'critical melt rate (default: 6e-8) [unit: m/sec]'))
+            s += '{}\n'.format(class_utils._field_display(self, 'wcrit', 'critical liquid water content (default: 15) [unit: kg/m2]'))
+            s += '{}\n'.format(class_utils._field_display(self, 'tau_a', 'dry albedo decline [unit: 1/day]'))
+            s += '{}\n'.format(class_utils._field_display(self, 'tau_f', 'wet albedo decline [unit: 1/day]'))
             s += '\n\tReference'
             s += '\tDouville, H., Royer, J.-F., and Mahfouf, J.-F.: A new snow parameterization for the Météo-France climate model. Part I: validation in stand-alone experiments, Climate Dynamics, 12, 21–35, https://doi.org/10.1007/s003820050092, 1995.'
         elif self.albedo_scheme == 4:
             s += '\n\tSEMIC snow albedo parameters of Alex.?\n'
-            s += '{}\n'.format(class_utils.fielddisplay(self,'afac','[unit: ?]'))
-            s += '{}\n'.format(class_utils.fielddisplay(self,'tmid','[unit: ?]'))
+            s += '{}\n'.format(class_utils._field_display(self,'afac','[unit: ?]'))
+            s += '{}\n'.format(class_utils._field_display(self,'tmid','[unit: ?]'))
         else:
             raise Exception('ERROR: {} is not supported albedo scheme.'.format(self.albedo_scheme))
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'steps_per_step', 'number of smb steps per time step'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'averaging', 'averaging methods from short to long steps'))
+        s += '{}\n'.format(class_utils._field_display(self, 'steps_per_step', 'number of smb steps per time step'))
+        s += '{}\n'.format(class_utils._field_display(self, 'averaging', 'averaging methods from short to long steps'))
         s += '\t\t{}\n'.format('0: Arithmetic (default)')
         s += '\t\t{}\n'.format('1: Geometric')
         s += '\t\t{}\n'.format('2: Harmonic')
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -3627,9 +3627,9 @@ class semic(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.semic fields to 3D
+        Extrude [smb.semic] fields to 3D
         """
         self.dailysnowfall = mesh.project3d(md, vector = self.dailysnowfall, type = 'node')
         self.dailyrainfall = mesh.project3d(md, vector = self.dailyrainfall, type = 'node')
@@ -3646,45 +3646,45 @@ class semic(class_registry.manage_state):
     
     def check_consistency(self, md, solution, analyses):
         if 'MasstransportAnalysis' in analyses:
-            md = class_utils.check_field(md, fieldname = 'smb.desfac', le = 1, scalar = True)
-            md = class_utils.check_field(md, fieldname = 'smb.s0gcm', ge = 0, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-            md = class_utils.check_field(md, fieldname = 'smb.rlaps', ge = 0, scalar = True)
-            md = class_utils.check_field(md, fieldname = 'smb.rdl', ge = 0, scalar = True)
-            md = class_utils.check_field(md, fieldname = 'smb.dailysnowfall', timeseries = True, allow_nan = False, allow_inf = False, ge = 0)
-            md = class_utils.check_field(md, fieldname = 'smb.dailyrainfall', timeseries = True, allow_nan = False, allow_inf = False, ge = 0)
-            md = class_utils.check_field(md, fieldname = 'smb.dailydsradiation', timeseries = True, allow_nan = False, allow_inf = False, ge = 0)
-            md = class_utils.check_field(md, fieldname = 'smb.dailydlradiation', timeseries = True, allow_nan = False, allow_inf = False, ge = 0)
-            md = class_utils.check_field(md, fieldname = 'smb.dailywindspeed', timeseries = True, allow_nan = False, allow_inf = False, ge = 0)
-            md = class_utils.check_field(md, fieldname = 'smb.dailypressure', timeseries = True, allow_nan = False, allow_inf = False, ge = 0)
-            md = class_utils.check_field(md, fieldname = 'smb.dailyairdensity', timeseries = True, allow_nan = False, allow_inf = False, ge = 0)
-            md = class_utils.check_field(md, fieldname='smb.dailyairhumidity', timeseries=True, allow_nan=False, allow_inf=False, ge=0)
-            md = class_utils.check_field(md, fieldname='smb.dailytemperature', timeseries=True, allow_nan=False, allow_inf=False, ge=0)
-            md = class_utils.check_field(md, fieldname = 'smb.ismethod', scalar = True, values = [0, 1])
-            md = class_utils.check_field(md, fieldname = 'smb.isdesertification', scalar = True, values = [0, 1])
-            md = class_utils.check_field(md, fieldname = 'smb.isLWDcorrect', scalar = True, values = [0, 1])
+            md = class_utils._check_field(md, fieldname = 'smb.desfac', le = 1, scalar = True)
+            md = class_utils._check_field(md, fieldname = 'smb.s0gcm', ge = 0, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            md = class_utils._check_field(md, fieldname = 'smb.rlaps', ge = 0, scalar = True)
+            md = class_utils._check_field(md, fieldname = 'smb.rdl', ge = 0, scalar = True)
+            md = class_utils._check_field(md, fieldname = 'smb.dailysnowfall', timeseries = True, allow_nan = False, allow_inf = False, ge = 0)
+            md = class_utils._check_field(md, fieldname = 'smb.dailyrainfall', timeseries = True, allow_nan = False, allow_inf = False, ge = 0)
+            md = class_utils._check_field(md, fieldname = 'smb.dailydsradiation', timeseries = True, allow_nan = False, allow_inf = False, ge = 0)
+            md = class_utils._check_field(md, fieldname = 'smb.dailydlradiation', timeseries = True, allow_nan = False, allow_inf = False, ge = 0)
+            md = class_utils._check_field(md, fieldname = 'smb.dailywindspeed', timeseries = True, allow_nan = False, allow_inf = False, ge = 0)
+            md = class_utils._check_field(md, fieldname = 'smb.dailypressure', timeseries = True, allow_nan = False, allow_inf = False, ge = 0)
+            md = class_utils._check_field(md, fieldname = 'smb.dailyairdensity', timeseries = True, allow_nan = False, allow_inf = False, ge = 0)
+            md = class_utils._check_field(md, fieldname='smb.dailyairhumidity', timeseries=True, allow_nan=False, allow_inf=False, ge=0)
+            md = class_utils._check_field(md, fieldname='smb.dailytemperature', timeseries=True, allow_nan=False, allow_inf=False, ge=0)
+            md = class_utils._check_field(md, fieldname = 'smb.ismethod', scalar = True, values = [0, 1])
+            md = class_utils._check_field(md, fieldname = 'smb.isdesertification', scalar = True, values = [0, 1])
+            md = class_utils._check_field(md, fieldname = 'smb.isLWDcorrect', scalar = True, values = [0, 1])
 
             if self.ismethod: # transient mode
-                md = class_utils.check_field(md, fieldname = 'smb.desfacElevation', scalar = True, ge = 0)
-                md = class_utils.check_field(md, fieldname = 'smb.albedo_scheme', scalar = True, values = [0, 1, 2, 3, 4])
-                md = class_utils.check_field(md, fieldname = 'smb.alb_smax', scalar = True, ge = 0)
-                md = class_utils.check_field(md, fieldname = 'smb.mask', size = (md.mesh.numberofvertices, ), values = [0, 1, 2])
-                md = class_utils.check_field(md, fieldname = 'smb.albedo', allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices, ))
-                md = class_utils.check_field(md, fieldname = 'smb.albedo_snow', allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices, ))
-                md = class_utils.check_field(md, fieldname = 'smb.alb_smax', ge = 0, le = 1, allow_nan = False, allow_inf = False, scalar = True)
-                md = class_utils.check_field(md, fieldname = 'smb.alb_smin', ge = 0, le = 1, allow_nan = False, allow_inf = False, scalar = True)
-                md = class_utils.check_field(md, fieldname = 'smb.albi', ge = 0, le = 1, allow_nan = False, allow_inf = False, scalar = True)
-                md = class_utils.check_field(md, fieldname = 'smb.albl', ge = 0, le = 1, allow_nan = False, allow_inf = False, scalar = True)
-                md = class_utils.check_field(md, fieldname = 'smb.hice', allow_nan=False, allow_inf=False, size=(md.mesh.numberofvertices, ))
-                md = class_utils.check_field(md, fieldname='smb.hsnow', allow_nan=False, allow_inf=False, size=(md.mesh.numberofvertices, ))
-                md = class_utils.check_field(md, fieldname = 'smb.qmr', allow_nan=False, allow_inf=False, size=(md.mesh.numberofvertices, ))
-        md = class_utils.check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
-        md = class_utils.check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
-        md = class_utils.check_field(md, fieldname = 'smb.requested_outputs', string_list = True)
+                md = class_utils._check_field(md, fieldname = 'smb.desfacElevation', scalar = True, ge = 0)
+                md = class_utils._check_field(md, fieldname = 'smb.albedo_scheme', scalar = True, values = [0, 1, 2, 3, 4])
+                md = class_utils._check_field(md, fieldname = 'smb.alb_smax', scalar = True, ge = 0)
+                md = class_utils._check_field(md, fieldname = 'smb.mask', size = (md.mesh.numberofvertices, ), values = [0, 1, 2])
+                md = class_utils._check_field(md, fieldname = 'smb.albedo', allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices, ))
+                md = class_utils._check_field(md, fieldname = 'smb.albedo_snow', allow_nan = False, allow_inf = False, size = (md.mesh.numberofvertices, ))
+                md = class_utils._check_field(md, fieldname = 'smb.alb_smax', ge = 0, le = 1, allow_nan = False, allow_inf = False, scalar = True)
+                md = class_utils._check_field(md, fieldname = 'smb.alb_smin', ge = 0, le = 1, allow_nan = False, allow_inf = False, scalar = True)
+                md = class_utils._check_field(md, fieldname = 'smb.albi', ge = 0, le = 1, allow_nan = False, allow_inf = False, scalar = True)
+                md = class_utils._check_field(md, fieldname = 'smb.albl', ge = 0, le = 1, allow_nan = False, allow_inf = False, scalar = True)
+                md = class_utils._check_field(md, fieldname = 'smb.hice', allow_nan=False, allow_inf=False, size=(md.mesh.numberofvertices, ))
+                md = class_utils._check_field(md, fieldname='smb.hsnow', allow_nan=False, allow_inf=False, size=(md.mesh.numberofvertices, ))
+                md = class_utils._check_field(md, fieldname = 'smb.qmr', allow_nan=False, allow_inf=False, size=(md.mesh.numberofvertices, ))
+        md = class_utils._check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
+        md = class_utils._check_field(md, fieldname = 'smb.averaging', scalar = True, values = [0, 1, 2])
+        md = class_utils._check_field(md, fieldname = 'smb.requested_outputs', string_list = True)
 
         return md
     
     # Initialise empty fields of correct dimensions
-    def initialise(self, md):
+    def initialize(self, md):
         """
         Initialise empty fields in smb.semic.
         """
@@ -3710,7 +3710,7 @@ class semic(class_registry.manage_state):
         return self
 
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -3772,39 +3772,39 @@ class semic(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 12, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 12, format = 'Integer')
 
         ## Write DoubleMat fields
         fieldnames = ['dailysnowfall', 'dailyrainfall', 'dailydsradiation', 'dailydlradiation',
                       'dailywindspeed', 'dailypressure', 'dailyairdensity', 'dailyairhumidity', 'dailytemperature']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
         ## Write Integer fields
         fieldnames = ['isdesertification', 'isLWDcorrect', 'steps_per_step', 'averaging']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Integer')
 
         ## Write conditional fields
         if self.ismethod:
             ### Write DoubleMat fields
             fieldnames = ['Tamp', 'mask', 'hice', 'hsnow', 'qmr', 'albedo', 'albedo_snow']
             for field in fieldnames:
-                execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
+                execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
 
             ### Write Double fields
             fieldnames = ['hcrit', 'rcrit', 'alb_smax', 'alb_smin', 'albi', 'albl', 'tmin', 'tmax', 'mcrit', 'wcrit', 'tau_a', 'tau_f', 'tmid', 'afac']
             for field in fieldnames:
-                execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+                execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double')
             
             ### Write Integer fields
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'albedo_scheme', format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'albedo_scheme', format = 'Integer')
 
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'ismethod', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'desfac', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'desfacElevation', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 's0gcm', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rdl', format = 'Double')
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'ismethod', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'desfac', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'desfacElevation', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 's0gcm', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rdl', format = 'Double')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self._process_outputs(md), format = 'StringArray')

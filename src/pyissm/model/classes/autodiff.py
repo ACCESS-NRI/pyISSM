@@ -1,70 +1,61 @@
 import numpy as np
-from pyissm.model.classes import class_utils
-from pyissm.model.classes import class_registry
+from pyissm.model.classes import class_utils, class_registry
 from pyissm.model import execute
 
 @class_registry.register_class
 class autodiff(class_registry.manage_state):
     """
-    Automatic differentiation parameters class for ISSM.
+    Automatic differentiation class for ISSM.
 
-    This class encapsulates parameters for automatic differentiation (AD) functionality in the ISSM (Ice Sheet System Model) framework.
+    This class contains parameters for automatic differentiation (AD) functionality in the ISSM framework.
     It allows users to configure AD settings including dependent and independent variables, memory buffer sizes, 
     and optimization parameters for sensitivity analysis and gradient-based optimization.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    isautodiff : float, default=0.0
+    isautodiff : :class:`float`, default=0.0
         Indicates if automatic differentiation is activated.
-    dependents : str, default='List dependents'
+    dependents : :class:`str`, default='List dependents'
         List of dependent variables for AD.
-    independents : str, default='List independents'
+    independents : :class:`str`, default='List independents'
         List of independent variables for AD.
-    driver : str, default='fos_forward'
+    driver : :class:`str`, default='fos_forward'
         ADOLC driver ('fos_forward' or 'fov_forward').
-    obufsize : float, default=524288
+    obufsize : :class:`float`, default=524288
         Number of operations per buffer (== OBUFSIZE in usrparms.h).
-    lbufsize : float, default=524288
+    lbufsize : :class:`float`, default=524288
         Number of locations per buffer (== LBUFSIZE in usrparms.h).
-    cbufsize : float, default=524288
+    cbufsize : :class:`float`, default=524288
         Number of values per buffer (== CBUFSIZE in usrparms.h).
-    tbufsize : float, default=524288
+    tbufsize : :class:`float`, default=524288
         Number of taylors per buffer (<=TBUFSIZE in usrparms.h).
-    gcTriggerMaxSize : float, default=65536
+    gcTriggerMaxSize : :class:`float`, default=65536
         Free location block sorting/consolidation triggered if allocated locations exceed this value.
-    gcTriggerRatio : float, default=2.0
+    gcTriggerRatio : :class:`float`, default=2.0
         Free location block sorting/consolidation triggered if the ratio between allocated and used locations exceeds this value.
-    tapeAlloc : float, default=15000000
+    tapeAlloc : :class:`float`, default=15000000
         Iteration count of a priori memory allocation of the AD tape.
-    outputTapeMemory : float, default=0.0
+    outputTapeMemory : :class:`float`, default=0.0
         Write AD tape memory statistics to file ad_mem.dat.
-    outputTime : float, default=0.0
+    outputTime : :class:`float`, default=0.0
         Write AD recording and evaluation times to file ad_time.dat.
-    enablePreaccumulation : float, default=0.0
+    enablePreaccumulation : :class:`float`, default=0.0
         Enable CoDiPack preaccumulation in augmented places.
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the autodiff parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the autodiff parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.autodiff = pyissm.model.classes.autodiff()
-    md.autodiff.isautodiff = 1
-    md.autodiff.dependents = ['Vel']
-    md.autodiff.independents = ['MaterialsRheologyBbar']
+    .. code-block:: python
+
+        >>> md.autodiff = pyissm.model.classes.autodiff()
+        >>> md.autodiff.isautodiff = 1
+        >>> md.autodiff.dependents = ['Vel']
+        >>> md.autodiff.independents = ['MaterialsRheologyBbar']
     """
 
     # Initialise with default parameters
@@ -91,20 +82,20 @@ class autodiff(class_registry.manage_state):
     def __repr__(self):
         s = '      automatic differentiation parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isautodiff', "indicates if the automatic differentiation is activated"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'dependents', "list of dependent variables"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'independents', "list of independent variables"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'driver', "ADOLC driver ('fos_forward' or 'fov_forward')"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'obufsize', "Number of operations per buffer (== OBUFSIZE in usrparms.h)"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'lbufsize', "Number of locations per buffer (== LBUFSIZE in usrparms.h)"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'cbufsize', "Number of values per buffer (== CBUFSIZE in usrparms.h)"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'tbufsize', "Number of taylors per buffer (<=TBUFSIZE in usrparms.h)"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'gcTriggerRatio', "free location block sorting / consolidation triggered if the ratio between allocated and used locations exceeds gcTriggerRatio"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'gcTriggerMaxSize', "free location block sorting / consolidation triggered if the allocated locations exceed gcTriggerMaxSize)"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'tapeAlloc', 'Iteration count of a priori memory allocation of the AD tape'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'outputTapeMemory', 'Write AD tape memory statistics to file ad_mem.dat'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'outputTime', 'Write AD recording and evaluation times to file ad_time.dat'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'enablePreaccumulation', 'Enable CoDiPack preaccumulation in augmented places'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isautodiff', "indicates if the automatic differentiation is activated"))
+        s += '{}\n'.format(class_utils._field_display(self, 'dependents', "list of dependent variables"))
+        s += '{}\n'.format(class_utils._field_display(self, 'independents', "list of independent variables"))
+        s += '{}\n'.format(class_utils._field_display(self, 'driver', "ADOLC driver ('fos_forward' or 'fov_forward')"))
+        s += '{}\n'.format(class_utils._field_display(self, 'obufsize', "Number of operations per buffer (== OBUFSIZE in usrparms.h)"))
+        s += '{}\n'.format(class_utils._field_display(self, 'lbufsize', "Number of locations per buffer (== LBUFSIZE in usrparms.h)"))
+        s += '{}\n'.format(class_utils._field_display(self, 'cbufsize', "Number of values per buffer (== CBUFSIZE in usrparms.h)"))
+        s += '{}\n'.format(class_utils._field_display(self, 'tbufsize', "Number of taylors per buffer (<=TBUFSIZE in usrparms.h)"))
+        s += '{}\n'.format(class_utils._field_display(self, 'gcTriggerRatio', "free location block sorting / consolidation triggered if the ratio between allocated and used locations exceeds gcTriggerRatio"))
+        s += '{}\n'.format(class_utils._field_display(self, 'gcTriggerMaxSize', "free location block sorting / consolidation triggered if the allocated locations exceed gcTriggerMaxSize)"))
+        s += '{}\n'.format(class_utils._field_display(self, 'tapeAlloc', 'Iteration count of a priori memory allocation of the AD tape'))
+        s += '{}\n'.format(class_utils._field_display(self, 'outputTapeMemory', 'Write AD tape memory statistics to file ad_mem.dat'))
+        s += '{}\n'.format(class_utils._field_display(self, 'outputTime', 'Write AD recording and evaluation times to file ad_time.dat'))
+        s += '{}\n'.format(class_utils._field_display(self, 'enablePreaccumulation', 'Enable CoDiPack preaccumulation in augmented places'))
         return s
 
     # Define class string
@@ -114,32 +105,50 @@ class autodiff(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        class_utils.check_field(md, fieldname = "autodiff.isautodiff", scalar = True, values = [0, 1])
+        """
+        Check consistency of the [autodiff] parameters.
+        
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+        
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+        
+        class_utils._check_field(md, fieldname = "autodiff.isautodiff", scalar = True, values = [0, 1])
         
         # Early return if autodiff is not activated
         if not self.isautodiff:
             return md
     
         # Buffer sizes
-        class_utils.check_field(md, fieldname = "autodiff.obufsize", ge = 524288)
-        class_utils.check_field(md, fieldname = "autodiff.lbufsize", ge = 524288)
-        class_utils.check_field(md, fieldname = "autodiff.cbufsize", ge = 524288)
-        class_utils.check_field(md, fieldname = "autodiff.tbufsize", ge = 524288)
+        class_utils._check_field(md, fieldname = "autodiff.obufsize", ge = 524288)
+        class_utils._check_field(md, fieldname = "autodiff.lbufsize", ge = 524288)
+        class_utils._check_field(md, fieldname = "autodiff.cbufsize", ge = 524288)
+        class_utils._check_field(md, fieldname = "autodiff.tbufsize", ge = 524288)
 
         # Garbage collector options
-        class_utils.check_field(md, fieldname = "autodiff.gcTriggerRatio", ge = 2.0)
-        class_utils.check_field(md, fieldname = "autodiff.gcTriggerMaxSize", ge = 65536)
-        class_utils.check_field(md, fieldname = "autodiff.tapeAlloc", ge = 0)
+        class_utils._check_field(md, fieldname = "autodiff.gcTriggerRatio", ge = 2.0)
+        class_utils._check_field(md, fieldname = "autodiff.gcTriggerMaxSize", ge = 65536)
+        class_utils._check_field(md, fieldname = "autodiff.tapeAlloc", ge = 0)
 
         # Memory and time output flags (single element, either 0 or 1)
-        class_utils.check_field(md, fieldname = "autodiff.outputTapeMemory", scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = "autodiff.outputTime", scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = "autodiff.outputTapeMemory", scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = "autodiff.outputTime", scalar = True, values = [0, 1])
 
         # Memory reduction options
-        class_utils.check_field(md, fieldname = "autodiff.enablePreaccumulation", ge = 0)
+        class_utils._check_field(md, fieldname = "autodiff.enablePreaccumulation", ge = 0)
 
         # Driver field (must be one of allowed strings)
-        class_utils.check_field(
+        class_utils._check_field(
             md,
             fieldname = "autodiff.driver",
             values = [
@@ -163,58 +172,58 @@ class autodiff(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
         """
 
         ## Write control fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'isautodiff', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'driver', format = 'String')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'isautodiff', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'driver', format = 'String')
 
         if self.isautodiff:
 
             ## Write Double fields
             fieldnames = ['obufsize', 'lbufsize', 'cbufsize', 'tbufsize', 'gcTriggerRatio', 'gcTriggerMaxSize']
             for fieldname in fieldnames:
-                execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'Double')
+                execute._write_model_field(fid, prefix, obj = self, fieldname = fieldname, format = 'Double')
 
             ## Write other fields
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'tapeAlloc', format = 'Integer')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'outputTapeMemory', format = 'Boolean')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'outputTime', format = 'Boolean')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'enablePreaccumulation', format = 'Boolean')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'tapeAlloc', format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'outputTapeMemory', format = 'Boolean')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'outputTime', format = 'Boolean')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'enablePreaccumulation', format = 'Boolean')
 
             ## Write conditional fields
             ## NOTE: Conditional writing taken from $ISSM_DIR/src/m/classes/autodiff.py
             ## 1 - dependent variables
             num_dependent_objects = len(self.dependents)
-            execute.WriteData(fid, prefix, name = 'md.autodiff.num_dependent_objects', data = num_dependent_objects, format = 'Integer')
+            execute._write_model_field(fid, prefix, name = 'md.autodiff.num_dependent_objects', data = num_dependent_objects, format = 'Integer')
 
             if num_dependent_objects:
                 names = []
                 for i, dep in enumerate(self.dependents):
                     names.append(dep.name)
 
-                execute.WriteData(fid, prefix, name = 'md.autodiff.dependent_object_names', data = names, format = 'StringArray')
+                execute._write_model_field(fid, prefix, name = 'md.autodiff.dependent_object_names', data = names, format = 'StringArray')
 
             ## 2 - independent variables
             num_independent_objects = len(self.independents)
-            execute.WriteData(fid, prefix, name = 'md.autodiff.num_independent_objects', data = num_independent_objects, format = 'Integer')
+            execute._write_model_field(fid, prefix, name = 'md.autodiff.num_independent_objects', data = num_independent_objects, format = 'Integer')
 
             for indep in self.independents:
-                execute.WriteData(fid, prefix, name = 'md.autodiff.independent_name', data = indep.name, format = 'String')
-                execute.WriteData(fid, prefix, name = 'md.autodiff.independent_min_parameters', data = indep.min_parameters, format = 'DoubleMat', mattype = 3)
-                execute.WriteData(fid, prefix, name = 'md.autodiff.independent_max_parameters', data = indep.max_parameters, format = 'DoubleMat', mattype = 3)
-                execute.WriteData(fid, prefix, name = 'md.autodiff.independent_scaling_factor', data = indep.control_scaling_factor, format = 'Double')
-                execute.WriteData(fid, prefix, name = 'md.autodiff.independent_control_size', data = indep.control_size, format = 'Integer')
+                execute._write_model_field(fid, prefix, name = 'md.autodiff.independent_name', data = indep.name, format = 'String')
+                execute._write_model_field(fid, prefix, name = 'md.autodiff.independent_min_parameters', data = indep.min_parameters, format = 'DoubleMat', mattype = 3)
+                execute._write_model_field(fid, prefix, name = 'md.autodiff.independent_max_parameters', data = indep.max_parameters, format = 'DoubleMat', mattype = 3)
+                execute._write_model_field(fid, prefix, name = 'md.autodiff.independent_scaling_factor', data = indep.control_scaling_factor, format = 'Double')
+                execute._write_model_field(fid, prefix, name = 'md.autodiff.independent_control_size', data = indep.control_size, format = 'Integer')
 
             ## 3 - build index for fos_forward driver
             if self.driver.lower() == 'fos_forward':
@@ -231,7 +240,7 @@ class autodiff(class_registry.manage_state):
                         index += indep.nods
 
                 index -= 1  # Convert to c-index numbering
-                execute.WriteData(fid, prefix, name = 'md.autodiff.fos_forward_index', data = index, format = 'Integer')
+                execute._write_model_field(fid, prefix, name = 'md.autodiff.fos_forward_index', data = index, format = 'Integer')
 
             ## 4 - build index for fos_reverse driver
             if self.driver.lower() == 'fos_reverse':
@@ -245,7 +254,7 @@ class autodiff(class_registry.manage_state):
                         index += 1
 
                 index -= 1  # Convert to c-index numbering
-                execute.WriteData(fid, prefix, name = 'md.autodiff.fos_reverse_index', data = index, format = 'Integer')
+                execute._write_model_field(fid, prefix, name = 'md.autodiff.fos_reverse_index', data = index, format = 'Integer')
 
 
             ## 5 - build index for fov_forward driver
@@ -263,7 +272,7 @@ class autodiff(class_registry.manage_state):
                             indices += indep.nods
 
                 index -= 1  # Convert to c-index numbering
-                execute.WriteData(fid, prefix, name = 'md.autodiff.fov_forward_indices', data = indices, format = 'IntMat', mattype = 3)
+                execute._write_model_field(fid, prefix, name = 'md.autodiff.fov_forward_indices', data = indices, format = 'IntMat', mattype = 3)
 
             ## 6 - Deal with mass fluxes
             mass_flux_segments = []
@@ -272,11 +281,11 @@ class autodiff(class_registry.manage_state):
                     mass_flux_segments.append(dep.segments)
 
             if mass_flux_segments:
-                execute.WriteData(fid, prefix, name = 'md.autodiff.mass_flux_segments', data = mass_flux_segments, format = 'MatArray')
+                execute._write_model_field(fid, prefix, name = 'md.autodiff.mass_flux_segments', data = mass_flux_segments, format = 'MatArray')
                 flag = True
             else:
                 flag = False
-            execute.WriteData(fid, prefix, name = 'md.autodiff.mass_flux_segments_present', data = flag, format = 'Boolean')
+            execute._write_model_field(fid, prefix, name = 'md.autodiff.mass_flux_segments_present', data = flag, format = 'Boolean')
 
             ## Deal with trace keep on
             keep = False
@@ -296,8 +305,8 @@ class autodiff(class_registry.manage_state):
                     keep = True
                 else:
                     keep = False
-            execute.WriteData(fid, prefix, name = 'md.autodiff.keep', data = keep, format ='Boolean')
+            execute._write_model_field(fid, prefix, name = 'md.autodiff.keep', data = keep, format ='Boolean')
 
         else:
-            execute.WriteData(fid, prefix, name = 'md.autodiff.mass_flux_segments_present', data = False, format = 'Boolean')
-            execute.WriteData(fid, prefix, name = 'md.autodiff.keep', data = False, format = 'Boolean')
+            execute._write_model_field(fid, prefix, name = 'md.autodiff.mass_flux_segments_present', data = False, format = 'Boolean')
+            execute._write_model_field(fid, prefix, name = 'md.autodiff.keep', data = False, format = 'Boolean')

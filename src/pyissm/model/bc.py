@@ -137,8 +137,8 @@ def set_ice_shelf_bc(md,
 
     # Define other boundary conditions
     ## Initialize smb and basalforcings
-    md.smb.initialise(md)
-    md.basalforcings.initialise(md)
+    md.smb.initialize(md)
+    md.basalforcings.initialize(md)
 
     ## Define balancethickness BCs
     if np.all(np.isnan(md.balancethickness.thickening_rate)):
@@ -204,11 +204,11 @@ def set_ice_sheet_bc(md):
     _set_sb_dirichlet_bc(md)
 
     # Initialise surface and basal forcings
-    md.smb.initialise(md)
-    md.basalforcings.initialise(md)
+    md.smb.initialize(md)
+    md.basalforcings.initialize(md)
 
     # Initialise ocean forcings and sea level
-    md.dsl.initialise(md)
+    md.dsl.initialize(md)
 
     ## Define balancethickness BCs
     if np.all(np.isnan(md.balancethickness.thickening_rate)):
@@ -285,8 +285,8 @@ def set_marine_ice_sheet_bc(md,
 
     # Define other boundary conditions
     ## Initialize smb and basalforcings
-    md.smb.initialise(md)
-    md.basalforcings.initialise(md)
+    md.smb.initialize(md)
+    md.basalforcings.initialize(md)
 
     ## Define hydrology BCs
     md.hydrology.spcwatercolumn = np.zeros((md.mesh.numberofvertices, 2))

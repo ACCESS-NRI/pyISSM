@@ -2498,7 +2498,7 @@ def twod_to_3d():
 
     raise NotImplementedError('pyissm.model.mesh.twod_to_3d:  This functionality is not yet implemented. Please contact ACCESS-NRI for support.')
 
-def project_3d(md,
+def _project_3d(md,
                vector,
                type = 'node',
                layer = 0,
@@ -2563,15 +2563,15 @@ def project_3d(md,
     --------
     Project a 2D node vector uniformly across all layers:
 
-    >>> extruded_vector = project_3d(md, vector=vector2d, type='node')
+    >>> extruded_vector = _project_3d(md, vector=vector2d, type='node')
 
     Project a 2D vector to a specific layer:
 
-    >>> extruded_vector = project_3d(md, vector=vector2d, type='node', layer=1)
+    >>> extruded_vector = _project_3d(md, vector=vector2d, type='node', layer=1)
 
     Project with polynomial interpolation:
 
-    >>> extruded_vector = project_3d(md, vector=vector2d, type='poly', degree=2.0)
+    >>> extruded_vector = _project_3d(md, vector=vector2d, type='poly', degree=2.0)
 
     Notes
     -----
@@ -2583,9 +2583,9 @@ def project_3d(md,
 
     # Error checks
     if not md:
-        raise TypeError("pyissm.model.mesh.project_3d: md must be provided")
+        raise TypeError("pyissm.model.mesh._project_3d: md must be provided")
     if md.mesh.domain_type().lower() != '3d':
-        raise TypeError("pyissm.model.mesh.project_3d: md must contain a 3D mesh")
+        raise TypeError("pyissm.model.mesh._project_3d: md must contain a 3D mesh")
 
     #Handle special case where vector2d is single element (differs from representation in MATLAB)
     if isinstance(vector, (bool, int, float)):
@@ -2604,7 +2604,7 @@ def project_3d(md,
                 projected_vector[-1] = vector[-1]
                 vector = vector[:-1]
             else:
-                raise TypeError("pyissm.model.mesh.project_3d: Vector must be the length of md.mesh.numberofvertices2d or md.mesh.numberofvertices2d + 1")
+                raise TypeError("pyissm.model.mesh._project_3d: Vector must be the length of md.mesh.numberofvertices2d or md.mesh.numberofvertices2d + 1")
             #Fill in
             if layer == 0:
                 for i in range(md.mesh.numberoflayers):
@@ -2619,7 +2619,7 @@ def project_3d(md,
                 projected_vector[-1, :] = vector[-1, :]
                 vector = vector[:-1, :]
             else:
-                raise TypeError("pyissm.model.mesh.project_3d: Vector must be the length of md.mesh.numberofvertices2d or md.mesh.numberofvertices2d + 1")
+                raise TypeError("pyissm.model.mesh._project_3d: Vector must be the length of md.mesh.numberofvertices2d or md.mesh.numberofvertices2d + 1")
             #Fill in
             if layer == 0:
                 for i in range(md.mesh.numberoflayers):
@@ -2637,7 +2637,7 @@ def project_3d(md,
                 projected_vector[-1] = vector[-1]
                 vector = vector[:-1]
             else:
-                raise TypeError("pyissm.model.mesh.project_3d: Vector must be the length of md.mesh.numberofelements2d or md.mesh.numberofelements2d + 1")
+                raise TypeError("pyissm.model.mesh._project_3d: Vector must be the length of md.mesh.numberofelements2d or md.mesh.numberofelements2d + 1")
             #Fill in
             if layer == 0:
                 for i in range(md.mesh.numberoflayers - 1):
@@ -2652,7 +2652,7 @@ def project_3d(md,
                 projected_vector[-1, :] = vector[-1, :]
                 vector = vector[:-1, :]
             else:
-                raise TypeError("pyissm.model.mesh.project_3d: Vector must be the length of md.mesh.numberofelements2d or md.mesh.numberofelements2d + 1")
+                raise TypeError("pyissm.model.mesh._project_3d: Vector must be the length of md.mesh.numberofelements2d or md.mesh.numberofelements2d + 1")
             #Fill in
             if layer == 0:
                 for i in range(md.mesh.numberoflayers - 1):
@@ -2669,7 +2669,7 @@ def project_3d(md,
                 projected_vector[-1] = vector[-1]
                 vector = vector[:-1]
             else:
-                raise TypeError("pyissm.model.mesh.project_3d: Vector must be the length of md.mesh.numberofvertices2d or md.mesh.numberofvertices2d + 1")
+                raise TypeError("pyissm.model.mesh._project_3d: Vector must be the length of md.mesh.numberofvertices2d or md.mesh.numberofvertices2d + 1")
             #Fill in
             if layer == 0:
                 for i in range(md.mesh.numberoflayers - 1):
@@ -2684,7 +2684,7 @@ def project_3d(md,
                 projected_vector[-1, :] = vector[-1, :]
                 vector = vector[:-1, :]
             else:
-                raise TypeError("pyissm.model.mesh.project_3d: Vector must be the length of md.mesh.numberofvertices2d or md.mesh.numberofvertices2d + 1")
+                raise TypeError("pyissm.model.mesh._project_3d: Vector must be the length of md.mesh.numberofvertices2d or md.mesh.numberofvertices2d + 1")
             #Fill in
             if layer == 0:
                 for i in range(md.mesh.numberoflayers - 1):
@@ -2692,12 +2692,12 @@ def project_3d(md,
             else:
                 projected_vector[((layer - 1) * md.mesh.numberofvertices2d):(layer * md.mesh.numberofvertices2d), :] = vector * (1.0 - (1.0 - layer / (md.mesh.numberoflayers - 1.0))**degree)
     else:
-        raise TypeError("pyissm.model.mesh.project_3d: Unknown projection type")
+        raise TypeError("pyissm.model.mesh._project_3d: Unknown projection type")
 
     return projected_vector
 
 
-def project_2d(md, value, layer):
+def _project_2d(md, value, layer):
     """
     Extract a 3D field value from a specified layer onto the 2D mesh.
 
@@ -2741,11 +2741,11 @@ def project_2d(md, value, layer):
     --------
     Extract velocity from the second layer (1 = base):
 
-    >>> vel_layer2 = project_2d(md3d, md3d.initialization.vel, 2)
+    >>> vel_layer2 = _project_2d(md3d, md3d.initialization.vel, 2)
 
     Extract temperature from the surface layer:
 
-    >>> temp_surface = project_2d(md3d, md3d.thermal.temperature, md3d.mesh.numberoflayers)
+    >>> temp_surface = _project_2d(md3d, md3d.thermal.temperature, md3d.mesh.numberoflayers)
 
     Notes
     -----
@@ -2762,12 +2762,12 @@ def project_2d(md, value, layer):
 
     # Error checks
     if not md:
-        raise TypeError("pyissm.model.mesh.project_2d: md must be provided")
+        raise TypeError("pyissm.model.mesh._project_2d: md must be provided")
     if md.mesh.domain_type().lower() != '3d':
-        raise TypeError("pyissm.model.mesh.project_2d: md must contain a 3D mesh")
+        raise TypeError("pyissm.model.mesh._project_2d: md must contain a 3D mesh")
 
     if layer < 1 or layer > md.mesh.numberoflayers:
-        raise ValueError(f"pyissm.model.mesh.project_2d: Layer must be between 1 and {md.mesh.numberoflayers}")
+        raise ValueError(f"pyissm.model.mesh._project_2d: Layer must be between 1 and {md.mesh.numberoflayers}")
 
     # coerce to array in case float is passed
     if type(value) not in [np.ndarray, np.ma.core.MaskedArray]:
@@ -2871,18 +2871,18 @@ def depth_average(md, vector):
     if vector.shape[0] == md.mesh.numberofvertices:
         vector_average = np.zeros(md.mesh.numberofvertices2d)
         for i in range(1, md.mesh.numberoflayers):
-            vector_average = vector_average + (project_2d(md, vector, i) + project_2d(md, vector, i + 1)) / 2. * (project_2d(md, md.mesh.z, i + 1) - project_2d(md, md.mesh.z, i))
-        vector_average = vector_average / project_2d(md, md.geometry.thickness, 1)
+            vector_average = vector_average + (_project_2d(md, vector, i) + _project_2d(md, vector, i + 1)) / 2. * (_project_2d(md, md.mesh.z, i + 1) - _project_2d(md, md.mesh.z, i))
+        vector_average = vector_average / _project_2d(md, md.geometry.thickness, 1)
 
     # Handle element data
     elif vector.shape[0] == md.mesh.numberofelements:
         vector_average = np.zeros(md.mesh.numberofelements2d)
         for i in range(1, md.mesh.numberoflayers):
-            vertices_dz = (project_2d(md, md.mesh.z, i + 1) - project_2d(md, md.mesh.z, i))
+            vertices_dz = (_project_2d(md, md.mesh.z, i + 1) - _project_2d(md, md.mesh.z, i))
             elements_dz = vertices_dz.mean(1)
-            vector_average = vector_average + project_2d(md, vector, i) * elements_dz
+            vector_average = vector_average + _project_2d(md, vector, i) * elements_dz
     #vector_average = vector_average + project2d(md, vector, i) * (project2d(md, md.mesh.z, i + 1) - project2d(md, md.mesh.z, i))
-        vertices_thickness = project_2d(md, md.geometry.thickness, 1)
+        vertices_thickness = _project_2d(md, md.geometry.thickness, 1)
         elements_thickness = vertices_thickness.mean(1)
         vector_average = vector_average / elements_thickness
     #vector_average = vector_average / project2d(md, md.geometry.thickness, 1)

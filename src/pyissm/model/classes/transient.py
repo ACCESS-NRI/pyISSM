@@ -64,7 +64,7 @@ class transient(class_registry.manage_state):
         Returns a detailed string representation of the transient parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -105,24 +105,24 @@ class transient(class_registry.manage_state):
     def __repr__(self):
         s = '   transient solution parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isage', 'indicates if age model is requested in the transient'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'issmb', 'indicates if a surface mass balance solution is used in the transient'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ismasstransport', 'indicates if a masstransport solution is used in the transient'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ismmemasstransport', 'indicates whether an MME masstransport solution is used in the transient'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isoceantransport', 'indicates whether an ocean masstransport solution is used in the transient'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isstressbalance', 'indicates if a stressbalance solution is used in the transient'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isthermal', 'indicates if a thermal solution is used in the transient'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isgroundingline', 'indicates if a groundingline migration is used in the transient'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isesa', 'indicates whether an elastic adjustment model is used in the transient'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isdamageevolution', 'indicates whether damage evolution is used in the transient'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ismovingfront', 'indicates whether a moving front capability is used in the transient'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ishydrology', 'indicates whether an hydrology model is used'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isdebris', 'indicates whether a debris model is used'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'issampling', 'indicates whether sampling is used in the transient'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isslc', 'indicates if a sea level change solution is used in the transient'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isoceancoupling', 'indicates whether coupling with an ocean model is used in the transient (1 for cartesian coordinates, 2 for lat/long coordinates'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'amr_frequency', 'frequency at which mesh is refined in simulations with multiple time_steps'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'list of additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isage', 'indicates if age model is requested in the transient'))
+        s += '{}\n'.format(class_utils._field_display(self, 'issmb', 'indicates if a surface mass balance solution is used in the transient'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ismasstransport', 'indicates if a masstransport solution is used in the transient'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ismmemasstransport', 'indicates whether an MME masstransport solution is used in the transient'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isoceantransport', 'indicates whether an ocean masstransport solution is used in the transient'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isstressbalance', 'indicates if a stressbalance solution is used in the transient'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isthermal', 'indicates if a thermal solution is used in the transient'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isgroundingline', 'indicates if a groundingline migration is used in the transient'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isesa', 'indicates whether an elastic adjustment model is used in the transient'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isdamageevolution', 'indicates whether damage evolution is used in the transient'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ismovingfront', 'indicates whether a moving front capability is used in the transient'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ishydrology', 'indicates whether an hydrology model is used'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isdebris', 'indicates whether a debris model is used'))
+        s += '{}\n'.format(class_utils._field_display(self, 'issampling', 'indicates whether sampling is used in the transient'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isslc', 'indicates if a sea level change solution is used in the transient'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isoceancoupling', 'indicates whether coupling with an ocean model is used in the transient (1 for cartesian coordinates, 2 for lat/long coordinates'))
+        s += '{}\n'.format(class_utils._field_display(self, 'amr_frequency', 'frequency at which mesh is refined in simulations with multiple time_steps'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'list of additional outputs requested'))
         return s
 
     # Define class string
@@ -136,23 +136,23 @@ class transient(class_registry.manage_state):
         if not solution == 'TransientSolution':
             return md
 
-        class_utils.check_field(md, fieldname = 'transient.isage', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'transient.issmb', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'transient.ismasstransport', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'transient.ismmemasstransport', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'transient.isoceantransport', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'transient.isstressbalance', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'transient.isthermal', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'transient.isgroundingline', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'transient.isesa', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'transient.isdamageevolution', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'transient.ishydrology', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'transient.isdebris', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'transient.issampling', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'transient.ismovingfront', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'transient.isslc', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'transient.isoceancoupling', scalar = True, values = [0, 1, 2])
-        class_utils.check_field(md, fieldname = 'transient.amr_frequency', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'transient.isage', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'transient.issmb', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'transient.ismasstransport', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'transient.ismmemasstransport', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'transient.isoceantransport', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'transient.isstressbalance', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'transient.isthermal', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'transient.isgroundingline', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'transient.isesa', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'transient.isdamageevolution', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'transient.ishydrology', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'transient.isdebris', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'transient.issampling', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'transient.ismovingfront', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'transient.isslc', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'transient.isoceancoupling', scalar = True, values = [0, 1, 2])
+        class_utils._check_field(md, fieldname = 'transient.amr_frequency', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
 
         if solution != 'TransientSolution' and md.transient.iscoupling:
             md.check_message("Coupling with ocean can only be done in transient simulations!")
@@ -163,7 +163,7 @@ class transient(class_registry.manage_state):
         return md
 
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -254,9 +254,9 @@ class transient(class_registry.manage_state):
             'ismovingfront', 'ishydrology', 'isdebris',
             'issampling', 'isslc']
         for fieldname in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'Boolean')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = fieldname, format = 'Boolean')
         
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'isoceancoupling', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'amr_frequency', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.transient.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'isoceancoupling', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'amr_frequency', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.transient.requested_outputs', data = self._process_outputs(md), format = 'StringArray')

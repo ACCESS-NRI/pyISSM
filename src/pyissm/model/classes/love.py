@@ -138,25 +138,25 @@ class default(class_registry.manage_state):
     def __repr__(self):
         s = '   love parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'nfreq', 'number of frequencies sampled (default: 1, elastic) [Hz]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'frequencies', 'frequencies sampled (convention defaults to 0 for the elastic case) [Hz]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sh_nmax', 'maximum spherical harmonic degree (default: 256, .35 deg, or 40 km at equator)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sh_nmin', 'minimum spherical harmonic degree (default: 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'g0', 'adimensioning constant for gravity (default: 10) [m/s^2]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'r0', 'adimensioning constant for radius (default: 6371*10^3) [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'mu0', 'adimensioning constant for stress (default: 10^11) [Pa]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'Gravitational_Constant', 'Newtonian constant of gravitation (default: 6.67259e-11 [m^3 kg^-1 s^-2])'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'chandler_wobble', 'includes the inertial terms for the chandler wobble in the rotational feedback love numbers, only for forcing_type=11 (default: 0) (/!\\ 1 has not been validated yet)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'allow_layer_deletion', 'allow for migration of the integration boundary with increasing spherical harmonics degree (default: 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'underflow_tol', 'threshold of deep to surface love number ratio to trigger the deletion of layers (default: 1e-16)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'pw_threshold', 'if relative variation across frequencies is smaller than this ratio, the post-widder transform for time-dependent love numbers is bypassed (default (1e-3)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'min_integration_steps', 'minimum number of radial steps to propagate the yi system from the bottom to the top of each layer (default: 500)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'max_integration_dr', 'maximum length of radial steps to propagate the yi system from the bottom to the top of each layer (default: 10e3) [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'istemporal', ['1 for time-dependent love numbers, 0 for frequency-dependent or elastic love numbers (default: 1)', 'If 1: use fourierlove function build_frequencies_from_time to meet consistency']))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'n_temporal_iterations', 'max number of iterations in the inverse Laplace transform. Also the number of spectral samples per time step requested (default: 7)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'time', 'time vector for deformation if istemporal (default: 0) [s]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'love_kernels', 'compute love numbers at depth? (default: 0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'forcing_type', 'integer indicating the nature and depth of the forcing for the Love number calculation (default: 11):'))
+        s += '{}\n'.format(class_utils._field_display(self, 'nfreq', 'number of frequencies sampled (default: 1, elastic) [Hz]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'frequencies', 'frequencies sampled (convention defaults to 0 for the elastic case) [Hz]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sh_nmax', 'maximum spherical harmonic degree (default: 256, .35 deg, or 40 km at equator)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sh_nmin', 'minimum spherical harmonic degree (default: 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'g0', 'adimensioning constant for gravity (default: 10) [m/s^2]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'r0', 'adimensioning constant for radius (default: 6371*10^3) [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'mu0', 'adimensioning constant for stress (default: 10^11) [Pa]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'Gravitational_Constant', 'Newtonian constant of gravitation (default: 6.67259e-11 [m^3 kg^-1 s^-2])'))
+        s += '{}\n'.format(class_utils._field_display(self, 'chandler_wobble', 'includes the inertial terms for the chandler wobble in the rotational feedback love numbers, only for forcing_type=11 (default: 0) (/!\\ 1 has not been validated yet)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'allow_layer_deletion', 'allow for migration of the integration boundary with increasing spherical harmonics degree (default: 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'underflow_tol', 'threshold of deep to surface love number ratio to trigger the deletion of layers (default: 1e-16)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'pw_threshold', 'if relative variation across frequencies is smaller than this ratio, the post-widder transform for time-dependent love numbers is bypassed (default (1e-3)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'min_integration_steps', 'minimum number of radial steps to propagate the yi system from the bottom to the top of each layer (default: 500)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'max_integration_dr', 'maximum length of radial steps to propagate the yi system from the bottom to the top of each layer (default: 10e3) [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'istemporal', ['1 for time-dependent love numbers, 0 for frequency-dependent or elastic love numbers (default: 1)', 'If 1: use fourierlove function build_frequencies_from_time to meet consistency']))
+        s += '{}\n'.format(class_utils._field_display(self, 'n_temporal_iterations', 'max number of iterations in the inverse Laplace transform. Also the number of spectral samples per time step requested (default: 7)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'time', 'time vector for deformation if istemporal (default: 0) [s]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'love_kernels', 'compute love numbers at depth? (default: 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'forcing_type', 'integer indicating the nature and depth of the forcing for the Love number calculation (default: 11):'))
         s += '{}\n'.format('                                                     1:  Inner core boundary -- Volumic Potential')
         s += '{}\n'.format('                                                     2:  Inner core boundary -- Pressure')
         s += '{}\n'.format('                                                     3:  Inner core boundary -- Loading')
@@ -169,16 +169,16 @@ class default(class_registry.manage_state):
         s += '{}\n'.format('                                                     10: Surface -- Pressure')
         s += '{}\n'.format('                                                     11: Surface -- Loading')
         s += '{}\n'.format('                                                     12: Surface -- Tangential traction ')
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'inner_core_boundary', 'interface index in materials.radius locating forcing. Only used for forcing_type 1--4 (default: 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'core_mantle_boundary', 'interface index in materials.radius locating forcing. Only used for forcing_type 5--8 (default: 2)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'complex_computation', 'return love numbers as 0: real (useful for elastic or temporal forms), 1: complex numbers (useful for Fourier spectral form) (default: 0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'quad_precision', 'toggle computation love numbers and post-widder transform with 32 digit precision, useful for temporal form (default: 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'debug', 'outputs yi system matrix prior to solving (default: 0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'hypergeom_table1', 'table 1 for hypergeometric function, only for EBM rheology (default: [1])'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'hypergeom_table2', 'table 2 for hypergeometric function, only for EBM rheology (default: [1])'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'hypergeom_nalpha', 'length of hypergeometric table, only for EBM rheology (default: 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'hypergeom_nz', 'width of hypergeometric table, only for EBM rheology (default: 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'hypergeom_z','abscissa for hypergeometric table, only for EBM rheology (default: [0])'))
+        s += '{}\n'.format(class_utils._field_display(self, 'inner_core_boundary', 'interface index in materials.radius locating forcing. Only used for forcing_type 1--4 (default: 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'core_mantle_boundary', 'interface index in materials.radius locating forcing. Only used for forcing_type 5--8 (default: 2)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'complex_computation', 'return love numbers as 0: real (useful for elastic or temporal forms), 1: complex numbers (useful for Fourier spectral form) (default: 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'quad_precision', 'toggle computation love numbers and post-widder transform with 32 digit precision, useful for temporal form (default: 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'debug', 'outputs yi system matrix prior to solving (default: 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'hypergeom_table1', 'table 1 for hypergeometric function, only for EBM rheology (default: [1])'))
+        s += '{}\n'.format(class_utils._field_display(self, 'hypergeom_table2', 'table 2 for hypergeometric function, only for EBM rheology (default: [1])'))
+        s += '{}\n'.format(class_utils._field_display(self, 'hypergeom_nalpha', 'length of hypergeometric table, only for EBM rheology (default: 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'hypergeom_nz', 'width of hypergeometric table, only for EBM rheology (default: 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'hypergeom_z','abscissa for hypergeometric table, only for EBM rheology (default: [0])'))
         return s
 
     # Define class string
@@ -192,37 +192,37 @@ class default(class_registry.manage_state):
         if 'LoveAnalysis' not in analyses:
             return md
 
-        class_utils.check_field(md, fieldname = 'love.nfreq', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.frequencies', numel = md.love.nfreq, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.sh_nmax', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.sh_nmin', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.g0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.r0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.mu0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.Gravitational_Constant', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.chandler_wobble', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'love.allow_layer_deletion', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'love.underflow_tol', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.pw_threshold', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.min_integration_steps', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.integration_scheme', scalar = True, ge = 0, le = 2, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.max_integration_dr', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.love_kernels', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'love.forcing_type', scalar = True, gt = 0, le = 12, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.complex_computation', scalar = True, values = [0, 1], allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.istemporal', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'love.hypergeom_nalpha', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.hypergeom_nz', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.hypergeom_z', numel = md.love.hypergeom_nz, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.hypergeom_table1', numel = md.love.hypergeom_nz * md.love.hypergeom_nalpha, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.hypergeom_table2', numel = md.love.hypergeom_nz * md.love.hypergeom_nalpha, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.nfreq', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.frequencies', numel = md.love.nfreq, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.sh_nmax', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.sh_nmin', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.g0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.r0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.mu0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.Gravitational_Constant', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.chandler_wobble', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'love.allow_layer_deletion', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'love.underflow_tol', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.pw_threshold', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.min_integration_steps', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.integration_scheme', scalar = True, ge = 0, le = 2, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.max_integration_dr', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.love_kernels', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'love.forcing_type', scalar = True, gt = 0, le = 12, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.complex_computation', scalar = True, values = [0, 1], allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.istemporal', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'love.hypergeom_nalpha', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.hypergeom_nz', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.hypergeom_z', numel = md.love.hypergeom_nz, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.hypergeom_table1', numel = md.love.hypergeom_nz * md.love.hypergeom_nalpha, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.hypergeom_table2', numel = md.love.hypergeom_nz * md.love.hypergeom_nalpha, allow_nan = False, allow_inf = False)
 
         if np.any(md.materials.rheologymodel) == 2 and md.love.hypergeom_nz <= 1:
             raise RuntimeError('EBM rheology requested but hypergeometric table has fewer then 2 frequency values')
 
         if md.love.istemporal:
-            class_utils.check_field(md, fieldname = 'love.n_temporal_iterations', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'love.time', numel = md.love.nfreq / 2 / md.love.n_temporal_iterations, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'love.n_temporal_iterations', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'love.time', numel = md.love.nfreq / 2 / md.love.n_temporal_iterations, allow_nan = False, allow_inf = False)
         if md.love.sh_nmin <= 1 and (md.love.forcing_type == 1 or md.love.forcing_type == 5 or md.love.forcing_type == 9):
             raise RuntimeError('Degree 1 not supported for forcing type {}. Use sh_min >= 2 for this kind of calculation.'.format(md.love.forcing_type))
 
@@ -235,9 +235,9 @@ class default(class_registry.manage_state):
 
         mat = np.where(np.array(md.materials.nature) == 'litho')[0]
         if md.love.forcing_type <= 4:
-            class_utils.check_field(md, fieldname = 'love.inner_core_boundary', scalar = True, gt = 0, le = md.materials[mat].numlayers, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'love.inner_core_boundary', scalar = True, gt = 0, le = md.materials[mat].numlayers, allow_nan = False, allow_inf = False)
         elif md.love.forcing_type <= 8:
-            class_utils.check_field(md, fieldname = 'love.core_mantle_boundary', scalar = True, gt = 0, le = md.materials[mat].numlayers, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'love.core_mantle_boundary', scalar = True, gt = 0, le = md.materials[mat].numlayers, allow_nan = False, allow_inf = False)
 
         return md
     
@@ -265,25 +265,25 @@ class default(class_registry.manage_state):
                       'n_temporal_iterations', 'forcing_type', 'inner_core_boundary', 'core_mantle_boundary',
                       'hypergeom_nalpha', 'hypergeom_nz']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj=self, fieldname=field, format='Integer')
+            execute._write_model_field(fid, prefix, obj=self, fieldname=field, format='Integer')
 
         ## Write Double fields
         fieldnames = ['g0', 'r0', 'mu0', 'Gravitational_Constant', 'underflow_tol', 'pw_threshold',
                       'max_integration_dr']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj=self, fieldname=field, format='Double')
+            execute._write_model_field(fid, prefix, obj=self, fieldname=field, format='Double')
 
         ## Write Boolean fields
         fieldnames = ['chandler_wobble', 'allow_layer_deletion', 'istemporal', 'complex_computation',
                       'quad_precision', 'love_kernels', 'debug']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj=self, fieldname=field, format='Boolean')
+            execute._write_model_field(fid, prefix, obj=self, fieldname=field, format='Boolean')
 
         ## Write DoubleMat fields
-        execute.WriteData(fid, prefix, obj=self, fieldname='frequencies', format='DoubleMat', mattype = 3)
-        execute.WriteData(fid, prefix, obj=self, fieldname='hypergeom_table1', format='DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj=self, fieldname='hypergeom_table2', format='DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj=self, fieldname='hypergeom_z', format='DoubleMat', mattype = 3)
+        execute._write_model_field(fid, prefix, obj=self, fieldname='frequencies', format='DoubleMat', mattype = 3)
+        execute._write_model_field(fid, prefix, obj=self, fieldname='hypergeom_table1', format='DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj=self, fieldname='hypergeom_table2', format='DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj=self, fieldname='hypergeom_z', format='DoubleMat', mattype = 3)
 
         
 ## ------------------------------------------------------
@@ -393,25 +393,25 @@ class fourier(class_registry.manage_state):
     def __repr__(self):
         s = '   fourier love parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'nfreq', 'number of frequencies sampled (default: 1, elastic) [Hz]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'frequencies', 'frequencies sampled (convention defaults to 0 for the elastic case) [Hz]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sh_nmax', 'maximum spherical harmonic degree (default: 256, .35 deg, or 40 km at equator)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sh_nmin', 'minimum spherical harmonic degree (default: 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'g0', 'adimensioning constant for gravity (default: 10) [m/s^2]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'r0', 'adimensioning constant for radius (default: 6371*10^3) [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'mu0', 'adimensioning constant for stress (default: 10^11) [Pa]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'allow_layer_deletion', 'allow for migration of the integration boundary with increasing spherical harmonics degree (default: 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'Gravitational_Constant', 'Newtonian constant of gravitation (default: 6.67259e-11 [m^3 kg^-1 s^-2])'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'chandler_wobble', 'includes the inertial terms for the chandler wobble in the rotational feedback love numbers, only for forcing_type=11 (default: 0) (/!\\ 1 has not been validated yet)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'allow_layer_deletion', 'allow for migration of the integration boundary with increasing spherical harmonics degree (default: 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'pw_threshold', 'if relative variation across frequencies is smaller than this ratio, the post-widder transform for time-dependent love numbers is bypassed (default (1e-3)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'chandler_wobble', 'includes the inertial terms for the chandler wobble in the rotational feedback love numbers, only for forcing_type=11 (default: 0) (/!\\ 1 is untested)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'integration_steps_per_layer', 'number of radial steps to propagate the yi system from the bottom to the top of each layer (default: 100)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'istemporal', ['1 for time-dependent love numbers, 0 for frequency-dependent or elastic love numbers (default: 0)', 'If 1: use fourierlove function build_frequencies_from_time to meet consistency']))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'n_temporal_iterations', 'max number of iterations in the inverse Laplace transform. Also the number of spectral samples per time step requested (default: 8)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'time', 'time vector for deformation if istemporal (default: 0) [s]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'love_kernels', 'compute love numbers at depth? (default: 0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'forcing_type', 'integer indicating the nature and depth of the forcing for the Love number calculation (default: 11):'))
+        s += '{}\n'.format(class_utils._field_display(self, 'nfreq', 'number of frequencies sampled (default: 1, elastic) [Hz]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'frequencies', 'frequencies sampled (convention defaults to 0 for the elastic case) [Hz]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sh_nmax', 'maximum spherical harmonic degree (default: 256, .35 deg, or 40 km at equator)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sh_nmin', 'minimum spherical harmonic degree (default: 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'g0', 'adimensioning constant for gravity (default: 10) [m/s^2]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'r0', 'adimensioning constant for radius (default: 6371*10^3) [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'mu0', 'adimensioning constant for stress (default: 10^11) [Pa]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'allow_layer_deletion', 'allow for migration of the integration boundary with increasing spherical harmonics degree (default: 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'Gravitational_Constant', 'Newtonian constant of gravitation (default: 6.67259e-11 [m^3 kg^-1 s^-2])'))
+        s += '{}\n'.format(class_utils._field_display(self, 'chandler_wobble', 'includes the inertial terms for the chandler wobble in the rotational feedback love numbers, only for forcing_type=11 (default: 0) (/!\\ 1 has not been validated yet)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'allow_layer_deletion', 'allow for migration of the integration boundary with increasing spherical harmonics degree (default: 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'pw_threshold', 'if relative variation across frequencies is smaller than this ratio, the post-widder transform for time-dependent love numbers is bypassed (default (1e-3)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'chandler_wobble', 'includes the inertial terms for the chandler wobble in the rotational feedback love numbers, only for forcing_type=11 (default: 0) (/!\\ 1 is untested)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'integration_steps_per_layer', 'number of radial steps to propagate the yi system from the bottom to the top of each layer (default: 100)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'istemporal', ['1 for time-dependent love numbers, 0 for frequency-dependent or elastic love numbers (default: 0)', 'If 1: use fourierlove function build_frequencies_from_time to meet consistency']))
+        s += '{}\n'.format(class_utils._field_display(self, 'n_temporal_iterations', 'max number of iterations in the inverse Laplace transform. Also the number of spectral samples per time step requested (default: 8)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'time', 'time vector for deformation if istemporal (default: 0) [s]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'love_kernels', 'compute love numbers at depth? (default: 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'forcing_type', 'integer indicating the nature and depth of the forcing for the Love number calculation (default: 11):'))
         s += '{}\n'.format('                                                     1:  Inner core boundary -- Volumic Potential')
         s += '{}\n'.format('                                                     2:  Inner core boundary -- Pressure')
         s += '{}\n'.format('                                                     3:  Inner core boundary -- Loading')
@@ -424,8 +424,8 @@ class fourier(class_registry.manage_state):
         s += '{}\n'.format('                                                     10: Surface -- Pressure')
         s += '{}\n'.format('                                                     11: Surface -- Loading')
         s += '{}\n'.format('                                                     12: Surface -- Tangential traction ')
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'inner_core_boundary', 'interface index in materials.radius locating forcing. Only used for forcing_type 1--4 (default: 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'core_mantle_boundary', 'interface index in materials.radius locating forcing. Only used for forcing_type 5--8 (default: 2)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'inner_core_boundary', 'interface index in materials.radius locating forcing. Only used for forcing_type 1--4 (default: 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'core_mantle_boundary', 'interface index in materials.radius locating forcing. Only used for forcing_type 5--8 (default: 2)'))
         return s
 
     # Define class string
@@ -439,27 +439,27 @@ class fourier(class_registry.manage_state):
         if 'LoveAnalysis' not in analyses:
             return md
 
-        class_utils.check_field(md, fieldname = 'love.nfreq', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.frequencies', numel = md.love.nfreq, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.sh_nmax', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.sh_nmin', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.g0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.r0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.mu0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.Gravitational_Constant', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.chandler_wobble', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'love.allow_layer_deletion', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'love.underflow_tol', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.pw_threshold', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.integration_steps_per_layer', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.love_kernels', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'love.forcing_type', scalar = True, gt = 0, le = 12, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.complex_computation', scalar = True, values = [0, 1], allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'love.istemporal', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'love.nfreq', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.frequencies', numel = md.love.nfreq, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.sh_nmax', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.sh_nmin', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.g0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.r0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.mu0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.Gravitational_Constant', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.chandler_wobble', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'love.allow_layer_deletion', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'love.underflow_tol', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.pw_threshold', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.integration_steps_per_layer', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.love_kernels', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'love.forcing_type', scalar = True, gt = 0, le = 12, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.complex_computation', scalar = True, values = [0, 1], allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'love.istemporal', values = [0, 1])
 
         if md.love.istemporal:
-            class_utils.check_field(md, fieldname = 'love.n_temporal_iterations', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'love.time', numel = md.love.nfreq / 2 / md.love.n_temporal_iterations, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'love.n_temporal_iterations', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'love.time', numel = md.love.nfreq / 2 / md.love.n_temporal_iterations, allow_nan = False, allow_inf = False)
         if md.love.sh_nmin <= 1 and (md.love.forcing_type == 1 or md.love.forcing_type == 5 or md.love.forcing_type == 9):
             raise RuntimeError('Degree 1 not supported for forcing type {}. Use sh_min >= 2 for this kind of calculation.'.format(md.love.forcing_type))
 
@@ -472,9 +472,9 @@ class fourier(class_registry.manage_state):
 
         mat = np.where(np.array(md.materials.nature) == 'litho')[0]
         if md.love.forcing_type <= 4:
-            class_utils.check_field(md, fieldname = 'love.inner_core_boundary', scalar = True, gt = 0, le = md.materials[mat].numlayers, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'love.inner_core_boundary', scalar = True, gt = 0, le = md.materials[mat].numlayers, allow_nan = False, allow_inf = False)
         elif md.love.forcing_type <= 8:
-            class_utils.check_field(md, fieldname = 'love.core_mantle_boundary', scalar = True, gt = 0, le = md.materials[mat].numlayers, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'love.core_mantle_boundary', scalar = True, gt = 0, le = md.materials[mat].numlayers, allow_nan = False, allow_inf = False)
 
         return md
     
@@ -501,18 +501,18 @@ class fourier(class_registry.manage_state):
         fieldnames = ['nfreq', 'sh_nmax', 'sh_nmin', 'integration_steps_per_layer', 'n_temporal_iterations',
                       'forcing_type', 'inner_core_boundary', 'core_mantle_boundary']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj=self, fieldname=field, format='Integer')
+            execute._write_model_field(fid, prefix, obj=self, fieldname=field, format='Integer')
 
         ## Write Double fields
         fieldnames = ['g0', 'r0', 'mu0', 'Gravitational_Constant', 'underflow_tol', 'pw_threshold']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj=self, fieldname=field, format='Double')
+            execute._write_model_field(fid, prefix, obj=self, fieldname=field, format='Double')
 
         ## Write Boolean fields
         fieldnames = ['chandler_wobble', 'allow_layer_deletion', 'istemporal', 'complex_computation',
                       'love_kernels']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj=self, fieldname=field, format='Boolean')
+            execute._write_model_field(fid, prefix, obj=self, fieldname=field, format='Boolean')
 
         ## Write DoubleMat fields
-        execute.WriteData(fid, prefix, obj=self, fieldname='frequencies', format='DoubleMat', mattype = 3)
+        execute._write_model_field(fid, prefix, obj=self, fieldname='frequencies', format='DoubleMat', mattype = 3)

@@ -487,7 +487,7 @@ def plot_model_field(md,
         # If a 3D model is provided, extract the layer (if provided), or continue to default extraction of surface layer
         if layer is not None:
             # Extract the specified layer
-            field = model.mesh.project_2d(md, field, layer)
+            field = model.mesh._project_2d(md, field, layer)
 
         elif depth_average:
             field = model.mesh.depth_average(md, field)
@@ -805,7 +805,7 @@ def plot_model_bc(md,
                     data = data[md.mesh.vertexonsurface == 1]
                     warnings.warn(f'3D model found. Plotting surface BCs only.')
                 else:
-                    data = model.mesh.project_2d(md, data, layer)
+                    data = model.mesh._project_2d(md, data, layer)
                     warnings.warn(f'3D model found. Plotting BCs  on layer {layer}.')
 
             # Make plot

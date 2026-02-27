@@ -11,7 +11,7 @@ md.cluster.np = 3
 # Use of SMBpddSicopolis
 md.smb = pyissm.model.classes.smb.pddSicopolis()
 # initalize pdd fields
-md.smb.initialise(md)
+md.smb.initialize(md)
 md.smb.s0p = md.geometry.surface.copy()
 md.smb.s0t = md.geometry.surface.copy()
 

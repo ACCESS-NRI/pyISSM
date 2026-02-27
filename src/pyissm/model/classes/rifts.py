@@ -54,8 +54,8 @@ class rifts(class_registry.manage_state):
     def __repr__(self):
         s = '   rift parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'riftstruct', 'structure containing all rift information (vertices coordinates, segments, type of melange, ...)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'riftproperties', 'rift properties'))
+        s += '{}\n'.format(class_utils._field_display(self, 'riftstruct', 'structure containing all rift information (vertices coordinates, segments, type of melange, ...)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'riftproperties', 'rift properties'))
         return s
 
     # Define class string
@@ -80,7 +80,7 @@ class rifts(class_registry.manage_state):
                 #We have segments with rift markers, but no rift structure!
                 md.check_message("model should be processed for rifts (run meshprocessrifts)!")
             for i, rift in enumerate(self.riftstruct):
-                class_utils.check_field(md, fieldname = "rifts.riftstruct[{}]['fill']".format(i), values = ['Water', 'Air', 'Ice', 'Melange', 0, 1, 2, 3])
+                class_utils._check_field(md, fieldname = "rifts.riftstruct[{}]['fill']".format(i), values = ['Water', 'Air', 'Ice', 'Melange', 0, 1, 2, 3])
         else:
             valid_structure = np.any(~np.isnan(self.riftstruct)) if isinstance(self.riftstruct, np.ndarray) else True
             if self.riftstruct and valid_structure:
@@ -149,5 +149,5 @@ class rifts(class_registry.manage_state):
             data = np.zeros((numpairs, 12))
         
         ## Write fields
-        execute.WriteData(fid, prefix, name = 'md.rifts.numrifts', data = numrifts, format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.rifts.riftstruct', data = data, format = 'DoubleMat', mattype = 3)
+        execute._write_model_field(fid, prefix, name = 'md.rifts.numrifts', data = numrifts, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.rifts.riftstruct', data = data, format = 'DoubleMat', mattype = 3)

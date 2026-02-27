@@ -12,7 +12,7 @@ md.cluster.np = 1
 
 md.transient.ishydrology = True
 md.hydrology = pyissm.model.classes.hydrology.dc()
-md.hydrology = md.hydrology.initialise(md)
+md.hydrology = md.hydrology.initialize(md)
 
 # Hydro Model Parameters
 md.hydrology.isefficientlayer = 0

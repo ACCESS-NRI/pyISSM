@@ -11,7 +11,7 @@ md.cluster.np = 4
 # Use of SMBsemic
 md.smb = pyissm.model.classes.smb.semic()
 # initalize pdd fields
-md.smb.initialise(md)
+md.smb.initialize(md)
 md.smb.s0gcm = md.geometry.surface
 
 # Okay, initialize attribute matrix

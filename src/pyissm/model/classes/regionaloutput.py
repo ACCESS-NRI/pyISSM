@@ -69,11 +69,11 @@ class regionaloutput(class_registry.manage_state):
     def __repr__(self):
         s = '   regionaloutput parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'name', 'identifier for this regional response'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'definitionstring', 'string that identifies this output definition uniquely, from Outputdefinition[1 - 100]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'outputnamestring', 'string that identifies the type of output you want, eg. IceVolume, TotalSmb, GroudedArea'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'mask', 'mask vectorial field which identifies the region of interest (value > 0 will be included)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'maskexpstring', 'name of Argus file that can be passed in to define the regional mask'))
+        s += '{}\n'.format(class_utils._field_display(self, 'name', 'identifier for this regional response'))
+        s += '{}\n'.format(class_utils._field_display(self, 'definitionstring', 'string that identifies this output definition uniquely, from Outputdefinition[1 - 100]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'outputnamestring', 'string that identifies the type of output you want, eg. IceVolume, TotalSmb, GroudedArea'))
+        s += '{}\n'.format(class_utils._field_display(self, 'mask', 'mask vectorial field which identifies the region of interest (value > 0 will be included)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'maskexpstring', 'name of Argus file that can be passed in to define the regional mask'))
         return s
 
     # Define class string
@@ -81,11 +81,12 @@ class regionaloutput(class_registry.manage_state):
         s = 'ISSM - regionaloutput Class'
         return s
     
-    def extrude(self, md):
+    # Extrude to 3D mesh
+    def _extrude(self, md):
         """
         Extrude regionaloutput fields to 3D mesh
         """
-        self.mask = mesh.project_3d(md, vector = self.mask, type = 'node')
+        self.mask = mesh._project_3d(md, vector = self.mask, type = 'node')
 
         return self
 
@@ -109,8 +110,8 @@ class regionaloutput(class_registry.manage_state):
             x = 'Outputdefinition' + str(i)
             OutputdefinitionStringArray.append(x)
 
-        class_utils.check_field(md, field = self.definitionstring, values = OutputdefinitionStringArray)
-        class_utils.check_field(md, field = self.mask, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, field = self.definitionstring, values = OutputdefinitionStringArray)
+        class_utils._check_field(md, field = self.mask, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         
         return md
     
@@ -147,7 +148,7 @@ class regionaloutput(class_registry.manage_state):
                 raise RuntimeError('regionaloutput.marshall_class: Python wrappers not installed. Unable to compute regional mask, required to marshall class.')
 
         ## Write fields
-        execute.WriteData(fid, prefix, data = self.name, name = 'md.regionaloutput.name', format = 'String')
-        execute.WriteData(fid, prefix, data = self.definitionstring, name = 'md.regionaloutput.definitionstring', format = 'String')
-        execute.WriteData(fid, prefix, data = self.outputnamestring, name = 'md.regionaloutput.outputnamestring', format = 'String')
-        execute.WriteData(fid, prefix, data = self.mask, name = 'md.regionaloutput.mask', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, data = self.name, name = 'md.regionaloutput.name', format = 'String')
+        execute._write_model_field(fid, prefix, data = self.definitionstring, name = 'md.regionaloutput.definitionstring', format = 'String')
+        execute._write_model_field(fid, prefix, data = self.outputnamestring, name = 'md.regionaloutput.outputnamestring', format = 'String')
+        execute._write_model_field(fid, prefix, data = self.mask, name = 'md.regionaloutput.mask', format = 'DoubleMat', mattype = 1)

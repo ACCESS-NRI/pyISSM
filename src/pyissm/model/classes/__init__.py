@@ -24,7 +24,7 @@ from pyissm.model.classes.groundingline import groundingline
 from pyissm.model.classes.hydrology import armapw, dc, glads, pism, shakti, shreve, tws
 from pyissm.model.classes.independent import independent
 from pyissm.model.classes.initialization import initialization
-from pyissm.model.classes.inversion import default, m1qn3, adm1qn3
+from pyissm.model.classes.inversion import default, m1qn3, tao, adm1qn3
 from pyissm.model.classes.issmsettings import issmsettings
 from pyissm.model.classes.levelset import levelset
 from pyissm.model.classes.love import default, fourier

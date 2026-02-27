@@ -56,9 +56,9 @@ class miscellaneous(class_registry.manage_state):
     def __repr__(self):
         s = '   miscellaneous parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'notes', 'notes in a cell of strings'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'name', 'model name'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'dummy', 'empty field to store some data'))
+        s += '{}\n'.format(class_utils._field_display(self, 'notes', 'notes in a cell of strings'))
+        s += '{}\n'.format(class_utils._field_display(self, 'name', 'model name'))
+        s += '{}\n'.format(class_utils._field_display(self, 'dummy', 'empty field to store some data'))
         return s
 
     # Define class string
@@ -68,7 +68,7 @@ class miscellaneous(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        class_utils.check_field(md, fieldname = 'miscellaneous.name', allow_empty = False)
+        class_utils._check_field(md, fieldname = 'miscellaneous.name', allow_empty = False)
         return md
 
     # Marshall method for saving the miscellaneous parameters
@@ -91,4 +91,4 @@ class miscellaneous(class_registry.manage_state):
         """
 
         ## Write field
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'name', format = 'String')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'name', format = 'String')

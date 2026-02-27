@@ -10,7 +10,7 @@ md = pyissm.model.param.set_flow_equation(md, SSA = 'all')
 md.cluster.np = 3
 md.constants.yts = 365.2422 * 24. * 3600.
 md.basalforcings = pyissm.model.classes.basalforcings.mismip()
-md.basalforcings = md.basalforcings.initialise(md)
+md.basalforcings = md.basalforcings.initialize(md)
 md.transient.isgroundingline = 1
 md.geometry.bed = min(md.geometry.base) * np.ones(md.mesh.numberofvertices, )
 md.transient.requested_outputs = ['default', 'BasalforcingsFloatingiceMeltingRate']

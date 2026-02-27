@@ -54,10 +54,10 @@ class offlinesolidearthsolution(class_registry.manage_state):
 
     def __repr__(self):
         s = '         units for time series is (yr)\n       external: offlinesolidearth solution\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'displacementeast', 'solid-Earth Eastwards bedrock displacement time series (m)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'displacementnorth', 'solid-Earth Northwards bedrock displacement time series (m)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'displacementup', 'solid-Earth bedrock uplift time series (m)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'geoid', 'solid-Earth geoid time series (m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'displacementeast', 'solid-Earth Eastwards bedrock displacement time series (m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'displacementnorth', 'solid-Earth Northwards bedrock displacement time series (m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'displacementup', 'solid-Earth bedrock uplift time series (m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'geoid', 'solid-Earth geoid time series (m)'))
         return s
 
     # Define class string
@@ -71,10 +71,10 @@ class offlinesolidearthsolution(class_registry.manage_state):
         if ('SealevelchangeAnalysis' not in analyses) or ((solution=='TransientSolution') and (md.solidearth.settings.isgrd==1)): 
             print('pyissm.model.classes.offlinesolidearthsolution.check_consistency: trying to run GRD patterns while supplying an offline solution for those patterns!')
             return md 
-        class_utils.check_field(md, fieldname = 'solidearth.external.displacementeast', timeseries = True, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.external.displacementnorth', timeseries = True, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.external.displacementup',  timeseries = True, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.external.geoid', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.external.displacementeast', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.external.displacementnorth', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.external.displacementup',  timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.external.geoid', timeseries = True, allow_inf = False)
 
         return md
 
@@ -119,11 +119,11 @@ class offlinesolidearthsolution(class_registry.manage_state):
 
         ## Write headers to file
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.solidearth.external.nature', data = 2, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.external.nature', data = 2, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, name =  'md.solidearth.external.displacementeast', data = displacementeast_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.solidearth.external.displacementup', data = displacementup_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.solidearth.external.displacementnorth', data = displacementnorth_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.solidearth.external.geoid', data = geoid_rate, format = 'DoubleMat',  mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name =  'md.solidearth.external.displacementeast', data = displacementeast_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.external.displacementup', data = displacementup_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.external.displacementnorth', data = displacementnorth_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.external.geoid', data = geoid_rate, format = 'DoubleMat',  mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 

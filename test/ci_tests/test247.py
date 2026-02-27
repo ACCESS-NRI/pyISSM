@@ -27,7 +27,7 @@ md.smb.temperatures_presentday = np.zeros((md.mesh.numberofvertices, 12))
 for imonth in range(0, 12):
     md.smb.temperatures_presentday[0:md.mesh.numberofvertices, imonth] = tmonth[imonth]
 
-md.smb.initialise(md)
+md.smb.initialize(md)
 
 # creating precipitation
 md.smb.precipitations_presentday = np.zeros((md.mesh.numberofvertices, 12))
