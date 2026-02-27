@@ -78,7 +78,7 @@ class mask(class_registry.manage_state):
         if solution == 'LoveSolution':
             return md
 
-        class_utils.check_field(md, fieldname = 'mask.ice_levelset', size = (md.mesh.numberofvertices, ))
+        class_utils._check_field(md, fieldname = 'mask.ice_levelset', size = (md.mesh.numberofvertices, ))
         is_ice = np.array(md.mask.ice_levelset <= 0, int)
         if np.sum(is_ice) == 0:
             raise ValueError('pyissm.model.classes.mask.check_consistency: mask.ice_levelset does not contain any ice (all values > 0)')

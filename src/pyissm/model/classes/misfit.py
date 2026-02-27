@@ -105,13 +105,13 @@ class misfit(class_registry.manage_state):
         for i in range(100):
             OutputdefinitionStringArray.append('Outputdefinition' + str(i))
 
-        class_utils.check_field(md, fieldname = 'self.definitionstring', field = self.definitionstring, values = OutputdefinitionStringArray)
+        class_utils._check_field(md, fieldname = 'self.definitionstring', field = self.definitionstring, values = OutputdefinitionStringArray)
         if type(self.timeinterpolation) != str:
             raise TypeError('pyissm.model.classes.misfit.check_consistency: "timeinterpolation" field should be a string!')
 
-        class_utils.check_field(md, fieldname = 'self.observation', field = self.observation, timeseries = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'self.timeinterpolation', field = self.timeinterpolation, values = ['nearestneighbor'])
-        class_utils.check_field(md, fieldname = 'self.weights', field = self.weights, timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'self.observation', field = self.observation, timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'self.timeinterpolation', field = self.timeinterpolation, values = ['nearestneighbor'])
+        class_utils._check_field(md, fieldname = 'self.weights', field = self.weights, timeseries = True, allow_nan = False, allow_inf = False)
 
         return md
 

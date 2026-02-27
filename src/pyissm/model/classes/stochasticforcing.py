@@ -267,16 +267,16 @@ class stochasticforcing(class_registry.manage_state):
                             f"{f1} and {f2} have different arma_timestep and non-zero covariance"
                         )
 
-        class_utils.check_field(md, fieldname = 'stochasticforcing.isstochasticforcing', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'stochasticforcing.fields', numel = num_fields, cell = True, values = class_utils.supported_stochastic_forcings())
-        class_utils.check_field(md, fieldname = 'stochasticforcing.covariance', size = (size_tot, size_tot, numtcovmat), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'stochasticforcing.stochastictimestep', ge = md.timestepping.time_step, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'stochasticforcing.randomflag', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'stochasticforcing.isstochasticforcing', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'stochasticforcing.fields', numel = num_fields, cell = True, values = class_utils.supported_stochastic_forcings())
+        class_utils._check_field(md, fieldname = 'stochasticforcing.covariance', size = (size_tot, size_tot, numtcovmat), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'stochasticforcing.stochastictimestep', ge = md.timestepping.time_step, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'stochasticforcing.randomflag', scalar = True, values = [0, 1])
         if(numtcovmat > 1):
-            class_utils.check_field(md, fieldname = 'stochasticforcing.timecovariance', ge = md.timestepping.start_time, le = md.timestepping.final_time, size = (1, numtcovmat), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'stochasticforcing.timecovariance', ge = md.timestepping.start_time, le = md.timestepping.final_time, size = (1, numtcovmat), allow_nan = False, allow_inf = False)
         if checkdefaults:
-            class_utils.check_field(md, fieldname = 'stochasticforcing.defaultdimension', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'stochasticforcing.default_id', ge = 0, le = self.defaultdimension, size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'stochasticforcing.defaultdimension', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'stochasticforcing.default_id', ge = 0, le = self.defaultdimension, size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
 
         return md
 

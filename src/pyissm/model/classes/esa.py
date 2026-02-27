@@ -100,12 +100,12 @@ class esa(class_registry.manage_state):
         if (solution != 'EsaAnalysis'):
             return md
         
-        class_utils.check_field(md, fieldname = "esa.deltathickness", allow_nan = True, allow_inf = True, size = (md.mesh.numberofelements, ))
-        class_utils.check_field(md, fieldname = "esa.love_h", allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "esa.love_l", allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "esa.hemisphere", allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "esa.degacc", size = (1, 1), ge = 1e-10)
-        class_utils.check_field(md, fieldname = "esa.requested_outputs", string_list = True)
+        class_utils._check_field(md, fieldname = "esa.deltathickness", allow_nan = True, allow_inf = True, size = (md.mesh.numberofelements, ))
+        class_utils._check_field(md, fieldname = "esa.love_h", allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "esa.love_l", allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "esa.hemisphere", allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "esa.degacc", size = (1, 1), ge = 1e-10)
+        class_utils._check_field(md, fieldname = "esa.requested_outputs", string_list = True)
 
         if (np.size(self.love_h, 1) != np.size(self.love_l, 0)):
             raise ValueError('pyissm.model.classes.esa.check_consistency: love_h and love_l must be the same size.')

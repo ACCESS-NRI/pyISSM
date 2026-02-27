@@ -103,14 +103,14 @@ class masstransport(class_registry.manage_state):
         if ('MasstransportAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.ismasstransport):
             return md
 
-        class_utils.check_field(md, fieldname = 'masstransport.spcthickness', timeseries = True, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'masstransport.isfreesurface', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'masstransport.hydrostatic_adjustment', values = ['Absolute', 'Incremental'])
-        class_utils.check_field(md, fieldname = 'masstransport.stabilization', values = [0, 1, 2, 3, 4, 5])
-        class_utils.check_field(md, fieldname = 'masstransport.min_thickness', gt = 0)
-        class_utils.check_field(md, fieldname = 'masstransport.requested_outputs', string_list = True)
+        class_utils._check_field(md, fieldname = 'masstransport.spcthickness', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'masstransport.isfreesurface', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'masstransport.hydrostatic_adjustment', values = ['Absolute', 'Incremental'])
+        class_utils._check_field(md, fieldname = 'masstransport.stabilization', values = [0, 1, 2, 3, 4, 5])
+        class_utils._check_field(md, fieldname = 'masstransport.min_thickness', gt = 0)
+        class_utils._check_field(md, fieldname = 'masstransport.requested_outputs', string_list = True)
         if not np.any(np.isnan(self.vertex_pairing)) and len(self.vertex_pairing) > 0:
-            class_utils.check_field(md, fieldname = 'stressbalance.vertex_pairing', gt = 0)
+            class_utils._check_field(md, fieldname = 'stressbalance.vertex_pairing', gt = 0)
 
         return md
     

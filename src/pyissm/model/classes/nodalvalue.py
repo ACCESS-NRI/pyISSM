@@ -79,8 +79,8 @@ class nodalvalue(class_registry.manage_state):
         OutputdefinitionStringArray = []
         for i in range(100):
             OutputdefinitionStringArray.append('Outputdefinition{}'.format(i))
-        class_utils.check_field(md, fieldname = 'self.definitionstring', field = self.definitionstring, values = OutputdefinitionStringArray)
-        class_utils.check_field(md, fieldname = 'self.node', field = self.node, values = range(md.mesh.numberofvertices))
+        class_utils._check_field(md, fieldname = 'self.definitionstring', field = self.definitionstring, values = OutputdefinitionStringArray)
+        class_utils._check_field(md, fieldname = 'self.node', field = self.node, values = range(md.mesh.numberofvertices))
         
         return md
 

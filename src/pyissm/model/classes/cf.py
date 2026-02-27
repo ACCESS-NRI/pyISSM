@@ -152,14 +152,14 @@ class levelsetmisfit(class_registry.manage_state):
         # MATLAB allowed Outputdefinition1..2000
         outputdef_allowed = [f"Outputdefinition{i}" for i in range(1, 2001)]
 
-        class_utils.check_field(
+        class_utils._check_field(
             md,
             fieldname="levelsetmisfit.definitionstring",
             field=self.definitionstring,
             values=outputdef_allowed,
         )
 
-        class_utils.check_field(
+        class_utils._check_field(
             md,
             fieldname="levelsetmisfit.observation",
             field=self.observation,
@@ -167,7 +167,7 @@ class levelsetmisfit(class_registry.manage_state):
             allow_nan=True,
             allow_inf=True,
         )
-        class_utils.check_field(
+        class_utils._check_field(
             md,
             fieldname="levelsetmisfit.weights",
             field=self.weights,
@@ -175,7 +175,7 @@ class levelsetmisfit(class_registry.manage_state):
             allow_nan=True,
             allow_inf=True,
         )
-        class_utils.check_field(
+        class_utils._check_field(
             md,
             fieldname="levelsetmisfit.datatime",
             field=self.datatime,
@@ -399,11 +399,11 @@ class surfacesquare(class_registry.manage_state):
         # MATLAB allowed Outputdefinition1..2000
         outputdef_allowed = [f"Outputdefinition{i}" for i in range(1, 2001)]
 
-        class_utils.check_field(md, fieldname="surfacesquare.surfaceid", field=self.surfaceid, values=[1, 2])
-        class_utils.check_field(md, fieldname="surfacesquare.definitionstring", field=self.definitionstring, values=outputdef_allowed)
+        class_utils._check_field(md, fieldname="surfacesquare.surfaceid", field=self.surfaceid, values=[1, 2])
+        class_utils._check_field(md, fieldname="surfacesquare.definitionstring", field=self.definitionstring, values=outputdef_allowed)
 
         # observation/weights: timeseries, allow NaN/Inf (MATLAB: 'timeseries',1,'NaN',1,'Inf',1)
-        class_utils.check_field(
+        class_utils._check_field(
             md,
             fieldname="surfacesquare.observation",
             field=self.observation,
@@ -411,7 +411,7 @@ class surfacesquare(class_registry.manage_state):
             allow_nan=True,
             allow_inf=True,
         )
-        class_utils.check_field(
+        class_utils._check_field(
             md,
             fieldname="surfacesquare.weights",
             field=self.weights,
@@ -421,7 +421,7 @@ class surfacesquare(class_registry.manage_state):
         )
 
         # datatime must be within simulation window
-        class_utils.check_field(
+        class_utils._check_field(
             md,
             fieldname="surfacesquare.datatime",
             field=self.datatime,
@@ -621,7 +621,7 @@ class surfacesquaretransient(class_registry.manage_state):
         # MATLAB allowed Outputdefinition1..2000
         outputdef_allowed = [f"Outputdefinition{i}" for i in range(1, 2001)]
 
-        class_utils.check_field(
+        class_utils._check_field(
             md,
             fieldname="surfacesquaretransient.definitionstring",
             field=self.definitionstring,
@@ -633,7 +633,7 @@ class surfacesquaretransient(class_registry.manage_state):
         # weights size:      [nv+1 NaN], NaN allowed, Inf allowed
         nv = md.mesh.numberofvertices
 
-        class_utils.check_field(
+        class_utils._check_field(
             md,
             fieldname="surfacesquaretransient.observations",
             field=self.observations,
@@ -643,7 +643,7 @@ class surfacesquaretransient(class_registry.manage_state):
             allow_inf=True,
         )
 
-        class_utils.check_field(
+        class_utils._check_field(
             md,
             fieldname="surfacesquaretransient.weights",
             field=self.weights,
@@ -863,7 +863,7 @@ class surfacelogvel(class_registry.manage_state):
         # MATLAB allowed Outputdefinition1..2000
         outputdef_allowed = [f"Outputdefinition{i}" for i in range(1, 2001)]
 
-        class_utils.check_field(
+        class_utils._check_field(
             md,
             fieldname="surfacelogvel.definitionstring",
             field=self.definitionstring,
@@ -872,7 +872,7 @@ class surfacelogvel(class_registry.manage_state):
 
         # MATLAB checks only vxobs, weights, datatime (vyobs is not checked there).
         # We keep parity, but you can add vyobs similarly if desired.
-        class_utils.check_field(
+        class_utils._check_field(
             md,
             fieldname="surfacelogvel.vxobs",
             field=self.vxobs,
@@ -880,7 +880,7 @@ class surfacelogvel(class_registry.manage_state):
             allow_nan=True,
             allow_inf=True,
         )
-        class_utils.check_field(
+        class_utils._check_field(
             md,
             fieldname="surfacelogvel.weights",
             field=self.weights,
@@ -888,7 +888,7 @@ class surfacelogvel(class_registry.manage_state):
             allow_nan=True,
             allow_inf=True,
         )
-        class_utils.check_field(
+        class_utils._check_field(
             md,
             fieldname="surfacelogvel.datatime",
             field=self.datatime,

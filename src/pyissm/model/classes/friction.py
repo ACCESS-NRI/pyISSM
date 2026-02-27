@@ -118,15 +118,15 @@ class default(class_registry.manage_state):
         if solution == 'TransientSolution' and not md.transient.isstressbalance and not md.transient.isthermal:
             return md
         
-        class_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.p", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2, 3, 4])
-        class_utils.check_field(md, fieldname = "friction.linearize", scalar = True, values = [0, 1, 2])
-        class_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)
+        class_utils._check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.p", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2, 3, 4])
+        class_utils._check_field(md, fieldname = "friction.linearize", scalar = True, values = [0, 1, 2])
+        class_utils._check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)
 
         if self.coupling == 3:
-            class_utils.check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
 
         return md
 
@@ -288,15 +288,15 @@ class coulomb(class_registry.manage_state):
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        class_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.coefficientcoulomb", timeseries = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.p", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2])
-        class_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)
+        class_utils._check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.coefficientcoulomb", timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.p", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2])
+        class_utils._check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)
 
         if self.coupling == 1:
-            class_utils.check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
         elif self.coupling == 2:
             raise ValueError('pyissm.model.classes.friction.coulomb.check_consistency: md.friction.coupling = 2 (coupled) is not implemented yet')
         elif self.coupling > 2:
@@ -454,15 +454,15 @@ class coulomb2(class_registry.manage_state):
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        class_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.coefficientcoulomb", timeseries = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.p", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2])
-        class_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)
+        class_utils._check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.coefficientcoulomb", timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.p", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2])
+        class_utils._check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)
 
         if self.coupling == 1:
-            class_utils.check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
         elif self.coupling == 2:
             raise ValueError('pyissm.model.classes.friction.coulomb.check_consistency: md.friction.coupling = 2 (coupled) is not implemented yet')
         elif self.coupling > 2:
@@ -615,14 +615,14 @@ class hydro(class_registry.manage_state):
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        class_utils.check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2, 3, 4])
-        class_utils.check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.C", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.As", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)       
+        class_utils._check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2, 3, 4])
+        class_utils._check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.C", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.As", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)       
 
         if self.coupling == 3:
-            class_utils.check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
         elif self.coupling > 4:
             raise ValueError(f'pyissm.model.classes.friction.hydro.check_consistency: md.friction.coupling = {self.coupling} is not implemented yet. Use md.friction.coupling <= 4.')
 
@@ -763,12 +763,12 @@ class josh(class_registry.manage_state):
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        class_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.pressure_adjusted_temperature", allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.gamma", gt = 0, scalar = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)       
-        class_utils.check_field(md, fieldname = "friction.coefficient_max", scalar = True, gt = 0, allow_nan = False, allow_inf = False)       
-        class_utils.check_field(md, fieldname = "initialization.temperature", size = 'universal', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.pressure_adjusted_temperature", allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.gamma", gt = 0, scalar = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)       
+        class_utils._check_field(md, fieldname = "friction.coefficient_max", scalar = True, gt = 0, allow_nan = False, allow_inf = False)       
+        class_utils._check_field(md, fieldname = "initialization.temperature", size = 'universal', allow_nan = False, allow_inf = False)
 
         return md
     
@@ -906,12 +906,12 @@ class pism(class_registry.manage_state):
         if solution == 'TransientSolution' and not md.transient.isstressbalance and not md.transient.isthermal:
             return md
 
-        class_utils.check_field(md, fieldname = 'friction.pseudoplasticity_exponent', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.threshold_speed', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.delta', scalar = True, gt = 0, lt = 1, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.void_ratio', scalar = True, gt = 0, lt = 1, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.till_friction_angle', gt = 0, lt = 360., size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.sediment_compressibility_coefficient', gt = 0., lt = 1., size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.pseudoplasticity_exponent', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.threshold_speed', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.delta', scalar = True, gt = 0, lt = 1, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.void_ratio', scalar = True, gt = 0, lt = 1, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.till_friction_angle', gt = 0, lt = 360., size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.sediment_compressibility_coefficient', gt = 0., lt = 1., size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
 
         return md
 
@@ -1042,9 +1042,9 @@ class regcoulomb(class_registry.manage_state):
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        class_utils.check_field(md, fieldname = 'friction.C', timeseries = True, ge = 0., allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.u0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, ), gt = 0., allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.C', timeseries = True, ge = 0., allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.u0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, ), gt = 0., allow_nan = False, allow_inf = False)
 
         return md
 
@@ -1177,9 +1177,9 @@ class regcoulomb2(class_registry.manage_state):
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        class_utils.check_field(md, fieldname = 'friction.C', timeseries = True, ge = 0., allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.K', gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, ), gt = 0., allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.C', timeseries = True, ge = 0., allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.K', gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, ), gt = 0., allow_nan = False, allow_inf = False)
 
         return md
 
@@ -1323,14 +1323,14 @@ class schoof(class_registry.manage_state):
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        class_utils.check_field(md, fieldname = 'friction.C', timeseries = True, gt = 0., allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.Cmax', timeseries = True, gt = 0., allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, ), gt = 0., allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.effective_pressure_limit', scalar = True, ge = 0.)
-        class_utils.check_field(md, fieldname = 'friction.coupling', scalar = True, values = [0, 1, 2, 3, 4])
+        class_utils._check_field(md, fieldname = 'friction.C', timeseries = True, gt = 0., allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.Cmax', timeseries = True, gt = 0., allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, ), gt = 0., allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.effective_pressure_limit', scalar = True, ge = 0.)
+        class_utils._check_field(md, fieldname = 'friction.coupling', scalar = True, values = [0, 1, 2, 3, 4])
         
         if self.coupling == 3:
-            class_utils.check_field(md, fieldname = 'friction.effective_pressure', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'friction.effective_pressure', timeseries = True, allow_nan = False, allow_inf = False)
 
         return md
     
@@ -1452,7 +1452,7 @@ class shakti(class_registry.manage_state):
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        class_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
 
         return md
     
@@ -1582,11 +1582,11 @@ class waterlayer(class_registry.manage_state):
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        class_utils.check_field(md, fieldname = 'friction.coefficient', timeseries = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.f', scalar = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.q', size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.p', size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'thermal.spctemperature', timeseries = True, ge = 0., allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.coefficient', timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.f', scalar = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.q', size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.p', size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'thermal.spctemperature', timeseries = True, ge = 0., allow_inf = False)
 
         return md
 
@@ -1710,9 +1710,9 @@ class weertman(class_registry.manage_state):
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        class_utils.check_field(md, fieldname = 'friction.C', timeseries = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.linearize', scalar = True, values = [0, 1, 2])
+        class_utils._check_field(md, fieldname = 'friction.C', timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.linearize', scalar = True, values = [0, 1, 2])
 
         return md
 

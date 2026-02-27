@@ -135,16 +135,16 @@ class ice(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         if solution == 'TransientSolution' and md.transient.isslc:
-            class_utils.check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
+            class_utils._check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
         else:
-            class_utils.check_field(md, fieldname = 'materials.rho_ice', gt = 0)
-            class_utils.check_field(md, fieldname = 'materials.rho_water', gt = 0)
-            class_utils.check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
-            class_utils.check_field(md, fieldname = 'materials.mu_water', gt = 0)
-            class_utils.check_field(md, fieldname = 'materials.rheology_B', gt = 0, size = 'universal', allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'materials.rheology_n', gt = 0, size = 'universal', allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'materials.rheology_law', values = ['None', 'BuddJacka', 'Cuffey', 'CuffeyTemperate', 'Paterson', 'Arrhenius', 'LliboutryDuval', 'NyeCO2', 'NyeH2O'])
-            class_utils.check_field(md, fieldname = 'materials.effectiveconductivity_averaging', scalar = True, values = [0, 1, 2])
+            class_utils._check_field(md, fieldname = 'materials.rho_ice', gt = 0)
+            class_utils._check_field(md, fieldname = 'materials.rho_water', gt = 0)
+            class_utils._check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
+            class_utils._check_field(md, fieldname = 'materials.mu_water', gt = 0)
+            class_utils._check_field(md, fieldname = 'materials.rheology_B', gt = 0, size = 'universal', allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'materials.rheology_n', gt = 0, size = 'universal', allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'materials.rheology_law', values = ['None', 'BuddJacka', 'Cuffey', 'CuffeyTemperate', 'Paterson', 'Arrhenius', 'LliboutryDuval', 'NyeCO2', 'NyeH2O'])
+            class_utils._check_field(md, fieldname = 'materials.effectiveconductivity_averaging', scalar = True, values = [0, 1, 2])
 
         return md
     
@@ -286,10 +286,10 @@ class hydro(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        class_utils.check_field(md, fieldname = 'materials.rho_ice', gt = 0)
-        class_utils.check_field(md, fieldname = 'materials.rho_water', gt = 0)
-        class_utils.check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
-        class_utils.check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
+        class_utils._check_field(md, fieldname = 'materials.rho_ice', gt = 0)
+        class_utils._check_field(md, fieldname = 'materials.rho_water', gt = 0)
+        class_utils._check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
+        class_utils._check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
 
         return md
     
@@ -447,24 +447,24 @@ class litho(class_registry.manage_state):
         if 'LoveAnalysis' not in analyses:
             return md
         
-        class_utils.check_field(md, fieldname = 'materials.numlayers', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'materials.radius', size = (md.materials.numlayers + 1, 1), gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'materials.lame_mu', size = (md.materials.numlayers, 1), ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'materials.lame_lambda', size = (md.materials.numlayers, 1), ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'materials.issolid', size = (md.materials.numlayers, 1), ge = 0, lt = 2, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'materials.density', size = (md.materials.numlayers, 1), gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'materials.viscosity', size = (md.materials.numlayers, 1), ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'materials.rheologymodel', size = (md.materials.numlayers, 1), ge = 0, le = 2, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'materials.numlayers', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'materials.radius', size = (md.materials.numlayers + 1, 1), gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'materials.lame_mu', size = (md.materials.numlayers, 1), ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'materials.lame_lambda', size = (md.materials.numlayers, 1), ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'materials.issolid', size = (md.materials.numlayers, 1), ge = 0, lt = 2, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'materials.density', size = (md.materials.numlayers, 1), gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'materials.viscosity', size = (md.materials.numlayers, 1), ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'materials.rheologymodel', size = (md.materials.numlayers, 1), ge = 0, le = 2, allow_nan = False, allow_inf = False)
 
         if np.any(self.rheologymodel == 1):
-            class_utils.check_field(md, fieldname = 'materials.burgers_viscosity', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'materials.burgers_mu', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'materials.burgers_viscosity', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'materials.burgers_mu', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
 
         if np.any(self.rheologymodel == 2):
-            class_utils.check_field(md, fieldname = 'materials.ebm_alpha', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'materials.ebm_delta', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'materials.ebm_taul', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'materials.ebm_tauh', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'materials.ebm_alpha', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'materials.ebm_delta', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'materials.ebm_taul', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'materials.ebm_tauh', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
 
         for i in range(md.materials.numlayers):
             if md.materials.rheologymodel[i] == 1 and (np.isnan(md.materials.burgers_viscosity[i] or np.isnan(md.materials.burgers_mu[i]))):
@@ -649,17 +649,17 @@ class damageice(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        class_utils.check_field(md, fieldname = 'materials.rho_ice', gt = 0)
-        class_utils.check_field(md, fieldname = 'materials.rho_water', gt = 0)
-        class_utils.check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
-        class_utils.check_field(md, fieldname = 'materials.mu_water', gt = 0)
-        class_utils.check_field(md, fieldname = 'materials.rheology_B', size = (md.mesh.numberofvertices, ), gt = 0)
-        class_utils.check_field(md, fieldname = 'materials.rheology_n', size = (md.mesh.numberofelements, ), gt = 0)
-        class_utils.check_field(md, fieldname = 'materials.rheology_law', values = ['None', 'BuddJacka', 'Cuffey', 'CuffeyTemperate', 'Paterson', 'Arrhenius', 'LliboutryDuval'])
-        class_utils.check_field(md, fieldname = 'materials.effectiveconductivity_averaging', scalar = True, values = [0, 1, 2])
+        class_utils._check_field(md, fieldname = 'materials.rho_ice', gt = 0)
+        class_utils._check_field(md, fieldname = 'materials.rho_water', gt = 0)
+        class_utils._check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
+        class_utils._check_field(md, fieldname = 'materials.mu_water', gt = 0)
+        class_utils._check_field(md, fieldname = 'materials.rheology_B', size = (md.mesh.numberofvertices, ), gt = 0)
+        class_utils._check_field(md, fieldname = 'materials.rheology_n', size = (md.mesh.numberofelements, ), gt = 0)
+        class_utils._check_field(md, fieldname = 'materials.rheology_law', values = ['None', 'BuddJacka', 'Cuffey', 'CuffeyTemperate', 'Paterson', 'Arrhenius', 'LliboutryDuval'])
+        class_utils._check_field(md, fieldname = 'materials.effectiveconductivity_averaging', scalar = True, values = [0, 1, 2])
 
         if 'SealevelchangeAnalysis' in analyses:
-            class_utils.check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
+            class_utils._check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
 
         return md
     
@@ -835,18 +835,18 @@ class enhancedice(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        class_utils.check_field(md, fieldname = 'materials.rho_ice', gt = 0)
-        class_utils.check_field(md, fieldname = 'materials.rho_water', gt = 0)
-        class_utils.check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
-        class_utils.check_field(md, fieldname = 'materials.mu_water', gt = 0)
-        class_utils.check_field(md, fieldname = 'materials.rheology_E', timeseries = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'materials.rheology_B', timeseries = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'materials.rheology_n', size = (md.mesh.numberofelements, ), gt = 0)
-        class_utils.check_field(md, fieldname = 'materials.rheology_law', values = ['None', 'BuddJacka', 'Cuffey', 'CuffeyTemperate', 'Paterson', 'Arrhenius', 'LliboutryDuval'])
-        class_utils.check_field(md, fieldname = 'materials.effectiveconductivity_averaging', scalar = True, values = [0, 1, 2])
+        class_utils._check_field(md, fieldname = 'materials.rho_ice', gt = 0)
+        class_utils._check_field(md, fieldname = 'materials.rho_water', gt = 0)
+        class_utils._check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
+        class_utils._check_field(md, fieldname = 'materials.mu_water', gt = 0)
+        class_utils._check_field(md, fieldname = 'materials.rheology_E', timeseries = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'materials.rheology_B', timeseries = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'materials.rheology_n', size = (md.mesh.numberofelements, ), gt = 0)
+        class_utils._check_field(md, fieldname = 'materials.rheology_law', values = ['None', 'BuddJacka', 'Cuffey', 'CuffeyTemperate', 'Paterson', 'Arrhenius', 'LliboutryDuval'])
+        class_utils._check_field(md, fieldname = 'materials.effectiveconductivity_averaging', scalar = True, values = [0, 1, 2])
 
         if 'SealevelchangeAnalysis' in analyses:
-            class_utils.check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
+            class_utils._check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
 
         return md
     
@@ -1023,18 +1023,18 @@ class estar(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        class_utils.check_field(md, fieldname = 'materials.rho_ice', gt = 0)
-        class_utils.check_field(md, fieldname = 'materials.rho_water', gt = 0)
-        class_utils.check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
-        class_utils.check_field(md, fieldname = 'materials.mu_water', gt = 0)
-        class_utils.check_field(md, fieldname = 'materials.rheology_B', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'materials.rheology_Ec', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'materials.rheology_Es', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'materials.rheology_law', values = ['None', 'BuddJacka', 'Cuffey', 'CuffeyTemperate', 'Paterson', 'Arrhenius', 'LliboutryDuval'])
-        class_utils.check_field(md, fieldname = 'materials.effectiveconductivity_averaging', scalar = True, values = [0, 1, 2])
+        class_utils._check_field(md, fieldname = 'materials.rho_ice', gt = 0)
+        class_utils._check_field(md, fieldname = 'materials.rho_water', gt = 0)
+        class_utils._check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
+        class_utils._check_field(md, fieldname = 'materials.mu_water', gt = 0)
+        class_utils._check_field(md, fieldname = 'materials.rheology_B', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'materials.rheology_Ec', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'materials.rheology_Es', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'materials.rheology_law', values = ['None', 'BuddJacka', 'Cuffey', 'CuffeyTemperate', 'Paterson', 'Arrhenius', 'LliboutryDuval'])
+        class_utils._check_field(md, fieldname = 'materials.effectiveconductivity_averaging', scalar = True, values = [0, 1, 2])
 
         if 'SealevelchangeAnalysis' in analyses:
-            class_utils.check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
+            class_utils._check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
 
         return md
 

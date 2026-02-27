@@ -99,11 +99,11 @@ class levelset(class_registry.manage_state):
         if (solution != 'TransientSolution') or (not md.transient.ismovingfront):
             return md
 
-        class_utils.check_field(md, fieldname = 'levelset.spclevelset', timeseries = True, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'levelset.stabilization', scalar = True, values = [0, 1, 2, 5, 6])
-        class_utils.check_field(md, fieldname = 'levelset.kill_icebergs', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'levelset.migration_max', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'levelset.fe', values = ['P1', 'P2'])
+        class_utils._check_field(md, fieldname = 'levelset.spclevelset', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'levelset.stabilization', scalar = True, values = [0, 1, 2, 5, 6])
+        class_utils._check_field(md, fieldname = 'levelset.kill_icebergs', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'levelset.migration_max', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'levelset.fe', values = ['P1', 'P2'])
 
         return md
 

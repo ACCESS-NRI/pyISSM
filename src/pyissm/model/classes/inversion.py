@@ -177,30 +177,30 @@ class default(class_registry.manage_state):
         num_controls = np.size(md.inversion.control_parameters)
         num_costfunc = np.size(md.inversion.cost_functions)
 
-        class_utils.check_field(md, fieldname = 'inversion.iscontrol', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'inversion.incomplete_adjoint', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'inversion.control_parameters', cell = True, values = class_utils.supported_inversion_control_parameters())
-        class_utils.check_field(md, fieldname = 'inversion.nsteps', scalar = True, ge = 0)
-        class_utils.check_field(md, fieldname = 'inversion.maxiter_per_step', size = (md.inversion.nsteps, ), ge = 0)
-        class_utils.check_field(md, fieldname = 'inversion.step_threshold', size = (md.inversion.nsteps, ))
-        class_utils.check_field(md, fieldname = 'inversion.cost_functions', size = (num_costfunc, ), values = class_utils.supported_inversion_cost_functions())
+        class_utils._check_field(md, fieldname = 'inversion.iscontrol', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'inversion.incomplete_adjoint', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'inversion.control_parameters', cell = True, values = class_utils.supported_inversion_control_parameters())
+        class_utils._check_field(md, fieldname = 'inversion.nsteps', scalar = True, ge = 0)
+        class_utils._check_field(md, fieldname = 'inversion.maxiter_per_step', size = (md.inversion.nsteps, ), ge = 0)
+        class_utils._check_field(md, fieldname = 'inversion.step_threshold', size = (md.inversion.nsteps, ))
+        class_utils._check_field(md, fieldname = 'inversion.cost_functions', size = (num_costfunc, ), values = class_utils.supported_inversion_cost_functions())
         if num_costfunc == 1:
             md.inversion.cost_functions_coefficients = np.squeeze(md.inversion.cost_functions_coefficients)
-            class_utils.check_field(md, fieldname = 'inversion.cost_functions_coefficients', size = (md.mesh.numberofvertices, ), ge = 0)
+            class_utils._check_field(md, fieldname = 'inversion.cost_functions_coefficients', size = (md.mesh.numberofvertices, ), ge = 0)
         else:
-            class_utils.check_field(md, fieldname = 'inversion.cost_functions_coefficients', size = (md.mesh.numberofvertices, num_costfunc), ge = 0)
+            class_utils._check_field(md, fieldname = 'inversion.cost_functions_coefficients', size = (md.mesh.numberofvertices, num_costfunc), ge = 0)
 
         if num_controls == 1:
             md.inversion.gradient_scaling = np.squeeze(md.inversion.gradient_scaling)
             md.inversion.min_parameters = np.squeeze(md.inversion.min_parameters)
             md.inversion.max_parameters = np.squeeze(md.inversion.max_parameters)
-            class_utils.check_field(md, fieldname = 'inversion.gradient_scaling', size = (md.inversion.nsteps, ))
-            class_utils.check_field(md, fieldname = 'inversion.min_parameters', size = (md.mesh.numberofvertices, ))
-            class_utils.check_field(md, fieldname = 'inversion.max_parameters', size = (md.mesh.numberofvertices, ))
+            class_utils._check_field(md, fieldname = 'inversion.gradient_scaling', size = (md.inversion.nsteps, ))
+            class_utils._check_field(md, fieldname = 'inversion.min_parameters', size = (md.mesh.numberofvertices, ))
+            class_utils._check_field(md, fieldname = 'inversion.max_parameters', size = (md.mesh.numberofvertices, ))
         else:
-            class_utils.check_field(md, fieldname = 'inversion.gradient_scaling', size = (md.inversion.nsteps, num_controls))
-            class_utils.check_field(md, fieldname = 'inversion.min_parameters', size = (md.mesh.numberofvertices, num_controls))
-            class_utils.check_field(md, fieldname = 'inversion.max_parameters', size = (md.mesh.numberofvertices, num_controls))
+            class_utils._check_field(md, fieldname = 'inversion.gradient_scaling', size = (md.inversion.nsteps, num_controls))
+            class_utils._check_field(md, fieldname = 'inversion.min_parameters', size = (md.mesh.numberofvertices, num_controls))
+            class_utils._check_field(md, fieldname = 'inversion.max_parameters', size = (md.mesh.numberofvertices, num_controls))
 
         # Only SSA, MMOLHO, L1L2, HO and FS are supported right now
         if solution == 'StressbalanceSolution':
@@ -209,12 +209,12 @@ class default(class_registry.manage_state):
         
         # Balancethicknesssolution
         if solution == 'BalancethicknessSolution':
-            class_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         elif solution == 'BalancethicknessSoftSolution':
-            class_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         else:
-            class_utils.check_field(md, fieldname = 'inversion.vx_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'inversion.vy_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'inversion.vx_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'inversion.vy_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         return md
     
     # Marshall method for saving the inversion.default parameters
@@ -441,39 +441,39 @@ class m1qn3(class_registry.manage_state):
         num_controls = np.size(md.inversion.control_parameters)
         num_costfunc = np.size(md.inversion.cost_functions)
 
-        class_utils.check_field(md, fieldname = 'inversion.iscontrol', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'inversion.incomplete_adjoint', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'inversion.control_parameters', cell = True, values = class_utils.supported_inversion_control_parameters())
-        class_utils.check_field(md, fieldname = 'inversion.control_scaling_factors', size = (num_controls, ), gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'inversion.maxsteps', scalar = True, ge = 0)
-        class_utils.check_field(md, fieldname = 'inversion.maxiter', scalar = True, ge = 0)
-        class_utils.check_field(md, fieldname = 'inversion.dxmin', scalar = True, gt = 0.)
-        class_utils.check_field(md, fieldname = 'inversion.dfmin_frac', scalar = True, ge = 0., le = 1.)
-        class_utils.check_field(md, fieldname = 'inversion.gttol', scalar = True, gt = 0.)
-        class_utils.check_field(md, fieldname = 'inversion.cost_functions', size = (num_costfunc, ), values = class_utils.supported_inversion_cost_functions())
+        class_utils._check_field(md, fieldname = 'inversion.iscontrol', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'inversion.incomplete_adjoint', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'inversion.control_parameters', cell = True, values = class_utils.supported_inversion_control_parameters())
+        class_utils._check_field(md, fieldname = 'inversion.control_scaling_factors', size = (num_controls, ), gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'inversion.maxsteps', scalar = True, ge = 0)
+        class_utils._check_field(md, fieldname = 'inversion.maxiter', scalar = True, ge = 0)
+        class_utils._check_field(md, fieldname = 'inversion.dxmin', scalar = True, gt = 0.)
+        class_utils._check_field(md, fieldname = 'inversion.dfmin_frac', scalar = True, ge = 0., le = 1.)
+        class_utils._check_field(md, fieldname = 'inversion.gttol', scalar = True, gt = 0.)
+        class_utils._check_field(md, fieldname = 'inversion.cost_functions', size = (num_costfunc, ), values = class_utils.supported_inversion_cost_functions())
         if num_costfunc == 1:
             md.inversion.cost_functions_coefficients = np.squeeze(md.inversion.cost_functions_coefficients)
-            class_utils.check_field(md, fieldname = 'inversion.cost_functions_coefficients', size = (md.mesh.numberofvertices, ), ge = 0)
+            class_utils._check_field(md, fieldname = 'inversion.cost_functions_coefficients', size = (md.mesh.numberofvertices, ), ge = 0)
         else:
-            class_utils.check_field(md, fieldname = 'inversion.cost_functions_coefficients', size = (md.mesh.numberofvertices, num_costfunc), ge = 0)
+            class_utils._check_field(md, fieldname = 'inversion.cost_functions_coefficients', size = (md.mesh.numberofvertices, num_costfunc), ge = 0)
 
         if num_controls == 1:
             md.inversion.min_parameters = np.squeeze(md.inversion.min_parameters)
             md.inversion.max_parameters = np.squeeze(md.inversion.max_parameters)
-            class_utils.check_field(md, fieldname = 'inversion.min_parameters', size = (md.mesh.numberofvertices, ))
-            class_utils.check_field(md, fieldname = 'inversion.max_parameters', size = (md.mesh.numberofvertices, ))
+            class_utils._check_field(md, fieldname = 'inversion.min_parameters', size = (md.mesh.numberofvertices, ))
+            class_utils._check_field(md, fieldname = 'inversion.max_parameters', size = (md.mesh.numberofvertices, ))
         else:
-            class_utils.check_field(md, fieldname = 'inversion.min_parameters', size = (md.mesh.numberofvertices, num_controls))
-            class_utils.check_field(md, fieldname = 'inversion.max_parameters', size = (md.mesh.numberofvertices, num_controls))
+            class_utils._check_field(md, fieldname = 'inversion.min_parameters', size = (md.mesh.numberofvertices, num_controls))
+            class_utils._check_field(md, fieldname = 'inversion.max_parameters', size = (md.mesh.numberofvertices, num_controls))
 
         if solution == 'BalancethicknessSolution':
-            class_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'inversion.surface_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'inversion.surface_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         elif solution == 'BalancethicknessSoftSolution':
-            class_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         else:
-            class_utils.check_field(md, fieldname = 'inversion.vx_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'inversion.vy_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'inversion.vx_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'inversion.vy_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         
         return md
 
@@ -727,40 +727,40 @@ class tao(class_registry.manage_state):
         num_controls = np.size(md.inversion.control_parameters)
         num_costfunc = np.size(md.inversion.cost_functions)
 
-        class_utils.check_field(md, fieldname = 'inversion.iscontrol', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'inversion.incomplete_adjoint', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'inversion.control_parameters', cell = True, values = class_utils.supported_inversion_control_parameters())
-        class_utils.check_field(md, fieldname = 'inversion.maxsteps', scalar = True, ge = 0)
-        class_utils.check_field(md, fieldname = 'inversion.maxiter', scalar = True, ge = 0)
-        class_utils.check_field(md, fieldname = 'inversion.fatol', scalar = True, ge = 0)
-        class_utils.check_field(md, fieldname = 'inversion.frtol', scalar = True, ge = 0)
-        class_utils.check_field(md, fieldname = 'inversion.gatol', scalar = True, ge = 0)
-        class_utils.check_field(md, fieldname = 'inversion.grtol', scalar = True, ge = 0)
-        class_utils.check_field(md, fieldname = 'inversion.gttol', scalar = True, ge = 0)
+        class_utils._check_field(md, fieldname = 'inversion.iscontrol', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'inversion.incomplete_adjoint', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'inversion.control_parameters', cell = True, values = class_utils.supported_inversion_control_parameters())
+        class_utils._check_field(md, fieldname = 'inversion.maxsteps', scalar = True, ge = 0)
+        class_utils._check_field(md, fieldname = 'inversion.maxiter', scalar = True, ge = 0)
+        class_utils._check_field(md, fieldname = 'inversion.fatol', scalar = True, ge = 0)
+        class_utils._check_field(md, fieldname = 'inversion.frtol', scalar = True, ge = 0)
+        class_utils._check_field(md, fieldname = 'inversion.gatol', scalar = True, ge = 0)
+        class_utils._check_field(md, fieldname = 'inversion.grtol', scalar = True, ge = 0)
+        class_utils._check_field(md, fieldname = 'inversion.gttol', scalar = True, ge = 0)
 
         if tools.wrappers.check_wrappers_installed():
             PETSCMAJOR = tools.wrappers.IssmConfig('_PETSC_MAJOR_')[0]
             PETSCMINOR = tools.wrappers.IssmConfig('_PETSC_MINOR_')[0]
             if(PETSCMAJOR > 3 or (PETSCMAJOR == 3 and PETSCMINOR >= 5)):
-                class_utils.check_field(md, fieldname = 'inversion.algorithm', values = ['blmvm', 'cg', 'lmvm'])
+                class_utils._check_field(md, fieldname = 'inversion.algorithm', values = ['blmvm', 'cg', 'lmvm'])
             else:
-                class_utils.check_field(md, fieldname = 'inversion.algorithm', values = ['tao_blmvm', 'tao_cg', 'tao_lmvm'])
+                class_utils._check_field(md, fieldname = 'inversion.algorithm', values = ['tao_blmvm', 'tao_cg', 'tao_lmvm'])
         else:
             warnings.warn('pyissm.model.classes.inversion.tao.check_consistency: Python wrappers not installed. Unable to check PETSc version for algorithm validation.\n'
                           'Proceeding without algorithm validation.')
 
-        class_utils.check_field(md, fieldname = 'inversion.cost_functions', size = (num_costfunc, ), values = class_utils.supported_inversion_cost_functions())
-        class_utils.check_field(md, fieldname = 'inversion.cost_functions_coefficients', size = (md.mesh.numberofvertices, num_costfunc), ge = 0)
-        class_utils.check_field(md, fieldname = 'inversion.min_parameters', size = (md.mesh.numberofvertices, num_controls))
-        class_utils.check_field(md, fieldname = 'inversion.max_parameters', size = (md.mesh.numberofvertices, num_controls))
+        class_utils._check_field(md, fieldname = 'inversion.cost_functions', size = (num_costfunc, ), values = class_utils.supported_inversion_cost_functions())
+        class_utils._check_field(md, fieldname = 'inversion.cost_functions_coefficients', size = (md.mesh.numberofvertices, num_costfunc), ge = 0)
+        class_utils._check_field(md, fieldname = 'inversion.min_parameters', size = (md.mesh.numberofvertices, num_controls))
+        class_utils._check_field(md, fieldname = 'inversion.max_parameters', size = (md.mesh.numberofvertices, num_controls))
 
         if solution == 'BalancethicknessSolution':
-            class_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         elif solution == 'BalancethicknessSoftSolution':
-            class_utils.check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'inversion.thickness_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         else:
-            class_utils.check_field(md, fieldname = 'inversion.vx_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'inversion.vy_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'inversion.vx_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'inversion.vy_obs', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
 
         return md
     
@@ -983,12 +983,12 @@ class adm1qn3(class_registry.manage_state):
                 "skipping M1QN3 availability check."
             )
 
-        class_utils.check_field(md, fieldname = "inversion.iscontrol", values = [0, 1])
-        class_utils.check_field(md, fieldname = "inversion.maxsteps", scalar = True, ge = 0)
-        class_utils.check_field(md, fieldname = "inversion.maxiter", scalar = True, ge = 0)
-        class_utils.check_field(md, fieldname = "inversion.dxmin", scalar = True, gt = 0)
-        class_utils.check_field(md, fieldname = "inversion.dfmin_frac", scalar = True, ge = 0.0, le = 1.0)
-        class_utils.check_field(md, fieldname = "inversion.gttol", scalar = True, gt = 0)
+        class_utils._check_field(md, fieldname = "inversion.iscontrol", values = [0, 1])
+        class_utils._check_field(md, fieldname = "inversion.maxsteps", scalar = True, ge = 0)
+        class_utils._check_field(md, fieldname = "inversion.maxiter", scalar = True, ge = 0)
+        class_utils._check_field(md, fieldname = "inversion.dxmin", scalar = True, gt = 0)
+        class_utils._check_field(md, fieldname = "inversion.dfmin_frac", scalar = True, ge = 0.0, le = 1.0)
+        class_utils._check_field(md, fieldname = "inversion.gttol", scalar = True, gt = 0)
 
         return md
 
