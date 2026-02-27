@@ -123,8 +123,8 @@ class armapw(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 
@@ -509,8 +509,8 @@ class dc(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 
@@ -869,8 +869,8 @@ class glads(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 
@@ -1077,8 +1077,8 @@ class pism(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 
@@ -1286,8 +1286,8 @@ class shakti(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 
@@ -1487,8 +1487,8 @@ class shreve(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 
@@ -1646,8 +1646,8 @@ class tws(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 

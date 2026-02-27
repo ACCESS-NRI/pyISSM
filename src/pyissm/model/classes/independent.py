@@ -94,8 +94,8 @@ class independent(class_registry.manage_state):
             The model object to check.
         i : :class:`int`
             Index of this independent variable.
-        solution : :class:`pyissm.model.solution`
-            The solution object to check.
+        solution : :class:`str`
+            The solution name to check.
         analyses : list of :class:`str`
             List of analyses to check consistency for.
 
