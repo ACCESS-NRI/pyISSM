@@ -89,7 +89,7 @@ class masstransport(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
         Extrude masstransport fields to 3D
         """

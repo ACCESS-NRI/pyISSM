@@ -120,11 +120,11 @@ class earth(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude solidearth.earth fields to 3D
+        Extrude [solidearth.earth] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.solidearth.earth.extrude: 3D extrusion not implemented for solidearth.earth. Returning unchanged (2D) solidearth fields.')
+        warnings.warn('pyissm.model.classes.solidearth.earth._extrude: 3D extrusion not implemented for solidearth.earth. Returning unchanged (2D) solidearth fields.')
 
         return self
 
@@ -361,11 +361,11 @@ class europa(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude solidearth.europa fields to 3D
+        Extrude [solidearth.europa] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.solidearth.europa.extrude: 3D extrusion not implemented for solidearth.europa. Returning unchanged (2D) solidearth fields.')
+        warnings.warn('pyissm.model.classes.solidearth.europa._extrude: 3D extrusion not implemented for solidearth.europa. Returning unchanged (2D) solidearth fields.')
 
         return self
     
@@ -382,7 +382,7 @@ class europa(class_registry.manage_state):
         rotational.check_consistency(md, solution, analyses)
         if self.external:
             if not isinstance(self.external, solution):
-                raise Exception('pyissm.model.classes.solidearth.earth.check_consistency: external field should be a pyissm.model.classes.solidearth.solution')
+                raise Exception('pyissm.model.classes.solidearth.europa.check_consistency: external field should be a pyissm.model.classes.solidearth.solution')
             self.external.check_consistency(md, solution, analyses)
         return md
     
@@ -631,11 +631,11 @@ class settings(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude solidearth.settings fields to 3D
+        Extrude [solidearth.settings] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.solidearth.settings.extrude: 3D extrusion not implemented for solidearth.settings. Returning unchanged (2D) solidearth fields.')
+        warnings.warn('pyissm.model.classes.solidearth.settings._extrude: 3D extrusion not implemented for solidearth.settings. Returning unchanged (2D) solidearth fields.')
 
         return self
     
@@ -800,11 +800,11 @@ class solution(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude solidearth.solution fields to 3D
+        Extrude [solidearth.solution] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.solidearth.solution.extrude: 3D extrusion not implemented for solidearth.solution. Returning unchanged (2D) solidearth fields.')
+        warnings.warn('pyissm.model.classes.solidearth.solution._extrude: 3D extrusion not implemented for solidearth.solution. Returning unchanged (2D) solidearth fields.')
 
         return self
     

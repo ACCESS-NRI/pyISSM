@@ -129,7 +129,7 @@ class initialization(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
         Extrude initialization fields to 3D
         """
@@ -153,7 +153,7 @@ class initialization(class_registry.manage_state):
 
         # Lithostatic pressure by default
         if np.ndim(md.geometry.surface) == 2:
-            warnings.warn('pyissm.model.classes.initialization.extrude: Reshaping md.geometry.surface for your convenience but you should fix it in your model set up')
+            warnings.warn('pyissm.model.classes.initialization._extrude: Reshaping md.geometry.surface for your convenience but you should fix it in your model set up')
             self.pressure = md.constants.g * md.materials.rho_ice * (md.geometry.surface.reshape(-1, 1) - md.mesh.z)
         else:
             self.pressure = md.constants.g * md.materials.rho_ice * (md.geometry.surface - md.mesh.z)

@@ -104,9 +104,9 @@ class levelsetmisfit(class_registry.manage_state):
         return "ISSM - cf.levelsetmisfit Class"
 
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude cf.levelsetmisfit fields to 3D
+        Extrude [cf.levelsetmisfit] fields to 3D
         """
 
         # weights
@@ -351,9 +351,9 @@ class surfacesquare(class_registry.manage_state):
         return "ISSM - surfacesquare Class"
 
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude cf.surfacesquare fields to 3D
+        Extrude [cf.surfacesquare] fields to 3D
         """
 
         # Treat "unset" as scalar NaN or arrays that are all-NaN
@@ -573,9 +573,9 @@ class surfacesquaretransient(class_registry.manage_state):
         return "ISSM - surfacesquaretransient Class"
 
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude cf.surfacesquaretransient fields to 3D
+        Extrude [cf.surfacesquaretransient] fields to 3D
         """
         
         # weights
@@ -815,9 +815,9 @@ class surfacelogvel(class_registry.manage_state):
         return "ISSM - surfacelogvel Class"
 
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude cf.surfacelogvel fields to 3D
+        Extrude [cf.surfacelogvel] fields to 3D
         """
 
         # weights

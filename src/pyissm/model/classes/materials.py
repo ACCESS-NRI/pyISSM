@@ -123,9 +123,9 @@ class ice(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude materials.ice fields to 3D
+        Extrude [materials.ice] fields to 3D
         """
         self.rheology_B = mesh.project_3d(md, vector = self.rheology_B, type = 'node')
         self.rheology_n = mesh.project_3d(md, vector = self.rheology_n, type = 'element')
@@ -276,11 +276,11 @@ class hydro(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude materials.hydro fields to 3D
+        Extrude [materials.hydro] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.materials.hydro.extrude: 3D extrusion not implemented for materials.hydro. Returning unchanged (2D) materials fields.')
+        warnings.warn('pyissm.model.classes.materials.hydro._extrude: 3D extrusion not implemented for materials.hydro. Returning unchanged (2D) materials fields.')
 
         return self
     
@@ -433,11 +433,11 @@ class litho(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude materials.litho fields to 3D
+        Extrude [materials.litho] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.materials.litho.extrude: 3D extrusion not implemented for materials.litho. Returning unchanged (2D) materials fields.')
+        warnings.warn('pyissm.model.classes.materials.litho._extrude: 3D extrusion not implemented for materials.litho. Returning unchanged (2D) materials fields.')
 
         return self
     
@@ -454,7 +454,7 @@ class litho(class_registry.manage_state):
         class_utils.check_field(md, fieldname = 'materials.issolid', size = (md.materials.numlayers, 1), ge = 0, lt = 2, allow_nan = False, allow_inf = False)
         class_utils.check_field(md, fieldname = 'materials.density', size = (md.materials.numlayers, 1), gt = 0, allow_nan = False, allow_inf = False)
         class_utils.check_field(md, fieldname = 'materials.viscosity', size = (md.materials.numlayers, 1), ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'materials.rheologymodel', size = (md.materials.layers, 1), ge = 0, le = 2, allow_nan = False, allow_inf = False)
+        class_utils.check_field(md, fieldname = 'materials.rheologymodel', size = (md.materials.numlayers, 1), ge = 0, le = 2, allow_nan = False, allow_inf = False)
 
         if np.any(self.rheologymodel == 1):
             class_utils.check_field(md, fieldname = 'materials.burgers_viscosity', size = (md.materials.numlayers, 1), ge = 0, allow_inf = False)
@@ -638,9 +638,9 @@ class damageice(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude materials.damageice fields to 3D
+        Extrude [materials.damageice] fields to 3D
         """
         self.rheology_B = mesh.project_3d(md, vector = self.rheology_B, type = 'node')
         self.rheology_n = mesh.project_3d(md, vector = self.rheology_n, type = 'element')
@@ -823,9 +823,9 @@ class enhancedice(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude materials.enhancedice fields to 3D
+        Extrude [materials.enhancedice] fields to 3D
         """
         self.rheology_E = mesh.project_3d(md, vector = self.rheology_E, type = 'node')
         self.rheology_B = mesh.project_3d(md, vector = self.rheology_B, type = 'node')
@@ -1011,9 +1011,9 @@ class estar(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude materials.estar fields to 3D
+        Extrude [materials.estar] fields to 3D
         """
         self.rheology_B = mesh.project_3d(md, vector = self.rheology_B, type = 'node')
         self.rheology_Ec = mesh.project_3d(md, vector = self.rheology_Ec, type = 'node')

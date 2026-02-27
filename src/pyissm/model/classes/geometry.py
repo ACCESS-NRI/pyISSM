@@ -66,7 +66,7 @@ class geometry(class_registry.manage_state):
         s = 'ISSM - geometry Class'
         return s
 
-    def extrude(self, md):
+    def _extrude(self, md):
         """
         Extrude geometry fields to 3D mesh
         """

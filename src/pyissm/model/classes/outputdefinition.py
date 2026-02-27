@@ -59,12 +59,12 @@ class outputdefinition(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
         Extrude outputdefinition fields to 3D
         """
         for definition in self.definitions:
-            definition.extrude(md)
+            definition._extrude(md)
 
         return self
     

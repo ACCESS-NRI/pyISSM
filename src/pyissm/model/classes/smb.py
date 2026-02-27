@@ -79,9 +79,9 @@ class default(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.default fields to 3D
+        Extrude [smb.default] fields to 3D
         """
         self.mass_balance = mesh.project_3d(md, vector = self.mass_balance, type = 'node')
             
@@ -320,11 +320,11 @@ class arma(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.arma fields to 3D
+        Extrude [smb.arma]fields to 3D
         """
-        warnings.warn('pyissm.model.classes.smb.arma.extrude: 3D extrusion not implemented for smb.arma. Returning unchanged (2D) smb fields.')
+        warnings.warn('pyissm.model.classes.smb.arma._extrude: 3D extrusion not implemented for smb.arma. Returning unchanged (2D) smb fields.')
             
         return self
     
@@ -689,9 +689,9 @@ class components(class_registry.manage_state):
         return s
 
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.components fields to 3D
+        Extrude [smb.components]fields to 3D
         """
         self.accumulation = mesh.project_3d(md, vector = self.accumulation, type = 'node')
         self.runoff = mesh.project_3d(md, vector = self.runoff, type = 'node')
@@ -966,9 +966,9 @@ class d18opdd(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.d18opdd fields to 3D
+        Extrude [smb.d18opdd] fields to 3D
         """
         if self.isd18opd:
             self.temperatures_presentday = mesh.project_3d(md, vector = self.temperatures_presentday, type = 'node')
@@ -1491,9 +1491,9 @@ class gemb(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.gemb fields to 3D
+        Extrude [smb.gemb] fields to 3D
         """
         if np.shape(self.Ta)[0] == md.mesh.numberofelements or np.shape(self.Ta)[0] == md.mesh.numberofelements + 1 :
             self.Ta = mesh.project_3d(md, vector = self.Ta, type = 'element')
@@ -1901,11 +1901,11 @@ class gradients(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.gradients fields to 3D
+        Extrude [smb.gradients] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.smb.gradients.extrude: 3D extrusion not implemented for smb.gradients. Returning unchanged (2D) smb fields.')
+        warnings.warn('pyissm.model.classes.smb.gradients._extrude: 3D extrusion not implemented for smb.gradients. Returning unchanged (2D) smb fields.')
             
         return self
     
@@ -2113,11 +2113,11 @@ class gradientscomponents(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.gradientscomponents fields to 3D
+        Extrude [smb.gradientscomponents] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.smb.gradientscomponents.extrude: 3D extrusion not implemented for smb.gradientscomponents. Returning unchanged (2D) smb fields.')
+        warnings.warn('pyissm.model.classes.smb.gradientscomponents._extrude: 3D extrusion not implemented for smb.gradientscomponents. Returning unchanged (2D) smb fields.')
             
         return self
     
@@ -2332,11 +2332,11 @@ class gradientsela(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.gradientsela fields to 3D
+        Extrude [smb.gradientsela] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.smb.gradientsela.extrude: 3D extrusion not implemented for smb.gradientsela. Returning unchanged (2D) smb fields.')
+        warnings.warn('pyissm.model.classes.smb.gradientsela._extrude: 3D extrusion not implemented for smb.gradientsela. Returning unchanged (2D) smb fields.')
             
         return self
     
@@ -2517,9 +2517,9 @@ class henning(class_registry.manage_state):
         return s
         
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.henning fields to 3D
+        Extrude [smb.henning] fields to 3D
         """
         self.smbref = mesh.project_3d(md, vector = self.smbref, type = 'node')
             
@@ -2721,9 +2721,9 @@ class meltcomponents(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.meltcomponents fields to 3D
+        Extrude [smb.meltcomponents] fields to 3D
         """
         self.accumulation = mesh.project_3d(md, vector = self.accumulation, type = 'node')
         self.evaporation = mesh.project_3d(md, vector = self.evaporation, type = 'node')
@@ -3019,9 +3019,9 @@ class pdd(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.pdd fields to 3D
+        Extrude [smb.pdd] fields to 3D
         """
         if not (self.isdelta18o and self.ismungsm):
             self.precipitation = mesh.project_3d(md, vector = self.precipitation, type = 'node')
@@ -3343,9 +3343,9 @@ class pddSicopolis(class_registry.manage_state):
         return s
 
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.pddSicopolis fields to 3D
+        Extrude [smb.pddSicopolis] fields to 3D
         """
         self.precipitation = mesh.project_3d(md, vector = self.precipitation, type = 'node')
         self.monthlytemperatures = mesh.project_3d(md, vector = self.monthlytemperatures, type = 'node')
@@ -3627,9 +3627,9 @@ class semic(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude smb.semic fields to 3D
+        Extrude [smb.semic] fields to 3D
         """
         self.dailysnowfall = mesh.project3d(md, vector = self.dailysnowfall, type = 'node')
         self.dailyrainfall = mesh.project3d(md, vector = self.dailyrainfall, type = 'node')

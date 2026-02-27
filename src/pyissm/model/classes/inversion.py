@@ -133,9 +133,9 @@ class default(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude inversion.default fields to 3D
+        Extrude [inversion.default] fields to 3D
         """
         self.vx_obs = mesh.project_3d(md, vector = self.vx_obs, type = 'node')
         self.vy_obs = mesh.project_3d(md, vector = self.vy_obs, type = 'node')
@@ -397,9 +397,9 @@ class m1qn3(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude inversion.m1qn3 fields to 3D
+        Extrude [inversion.m1qn3] fields to 3D
         """
         self.vx_obs = mesh.project_3d(md, vector = self.vx_obs, type = 'node')
         self.vy_obs = mesh.project_3d(md, vector = self.vy_obs, type = 'node')
@@ -673,9 +673,9 @@ class tao(class_registry.manage_state):
         return s
 
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude inversion.tao fields to 3D
+        Extrude [inversion.tao] fields to 3D
         """
         self.vx_obs = mesh.project_3d(md, vector = self.vx_obs, type = 'node')
         self.vy_obs = mesh.project_3d(md, vector = self.vy_obs, type = 'node')
@@ -942,9 +942,9 @@ class adm1qn3(class_registry.manage_state):
     # Extrude to 3D mesh
     def _extrude(self, md):
         """
-        Extrude inversion.tao fields to 3D
+        Extrude [inversion.adm1qn3] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.inversion.adm1qn3.extrude: 3D extrusion not implemented for adm1qn3. Returning unchanged (2D) adm1qn3 fields.')
+        warnings.warn('pyissm.model.classes.inversion.adm1qn3._extrude: 3D extrusion not implemented for adm1qn3. Returning unchanged (2D) adm1qn3 fields.')
         return self
 
     # Check model consistency
