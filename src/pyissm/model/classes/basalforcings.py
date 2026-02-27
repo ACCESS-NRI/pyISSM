@@ -75,10 +75,10 @@ class default(class_registry.manage_state):
         """
         Extrude [basalforcings.default] fields to 3D
         """
-        self.groundedice_melting_rate = mesh.project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
-        self.perturbation_melting_rate = mesh.project_3d(md, vector = self.perturbation_melting_rate, type = 'node', layer = 1)
-        self.floatingice_melting_rate = mesh.project_3d(md, vector = self.floatingice_melting_rate, type = 'node', layer = 1)
-        self.geothermalflux = mesh.project_3d(md, vector = self.geothermalflux, type = 'node', layer = 1) # Bedrock only gets geothermal flux        
+        self.groundedice_melting_rate = mesh._project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
+        self.perturbation_melting_rate = mesh._project_3d(md, vector = self.perturbation_melting_rate, type = 'node', layer = 1)
+        self.floatingice_melting_rate = mesh._project_3d(md, vector = self.floatingice_melting_rate, type = 'node', layer = 1)
+        self.geothermalflux = mesh._project_3d(md, vector = self.geothermalflux, type = 'node', layer = 1) # Bedrock only gets geothermal flux        
 
         return self
     
@@ -269,9 +269,9 @@ class pico(class_registry.manage_state):
         """
         Extrude [basalforcings.pico] fields to 3D
         """
-        self.basin_id = mesh.project_3d(md, vector = self.basin_id, type = 'element', layer = 1)
-        self.geothermalflux = mesh.project_3d(md, vector = self.geothermalflux, type = 'element', layer = 1) # Bedrock only gets geothermal flux        
-        self.groundedice_melting_rate = mesh.project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
+        self.basin_id = mesh._project_3d(md, vector = self.basin_id, type = 'element', layer = 1)
+        self.geothermalflux = mesh._project_3d(md, vector = self.geothermalflux, type = 'element', layer = 1) # Bedrock only gets geothermal flux        
+        self.groundedice_melting_rate = mesh._project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
 
         return self
     
@@ -471,9 +471,9 @@ class linear(class_registry.manage_state):
         """
         Extrude [basalforcings.linear] fields to 3D
         """
-        self.perturbation_melting_rate = mesh.project_3d(md, vector = self.perturbation_melting_rate, type = 'node', layer = 1)
-        self.groundedice_melting_rate = mesh.project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
-        self.geothermalflux = mesh.project_3d(md, vector = self.geothermalflux, type = 'node', layer = 1) # Bedrock only gets geothermal flux        
+        self.perturbation_melting_rate = mesh._project_3d(md, vector = self.perturbation_melting_rate, type = 'node', layer = 1)
+        self.groundedice_melting_rate = mesh._project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
+        self.geothermalflux = mesh._project_3d(md, vector = self.geothermalflux, type = 'node', layer = 1) # Bedrock only gets geothermal flux        
 
         return self
     
@@ -962,8 +962,8 @@ class mismip(class_registry.manage_state):
         """
         Extrude [basalforcings.mismip] fields to 3D
         """
-        self.groundedice_melting_rate = mesh.project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
-        self.geothermalflux = mesh.project_3d(md, vector = self.geothermalflux, type = 'node', layer = 1)  #bedrock only gets geothermal flux
+        self.groundedice_melting_rate = mesh._project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
+        self.geothermalflux = mesh._project_3d(md, vector = self.geothermalflux, type = 'node', layer = 1)  #bedrock only gets geothermal flux
 
         return self
     
@@ -1177,8 +1177,8 @@ class plume(class_registry.manage_state):
         """
         Extrude [basalforcings.plume] fields to 3D
         """
-        self.groundedice_melting_rate = mesh.project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
-        self.floatingice_melting_rate = mesh.project_3d(md, vector = self.floatingice_melting_rate, type = 'node', layer = 1)
+        self.groundedice_melting_rate = mesh._project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
+        self.floatingice_melting_rate = mesh._project_3d(md, vector = self.floatingice_melting_rate, type = 'node', layer = 1)
 
         return self
     
@@ -1364,13 +1364,13 @@ class spatiallinear(class_registry.manage_state):
         """
         Extrude [basalforcings.spatiallinear] fields to 3D
         """
-        self.groundedice_melting_rate = mesh.project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1) 
-        self.deepwater_melting_rate = mesh.project_3d(md, vector = self.deepwater_melting_rate, type = 'node', layer = 1) 
-        self.deepwater_elevation = mesh.project_3d(md, vector = self.deepwater_elevation, type = 'node', layer = 1)
-        self.upperwater_melting_rate = mesh.project_3d(md, vector = self.upperwater_melting_rate, type = 'node', layer = 1) 
-        self.upperwater_elevation = mesh.project_3d(md, vector = self.upperwater_elevation, type = 'node', layer = 1) 
-        self.geothermalflux = mesh.project_3d(md, vector = self.geothermalflux, type = 'node', layer = 1) # Bedrock only gets geothermal flux
-        self.perturbation_melting_rate = mesh.project_3d(md, vector = self.upperwater_melting_rate, type = 'node', layer = 1) 
+        self.groundedice_melting_rate = mesh._project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1) 
+        self.deepwater_melting_rate = mesh._project_3d(md, vector = self.deepwater_melting_rate, type = 'node', layer = 1) 
+        self.deepwater_elevation = mesh._project_3d(md, vector = self.deepwater_elevation, type = 'node', layer = 1)
+        self.upperwater_melting_rate = mesh._project_3d(md, vector = self.upperwater_melting_rate, type = 'node', layer = 1) 
+        self.upperwater_elevation = mesh._project_3d(md, vector = self.upperwater_elevation, type = 'node', layer = 1) 
+        self.geothermalflux = mesh._project_3d(md, vector = self.geothermalflux, type = 'node', layer = 1) # Bedrock only gets geothermal flux
+        self.perturbation_melting_rate = mesh._project_3d(md, vector = self.upperwater_melting_rate, type = 'node', layer = 1) 
 
         return self
     

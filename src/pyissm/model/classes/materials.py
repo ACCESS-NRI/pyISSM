@@ -127,8 +127,8 @@ class ice(class_registry.manage_state):
         """
         Extrude [materials.ice] fields to 3D
         """
-        self.rheology_B = mesh.project_3d(md, vector = self.rheology_B, type = 'node')
-        self.rheology_n = mesh.project_3d(md, vector = self.rheology_n, type = 'element')
+        self.rheology_B = mesh._project_3d(md, vector = self.rheology_B, type = 'node')
+        self.rheology_n = mesh._project_3d(md, vector = self.rheology_n, type = 'element')
 
         return self
     
@@ -642,8 +642,8 @@ class damageice(class_registry.manage_state):
         """
         Extrude [materials.damageice] fields to 3D
         """
-        self.rheology_B = mesh.project_3d(md, vector = self.rheology_B, type = 'node')
-        self.rheology_n = mesh.project_3d(md, vector = self.rheology_n, type = 'element')
+        self.rheology_B = mesh._project_3d(md, vector = self.rheology_B, type = 'node')
+        self.rheology_n = mesh._project_3d(md, vector = self.rheology_n, type = 'element')
 
         return self
     
@@ -827,9 +827,9 @@ class enhancedice(class_registry.manage_state):
         """
         Extrude [materials.enhancedice] fields to 3D
         """
-        self.rheology_E = mesh.project_3d(md, vector = self.rheology_E, type = 'node')
-        self.rheology_B = mesh.project_3d(md, vector = self.rheology_B, type = 'node')
-        self.rheology_n = mesh.project_3d(md, vector = self.rheology_n, type = 'element')
+        self.rheology_E = mesh._project_3d(md, vector = self.rheology_E, type = 'node')
+        self.rheology_B = mesh._project_3d(md, vector = self.rheology_B, type = 'node')
+        self.rheology_n = mesh._project_3d(md, vector = self.rheology_n, type = 'element')
 
         return self
     
@@ -1015,9 +1015,9 @@ class estar(class_registry.manage_state):
         """
         Extrude [materials.estar] fields to 3D
         """
-        self.rheology_B = mesh.project_3d(md, vector = self.rheology_B, type = 'node')
-        self.rheology_Ec = mesh.project_3d(md, vector = self.rheology_Ec, type = 'node')
-        self.rheology_Es = mesh.project_3d(md, vector = self.rheology_Es, type = 'node')
+        self.rheology_B = mesh._project_3d(md, vector = self.rheology_B, type = 'node')
+        self.rheology_Ec = mesh._project_3d(md, vector = self.rheology_Ec, type = 'node')
+        self.rheology_Es = mesh._project_3d(md, vector = self.rheology_Es, type = 'node')
 
         return self
     

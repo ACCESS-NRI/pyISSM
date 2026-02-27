@@ -107,7 +107,7 @@ class stochasticforcing(class_registry.manage_state):
         """
         Extrude stochasticforcing fields to 3D
         """
-        self.default_id = mesh.project_3d(md, vector = self.default_id, type = 'element')
+        self.default_id = mesh._project_3d(md, vector = self.default_id, type = 'element')
 
         return self
     

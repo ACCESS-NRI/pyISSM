@@ -110,7 +110,7 @@ class armapw(class_registry.manage_state):
         """
         Extrude [hydrology.armapw] fields to 3D
         """
-        self.basin_id = mesh.project_3d(md, vector = self.basin_id, type = 'element')
+        self.basin_id = mesh._project_3d(md, vector = self.basin_id, type = 'element')
             
         return self
 
@@ -490,13 +490,13 @@ class dc(class_registry.manage_state):
         """
         Extrude [hydrology.dc] fields to 3D
         """
-        self.spcsediment_head = mesh.project_3d(md, vector = self.spcsediment_head, type = 'node', layer = 1)
-        self.sediment_transmitivity = mesh.project_3d(md, vector = self.sediment_transmitivity, type = 'node', layer = 1)
-        self.basal_moulin_input = mesh.project_3d(md, vector = self.basal_moulin_input, type = 'node', layer = 1)
-        self.mask_thawed_node = mesh.project_3d(md, vector = self.mask_thawed_node, type = 'node', layer = 1)
+        self.spcsediment_head = mesh._project_3d(md, vector = self.spcsediment_head, type = 'node', layer = 1)
+        self.sediment_transmitivity = mesh._project_3d(md, vector = self.sediment_transmitivity, type = 'node', layer = 1)
+        self.basal_moulin_input = mesh._project_3d(md, vector = self.basal_moulin_input, type = 'node', layer = 1)
+        self.mask_thawed_node = mesh._project_3d(md, vector = self.mask_thawed_node, type = 'node', layer = 1)
         if self.isefficientlayer == 1:
-            self.spcepl_head = mesh.project_3d(md, vector = self.spcepl_head, type = 'node', layer = 1)
-            self.mask_eplactive_node = mesh.project_3d(md, vector = self.mask_eplactive_node, type = 'node', layer = 1)
+            self.spcepl_head = mesh._project_3d(md, vector = self.spcepl_head, type = 'node', layer = 1)
+            self.mask_eplactive_node = mesh._project_3d(md, vector = self.mask_eplactive_node, type = 'node', layer = 1)
 
         return self
     
@@ -852,11 +852,11 @@ class glads(class_registry.manage_state):
         """
         Extrude [hydrology.glads] fields to 3D
         """
-        self.sheet_conductivity = mesh.project_3d(md, vector = self.sheet_conductivity, type = 'node', layer = 1)
-        self.bump_height = mesh.project_3d(md, vector = self.bump_height, type = 'node', layer = 1)
-        self.spcphi = mesh.project_3d(md, vector = self.spcphi, type = 'node', layer = 1)
-        self.moulin_input = mesh.project_3d(md, vector = self.moulin_input, type = 'node', layer = 1)
-        self.neumannflux = mesh.project_3d(md, vector = self.neumannflux, type = 'node', layer = 1)
+        self.sheet_conductivity = mesh._project_3d(md, vector = self.sheet_conductivity, type = 'node', layer = 1)
+        self.bump_height = mesh._project_3d(md, vector = self.bump_height, type = 'node', layer = 1)
+        self.spcphi = mesh._project_3d(md, vector = self.spcphi, type = 'node', layer = 1)
+        self.moulin_input = mesh._project_3d(md, vector = self.moulin_input, type = 'node', layer = 1)
+        self.neumannflux = mesh._project_3d(md, vector = self.neumannflux, type = 'node', layer = 1)
 
         return self
 

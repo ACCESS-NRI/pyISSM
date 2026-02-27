@@ -114,7 +114,7 @@ class thermal(class_registry.manage_state):
         """
         Extrude thermal fields to 3D
         """
-        self.spctemperature = mesh.project_3d(md, vector = self.spctemperature, type = 'node', layer = md.mesh.numberoflayers, padding = np.nan)
+        self.spctemperature = mesh._project_3d(md, vector = self.spctemperature, type = 'node', layer = md.mesh.numberoflayers, padding = np.nan)
         if isinstance(md.initialization.temperature, np.ndarray) and np.size(md.initialization.temperature, axis=0) == md.mesh.numberofvertices:
             self.spctemperature = float('NaN') * np.ones((md.mesh.numberofvertices))
             pos = np.where(md.mesh.vertexonsurface)[0]

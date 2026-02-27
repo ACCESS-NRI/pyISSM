@@ -83,7 +83,7 @@ class default(class_registry.manage_state):
         """
         Extrude [smb.default] fields to 3D
         """
-        self.mass_balance = mesh.project_3d(md, vector = self.mass_balance, type = 'node')
+        self.mass_balance = mesh._project_3d(md, vector = self.mass_balance, type = 'node')
             
         return self
     
@@ -693,9 +693,9 @@ class components(class_registry.manage_state):
         """
         Extrude [smb.components]fields to 3D
         """
-        self.accumulation = mesh.project_3d(md, vector = self.accumulation, type = 'node')
-        self.runoff = mesh.project_3d(md, vector = self.runoff, type = 'node')
-        self.evaporation = mesh.project_3d(md, vector = self.evaporation, type = 'node')
+        self.accumulation = mesh._project_3d(md, vector = self.accumulation, type = 'node')
+        self.runoff = mesh._project_3d(md, vector = self.runoff, type = 'node')
+        self.evaporation = mesh._project_3d(md, vector = self.evaporation, type = 'node')
             
         return self
     
@@ -971,15 +971,15 @@ class d18opdd(class_registry.manage_state):
         Extrude [smb.d18opdd] fields to 3D
         """
         if self.isd18opd:
-            self.temperatures_presentday = mesh.project_3d(md, vector = self.temperatures_presentday, type = 'node')
+            self.temperatures_presentday = mesh._project_3d(md, vector = self.temperatures_presentday, type = 'node')
         if self.isd18opd:
-            self.precipitations_presentday = mesh.project_3d(md, vector = self.precipitations_presentday, type = 'node')
+            self.precipitations_presentday = mesh._project_3d(md, vector = self.precipitations_presentday, type = 'node')
         if self.istemperaturescaled == 0:
-            self.temperatures_reconstructed = mesh.project_3d(md, vector = self.temperatures_reconstructed, type = 'node')
+            self.temperatures_reconstructed = mesh._project_3d(md, vector = self.temperatures_reconstructed, type = 'node')
         if self.isprecipscaled == 0:
-            self.precipitations_reconstructed = mesh.project_3d(md, vector = self.precipitations_reconstructed, type = 'node')
-        self.s0p = mesh.project_3d(md, vector = self.s0p, type = 'node')
-        self.s0t = mesh.project_3d(md, vector = self.s0t, type = 'node')            
+            self.precipitations_reconstructed = mesh._project_3d(md, vector = self.precipitations_reconstructed, type = 'node')
+        self.s0p = mesh._project_3d(md, vector = self.s0p, type = 'node')
+        self.s0t = mesh._project_3d(md, vector = self.s0t, type = 'node')            
 
         return self
     
@@ -1496,52 +1496,52 @@ class gemb(class_registry.manage_state):
         Extrude [smb.gemb] fields to 3D
         """
         if np.shape(self.Ta)[0] == md.mesh.numberofelements or np.shape(self.Ta)[0] == md.mesh.numberofelements + 1 :
-            self.Ta = mesh.project_3d(md, vector = self.Ta, type = 'element')
-            self.V = mesh.project_3d(md, vector = self.V, type = 'element')
-            self.dswrf = mesh.project_3d(md, vector = self.dswrf, type = 'element')
-            self.dlwrf = mesh.project_3d(md, vector = self.dlwrf, type = 'element')
-            self.P = mesh.project_3d(md, vector = self.P, type = 'element')
-            self.eAir = mesh.project_3d(md, vector = self.eAir, type = 'element')
-            self.pAir = mesh.project_3d(md, vector = self.pAir, type = 'element')
+            self.Ta = mesh._project_3d(md, vector = self.Ta, type = 'element')
+            self.V = mesh._project_3d(md, vector = self.V, type = 'element')
+            self.dswrf = mesh._project_3d(md, vector = self.dswrf, type = 'element')
+            self.dlwrf = mesh._project_3d(md, vector = self.dlwrf, type = 'element')
+            self.P = mesh._project_3d(md, vector = self.P, type = 'element')
+            self.eAir = mesh._project_3d(md, vector = self.eAir, type = 'element')
+            self.pAir = mesh._project_3d(md, vector = self.pAir, type = 'element')
 
         if not np.isnan(self.Dzini):
-            self.Dzini=mesh.project_3d(md,vector = self.Dzini, type = 'element')
+            self.Dzini=mesh._project_3d(md,vector = self.Dzini, type = 'element')
         if not np.isnan(self.Dini):
-            self.Dini=mesh.project_3d(md,vector = self.Dini, type = 'element')
+            self.Dini=mesh._project_3d(md,vector = self.Dini, type = 'element')
         if not np.isnan(self.Reini):
-            self.Reini=mesh.project_3d(md, vector = self.Reini, type = 'element')
+            self.Reini=mesh._project_3d(md, vector = self.Reini, type = 'element')
         if not np.isnan(self.Gdnini):
-            self.Gdnini=mesh.project_3d(md, vector = self.Gdnini, type = 'element')
+            self.Gdnini=mesh._project_3d(md, vector = self.Gdnini, type = 'element')
         if not np.isnan(self.Gspini):
-            self.Gspini=mesh.project_3d(md, vector = self.Gspini, type = 'element')
+            self.Gspini=mesh._project_3d(md, vector = self.Gspini, type = 'element')
         if not np.isnan(self.ECini):
-            self.ECini=mesh.project_3d(md, vector = self.ECini, type = 'element')
+            self.ECini=mesh._project_3d(md, vector = self.ECini, type = 'element')
         if not np.isnan(self.Wini):
-            self.Wini=mesh.project_3d(md, vector = self.Wini, type = 'element')
+            self.Wini=mesh._project_3d(md, vector = self.Wini, type = 'element')
         if not np.isnan(self.Aini):
-            self.Aini=mesh.project_3d(md, vector = self.Aini, type = 'element')
+            self.Aini=mesh._project_3d(md, vector = self.Aini, type = 'element')
         if not np.isnan(self.Adiffini):
-            self.Adiffini=mesh.project_3d(md, vector = self.Adiffini, type = 'element')
+            self.Adiffini=mesh._project_3d(md, vector = self.Adiffini, type = 'element')
         if not np.isnan(self.Tini):
-            self.Tini=mesh.project_3d(md, vector = self.Tini, type = 'element')
+            self.Tini=mesh._project_3d(md, vector = self.Tini, type = 'element')
 
         if not np.isnan(self.dswdiffrf):
-            self.dswdiffrf=mesh.project_3d(md, vector = self.dswdiffrf, type = 'element')
+            self.dswdiffrf=mesh._project_3d(md, vector = self.dswdiffrf, type = 'element')
         if not np.isnan(self.szaValue):
-            self.szaValue=mesh.project_3d(md, vector = self.szaValue, type = 'element')
+            self.szaValue=mesh._project_3d(md, vector = self.szaValue, type = 'element')
         if not np.isnan(self.cotValue):
-            self.cotValue=mesh.project_3d(md, vector = self.cotValue, type = 'element')
+            self.cotValue=mesh._project_3d(md, vector = self.cotValue, type = 'element')
         if not np.isnan(self.ccsnowValue):
-            self.ccsnowValue=mesh.project_3d(md, vector = self.ccsnowValue, type = 'element')
+            self.ccsnowValue=mesh._project_3d(md, vector = self.ccsnowValue, type = 'element')
         if not np.isnan(self.cciceValue):
-            self.cciceValue=mesh.project_3d(md, vector = self.cciceValue, type = 'element')
+            self.cciceValue=mesh._project_3d(md, vector = self.cciceValue, type = 'element')
 
         if not np.isnan(self.aValue):
-            self.aValue = mesh.project_3d(md, vector = self.aValue, type = 'element')
+            self.aValue = mesh._project_3d(md, vector = self.aValue, type = 'element')
         if not np.isnan(self.teValue):
-            self.teValue = mesh.project_3d(md, vector = self.teValue, type = 'element')
+            self.teValue = mesh._project_3d(md, vector = self.teValue, type = 'element')
         if not np.isnan(self.mappedforcingpoint):
-            self.mappedforcingpoint = mesh.project_3d(md, vector = self.mappedforcingpoint, type = 'element')
+            self.mappedforcingpoint = mesh._project_3d(md, vector = self.mappedforcingpoint, type = 'element')
         
         return self
     
@@ -2521,7 +2521,7 @@ class henning(class_registry.manage_state):
         """
         Extrude [smb.henning] fields to 3D
         """
-        self.smbref = mesh.project_3d(md, vector = self.smbref, type = 'node')
+        self.smbref = mesh._project_3d(md, vector = self.smbref, type = 'node')
             
         return self
     
@@ -2725,10 +2725,10 @@ class meltcomponents(class_registry.manage_state):
         """
         Extrude [smb.meltcomponents] fields to 3D
         """
-        self.accumulation = mesh.project_3d(md, vector = self.accumulation, type = 'node')
-        self.evaporation = mesh.project_3d(md, vector = self.evaporation, type = 'node')
-        self.melt = mesh.project_3d(md, vector = self.melt, type = 'node')
-        self.refreeze = mesh.project_3d(md, vector = self.refreeze, type = 'node')
+        self.accumulation = mesh._project_3d(md, vector = self.accumulation, type = 'node')
+        self.evaporation = mesh._project_3d(md, vector = self.evaporation, type = 'node')
+        self.melt = mesh._project_3d(md, vector = self.melt, type = 'node')
+        self.refreeze = mesh._project_3d(md, vector = self.refreeze, type = 'node')
             
         return self
     
@@ -3024,27 +3024,27 @@ class pdd(class_registry.manage_state):
         Extrude [smb.pdd] fields to 3D
         """
         if not (self.isdelta18o and self.ismungsm):
-            self.precipitation = mesh.project_3d(md, vector = self.precipitation, type = 'node')
-            self.monthlytemperatures = mesh.project_3d(md, vector = self.monthlytemperatures, type = 'node')
+            self.precipitation = mesh._project_3d(md, vector = self.precipitation, type = 'node')
+            self.monthlytemperatures = mesh._project_3d(md, vector = self.monthlytemperatures, type = 'node')
 
         if self.isdelta18o:
-            self.temperatures_lgm = mesh.project_3d(md, vector = self.temperatures_lgm, type = 'node')
-            self.temperatures_presentday = mesh.project_3d(md, vector = self.temperatures_presentday, type = 'node')
-            self.precipitations_presentday = mesh.project_3d(md, vector = self.precipitations_presentday, type = 'node')
-            self.precipitations_lgm = mesh.project_3d(md, vector = self.precipitations_lgm, type = 'node')
+            self.temperatures_lgm = mesh._project_3d(md, vector = self.temperatures_lgm, type = 'node')
+            self.temperatures_presentday = mesh._project_3d(md, vector = self.temperatures_presentday, type = 'node')
+            self.precipitations_presentday = mesh._project_3d(md, vector = self.precipitations_presentday, type = 'node')
+            self.precipitations_lgm = mesh._project_3d(md, vector = self.precipitations_lgm, type = 'node')
 
         if self.ismungsm:
-            self.temperatures_lgm = mesh.project_3d(md, vector = self.temperatures_lgm, type = 'node')
-            self.temperatures_presentday = mesh.project_3d(md, vector = self.temperatures_presentday, type = 'node')
-            self.precipitations_presentday = mesh.project_3d(md, vector = self.precipitations_presentday, type = 'node')
-            self.precipitations_lgm = mesh.project_3d(md, vector = self.precipitations_lgm, type = 'node')
+            self.temperatures_lgm = mesh._project_3d(md, vector = self.temperatures_lgm, type = 'node')
+            self.temperatures_presentday = mesh._project_3d(md, vector = self.temperatures_presentday, type = 'node')
+            self.precipitations_presentday = mesh._project_3d(md, vector = self.precipitations_presentday, type = 'node')
+            self.precipitations_lgm = mesh._project_3d(md, vector = self.precipitations_lgm, type = 'node')
 
         if self.issetpddfac:
-            self.pddfac_snow = mesh.project_3d(md, vector = self.pddfac_snow, type = 'node')
+            self.pddfac_snow = mesh._project_3d(md, vector = self.pddfac_snow, type = 'node')
         if self.issetpddfac:
-            self.pddfac_ice = mesh.project_3d(md, vector = self.pddfac_ice, type = 'node')
-        self.s0p = mesh.project_3d(md, vector = self.s0p, type = 'node')
-        self.s0t = mesh.project_3d(md, vector = self.s0t, type = 'node')
+            self.pddfac_ice = mesh._project_3d(md, vector = self.pddfac_ice, type = 'node')
+        self.s0p = mesh._project_3d(md, vector = self.s0p, type = 'node')
+        self.s0t = mesh._project_3d(md, vector = self.s0t, type = 'node')
             
         return self
     
@@ -3347,13 +3347,13 @@ class pddSicopolis(class_registry.manage_state):
         """
         Extrude [smb.pddSicopolis] fields to 3D
         """
-        self.precipitation = mesh.project_3d(md, vector = self.precipitation, type = 'node')
-        self.monthlytemperatures = mesh.project_3d(md, vector = self.monthlytemperatures, type = 'node')
-        self.temperature_anomaly = mesh.project_3d(md, vector = self.temperature_anomaly, type = 'node')
-        self.precipitation_anomaly = mesh.project_3d(md, vector = self.precipitation_anomaly, type = 'node')
-        self.smb_corr = mesh.project_3d(md, vector = self.smb_corr, type = 'node')
-        self.s0p = mesh.project_3d(md, vector = self.s0p, type = 'node')
-        self.s0t = mesh.project_3d(md, vector = self.s0t, type = 'node')
+        self.precipitation = mesh._project_3d(md, vector = self.precipitation, type = 'node')
+        self.monthlytemperatures = mesh._project_3d(md, vector = self.monthlytemperatures, type = 'node')
+        self.temperature_anomaly = mesh._project_3d(md, vector = self.temperature_anomaly, type = 'node')
+        self.precipitation_anomaly = mesh._project_3d(md, vector = self.precipitation_anomaly, type = 'node')
+        self.smb_corr = mesh._project_3d(md, vector = self.smb_corr, type = 'node')
+        self.s0p = mesh._project_3d(md, vector = self.s0p, type = 'node')
+        self.s0t = mesh._project_3d(md, vector = self.s0t, type = 'node')
             
         return self
     

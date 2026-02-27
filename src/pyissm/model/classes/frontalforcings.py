@@ -64,8 +64,8 @@ class default(class_registry.manage_state):
         """
         Extrude [frontalforcings.default] fields to 3D
         """
-        self.meltingrate = mesh.project_3d(md, vector = self.meltingrate, type = 'node')
-        self.ablationrate = mesh.project_3d(md, vector = self.ablationrate, type = 'node')
+        self.meltingrate = mesh._project_3d(md, vector = self.meltingrate, type = 'node')
+        self.ablationrate = mesh._project_3d(md, vector = self.ablationrate, type = 'node')
             
         return self
 

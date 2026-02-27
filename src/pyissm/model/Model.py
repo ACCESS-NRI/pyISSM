@@ -829,14 +829,14 @@ class Model():
 
         # Ok, now deal with the other fields from the 2d mesh
         # Bed info and surface info
-        md.mesh.vertexonbase = mesh.project_3d(md, vector = np.ones(md.mesh.numberofvertices2d, int), type = 'node', layer = 1)
-        md.mesh.vertexonsurface = mesh.project_3d(md, vector = np.ones(md.mesh.numberofvertices2d, int), type = 'node', layer = md.mesh.numberoflayers)
-        md.mesh.vertexonboundary = mesh.project_3d(md, vector = md.mesh.vertexonboundary, type = 'node')
+        md.mesh.vertexonbase = mesh._project_3d(md, vector = np.ones(md.mesh.numberofvertices2d, int), type = 'node', layer = 1)
+        md.mesh.vertexonsurface = mesh._project_3d(md, vector = np.ones(md.mesh.numberofvertices2d, int), type = 'node', layer = md.mesh.numberoflayers)
+        md.mesh.vertexonboundary = mesh._project_3d(md, vector = md.mesh.vertexonboundary, type = 'node')
 
         # lat/long
-        md.mesh.lat = mesh.project_3d(md, vector = md.mesh.lat, type = 'node')
-        md.mesh.long = mesh.project_3d(md, vector = md.mesh.long, type = 'node')
-        md.mesh.scale_factor = mesh.project_3d(md, vector = md.mesh.scale_factor, type = 'node')
+        md.mesh.lat = mesh._project_3d(md, vector = md.mesh.lat, type = 'node')
+        md.mesh.long = mesh._project_3d(md, vector = md.mesh.long, type = 'node')
+        md.mesh.scale_factor = mesh._project_3d(md, vector = md.mesh.scale_factor, type = 'node')
 
         # Project model fields
         md.geometry._extrude(md)

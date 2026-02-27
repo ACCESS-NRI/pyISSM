@@ -98,7 +98,7 @@ class debris(class_registry.manage_state):
         """
         Extrude debris fields to 3D
         """
-        self.spcthickness = mesh.project_3d(md, vector = self.spcthickness, type = 'node')
+        self.spcthickness = mesh._project_3d(md, vector = self.spcthickness, type = 'node')
             
         return self
 

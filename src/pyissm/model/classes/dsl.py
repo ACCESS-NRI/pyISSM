@@ -67,8 +67,8 @@ class default(class_registry.manage_state):
         """
         Extrude dsl.default fields to 3D
         """
-        self.sea_surface_height_above_geoid = mesh.project_3d(md, vector = self.sea_surface_height_above_geoid, type = 'node', layer = 1)
-        self.sea_water_pressure_at_sea_floor = mesh.project_3d(md, vector = self.sea_water_pressure_at_sea_floor, type = 'node', layer = 1)
+        self.sea_surface_height_above_geoid = mesh._project_3d(md, vector = self.sea_surface_height_above_geoid, type = 'node', layer = 1)
+        self.sea_water_pressure_at_sea_floor = mesh._project_3d(md, vector = self.sea_water_pressure_at_sea_floor, type = 'node', layer = 1)
 
         return self
     
@@ -229,8 +229,8 @@ class mme(class_registry.manage_state):
         Extrude dsl.mme fields to 3D
         """
         for i in range(len(self.global_average_thermosteric_sea_level)):
-            self.sea_surface_height_above_geoid[i] = mesh.project_3d(md, vector = self.self.sea_surface_height_above_geoid[i], type = 'node', layer = 1)
-            self.sea_water_pressure_at_sea_floor[i] = mesh.project_3d(md, vector = self.sea_water_pressure_at_sea_floor[i], type = 'node', layer = 1)
+            self.sea_surface_height_above_geoid[i] = mesh._project_3d(md, vector = self.self.sea_surface_height_above_geoid[i], type = 'node', layer = 1)
+            self.sea_water_pressure_at_sea_floor[i] = mesh._project_3d(md, vector = self.sea_water_pressure_at_sea_floor[i], type = 'node', layer = 1)
 
         return self    
 

@@ -122,8 +122,8 @@ class damage(class_registry.manage_state):
         """
         Extrude damage fields to 3D
         """
-        self.D = mesh.project_3d(md, vector = self.D, type = 'node')
-        self.spcdamage = mesh.project_3d(md, vector = self.spcdamage, type = 'node')
+        self.D = mesh._project_3d(md, vector = self.D, type = 'node')
+        self.spcdamage = mesh._project_3d(md, vector = self.spcdamage, type = 'node')
             
         return self
 
