@@ -112,7 +112,7 @@ class surfaceload(class_registry.manage_state):
             self.otherchange = np.zeros((md.mesh.numberofelements + 1, ))
 
         ## Write fields
-        execute.WriteData(fid, prefix, name = 'md.solidearth.surfaceload.icethicknesschange', data = self.icethicknesschange, format = 'MatArray', timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts, scale = 1 / md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.solidearth.surfaceload.waterheightchange', data = self.waterheightchange, format = 'MatArray', timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts, scale = 1 / md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.solidearth.surfaceload.otherchange', data = self.otherchange, format = 'MatArray', timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts, scale = 1 / md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.surfaceload.icethicknesschange', data = self.icethicknesschange, format = 'MatArray', timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts, scale = 1 / md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.surfaceload.waterheightchange', data = self.waterheightchange, format = 'MatArray', timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts, scale = 1 / md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.surfaceload.otherchange', data = self.otherchange, format = 'MatArray', timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts, scale = 1 / md.constants.yts)
 

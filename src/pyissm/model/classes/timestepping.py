@@ -135,17 +135,17 @@ class default(class_registry.manage_state):
         """
 
         ## Write header field
-        execute.WriteData(fid, prefix, name = 'md.timestepping.type', data = 1, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.timestepping.type', data = 1, format = 'Integer')
 
         ## Write Double fields (all consistent format)
         fieldnames = ['start_time', 'final_time', 'time_step', 'coupling_time']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double', scale = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double', scale = md.constants.yts)
 
         ## Write Boolean fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'interp_forcing', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'average_forcing', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'cycle_forcing', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'interp_forcing', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'average_forcing', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'cycle_forcing', format = 'Boolean')
 
 ## ------------------------------------------------------
 ## timestepping.adaptive
@@ -295,15 +295,15 @@ class adaptive(class_registry.manage_state):
         """
 
         ## Write header field
-        execute.WriteData(fid, prefix, name = 'md.timestepping.type', data = 2, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.timestepping.type', data = 2, format = 'Integer')
 
         ## Write Double fields (all consistent format)
         fieldnames = ['start_time', 'final_time', 'time_step_min', 'time_step_max', 'coupling_time']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double', scale = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'cfl_coefficient', format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double', scale = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'cfl_coefficient', format = 'Double')
 
         ## Write Boolean fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'interp_forcing', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'average_forcing', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'cycle_forcing', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'interp_forcing', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'average_forcing', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'cycle_forcing', format = 'Boolean')

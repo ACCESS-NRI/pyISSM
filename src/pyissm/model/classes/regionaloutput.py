@@ -148,7 +148,7 @@ class regionaloutput(class_registry.manage_state):
                 raise RuntimeError('regionaloutput.marshall_class: Python wrappers not installed. Unable to compute regional mask, required to marshall class.')
 
         ## Write fields
-        execute.WriteData(fid, prefix, data = self.name, name = 'md.regionaloutput.name', format = 'String')
-        execute.WriteData(fid, prefix, data = self.definitionstring, name = 'md.regionaloutput.definitionstring', format = 'String')
-        execute.WriteData(fid, prefix, data = self.outputnamestring, name = 'md.regionaloutput.outputnamestring', format = 'String')
-        execute.WriteData(fid, prefix, data = self.mask, name = 'md.regionaloutput.mask', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, data = self.name, name = 'md.regionaloutput.name', format = 'String')
+        execute._write_model_field(fid, prefix, data = self.definitionstring, name = 'md.regionaloutput.definitionstring', format = 'String')
+        execute._write_model_field(fid, prefix, data = self.outputnamestring, name = 'md.regionaloutput.outputnamestring', format = 'String')
+        execute._write_model_field(fid, prefix, data = self.mask, name = 'md.regionaloutput.mask', format = 'DoubleMat', mattype = 1)

@@ -114,10 +114,10 @@ class default(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.calving.law', data = 1, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.calving.law', data = 1, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'calvingrate', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts, scale = 1. / md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'calvingrate', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts, scale = 1. / md.constants.yts)
 
 ## ------------------------------------------------------
 ## calving.crevassedepth
@@ -238,12 +238,12 @@ class crevassedepth(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.calving.law', data = 6, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.calving.law', data = 6, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'crevasse_opening_stress', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'crevasse_threshold', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'water_height', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'crevasse_opening_stress', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'crevasse_threshold', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'water_height', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
 ## ------------------------------------------------------
 ## calving.dev
@@ -358,11 +358,11 @@ class dev(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.calving.law', data = 2, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.calving.law', data = 2, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'stress_threshold_groundedice', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'stress_threshold_floatingice', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'stress_threshold_groundedice', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'stress_threshold_floatingice', format = 'DoubleMat', mattype = 1)
 
 ## ------------------------------------------------------
 ## calving.levermann
@@ -470,10 +470,10 @@ class levermann(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.calving.law', data = 3, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.calving.law', data = 3, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'coeff', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'coeff', format = 'DoubleMat', mattype = 1)
 
 ## ------------------------------------------------------
 ## calving.minthickness
@@ -581,10 +581,10 @@ class minthickness(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.calving.law', data = 4, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.calving.law', data = 4, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'min_thickness', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'min_thickness', format = 'Double')
 
 ## ------------------------------------------------------
 ## calving.parameterization
@@ -748,16 +748,16 @@ class parameterization(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.calving.law', data = 9, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.calving.law', data = 9, format = 'Integer')
 
         ## Write Double fields
         fieldnames = ['min_thickness', 'use_param', 'theta', 'alpha', 'xoffset', 'yoffset']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double')
 
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'vel_lowerbound', format = 'Double', scale = 1. / md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'vel_threshold', format = 'Double', scale = 1. / md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'vel_upperbound', format = 'Double', scale = 1. / md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'vel_lowerbound', format = 'Double', scale = 1. / md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'vel_threshold', format = 'Double', scale = 1. / md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'vel_upperbound', format = 'Double', scale = 1. / md.constants.yts)
 
 ## ------------------------------------------------------
 ## calving.vonmises
@@ -878,9 +878,9 @@ class vonmises(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.calving.law', data = 2, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.calving.law', data = 2, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'stress_threshold_groundedice', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'stress_threshold_floatingice', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'min_thickness', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'stress_threshold_groundedice', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'stress_threshold_floatingice', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'min_thickness', format = 'Double')

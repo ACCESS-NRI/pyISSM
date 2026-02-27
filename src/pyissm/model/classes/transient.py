@@ -254,9 +254,9 @@ class transient(class_registry.manage_state):
             'ismovingfront', 'ishydrology', 'isdebris',
             'issampling', 'isslc']
         for fieldname in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'Boolean')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = fieldname, format = 'Boolean')
         
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'isoceancoupling', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'amr_frequency', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.transient.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'isoceancoupling', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'amr_frequency', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.transient.requested_outputs', data = self.process_outputs(md), format = 'StringArray')

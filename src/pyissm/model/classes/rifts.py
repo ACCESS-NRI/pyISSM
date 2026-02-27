@@ -149,5 +149,5 @@ class rifts(class_registry.manage_state):
             data = np.zeros((numpairs, 12))
         
         ## Write fields
-        execute.WriteData(fid, prefix, name = 'md.rifts.numrifts', data = numrifts, format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.rifts.riftstruct', data = data, format = 'DoubleMat', mattype = 3)
+        execute._write_model_field(fid, prefix, name = 'md.rifts.numrifts', data = numrifts, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.rifts.riftstruct', data = data, format = 'DoubleMat', mattype = 3)

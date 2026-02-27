@@ -156,12 +156,12 @@ class default(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.dsl.model', data = 1, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.dsl.model', data = 1, format = 'Integer')
 
         ## Write DoubleMat fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'global_average_thermosteric_sea_level', format = 'DoubleMat', mattype = 2, timeserieslength = 2, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'sea_surface_height_above_geoid', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'sea_water_pressure_at_sea_floor', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'global_average_thermosteric_sea_level', format = 'DoubleMat', mattype = 2, timeserieslength = 2, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'sea_surface_height_above_geoid', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'sea_water_pressure_at_sea_floor', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
 
 ## ------------------------------------------------------
@@ -291,13 +291,13 @@ class mme(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.dsl.model', data = 2, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.dsl.model', data = 2, format = 'Integer')
 
         ## Write DoubleMat fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'global_average_thermosteric_sea_level', format = 'MatArray', timeserieslength = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'sea_surface_height_above_geoid', format = 'MatArray', timeserieslength = md.mesh.numberofvertices + 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'sea_water_pressure_at_sea_floor', format = 'MatArray', timeserieslength = md.mesh.numberofvertices + 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'global_average_thermosteric_sea_level', format = 'MatArray', timeserieslength = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'sea_surface_height_above_geoid', format = 'MatArray', timeserieslength = md.mesh.numberofvertices + 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'sea_water_pressure_at_sea_floor', format = 'MatArray', timeserieslength = md.mesh.numberofvertices + 1)
 
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'modelid', format = 'Double')
-        execute.WriteData(fid, prefix, name = 'md.dsl.nummodels', data = len(self.global_average_thermosteric_sea_level), format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'modelid', format = 'Double')
+        execute._write_model_field(fid, prefix, name = 'md.dsl.nummodels', data = len(self.global_average_thermosteric_sea_level), format = 'Integer')

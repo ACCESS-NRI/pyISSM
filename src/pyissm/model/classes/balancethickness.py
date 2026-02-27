@@ -119,10 +119,10 @@ class balancethickness(class_registry.manage_state):
         ## Write DoubleMat fields
         fieldnames = ['spcthickness', 'omega', 'slopex', 'slopey']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
 
         ## Write Integer fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'stabilization', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'stabilization', format = 'Integer')
 
         ## Write Scaled fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'thickening_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'thickening_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts)

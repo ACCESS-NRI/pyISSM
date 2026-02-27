@@ -150,8 +150,8 @@ class steadystate(class_registry.manage_state):
         """
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'reltol', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'maxiter', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.steadystate.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'reltol', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'maxiter', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.steadystate.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 

@@ -119,11 +119,11 @@ class offlinesolidearthsolution(class_registry.manage_state):
 
         ## Write headers to file
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.solidearth.external.nature', data = 2, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.external.nature', data = 2, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, name =  'md.solidearth.external.displacementeast', data = displacementeast_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.solidearth.external.displacementup', data = displacementup_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.solidearth.external.displacementnorth', data = displacementnorth_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.solidearth.external.geoid', data = geoid_rate, format = 'DoubleMat',  mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name =  'md.solidearth.external.displacementeast', data = displacementeast_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.external.displacementup', data = displacementup_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.external.displacementnorth', data = displacementnorth_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.external.geoid', data = geoid_rate, format = 'DoubleMat',  mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 

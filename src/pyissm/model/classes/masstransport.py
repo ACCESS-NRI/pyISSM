@@ -177,12 +177,12 @@ class masstransport(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'spcthickness', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'isfreesurface', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'min_thickness', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'hydrostatic_adjustment', format = 'String')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'stabilization', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'vertex_pairing', format = 'DoubleMat', mattype = 3)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'penalty_factor', format = 'Double')
-        execute.WriteData(fid, prefix, name = 'md.masstransport.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'spcthickness', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'isfreesurface', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'min_thickness', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'hydrostatic_adjustment', format = 'String')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'stabilization', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'vertex_pairing', format = 'DoubleMat', mattype = 3)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'penalty_factor', format = 'Double')
+        execute._write_model_field(fid, prefix, name = 'md.masstransport.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 

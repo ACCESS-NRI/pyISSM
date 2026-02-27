@@ -146,9 +146,9 @@ class geometry(class_registry.manage_state):
 
         # Write thickness data depending on whether it matches number of vertices or elements
         if (length_thickness == md.mesh.numberofvertices) or (length_thickness == md.mesh.numberofvertices + 1):
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'thickness', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'thickness', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         elif (length_thickness == md.mesh.numberofelements) or (length_thickness == md.mesh.numberofelements + 1):
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'thickness', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'thickness', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
         else:
             # Raise error if thickness does not match expected sizes
             raise RuntimeError('geometry thickness time series should be a vertex or element time series')
@@ -156,4 +156,4 @@ class geometry(class_registry.manage_state):
         ## 2. Write other geometry fields to file (all fields are of the same type/format)
         fieldnames = ['surface', 'base', 'bed', 'hydrostatic_ratio']
         for fieldname in fieldnames:
-                execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'DoubleMat', mattype = 1)
+                execute._write_model_field(fid, prefix, obj = self, fieldname = fieldname, format = 'DoubleMat', mattype = 1)

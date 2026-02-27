@@ -89,8 +89,8 @@ class default(class_registry.manage_state):
         """
 
         ## Write fields (Turn off)
-        execute.WriteData(fid, prefix, name = 'md.qmu.isdakota', data = False, format = 'Boolean')
-        execute.WriteData(fid, prefix, name = 'md.qmu.mass_flux_segments_present', data = False, format = 'Boolean')
+        execute._write_model_field(fid, prefix, name = 'md.qmu.isdakota', data = False, format = 'Boolean')
+        execute._write_model_field(fid, prefix, name = 'md.qmu.mass_flux_segments_present', data = False, format = 'Boolean')
 
         warnings.warn('pyissm.model.classes.qmu::qmu not yet implemented. Turning off qmu.')
 

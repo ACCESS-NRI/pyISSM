@@ -77,7 +77,7 @@ def marshall(md):
             raise RuntimeError(f"Error marshalling model class {model_class}: {e}")
         
     # Write "md.EOF" to make sure that the binary file is not corrupt
-    WriteData(fid,
+    _write_model_field(fid,
               prefix = 'XXX',
               name = 'md.EOF', 
               data = True, 
@@ -91,7 +91,7 @@ def marshall(md):
         print(f'marshall error message: could not close \'{md.miscellaneous.name}.bin\' file for binary writing due to: {e}')
 
 
-def WriteData(fid, 
+def _write_model_field(fid, 
               prefix, 
               *, 
               obj = None,

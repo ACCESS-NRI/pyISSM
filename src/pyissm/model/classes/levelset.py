@@ -127,9 +127,9 @@ class levelset(class_registry.manage_state):
         """
         
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'stabilization', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'spclevelset', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'reinit_frequency', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'kill_icebergs', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'migration_max', format = 'Double', scale = 1. / md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'fe', format = 'String')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'stabilization', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'spclevelset', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'reinit_frequency', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'kill_icebergs', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'migration_max', format = 'Double', scale = 1. / md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'fe', format = 'String')

@@ -231,25 +231,25 @@ class flowequation(class_registry.manage_state):
         ## Write Boolean fields
         fieldnames = ['isSIA', 'isSSA', 'isL1L2', 'isMOLHO', 'isHO', 'isFS', 'isNitscheBC']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Boolean')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Boolean')
 
         ## Write Double fields
         fieldnames = ['FSNitscheGamma', 'augmented_lagrangian_r', 'augmented_lagrangian_rhop',
                   'augmented_lagrangian_rlambda', 'augmented_lagrangian_rholambda']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double')
 
         ## Write String fields
         fieldnames = ['fe_SSA', 'fe_HO', 'fe_FS']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, data = getattr(self, field), format = 'String')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, data = getattr(self, field), format = 'String')
         
         ## Write DoubleMat fields (mattype 1)
         fieldnames = ['borderSSA', 'borderHO', 'borderFS']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
 
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'XTH_theta', data = self.XTH_theta, format = 'Double')
-        execute.WriteData(fid, prefix, name = 'md.flowequation.vertex_equation', data = self.vertex_equation, format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, name = 'md.flowequation.element_equation', data = self.element_equation, format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'XTH_theta', data = self.XTH_theta, format = 'Double')
+        execute._write_model_field(fid, prefix, name = 'md.flowequation.vertex_equation', data = self.vertex_equation, format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, name = 'md.flowequation.element_equation', data = self.element_equation, format = 'DoubleMat', mattype = 2)

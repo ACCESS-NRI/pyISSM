@@ -114,5 +114,5 @@ class constants(class_registry.manage_state):
         ## Write each field to the file (all fields are of the same type/format)
         fieldnames = ['g', 'omega', 'yts', 'referencetemperature', 'gravitational_constant']
         for fieldname in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = fieldname, format = 'Double')
 

@@ -185,45 +185,45 @@ class autodiff(class_registry.manage_state):
         """
 
         ## Write control fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'isautodiff', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'driver', format = 'String')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'isautodiff', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'driver', format = 'String')
 
         if self.isautodiff:
 
             ## Write Double fields
             fieldnames = ['obufsize', 'lbufsize', 'cbufsize', 'tbufsize', 'gcTriggerRatio', 'gcTriggerMaxSize']
             for fieldname in fieldnames:
-                execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'Double')
+                execute._write_model_field(fid, prefix, obj = self, fieldname = fieldname, format = 'Double')
 
             ## Write other fields
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'tapeAlloc', format = 'Integer')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'outputTapeMemory', format = 'Boolean')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'outputTime', format = 'Boolean')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'enablePreaccumulation', format = 'Boolean')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'tapeAlloc', format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'outputTapeMemory', format = 'Boolean')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'outputTime', format = 'Boolean')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'enablePreaccumulation', format = 'Boolean')
 
             ## Write conditional fields
             ## NOTE: Conditional writing taken from $ISSM_DIR/src/m/classes/autodiff.py
             ## 1 - dependent variables
             num_dependent_objects = len(self.dependents)
-            execute.WriteData(fid, prefix, name = 'md.autodiff.num_dependent_objects', data = num_dependent_objects, format = 'Integer')
+            execute._write_model_field(fid, prefix, name = 'md.autodiff.num_dependent_objects', data = num_dependent_objects, format = 'Integer')
 
             if num_dependent_objects:
                 names = []
                 for i, dep in enumerate(self.dependents):
                     names.append(dep.name)
 
-                execute.WriteData(fid, prefix, name = 'md.autodiff.dependent_object_names', data = names, format = 'StringArray')
+                execute._write_model_field(fid, prefix, name = 'md.autodiff.dependent_object_names', data = names, format = 'StringArray')
 
             ## 2 - independent variables
             num_independent_objects = len(self.independents)
-            execute.WriteData(fid, prefix, name = 'md.autodiff.num_independent_objects', data = num_independent_objects, format = 'Integer')
+            execute._write_model_field(fid, prefix, name = 'md.autodiff.num_independent_objects', data = num_independent_objects, format = 'Integer')
 
             for indep in self.independents:
-                execute.WriteData(fid, prefix, name = 'md.autodiff.independent_name', data = indep.name, format = 'String')
-                execute.WriteData(fid, prefix, name = 'md.autodiff.independent_min_parameters', data = indep.min_parameters, format = 'DoubleMat', mattype = 3)
-                execute.WriteData(fid, prefix, name = 'md.autodiff.independent_max_parameters', data = indep.max_parameters, format = 'DoubleMat', mattype = 3)
-                execute.WriteData(fid, prefix, name = 'md.autodiff.independent_scaling_factor', data = indep.control_scaling_factor, format = 'Double')
-                execute.WriteData(fid, prefix, name = 'md.autodiff.independent_control_size', data = indep.control_size, format = 'Integer')
+                execute._write_model_field(fid, prefix, name = 'md.autodiff.independent_name', data = indep.name, format = 'String')
+                execute._write_model_field(fid, prefix, name = 'md.autodiff.independent_min_parameters', data = indep.min_parameters, format = 'DoubleMat', mattype = 3)
+                execute._write_model_field(fid, prefix, name = 'md.autodiff.independent_max_parameters', data = indep.max_parameters, format = 'DoubleMat', mattype = 3)
+                execute._write_model_field(fid, prefix, name = 'md.autodiff.independent_scaling_factor', data = indep.control_scaling_factor, format = 'Double')
+                execute._write_model_field(fid, prefix, name = 'md.autodiff.independent_control_size', data = indep.control_size, format = 'Integer')
 
             ## 3 - build index for fos_forward driver
             if self.driver.lower() == 'fos_forward':
@@ -240,7 +240,7 @@ class autodiff(class_registry.manage_state):
                         index += indep.nods
 
                 index -= 1  # Convert to c-index numbering
-                execute.WriteData(fid, prefix, name = 'md.autodiff.fos_forward_index', data = index, format = 'Integer')
+                execute._write_model_field(fid, prefix, name = 'md.autodiff.fos_forward_index', data = index, format = 'Integer')
 
             ## 4 - build index for fos_reverse driver
             if self.driver.lower() == 'fos_reverse':
@@ -254,7 +254,7 @@ class autodiff(class_registry.manage_state):
                         index += 1
 
                 index -= 1  # Convert to c-index numbering
-                execute.WriteData(fid, prefix, name = 'md.autodiff.fos_reverse_index', data = index, format = 'Integer')
+                execute._write_model_field(fid, prefix, name = 'md.autodiff.fos_reverse_index', data = index, format = 'Integer')
 
 
             ## 5 - build index for fov_forward driver
@@ -272,7 +272,7 @@ class autodiff(class_registry.manage_state):
                             indices += indep.nods
 
                 index -= 1  # Convert to c-index numbering
-                execute.WriteData(fid, prefix, name = 'md.autodiff.fov_forward_indices', data = indices, format = 'IntMat', mattype = 3)
+                execute._write_model_field(fid, prefix, name = 'md.autodiff.fov_forward_indices', data = indices, format = 'IntMat', mattype = 3)
 
             ## 6 - Deal with mass fluxes
             mass_flux_segments = []
@@ -281,11 +281,11 @@ class autodiff(class_registry.manage_state):
                     mass_flux_segments.append(dep.segments)
 
             if mass_flux_segments:
-                execute.WriteData(fid, prefix, name = 'md.autodiff.mass_flux_segments', data = mass_flux_segments, format = 'MatArray')
+                execute._write_model_field(fid, prefix, name = 'md.autodiff.mass_flux_segments', data = mass_flux_segments, format = 'MatArray')
                 flag = True
             else:
                 flag = False
-            execute.WriteData(fid, prefix, name = 'md.autodiff.mass_flux_segments_present', data = flag, format = 'Boolean')
+            execute._write_model_field(fid, prefix, name = 'md.autodiff.mass_flux_segments_present', data = flag, format = 'Boolean')
 
             ## Deal with trace keep on
             keep = False
@@ -305,8 +305,8 @@ class autodiff(class_registry.manage_state):
                     keep = True
                 else:
                     keep = False
-            execute.WriteData(fid, prefix, name = 'md.autodiff.keep', data = keep, format ='Boolean')
+            execute._write_model_field(fid, prefix, name = 'md.autodiff.keep', data = keep, format ='Boolean')
 
         else:
-            execute.WriteData(fid, prefix, name = 'md.autodiff.mass_flux_segments_present', data = False, format = 'Boolean')
-            execute.WriteData(fid, prefix, name = 'md.autodiff.keep', data = False, format = 'Boolean')
+            execute._write_model_field(fid, prefix, name = 'md.autodiff.mass_flux_segments_present', data = False, format = 'Boolean')
+            execute._write_model_field(fid, prefix, name = 'md.autodiff.keep', data = False, format = 'Boolean')

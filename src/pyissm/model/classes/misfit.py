@@ -138,11 +138,11 @@ class misfit(class_registry.manage_state):
         fieldnames = ['name', 'definitionstring', 'model_string', 'observation_string', 'timeinterpolation',
                       'weights_string']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj=self, fieldname=field, format='String')
+            execute._write_model_field(fid, prefix, obj=self, fieldname=field, format='String')
 
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'observation', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'local', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'weights', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'observation', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'local', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'weights', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         
 

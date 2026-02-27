@@ -300,7 +300,7 @@ class stochasticforcing(class_registry.manage_state):
         """
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'isstochasticforcing', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'isstochasticforcing', format = 'Boolean')
 
         ## Conditional writing
         ## NOTE: Taken from $ISSM_DIR/src/classes/stochasticforcing.py
@@ -380,13 +380,13 @@ class stochasticforcing(class_registry.manage_state):
             dimensions = dimensions.reshape(1, len(dimensions))
 
             ## Write fields
-            execute.WriteData(fid, prefix, name = 'md.stochasticforcing.num_fields', data = num_fields, format = 'Integer')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'fields', format = 'StringArray')
-            execute.WriteData(fid, prefix, name = 'md.stochasticforcing.dimensions', data = dimensions, format = 'IntMat')
-            execute.WriteData(fid, prefix, name = 'md.stochasticforcing.default_id', data = self.default_id - 1, format = 'IntMat', mattype = 2) # 0-indexed
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'defaultdimension', format = 'Integer')
-            execute.WriteData(fid, prefix, name = 'md.stochasticforcing.num_timescovariance', data = numtcovmat, format = 'Integer')
-            execute.WriteData(fid, prefix, name = 'md.stochasticforcing.covariance', data = tempcovariance2d, format = 'DoubleMat')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'timecovariance', format = 'DoubleMat', scale = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'stochastictimestep', format = 'Double', scale = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'randomflag', format = 'Boolean')
+            execute._write_model_field(fid, prefix, name = 'md.stochasticforcing.num_fields', data = num_fields, format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'fields', format = 'StringArray')
+            execute._write_model_field(fid, prefix, name = 'md.stochasticforcing.dimensions', data = dimensions, format = 'IntMat')
+            execute._write_model_field(fid, prefix, name = 'md.stochasticforcing.default_id', data = self.default_id - 1, format = 'IntMat', mattype = 2) # 0-indexed
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'defaultdimension', format = 'Integer')
+            execute._write_model_field(fid, prefix, name = 'md.stochasticforcing.num_timescovariance', data = numtcovmat, format = 'Integer')
+            execute._write_model_field(fid, prefix, name = 'md.stochasticforcing.covariance', data = tempcovariance2d, format = 'DoubleMat')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'timecovariance', format = 'DoubleMat', scale = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'stochastictimestep', format = 'Double', scale = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'randomflag', format = 'Boolean')

@@ -178,13 +178,13 @@ class default(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 1, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 1, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'mass_balance', format = 'DoubleMat', scale = 1. / md.constants.yts, mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'mass_balance', format = 'DoubleMat', scale = 1. / md.constants.yts, mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.arma
@@ -575,27 +575,27 @@ class arma(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 13, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 13, format = 'Integer')
 
         ## Write Integer fields
         fieldnames = ['num_basins', 'num_breaks', 'num_params', 'ar_order', 'ma_order', 'steps_per_step', 'averaging']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.smb.num_bins', data = nbins, format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.num_bins', data = nbins, format = 'Integer')
 
         ## Write DoubleMat fields
-        execute.WriteData(fid, prefix, name = 'md.smb.polynomialparams', data = polyParams_scaled_2d,  format = 'DoubleMat')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'arlag_coefs', format = 'DoubleMat', yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'malag_coefs', format = 'DoubleMat', yts = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.smb.datebreaks', data = dbreaks, format = 'DoubleMat', scale = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.smb.lapserates', data = temp_lapse_rates_2d, format = 'DoubleMat', scale = 1. / md.constants.yts, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.smb.elevationbins', data = temp_elevation_bins_2d, format = 'DoubleMat')
-        execute.WriteData(fid, prefix, name = 'md.smb.refelevation', data = temp_ref_elevation, format = 'DoubleMat')
+        execute._write_model_field(fid, prefix, name = 'md.smb.polynomialparams', data = polyParams_scaled_2d,  format = 'DoubleMat')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'arlag_coefs', format = 'DoubleMat', yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'malag_coefs', format = 'DoubleMat', yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.smb.datebreaks', data = dbreaks, format = 'DoubleMat', scale = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.smb.lapserates', data = temp_lapse_rates_2d, format = 'DoubleMat', scale = 1. / md.constants.yts, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.smb.elevationbins', data = temp_elevation_bins_2d, format = 'DoubleMat')
+        execute._write_model_field(fid, prefix, name = 'md.smb.refelevation', data = temp_ref_elevation, format = 'DoubleMat')
 
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'arma_timestep', format = 'Double', scale = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.smb.basin_id', data = self.basin_id - 1, format = 'IntMat', mattype = 2)  # 0-indexed
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'arma_timestep', format = 'Double', scale = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.smb.basin_id', data = self.basin_id - 1, format = 'IntMat', mattype = 2)  # 0-indexed
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.components
@@ -798,15 +798,15 @@ class components(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 2, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 2, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'accumulation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'runoff', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'evaporation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'accumulation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'runoff', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'evaporation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 
 ## ------------------------------------------------------
@@ -1102,42 +1102,42 @@ class d18opdd(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 5, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 5, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'ismungsm', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'isd18opd', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'issetpddfac', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'desfac', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 's0p', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 's0t', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rlapslgm', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'Tdiff', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'sealev', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'ismungsm', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'isd18opd', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'issetpddfac', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'desfac', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 's0p', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 's0t', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rlapslgm', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'Tdiff', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'sealev', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
         ## Write conditional fields
         if self.isd18opd:
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'temperatures_presentday', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitations_presentday', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'istemperaturescaled', format = 'Boolean')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'isprecipscaled', format = 'Boolean')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'delta18o', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'dpermil', format = 'Double')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'f', format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'temperatures_presentday', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'precipitations_presentday', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'istemperaturescaled', format = 'Boolean')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'isprecipscaled', format = 'Boolean')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'delta18o', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'dpermil', format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'f', format = 'Double')
 
             if self.istemperaturescaled == 0:
-                execute.WriteData(fid, prefix, obj = self, fieldname = 'temperatures_reconstructed', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+                execute._write_model_field(fid, prefix, obj = self, fieldname = 'temperatures_reconstructed', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
             if self.isprecipscaled == 0:
-                execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitations_reconstructed', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+                execute._write_model_field(fid, prefix, obj = self, fieldname = 'precipitations_reconstructed', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
         if self.issetpddfac:
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'pddfac_snow', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'pddfac_ice', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'pddfac_snow', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'pddfac_ice', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
 ## ------------------------------------------------------
 ## smb.gemb
@@ -1707,14 +1707,14 @@ class gemb(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 8, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 8, format = 'Integer')
 
         ## Write Boolean fields
         fieldnames = ['isgraingrowth', 'isalbedo', 'isshortwave', 'isthermal', 'isaccumulation',
                       'ismelt', 'isdensification', 'isturbulentflux', 'isconstrainsurfaceT',
                       'isdeltaLWup', 'ismappedforcing', 'isprecipforcingremapped']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Boolean')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Boolean')
 
         ## Write conditional compressed forcing fields
         if self.iscompressedforcing:
@@ -1724,46 +1724,46 @@ class gemb(class_registry.manage_state):
 
         fieldnames = ['Ta', 'V', 'dswrf', 'dswdiffrf', 'dlwrf', 'P', 'eAir', 'pAir']
         for field in fieldnames:
-            execute.WriteData(fid,prefix, obj = self, fieldname = field, format = writetype, mattype = 2, timeserieslength = np.shape(self.Ta)[0], yts = md.constants.yts)
+            execute._write_model_field(fid,prefix, obj = self, fieldname = field, format = writetype, mattype = 2, timeserieslength = np.shape(self.Ta)[0], yts = md.constants.yts)
 
         ## Write DoubleMat fields
         fieldnames = ['Tmean', 'C', 'Vmean', 'Tz', 'Vz', 'zTop', 'dzTop', 'dzMin', 'zY', 'zMax', 'zMin']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 2)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 2)
 
         ## Write Integer fields
         fieldnames = ['aIdx', 'eIdx', 'tcIdx', 'swIdx', 'denIdx', 'dsnowIdx']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Integer')
 
         ## Write Double fields
         fieldnames = ['InitDensityScaling', 'ThermoDeltaTScaling', 'outputFreq', 'aSnow', 'aIce',
                       'cldFrac', 't0wet', 't0dry', 'K', 'adThresh', 'teThresh']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double')
 
         ## Write DoubleMat fields
             ## mattype = 2
         fieldnames = ['aValue', 'teValue', 'dulwrfValue', 'szaValue', 'cotValue', 'ccsnowValue', 'cciceValue']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 2, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 2, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
 
             ## mattype = 3
         fieldnames = ['Dzini', 'Dini', 'Reini', 'Gdnini', 'Gspini', 'Wini', 'Aini', 'Adiffini', 'Tini']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 3)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 3)
 
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'Sizeini', format = 'IntMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'ECini', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'Sizeini', format = 'IntMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'ECini', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
 
         if self.ismappedforcing:
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'mappedforcingpoint', format ='IntMat', mattype = 2)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'mappedforcingelevation', format ='DoubleMat', mattype = 3)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'lapseTaValue', format ='DoubleMat', mattype = 3)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'lapsedlwrfValue', format ='DoubleMat', mattype = 3)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'mappedforcingpoint', format ='IntMat', mattype = 2)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'mappedforcingelevation', format ='DoubleMat', mattype = 3)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'lapseTaValue', format ='DoubleMat', mattype = 3)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'lapsedlwrfValue', format ='DoubleMat', mattype = 3)
 
         ## Calculate dt from forcings
         ## NOTE: Taken from $ISSM_DIR/src/m/classes/SMBgemb.py
@@ -1791,7 +1791,7 @@ class gemb(class_registry.manage_state):
         dtime = np.diff(time, n=1, axis=0)
         dt = min(dtime)
 
-        execute.WriteData(fid, prefix, name = 'md.smb.dt', data = dt, format = 'Double', scale = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.smb.dt', data = dt, format = 'Double', scale = md.constants.yts)
         
         # Check if smb_dt goes evenly into transient core time step
         if (md.timestepping.time_step % dt >= 1e-10):
@@ -1800,7 +1800,7 @@ class gemb(class_registry.manage_state):
         if md.timestepping.__class__.__name__ == 'timesteppingadaptive':
             raise IOError('GEMB cannot be run with adaptive timestepping.  Check class type of md.timestepping')
 
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.gradients
@@ -1997,15 +1997,15 @@ class gradients(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 6, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 6, format = 'Integer')
 
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'href', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'smbref', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'b_pos', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'b_neg', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'href', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'smbref', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'b_pos', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'b_neg', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.gradientscomponents
@@ -2214,20 +2214,20 @@ class gradientscomponents(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 11, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 11, format = 'Integer')
 
         ## Write DoubleMat fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'accuref', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts, scale = 1. / md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'accugrad', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts, scale = 1. / md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'runoffref', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts, scale = 1. / md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'runoffgrad', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts, scale = 1. / md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'accuref', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts, scale = 1. / md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'accugrad', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts, scale = 1. / md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'runoffref', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts, scale = 1. / md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'runoffgrad', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts, scale = 1. / md.constants.yts)
         
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'accualti', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'runoffalti', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'accualti', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'runoffalti', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.gradientsela
@@ -2427,19 +2427,19 @@ class gradientsela(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 9, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 9, format = 'Integer')
 
         ## Write DoubleMat fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'ela', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'b_pos', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'b_neg', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'b_max', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'b_min', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'ela', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'b_pos', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'b_neg', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'b_max', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'b_min', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.henning
@@ -2614,13 +2614,13 @@ class henning(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 7, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 7, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'smbref', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'smbref', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.meltcomponents
@@ -2839,16 +2839,16 @@ class meltcomponents(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 3, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 3, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'accumulation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'evaporation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'melt', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'refreeze', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'accumulation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'evaporation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'melt', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'refreeze', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.pdd
@@ -3168,46 +3168,46 @@ class pdd(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 4, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 4, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'isdelta18o', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'ismungsm', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'issetpddfac', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'desfac', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 's0p', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 's0t', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rlapslgm', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'isdelta18o', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'ismungsm', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'issetpddfac', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'desfac', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 's0p', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 's0t', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rlapslgm', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
         ## Write conditional fields
         if (self.isdelta18o == 0 and self.ismungsm == 0):
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'monthlytemperatures', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'monthlytemperatures', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'precipitation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         elif self.isdelta18o:
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'temperatures_presentday', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'temperatures_lgm', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitations_presentday', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitations_lgm', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'delta18o_surface', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'delta18o', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'Tdiff', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'sealev', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'temperatures_presentday', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'temperatures_lgm', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'precipitations_presentday', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'precipitations_lgm', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'delta18o_surface', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'delta18o', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'Tdiff', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'sealev', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
         elif self.ismungsm:
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'temperatures_presentday', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'temperatures_lgm', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitations_presentday', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitations_lgm', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'Pfac', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'Tdiff', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'sealev', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'temperatures_presentday', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'temperatures_lgm', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'precipitations_presentday', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'precipitations_lgm', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'Pfac', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'Tdiff', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'sealev', format = 'DoubleMat', mattype = 1, timeserieslength = 2, yts = md.constants.yts)
 
         if self.issetpddfac:
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'pddfac_snow', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'pddfac_ice', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'pddfac_snow', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'pddfac_ice', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
 ## ------------------------------------------------------
 ## smb.pddSicopolis
@@ -3467,25 +3467,25 @@ class pddSicopolis(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 10, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 10, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'isfirnwarming', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'desfac', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 's0p', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 's0t', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'pdd_fac_ice', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'pdd_fac_snow', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'monthlytemperatures', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'temperature_anomaly', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'precipitation_anomaly', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'smb_corr', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'isfirnwarming', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'desfac', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 's0p', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 's0t', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'pdd_fac_ice', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'pdd_fac_snow', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'monthlytemperatures', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'precipitation', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'temperature_anomaly', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'precipitation_anomaly', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'smb_corr', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'steps_per_step', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'averaging', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
 ## smb.semic
@@ -3772,39 +3772,39 @@ class semic(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.smb.model', data = 12, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.smb.model', data = 12, format = 'Integer')
 
         ## Write DoubleMat fields
         fieldnames = ['dailysnowfall', 'dailyrainfall', 'dailydsradiation', 'dailydlradiation',
                       'dailywindspeed', 'dailypressure', 'dailyairdensity', 'dailyairhumidity', 'dailytemperature']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
         ## Write Integer fields
         fieldnames = ['isdesertification', 'isLWDcorrect', 'steps_per_step', 'averaging']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Integer')
 
         ## Write conditional fields
         if self.ismethod:
             ### Write DoubleMat fields
             fieldnames = ['Tamp', 'mask', 'hice', 'hsnow', 'qmr', 'albedo', 'albedo_snow']
             for field in fieldnames:
-                execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
+                execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
 
             ### Write Double fields
             fieldnames = ['hcrit', 'rcrit', 'alb_smax', 'alb_smin', 'albi', 'albl', 'tmin', 'tmax', 'mcrit', 'wcrit', 'tau_a', 'tau_f', 'tmid', 'afac']
             for field in fieldnames:
-                execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+                execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double')
             
             ### Write Integer fields
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'albedo_scheme', format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'albedo_scheme', format = 'Integer')
 
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'ismethod', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'desfac', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'desfacElevation', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 's0gcm', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'rdl', format = 'Double')
-        execute.WriteData(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'ismethod', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'desfac', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'desfacElevation', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 's0gcm', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rlaps', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'rdl', format = 'Double')
+        execute._write_model_field(fid, prefix, name = 'md.smb.requested_outputs', data = self.process_outputs(md), format = 'StringArray')

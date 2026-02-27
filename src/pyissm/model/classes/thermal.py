@@ -222,20 +222,20 @@ class thermal(class_registry.manage_state):
         ## Write Integer fields
         fieldnames = ['penalty_threshold', 'stabilization', 'maxiter', 'penalty_lock']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Integer')
         
         ## Write Boolean fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'isenthalpy', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'isdrainicecolumn', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'isdynamicbasalspc', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'isenthalpy', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'isdrainicecolumn', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'isdynamicbasalspc', format = 'Boolean')
 
         ## Write Double fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'reltol', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'penalty_factor', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'watercolumn_upperlimit', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'reltol', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'penalty_factor', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'watercolumn_upperlimit', format = 'Double')
 
         
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'spctemperature', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'fe', format = 'String')
-        execute.WriteData(fid, prefix, name = 'md.thermal.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'spctemperature', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'fe', format = 'String')
+        execute._write_model_field(fid, prefix, name = 'md.thermal.requested_outputs', data = self.process_outputs(md), format = 'StringArray')

@@ -206,15 +206,15 @@ class debris(class_registry.manage_state):
         ## Write Integer fields
         fieldnames = ['stabilization', 'removalmodel', 'displacementmodel']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Integer')
         
         ## Write Double fields
         fieldnames = ['max_displacementvelocity', 'removal_slope_threshold', 'removal_stress_threshold', 'packingfraction', 'min_thickness']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double')
     
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'spcthickness', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'vertex_pairing', format = 'DoubleMat', mattype = 3)
-        execute.WriteData(fid, prefix, name = 'md.debris.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'spcthickness', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'vertex_pairing', format = 'DoubleMat', mattype = 3)
+        execute._write_model_field(fid, prefix, name = 'md.debris.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 

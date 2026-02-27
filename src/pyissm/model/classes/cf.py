@@ -206,15 +206,15 @@ class levelsetmisfit(class_registry.manage_state):
         nv = md.mesh.numberofvertices
         yts = md.constants.yts
 
-        execute.WriteData(fid, prefix, data=self.name, name="md.cflevelsetmisfit.name", format="String")
-        execute.WriteData(
+        execute._write_model_field(fid, prefix, data=self.name, name="md.cflevelsetmisfit.name", format="String")
+        execute._write_model_field(
             fid,
             prefix,
             data=self.definitionstring,
             name="md.cflevelsetmisfit.definitionstring",
             format="String",
         )
-        execute.WriteData(
+        execute._write_model_field(
             fid,
             prefix,
             data=self.model_string,
@@ -222,7 +222,7 @@ class levelsetmisfit(class_registry.manage_state):
             format="String",
         )
 
-        execute.WriteData(
+        execute._write_model_field(
             fid,
             prefix,
             data=self.observation,
@@ -232,7 +232,7 @@ class levelsetmisfit(class_registry.manage_state):
             timeserieslength=nv + 1,
             yts=yts,
         )
-        execute.WriteData(
+        execute._write_model_field(
             fid,
             prefix,
             data=self.observation_string,
@@ -240,7 +240,7 @@ class levelsetmisfit(class_registry.manage_state):
             format="String",
         )
 
-        execute.WriteData(
+        execute._write_model_field(
             fid,
             prefix,
             data=self.weights,
@@ -250,7 +250,7 @@ class levelsetmisfit(class_registry.manage_state):
             timeserieslength=nv + 1,
             yts=yts,
         )
-        execute.WriteData(
+        execute._write_model_field(
             fid,
             prefix,
             data=self.weights_string,
@@ -258,7 +258,7 @@ class levelsetmisfit(class_registry.manage_state):
             format="String",
         )
 
-        execute.WriteData(
+        execute._write_model_field(
             fid,
             prefix,
             data=float(np.round(self.datatime * yts)),
@@ -452,12 +452,12 @@ class surfacesquare(class_registry.manage_state):
         nv = md.mesh.numberofvertices
         yts = md.constants.yts
 
-        execute.WriteData(fid, prefix, data=self.name, name="md.cfsurfacesquare.name", format="String")
-        execute.WriteData(fid, prefix, data=self.definitionstring, name="md.cfsurfacesquare.definitionstring", format="String")
-        execute.WriteData(fid, prefix, data=self.surfaceid, name="md.cfsurfacesquare.surfaceid", format="Integer")
-        execute.WriteData(fid, prefix, data=self.model_string, name="md.cfsurfacesquare.model_string", format="String")
+        execute._write_model_field(fid, prefix, data=self.name, name="md.cfsurfacesquare.name", format="String")
+        execute._write_model_field(fid, prefix, data=self.definitionstring, name="md.cfsurfacesquare.definitionstring", format="String")
+        execute._write_model_field(fid, prefix, data=self.surfaceid, name="md.cfsurfacesquare.surfaceid", format="Integer")
+        execute._write_model_field(fid, prefix, data=self.model_string, name="md.cfsurfacesquare.model_string", format="String")
 
-        execute.WriteData(
+        execute._write_model_field(
             fid,
             prefix,
             data=self.observation,
@@ -467,9 +467,9 @@ class surfacesquare(class_registry.manage_state):
             timeserieslength=nv + 1,
             yts=yts,
         )
-        execute.WriteData(fid, prefix, data=self.observation_string, name="md.cfsurfacesquare.observation_string", format="String")
+        execute._write_model_field(fid, prefix, data=self.observation_string, name="md.cfsurfacesquare.observation_string", format="String")
 
-        execute.WriteData(
+        execute._write_model_field(
             fid,
             prefix,
             data=self.weights,
@@ -479,10 +479,10 @@ class surfacesquare(class_registry.manage_state):
             timeserieslength=nv + 1,
             yts=yts,
         )
-        execute.WriteData(fid, prefix, data=self.weights_string, name="md.cfsurfacesquare.weights_string", format="String")
+        execute._write_model_field(fid, prefix, data=self.weights_string, name="md.cfsurfacesquare.weights_string", format="String")
 
         # MATLAB: round(datatime * yts) stored as Double
-        execute.WriteData(
+        execute._write_model_field(
             fid,
             prefix,
             data=float(np.round(self.datatime * yts)),
@@ -675,15 +675,15 @@ class surfacesquaretransient(class_registry.manage_state):
         nv = md.mesh.numberofvertices
         yts = md.constants.yts
 
-        execute.WriteData(fid, prefix, data=self.name, name="md.cfsurfacesquaretransient.name", format="String")
-        execute.WriteData(
+        execute._write_model_field(fid, prefix, data=self.name, name="md.cfsurfacesquaretransient.name", format="String")
+        execute._write_model_field(
             fid,
             prefix,
             data=self.definitionstring,
             name="md.cfsurfacesquaretransient.definitionstring",
             format="String",
         )
-        execute.WriteData(
+        execute._write_model_field(
             fid,
             prefix,
             data=self.model_string,
@@ -691,7 +691,7 @@ class surfacesquaretransient(class_registry.manage_state):
             format="String",
         )
 
-        execute.WriteData(
+        execute._write_model_field(
             fid,
             prefix,
             data=self.observations,
@@ -701,7 +701,7 @@ class surfacesquaretransient(class_registry.manage_state):
             timeserieslength=nv + 1,
             yts=yts,
         )
-        execute.WriteData(
+        execute._write_model_field(
             fid,
             prefix,
             data=self.weights,
@@ -919,8 +919,8 @@ class surfacelogvel(class_registry.manage_state):
         nv = md.mesh.numberofvertices
         yts = md.constants.yts
 
-        execute.WriteData(fid, prefix, data=self.name, name="md.cfsurfacelogvel.name", format="String")
-        execute.WriteData(
+        execute._write_model_field(fid, prefix, data=self.name, name="md.cfsurfacelogvel.name", format="String")
+        execute._write_model_field(
             fid,
             prefix,
             data=self.definitionstring,
@@ -928,7 +928,7 @@ class surfacelogvel(class_registry.manage_state):
             format="String",
         )
 
-        execute.WriteData(
+        execute._write_model_field(
             fid,
             prefix,
             data=self.vxobs,
@@ -939,7 +939,7 @@ class surfacelogvel(class_registry.manage_state):
             yts=yts,
             scale=1.0 / yts,
         )
-        execute.WriteData(
+        execute._write_model_field(
             fid,
             prefix,
             data=self.vxobs_string,
@@ -947,7 +947,7 @@ class surfacelogvel(class_registry.manage_state):
             format="String",
         )
 
-        execute.WriteData(
+        execute._write_model_field(
             fid,
             prefix,
             data=self.vyobs,
@@ -958,7 +958,7 @@ class surfacelogvel(class_registry.manage_state):
             yts=yts,
             scale=1.0 / yts,
         )
-        execute.WriteData(
+        execute._write_model_field(
             fid,
             prefix,
             data=self.vyobs_string,
@@ -966,7 +966,7 @@ class surfacelogvel(class_registry.manage_state):
             format="String",
         )
 
-        execute.WriteData(
+        execute._write_model_field(
             fid,
             prefix,
             data=self.weights,
@@ -976,7 +976,7 @@ class surfacelogvel(class_registry.manage_state):
             timeserieslength=nv + 1,
             yts=yts,
         )
-        execute.WriteData(
+        execute._write_model_field(
             fid,
             prefix,
             data=self.weights_string,
@@ -984,7 +984,7 @@ class surfacelogvel(class_registry.manage_state):
             format="String",
         )
 
-        execute.WriteData(
+        execute._write_model_field(
             fid,
             prefix,
             data=float(np.round(self.datatime * yts)),

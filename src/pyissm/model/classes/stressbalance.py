@@ -297,34 +297,34 @@ class stressbalance(class_registry.manage_state):
         ## Write DoubleMat fields (all consistent formats)
         fieldnames = ['spcvx', 'spcvy', 'spcvz']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
         ## Write Double fields
         fieldnames = ['restol', 'reltol', 'FSreconditioning', 'penalty_factor']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double')
 
         ## Write Integer fields
         fieldnames = ['isnewton', 'maxiter', 'shelf_dampening', 'rift_penalty_lock', 'rift_penalty_threshold']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Integer')
 
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'abstol', format = 'Double', scale = 1. / md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'ishydrologylayer', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'referential', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'vertex_pairing', format = 'DoubleMat', mattype = 3)
-        execute.WriteData(fid, prefix, name = 'md.stressbalance.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'abstol', format = 'Double', scale = 1. / md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'ishydrologylayer', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'referential', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'vertex_pairing', format = 'DoubleMat', mattype = 3)
+        execute._write_model_field(fid, prefix, name = 'md.stressbalance.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
 
         ## Write conditional fields
         ## Loading force
         if isinstance(self.loadingforce, (list, tuple, np.ndarray)) and np.size(self.loadingforce, 1) == 3:
-            execute.WriteData(fid, prefix, name = 'md.stressbalance.loadingforcex', data = self.loadingforce[:, 0], format = 'DoubleMat', mattype = 1)
-            execute.WriteData(fid, prefix, name = 'md.stressbalance.loadingforcey', data = self.loadingforce[:, 1], format = 'DoubleMat', mattype = 1)
-            execute.WriteData(fid, prefix, name = 'md.stressbalance.loadingforcez', data = self.loadingforce[:, 2], format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, name = 'md.stressbalance.loadingforcex', data = self.loadingforce[:, 0], format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, name = 'md.stressbalance.loadingforcey', data = self.loadingforce[:, 1], format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, name = 'md.stressbalance.loadingforcez', data = self.loadingforce[:, 2], format = 'DoubleMat', mattype = 1)
         
         ## MOLHO
         if md.flowequation.isMOLHO:
             fieldnames = ['spcvx_base', 'spcvy_base', 'spcvx_shear', 'spcvy_shear']
             for field in fieldnames:
-                execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+                execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)

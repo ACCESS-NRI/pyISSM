@@ -181,10 +181,10 @@ class sampling(class_registry.manage_state):
         ## Write DoubleMat fields (all consistent formats)
         fieldnames = ['kappa', 'tau', 'beta', 'phi']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
 
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'alpha', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'robin', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'seed', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.sampling.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'alpha', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'robin', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'seed', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.sampling.requested_outputs', data = self.process_outputs(md), format = 'StringArray')

@@ -99,4 +99,4 @@ class debug(class_registry.manage_state):
         """
 
         ## Write single field to file
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'profiling', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'profiling', format = 'Boolean')

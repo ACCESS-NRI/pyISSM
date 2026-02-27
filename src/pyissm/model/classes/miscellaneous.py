@@ -91,4 +91,4 @@ class miscellaneous(class_registry.manage_state):
         """
 
         ## Write field
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'name', format = 'String')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'name', format = 'String')

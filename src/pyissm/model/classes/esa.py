@@ -173,10 +173,10 @@ class esa(class_registry.manage_state):
         """
                 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'deltathickness', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'love_h', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'love_l', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'hemisphere', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'degacc', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'transitions', format = 'MatArray')
-        execute.WriteData(fid, prefix, name = 'md.esa.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'deltathickness', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'love_h', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'love_l', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'hemisphere', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'degacc', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'transitions', format = 'MatArray')
+        execute._write_model_field(fid, prefix, name = 'md.esa.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
