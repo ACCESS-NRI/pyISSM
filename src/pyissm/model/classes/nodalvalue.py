@@ -61,10 +61,10 @@ class nodalvalue(class_registry.manage_state):
     def __repr__(self):
         s = '   nodalvalue parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'name', 'identifier for this nodalvalue response'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'definitionstring', 'string that identifies this output definition uniquely, from \'Outputdefinition[1-10]\''))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'model_string', 'string for field that is being retrieved'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'node', 'vertex index at which we retrieve the value'))
+        s += '{}\n'.format(class_utils._field_display(self, 'name', 'identifier for this nodalvalue response'))
+        s += '{}\n'.format(class_utils._field_display(self, 'definitionstring', 'string that identifies this output definition uniquely, from \'Outputdefinition[1-10]\''))
+        s += '{}\n'.format(class_utils._field_display(self, 'model_string', 'string for field that is being retrieved'))
+        s += '{}\n'.format(class_utils._field_display(self, 'node', 'vertex index at which we retrieve the value'))
         return s
 
     # Define class string

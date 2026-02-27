@@ -12,7 +12,7 @@ from pyissm.model.classes import basalforcings, calving, friction, smb, frontalf
 Functions for formatting and displaying model fields in ISSM classes. Taken from $ISSM_DIR/src/m/miscellaneous/fielddisplay.py.
 """
 
-def fielddisplay(md, name, comment):
+def _field_display(md, name, comment):
     """
     Display a model field with formatted output for ISSM class representations.
 
@@ -38,10 +38,10 @@ def fielddisplay(md, name, comment):
     --------
     .. code-block:: python
 
-        >>> fielddisplay(md, 'thickness', 'ice thickness [m]')
+        >>> _field_display(md, 'thickness', 'ice thickness [m]')
         '         thickness        : (100, 200)    -- ice thickness [m]'
         
-        >>> fielddisplay(md, 'verbose', 'verbose output flag')
+        >>> _field_display(md, 'verbose', 'verbose output flag')
         '         verbose          : True          -- verbose output flag'
     """
 
@@ -49,10 +49,10 @@ def fielddisplay(md, name, comment):
     field = getattr(md, name)
 
     #disp corresponding line as a function of field type (offset set as 9 spaces)
-    return parsedisplay("         ", name, field, comment)
+    return _parse_display("         ", name, field, comment)
 
 
-def parsedisplay(offset, name, field, comment):
+def _parse_display(offset, name, field, comment):
     """
     Parse and format a field for display based on its data type.
 
@@ -93,50 +93,50 @@ def parsedisplay(offset, name, field, comment):
     --------
     .. code-block:: python
 
-            >>> parsedisplay('   ', 'temperature', 273.15, 'temperature [K]')
+            >>> _parse_display('   ', 'temperature', 273.15, 'temperature [K]')
         '   temperature        : 273.15        -- temperature [K]'
     """
     #string
     if isinstance(field, str):
         if len(field) > 30:
-            string = displayunit(offset, name, "not displayed", comment)
+            string = _display_unit(offset, name, "not displayed", comment)
         else:
-            string = displayunit(offset, name, "'%s'" % field, comment)
+            string = _display_unit(offset, name, "'%s'" % field, comment)
 
     #numeric
     elif isinstance(field, (int, float)):
-        string = displayunit(offset, name, str(field), comment)
+        string = _display_unit(offset, name, str(field), comment)
 
     #matrix
     elif isinstance(field, np.ndarray):
-        string = displayunit(offset, name, str(field.shape), comment)
+        string = _display_unit(offset, name, str(field.shape), comment)
 
     #logical
     elif isinstance(field, bool):
         if field:
-            string = displayunit(offset, name, "True", comment)
+            string = _display_unit(offset, name, "True", comment)
         else:
-            string = displayunit(offset, name, "False", comment)
+            string = _display_unit(offset, name, "False", comment)
 
     #dictionary
     elif isinstance(field, dict):
-        string = dict_display(offset, name, field, comment)
+        string = _dict_display(offset, name, field, comment)
 
     #list or tuple
     elif isinstance(field, (list, tuple)):
-        string = list_display(offset, name, field, comment)
+        string = _list_display(offset, name, field, comment)
 
     #None
     elif field is None:
-        string = displayunit(offset, name, "None", comment)
+        string = _display_unit(offset, name, "None", comment)
 
     else:
-        string = displayunit(offset, name, "not displayed", comment)
+        string = _display_unit(offset, name, "not displayed", comment)
 
     return string
 
 
-def dict_display(offset, name, field, comment):
+def _dict_display(offset, name, field, comment):
     """
     Format a dictionary field for hierarchical display.
 
@@ -169,28 +169,28 @@ def dict_display(offset, name, field, comment):
     --------
     .. code-block:: python
 
-        >>> dict_display('   ', 'params', {'a': 1, 'b': 2}, 'parameters')
+        >>> _dict_display('   ', 'params', {'a': 1, 'b': 2}, 'parameters')
         '   params             : {dictionary}   -- parameters
             a               : 1
             b               : 2'
     """
     if field:
-        string = displayunit(offset, name, '{dictionary}', comment) + '\n'
+        string = _display_unit(offset, name, '{dictionary}', comment) + '\n'
         offset += '   '
 
         for structure_field, sfield in list(field.items()):
-            string += parsedisplay(offset, str(structure_field), sfield, '') + '\n'
+            string += _parse_display(offset, str(structure_field), sfield, '') + '\n'
 
         if string and string[-1] == '\n':
             string = string[:-1]
 
     else:
-        string = displayunit(offset, name, 'N/A', comment)
+        string = _display_unit(offset, name, 'N/A', comment)
 
     return string
 
 
-def list_display(offset, name, field, comment):
+def _list_display(offset, name, field, comment):
     """
     Format a list or tuple field for compact display.
 
@@ -225,10 +225,10 @@ def list_display(offset, name, field, comment):
     --------
     .. code-block:: python
 
-        >>> list_display('   ', 'coords', [1.0, 2.0, 3.0], 'coordinates')
+        >>> _list_display('   ', 'coords', [1.0, 2.0, 3.0], 'coordinates')
         '   coords             : [1.0, 2.0, 3.0] -- coordinates'
         
-        >>> list_display('   ', 'data', list(range(100)), 'large dataset')
+        >>> _list_display('   ', 'data', list(range(100)), 'large dataset')
         '   data               : [100x1]         -- large dataset'
     """
 
@@ -257,11 +257,11 @@ def list_display(offset, name, field, comment):
     else:
         string = string[:-1] + send
 
-    #call displayunit
-    return displayunit(offset, name, string, comment)
+    #call _display_unit
+    return _display_unit(offset, name, string, comment)
 
 
-def displayunit(offset, name, characterization, comment):
+def _display_unit(offset, name, characterization, comment):
     """
     Format a single field line with consistent spacing and alignment.
 
@@ -301,10 +301,10 @@ def displayunit(offset, name, characterization, comment):
     --------
     .. code-block:: python
 
-        >>> displayunit('   ', 'temperature', '273.15', 'temperature [K]')
+        >>> _display_unit('   ', 'temperature', '273.15', 'temperature [K]')
         '   temperature        : 273.15         -- temperature [K]'
         
-        >>> displayunit('   ', 'very_long_field_name', '42', 'description')
+        >>> _display_unit('   ', 'very_long_field_name', '42', 'description')
         '   very_long_field_n...: 42             -- description'
     """
 
@@ -330,11 +330,11 @@ def displayunit(offset, name, characterization, comment):
             for commenti in comment:
                 string += "\n%s% - 23s  % - 15s    %s" % (offset, '', '', commenti)
         else:
-            raise RuntimeError("fielddisplay error message: format for comment not supported yet")
+            raise RuntimeError("_display_unit error message: format for comment not supported yet")
 
     return string
 
-def getlongestfieldname(self):
+def _get_longest_fieldname(self):
     """
     Find the longest field name in an object's attributes.
 
@@ -367,7 +367,7 @@ def getlongestfieldname(self):
         ...         self.very_long_field_name = 2
         ...         self.b = 3
         >>> obj = Example()
-        >>> getlongestfieldname(obj)
+        >>> _get_longest_fieldname(obj)
         20
     
     """

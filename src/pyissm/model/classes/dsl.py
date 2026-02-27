@@ -52,9 +52,9 @@ class default(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   dsl parameters:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'global_average_thermosteric_sea_level', 'Corresponds to zostoga field in CMIP5 archives. Specified as a temporally variable quantity (in m).'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sea_surface_height_above_geoid', 'Corresponds to zos field in CMIP5 archives. Spatial average is 0. Specified as a spatio-temporally variable quantity (in m).'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sea_water_pressure_at_sea_floor', 'Corresponds to bpo field in CMIP5 archives. Specified as a spatio-temporally variable quantity (in m equivalent, not in Pa!).'))
+        s += '{}\n'.format(class_utils._field_display(self, 'global_average_thermosteric_sea_level', 'Corresponds to zostoga field in CMIP5 archives. Specified as a temporally variable quantity (in m).'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sea_surface_height_above_geoid', 'Corresponds to zos field in CMIP5 archives. Spatial average is 0. Specified as a spatio-temporally variable quantity (in m).'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sea_water_pressure_at_sea_floor', 'Corresponds to bpo field in CMIP5 archives. Specified as a spatio-temporally variable quantity (in m equivalent, not in Pa!).'))
         return s
 
     # Define class string
@@ -212,10 +212,10 @@ class mme(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   dsl mme parameters:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'modelid', 'index into the multi-model ensemble, determines which field will be used.'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'global_average_thermosteric_sea_level', 'Corresponds to zostoga field in CMIP5 archives. Specified as a temporally variable quantity (in m) for each ensemble.'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sea_surface_height_above_geoid', 'Corresponds to zos field in CMIP5 archives. Spatial average is 0. Specified as a spatio-temporally variable quantity (in m) for each ensemble.'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sea_water_pressure_at_sea_floor', 'Corresponds to bpo field in CMIP5 archives. Specified as a spatio-temporally variable quantity (in m equivalent, not in Pa!) for each ensemble.'))
+        s += '{}\n'.format(class_utils._field_display(self, 'modelid', 'index into the multi-model ensemble, determines which field will be used.'))
+        s += '{}\n'.format(class_utils._field_display(self, 'global_average_thermosteric_sea_level', 'Corresponds to zostoga field in CMIP5 archives. Specified as a temporally variable quantity (in m) for each ensemble.'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sea_surface_height_above_geoid', 'Corresponds to zos field in CMIP5 archives. Spatial average is 0. Specified as a spatio-temporally variable quantity (in m) for each ensemble.'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sea_water_pressure_at_sea_floor', 'Corresponds to bpo field in CMIP5 archives. Specified as a spatio-temporally variable quantity (in m equivalent, not in Pa!) for each ensemble.'))
         return s
 
     # Define class string

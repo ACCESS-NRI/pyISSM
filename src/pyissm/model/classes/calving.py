@@ -48,7 +48,7 @@ class default(class_registry.manage_state):
     def __repr__(self):
         s = '   Calving parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'calvingrate', 'calving rate at given location [m/a]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'calvingrate', 'calving rate at given location [m/a]'))
         return s
 
     # Define class string
@@ -168,9 +168,9 @@ class crevassedepth(class_registry.manage_state):
     def __repr__(self):
         s = '   Calving Pi parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'crevasse_opening_stress', '0: stress only in the ice-flow direction, 1: max principal'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'crevasse_threshold', 'ratio of full thickness to calve (e.g. 0.75 is for 75% of the total ice thickness)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'water_height', 'water height in the crevasse [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'crevasse_opening_stress', '0: stress only in the ice-flow direction, 1: max principal'))
+        s += '{}\n'.format(class_utils._field_display(self, 'crevasse_threshold', 'ratio of full thickness to calve (e.g. 0.75 is for 75% of the total ice thickness)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'water_height', 'water height in the crevasse [m]'))
         return s
 
     # Define class string
@@ -290,8 +290,8 @@ class dev(class_registry.manage_state):
     def __repr__(self):
         s = '   Calving Pi parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'stress_threshold_groundedice', 'sigma_max applied to grounded ice only [Pa]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'stress_threshold_floatingice', 'sigma_max applied to floating ice only [Pa]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'stress_threshold_groundedice', 'sigma_max applied to grounded ice only [Pa]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'stress_threshold_floatingice', 'sigma_max applied to floating ice only [Pa]'))
         return s
 
     # Define class string
@@ -404,7 +404,7 @@ class levermann(class_registry.manage_state):
     def __repr__(self):
         s = '   Calving Levermann parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coeff', 'proportionality coefficient in Levermann model'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coeff', 'proportionality coefficient in Levermann model'))
         return s
 
     # Define class string
@@ -515,7 +515,7 @@ class minthickness(class_registry.manage_state):
     def __repr__(self):
         s = '   Calving Minimum thickness:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'min_thickness', 'minimum thickness below which no ice is allowed'))
+        s += '{}\n'.format(class_utils._field_display(self, 'min_thickness', 'minimum thickness below which no ice is allowed'))
         return s
 
     # Define class string
@@ -666,15 +666,15 @@ class parameterization(class_registry.manage_state):
     def __repr__(self):
         s = '   Calving test parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'min_thickness', 'minimum thickness below which no ice is allowed [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'use_param', '-1 - just use frontal ablation rate, 0 - f(x) = y_{o} + \alpha (x+x_{o}), 1 - f(x)=y_{o}-\frac{\theta}{2}\tanh(\alpha(x+x_{o})), 2 - tanh(thickness), 3 - tanh(normalized vel), 4 - tanh(truncated vel), 5 - linear(truncated vel)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'theta', 'the amplifier'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'alpha', 'the slope'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'xoffset', 'offset in x-axis'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'yoffset', 'offset in y-axis'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'vel_lowerbound', 'lowerbound of ice velocity to reduce the calving rate [m/a]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'vel_threshold', 'threshold of ice velocity to reduce the calving rate [m/a]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'vel_upperbound', 'upperbound of ice velocity to reduce the calving rate [m/a]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'min_thickness', 'minimum thickness below which no ice is allowed [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'use_param', '-1 - just use frontal ablation rate, 0 - f(x) = y_{o} + \alpha (x+x_{o}), 1 - f(x)=y_{o}-\frac{\theta}{2}\tanh(\alpha(x+x_{o})), 2 - tanh(thickness), 3 - tanh(normalized vel), 4 - tanh(truncated vel), 5 - linear(truncated vel)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'theta', 'the amplifier'))
+        s += '{}\n'.format(class_utils._field_display(self, 'alpha', 'the slope'))
+        s += '{}\n'.format(class_utils._field_display(self, 'xoffset', 'offset in x-axis'))
+        s += '{}\n'.format(class_utils._field_display(self, 'yoffset', 'offset in y-axis'))
+        s += '{}\n'.format(class_utils._field_display(self, 'vel_lowerbound', 'lowerbound of ice velocity to reduce the calving rate [m/a]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'vel_threshold', 'threshold of ice velocity to reduce the calving rate [m/a]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'vel_upperbound', 'upperbound of ice velocity to reduce the calving rate [m/a]'))
         return s
 
     # Define class string
@@ -808,9 +808,9 @@ class vonmises(class_registry.manage_state):
     def __repr__(self):
         s = '   Calving VonMises parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'stress_threshold_groundedice', 'sigma_max applied to grounded ice only [Pa]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'stress_threshold_floatingice', 'sigma_max applied to floating ice only [Pa]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'min_thickness', 'minimum thickness below which no ice is allowed [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'stress_threshold_groundedice', 'sigma_max applied to grounded ice only [Pa]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'stress_threshold_floatingice', 'sigma_max applied to floating ice only [Pa]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'min_thickness', 'minimum thickness below which no ice is allowed [m]'))
         return s
 
     # Define class string

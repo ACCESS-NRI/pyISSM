@@ -57,9 +57,9 @@ class balancethickness(class_registry.manage_state):
     def __repr__(self):
         s = '   balance thickness solution parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'spcthickness', 'thickness constraints (NaN means no constraint) [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'thickening_rate', 'ice thickening rate used in the mass conservation (dh / dt) [m / yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'stabilization', "0: None, 1: SU, 2: SSA's artificial diffusivity, 3:DG"))
+        s += '{}\n'.format(class_utils._field_display(self, 'spcthickness', 'thickness constraints (NaN means no constraint) [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'thickening_rate', 'ice thickening rate used in the mass conservation (dh / dt) [m / yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'stabilization', "0: None, 1: SU, 2: SSA's artificial diffusivity, 3:DG"))
         return s
 
     # Define class string

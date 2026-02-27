@@ -60,9 +60,9 @@ class steadystate(class_registry.manage_state):
     def __repr__(self):
         s = '   steadystate solution parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'reltol', 'relative tolerance criterion'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'maxiter', 'maximum number of iterations'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional requested outputs'))
+        s += '{}\n'.format(class_utils._field_display(self, 'reltol', 'relative tolerance criterion'))
+        s += '{}\n'.format(class_utils._field_display(self, 'maxiter', 'maximum number of iterations'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional requested outputs'))
         return s
 
     # Define class string

@@ -55,11 +55,11 @@ class groundingline(class_registry.manage_state):
     def __repr__(self):
         s = '   grounding line migration parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'migration', 'type of grounding line migration: \'SoftMigration\', \'SubelementMigration\', \'AggressiveMigration\', \'Contact\', \'None\''))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'friction_interpolation', 'type of friction interpolation on partially floating elements: ''SubelementFriction1'', ''SubelementFriction2'', ''NoFrictionOnPartiallyFloating'''))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'melt_interpolation', 'type of melt interpolation on partially floating elements: \'SubelementMelt1\', \'SubelementMelt2\', \'IntrusionMelt\', \'NoMeltOnPartiallyFloating\', \'FullMeltOnPartiallyFloating\''))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'intrusion_distance', 'distance of seawater intrusion from grounding line [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'migration', 'type of grounding line migration: \'SoftMigration\', \'SubelementMigration\', \'AggressiveMigration\', \'Contact\', \'None\''))
+        s += '{}\n'.format(class_utils._field_display(self, 'friction_interpolation', 'type of friction interpolation on partially floating elements: ''SubelementFriction1'', ''SubelementFriction2'', ''NoFrictionOnPartiallyFloating'''))
+        s += '{}\n'.format(class_utils._field_display(self, 'melt_interpolation', 'type of melt interpolation on partially floating elements: \'SubelementMelt1\', \'SubelementMelt2\', \'IntrusionMelt\', \'NoMeltOnPartiallyFloating\', \'FullMeltOnPartiallyFloating\''))
+        s += '{}\n'.format(class_utils._field_display(self, 'intrusion_distance', 'distance of seawater intrusion from grounding line [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string

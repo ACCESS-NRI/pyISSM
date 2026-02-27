@@ -62,13 +62,13 @@ class esa(class_registry.manage_state):
     def __repr__(self):
         s = '   esa parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'deltathickness', 'thickness change: ice height equivalent [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'love_h', 'load Love number for radial displacement'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'love_l', 'load Love number for horizontal displaements'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'hemisphere', 'North-south, East-west components of 2-D horiz displacement vector:-1 south, 1 north'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'degacc', 'accuracy (default .01 deg) for numerical discretization of the Green''s functions'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'transitions', 'indices into parts of the mesh that will be icecaps'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested (default: EsaUmotion)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'deltathickness', 'thickness change: ice height equivalent [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'love_h', 'load Love number for radial displacement'))
+        s += '{}\n'.format(class_utils._field_display(self, 'love_l', 'load Love number for horizontal displaements'))
+        s += '{}\n'.format(class_utils._field_display(self, 'hemisphere', 'North-south, East-west components of 2-D horiz displacement vector:-1 south, 1 north'))
+        s += '{}\n'.format(class_utils._field_display(self, 'degacc', 'accuracy (default .01 deg) for numerical discretization of the Green''s functions'))
+        s += '{}\n'.format(class_utils._field_display(self, 'transitions', 'indices into parts of the mesh that will be icecaps'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested (default: EsaUmotion)'))
         return s
 
     # Define class string

@@ -46,9 +46,9 @@ class debug(class_registry.manage_state):
     def __repr__(self):
         s = '   debug parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'valgrind', 'use valgrind to debug (0 or 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'gprof', 'use gnu - profiler to find out where the time is spent'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'profiling', 'enables profiling (memory, flops, time)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'valgrind', 'use valgrind to debug (0 or 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'gprof', 'use gnu - profiler to find out where the time is spent'))
+        s += '{}\n'.format(class_utils._field_display(self, 'profiling', 'enables profiling (memory, flops, time)'))
         return s
 
     # Define class string

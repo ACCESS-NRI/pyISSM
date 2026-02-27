@@ -82,12 +82,12 @@ class dependent(class_registry.manage_state):
     def __repr__(self):
         s = '   dependent variable:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'name', 'variable name (must match corresponding String)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'fos_reverse_index', 'index for fos_reverse driver of ADOLC'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'exp', 'file needed to compute dependent variable'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'segments', 'mass flux segments'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'index', '...'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'nods', '...'))
+        s += '{}\n'.format(class_utils._field_display(self, 'name', 'variable name (must match corresponding String)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'fos_reverse_index', 'index for fos_reverse driver of ADOLC'))
+        s += '{}\n'.format(class_utils._field_display(self, 'exp', 'file needed to compute dependent variable'))
+        s += '{}\n'.format(class_utils._field_display(self, 'segments', 'mass flux segments'))
+        s += '{}\n'.format(class_utils._field_display(self, 'index', '...'))
+        s += '{}\n'.format(class_utils._field_display(self, 'nods', '...'))
         return s
 
     # Define class string

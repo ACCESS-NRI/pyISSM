@@ -57,9 +57,9 @@ class surfaceload(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   surfaceload:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'icethicknesschange', 'thickness change: ice height equivalent [mIce/yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'waterheightchange', 'water height change: water height equivalent [mWater/yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'otherchange', 'other loads (sediments) [kg/m^2/yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'icethicknesschange', 'thickness change: ice height equivalent [mIce/yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'waterheightchange', 'water height change: water height equivalent [mWater/yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'otherchange', 'other loads (sediments) [kg/m^2/yr]'))
         return s
 
     # Define class string

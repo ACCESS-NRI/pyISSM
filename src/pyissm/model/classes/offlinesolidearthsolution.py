@@ -54,10 +54,10 @@ class offlinesolidearthsolution(class_registry.manage_state):
 
     def __repr__(self):
         s = '         units for time series is (yr)\n       external: offlinesolidearth solution\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'displacementeast', 'solid-Earth Eastwards bedrock displacement time series (m)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'displacementnorth', 'solid-Earth Northwards bedrock displacement time series (m)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'displacementup', 'solid-Earth bedrock uplift time series (m)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'geoid', 'solid-Earth geoid time series (m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'displacementeast', 'solid-Earth Eastwards bedrock displacement time series (m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'displacementnorth', 'solid-Earth Northwards bedrock displacement time series (m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'displacementup', 'solid-Earth bedrock uplift time series (m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'geoid', 'solid-Earth geoid time series (m)'))
         return s
 
     # Define class string

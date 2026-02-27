@@ -84,13 +84,13 @@ class default(class_registry.manage_state):
     def __repr__(self):
         s = '   timestepping parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'start_time', 'simulation starting time [yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'final_time', 'final time to stop the simulation [yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'time_step', 'length of time steps [yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'interp_forcing', 'interpolate in time between requested forcing values? (0 or 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'average_forcing', 'average in time if there are several forcing values between steps? (0 or 1, default is 0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'cycle_forcing', 'cycle through forcing? (0 or 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coupling_time', 'length of coupling time steps with ocean model [yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'start_time', 'simulation starting time [yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'final_time', 'final time to stop the simulation [yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'time_step', 'length of time steps [yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'interp_forcing', 'interpolate in time between requested forcing values? (0 or 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'average_forcing', 'average in time if there are several forcing values between steps? (0 or 1, default is 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'cycle_forcing', 'cycle through forcing? (0 or 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coupling_time', 'length of coupling time steps with ocean model [yr]'))
         return s
 
     # Define class string
@@ -242,16 +242,16 @@ class adaptive(class_registry.manage_state):
     def __repr__(self):
         s = '   timestepping.adaptive parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'start_time', 'simulation starting time [yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "start_time", "simulation starting time [yr]"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "final_time", "final time to stop the simulation [yr]"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "time_step_min", "minimum length of time steps [yr]"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "time_step_max", "maximum length of time steps [yr]"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "cfl_coefficient", "coefficient applied to cfl condition"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "interp_forcing", "interpolate in time between requested forcing values ? (0 or 1)"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'average_forcing', 'average in time if there are several forcing values between steps? (0 or 1, default is 0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "cycle_forcing", "cycle through forcing ? (0 or 1)"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "coupling_time", "coupling time steps with ocean model [yr]"))
+        s += '{}\n'.format(class_utils._field_display(self, 'start_time', 'simulation starting time [yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, "start_time", "simulation starting time [yr]"))
+        s += '{}\n'.format(class_utils._field_display(self, "final_time", "final time to stop the simulation [yr]"))
+        s += '{}\n'.format(class_utils._field_display(self, "time_step_min", "minimum length of time steps [yr]"))
+        s += '{}\n'.format(class_utils._field_display(self, "time_step_max", "maximum length of time steps [yr]"))
+        s += '{}\n'.format(class_utils._field_display(self, "cfl_coefficient", "coefficient applied to cfl condition"))
+        s += '{}\n'.format(class_utils._field_display(self, "interp_forcing", "interpolate in time between requested forcing values ? (0 or 1)"))
+        s += '{}\n'.format(class_utils._field_display(self, 'average_forcing', 'average in time if there are several forcing values between steps? (0 or 1, default is 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, "cycle_forcing", "cycle through forcing ? (0 or 1)"))
+        s += '{}\n'.format(class_utils._field_display(self, "coupling_time", "coupling time steps with ocean model [yr]"))
         return s
 
     # Define class string

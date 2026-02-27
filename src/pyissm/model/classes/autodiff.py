@@ -82,20 +82,20 @@ class autodiff(class_registry.manage_state):
     def __repr__(self):
         s = '      automatic differentiation parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isautodiff', "indicates if the automatic differentiation is activated"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'dependents', "list of dependent variables"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'independents', "list of independent variables"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'driver', "ADOLC driver ('fos_forward' or 'fov_forward')"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'obufsize', "Number of operations per buffer (== OBUFSIZE in usrparms.h)"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'lbufsize', "Number of locations per buffer (== LBUFSIZE in usrparms.h)"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'cbufsize', "Number of values per buffer (== CBUFSIZE in usrparms.h)"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'tbufsize', "Number of taylors per buffer (<=TBUFSIZE in usrparms.h)"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'gcTriggerRatio', "free location block sorting / consolidation triggered if the ratio between allocated and used locations exceeds gcTriggerRatio"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'gcTriggerMaxSize', "free location block sorting / consolidation triggered if the allocated locations exceed gcTriggerMaxSize)"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'tapeAlloc', 'Iteration count of a priori memory allocation of the AD tape'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'outputTapeMemory', 'Write AD tape memory statistics to file ad_mem.dat'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'outputTime', 'Write AD recording and evaluation times to file ad_time.dat'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'enablePreaccumulation', 'Enable CoDiPack preaccumulation in augmented places'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isautodiff', "indicates if the automatic differentiation is activated"))
+        s += '{}\n'.format(class_utils._field_display(self, 'dependents', "list of dependent variables"))
+        s += '{}\n'.format(class_utils._field_display(self, 'independents', "list of independent variables"))
+        s += '{}\n'.format(class_utils._field_display(self, 'driver', "ADOLC driver ('fos_forward' or 'fov_forward')"))
+        s += '{}\n'.format(class_utils._field_display(self, 'obufsize', "Number of operations per buffer (== OBUFSIZE in usrparms.h)"))
+        s += '{}\n'.format(class_utils._field_display(self, 'lbufsize', "Number of locations per buffer (== LBUFSIZE in usrparms.h)"))
+        s += '{}\n'.format(class_utils._field_display(self, 'cbufsize', "Number of values per buffer (== CBUFSIZE in usrparms.h)"))
+        s += '{}\n'.format(class_utils._field_display(self, 'tbufsize', "Number of taylors per buffer (<=TBUFSIZE in usrparms.h)"))
+        s += '{}\n'.format(class_utils._field_display(self, 'gcTriggerRatio', "free location block sorting / consolidation triggered if the ratio between allocated and used locations exceeds gcTriggerRatio"))
+        s += '{}\n'.format(class_utils._field_display(self, 'gcTriggerMaxSize', "free location block sorting / consolidation triggered if the allocated locations exceed gcTriggerMaxSize)"))
+        s += '{}\n'.format(class_utils._field_display(self, 'tapeAlloc', 'Iteration count of a priori memory allocation of the AD tape'))
+        s += '{}\n'.format(class_utils._field_display(self, 'outputTapeMemory', 'Write AD tape memory statistics to file ad_mem.dat'))
+        s += '{}\n'.format(class_utils._field_display(self, 'outputTime', 'Write AD recording and evaluation times to file ad_time.dat'))
+        s += '{}\n'.format(class_utils._field_display(self, 'enablePreaccumulation', 'Enable CoDiPack preaccumulation in augmented places'))
         return s
 
     # Define class string

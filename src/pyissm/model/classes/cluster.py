@@ -116,18 +116,18 @@ class generic(class_registry.manage_state):
     def __repr__(self):
         s = '   Cluster parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'name', 'name of the cluster'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'login', 'login name for the cluster'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'np', 'number of processors'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'port', 'port number'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'interactive', 'interactive mode'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'codepath', 'path to the code'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'executionpath', 'path to the execution directory'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'valgrind', 'path to valgrind'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'valgrindlib', 'path to valgrind library'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'valgrindsup', 'valgrind suppression files'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'verbose', 'verbose mode'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'shell', 'shell to use'))
+        s += '{}\n'.format(class_utils._field_display(self, 'name', 'name of the cluster'))
+        s += '{}\n'.format(class_utils._field_display(self, 'login', 'login name for the cluster'))
+        s += '{}\n'.format(class_utils._field_display(self, 'np', 'number of processors'))
+        s += '{}\n'.format(class_utils._field_display(self, 'port', 'port number'))
+        s += '{}\n'.format(class_utils._field_display(self, 'interactive', 'interactive mode'))
+        s += '{}\n'.format(class_utils._field_display(self, 'codepath', 'path to the code'))
+        s += '{}\n'.format(class_utils._field_display(self, 'executionpath', 'path to the execution directory'))
+        s += '{}\n'.format(class_utils._field_display(self, 'valgrind', 'path to valgrind'))
+        s += '{}\n'.format(class_utils._field_display(self, 'valgrindlib', 'path to valgrind library'))
+        s += '{}\n'.format(class_utils._field_display(self, 'valgrindsup', 'valgrind suppression files'))
+        s += '{}\n'.format(class_utils._field_display(self, 'verbose', 'verbose mode'))
+        s += '{}\n'.format(class_utils._field_display(self, 'shell', 'shell to use'))
 
         return s
 
@@ -647,19 +647,19 @@ class gadi(class_registry.manage_state):
     def __repr__(self):
         s = '   Cluster parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'name', 'name of the cluster'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'login', 'login name for the cluster'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'np', 'number of processors'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'memory', 'memory per node (in GB)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'port', 'port number'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'queue', 'queue name'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'time', 'walltime (in minutes)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'codepath', 'path to the ISSM executable (e.g. $ISSM_DIR/bin)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'executionpath', 'path to the execution directory'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'project', 'NCI project name'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'storage', 'storage path (e.g. gdata/XXX+scratch/XXX)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'moduleload', 'List of module load commands needed for PBS job'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'moduleuse', 'List of module use commands needed for PBS job'))
+        s += '{}\n'.format(class_utils._field_display(self, 'name', 'name of the cluster'))
+        s += '{}\n'.format(class_utils._field_display(self, 'login', 'login name for the cluster'))
+        s += '{}\n'.format(class_utils._field_display(self, 'np', 'number of processors'))
+        s += '{}\n'.format(class_utils._field_display(self, 'memory', 'memory per node (in GB)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'port', 'port number'))
+        s += '{}\n'.format(class_utils._field_display(self, 'queue', 'queue name'))
+        s += '{}\n'.format(class_utils._field_display(self, 'time', 'walltime (in minutes)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'codepath', 'path to the ISSM executable (e.g. $ISSM_DIR/bin)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'executionpath', 'path to the execution directory'))
+        s += '{}\n'.format(class_utils._field_display(self, 'project', 'NCI project name'))
+        s += '{}\n'.format(class_utils._field_display(self, 'storage', 'storage path (e.g. gdata/XXX+scratch/XXX)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'moduleload', 'List of module load commands needed for PBS job'))
+        s += '{}\n'.format(class_utils._field_display(self, 'moduleuse', 'List of module use commands needed for PBS job'))
 
         return s
     

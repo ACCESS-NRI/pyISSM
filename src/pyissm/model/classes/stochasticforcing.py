@@ -75,14 +75,14 @@ class stochasticforcing(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   stochasticforcing parameters:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isstochasticforcing', 'is stochasticity activated?'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'fields', 'fields with stochasticity applied, ex: [\'smb.default\',\'calving.default\']'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'defaultdimension', 'dimensionality of the noise terms (does not apply to fields with their specific dimension)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'default_id', 'id of each element for partitioning of the noise terms (does not apply to fields with their specific partition)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'covariance', 'covariance matrix for within- and between-fields covariance (units must be squared field units),multiple matrices can be concatenated along 3rd dimension to apply different covariances in time'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'timecovariance', 'starting dates at which covariances apply (only applicabe if multiple covariance matrices are prescribed)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'stochastictimestep', 'timestep at which new stochastic noise terms are generated (default: md.timestepping.time_step)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'randomflag', 'whether to apply real randomness (true) or pseudo-randomness with fixed seed (false)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isstochasticforcing', 'is stochasticity activated?'))
+        s += '{}\n'.format(class_utils._field_display(self, 'fields', 'fields with stochasticity applied, ex: [\'smb.default\',\'calving.default\']'))
+        s += '{}\n'.format(class_utils._field_display(self, 'defaultdimension', 'dimensionality of the noise terms (does not apply to fields with their specific dimension)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'default_id', 'id of each element for partitioning of the noise terms (does not apply to fields with their specific partition)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'covariance', 'covariance matrix for within- and between-fields covariance (units must be squared field units),multiple matrices can be concatenated along 3rd dimension to apply different covariances in time'))
+        s += '{}\n'.format(class_utils._field_display(self, 'timecovariance', 'starting dates at which covariances apply (only applicabe if multiple covariance matrices are prescribed)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'stochastictimestep', 'timestep at which new stochastic noise terms are generated (default: md.timestepping.time_step)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'randomflag', 'whether to apply real randomness (true) or pseudo-randomness with fixed seed (false)'))
         s += 'Available fields:\n'
         s += '   BasalforcingsDeepwaterMeltingRatearma\n'
         s += '   BasalforcingsSpatialDeepwaterMeltingRate\n'

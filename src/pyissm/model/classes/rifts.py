@@ -54,8 +54,8 @@ class rifts(class_registry.manage_state):
     def __repr__(self):
         s = '   rift parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'riftstruct', 'structure containing all rift information (vertices coordinates, segments, type of melange, ...)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'riftproperties', 'rift properties'))
+        s += '{}\n'.format(class_utils._field_display(self, 'riftstruct', 'structure containing all rift information (vertices coordinates, segments, type of melange, ...)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'riftproperties', 'rift properties'))
         return s
 
     # Define class string
