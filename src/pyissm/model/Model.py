@@ -954,52 +954,52 @@ class Model():
         # Dealing with the friction law
         # Drag is limited to nodes that are on the bedrock.
         if isinstance(md.friction, classes.friction.default):
-            md.friction.coefficient = mesh.project_2d(md, md.friction.coefficient, 1)
-            md.friction.p = mesh.project_2d(md, md.friction.p, 1)
-            md.friction.q = mesh.project_2d(md, md.friction.q, 1)
+            md.friction.coefficient = mesh._project_2d(md, md.friction.coefficient, 1)
+            md.friction.p = mesh._project_2d(md, md.friction.p, 1)
+            md.friction.q = mesh._project_2d(md, md.friction.q, 1)
         elif isinstance(md.friction, classes.friction.coulomb):
-            md.friction.coefficient = mesh.project_2d(md, md.friction.coefficient, 1)
-            md.friction.coefficientcoulomb = mesh.project_2d(md, md.friction.coefficientcoulomb, 1)
-            md.friction.p = mesh.project_2d(md, md.friction.p, 1)
-            md.friction.q = mesh.project_2d(md, md.friction.q, 1)
+            md.friction.coefficient = mesh._project_2d(md, md.friction.coefficient, 1)
+            md.friction.coefficientcoulomb = mesh._project_2d(md, md.friction.coefficientcoulomb, 1)
+            md.friction.p = mesh._project_2d(md, md.friction.p, 1)
+            md.friction.q = mesh._project_2d(md, md.friction.q, 1)
         elif isinstance(md.friction, classes.friction.hydro):
-            md.friction.q = mesh.project_2d(md, md.friction.q, 1)
-            md.friction.C = mesh.project_2d(md, md.friction.C, 1)
-            md.friction.As = mesh.project_2d(md, md.friction.As, 1)
-            md.friction.effective_pressure = mesh.project_2d(md, md.friction.effective_pressure, 1)
+            md.friction.q = mesh._project_2d(md, md.friction.q, 1)
+            md.friction.C = mesh._project_2d(md, md.friction.C, 1)
+            md.friction.As = mesh._project_2d(md, md.friction.As, 1)
+            md.friction.effective_pressure = mesh._project_2d(md, md.friction.effective_pressure, 1)
         elif isinstance(md.friction, classes.friction.waterlayer):
-            md.friction.coefficient = mesh.project_2d(md, md.friction.coefficient, 1)
-            md.friction.p = mesh.project_2d(md, md.friction.p, 1)
-            md.friction.q = mesh.project_2d(md, md.friction.q, 1)
-            md.friction.water_layer = mesh.project_2d(md, md.friction.water_layer, 1)
+            md.friction.coefficient = mesh._project_2d(md, md.friction.coefficient, 1)
+            md.friction.p = mesh._project_2d(md, md.friction.p, 1)
+            md.friction.q = mesh._project_2d(md, md.friction.q, 1)
+            md.friction.water_layer = mesh._project_2d(md, md.friction.water_layer, 1)
         elif isinstance(md.friction, classes.friction.weertman):
-            md.friction.C = mesh.project_2d(md, md.friction.C, 1)
-            md.friction.m = mesh.project_2d(md, md.friction.m, 1)
+            md.friction.C = mesh._project_2d(md, md.friction.C, 1)
+            md.friction.m = mesh._project_2d(md, md.friction.m, 1)
         elif isinstance(md.friction, classes.friction.weertmantemp):
-            md.friction.C = mesh.project_2d(md, md.friction.C, 1)
-            md.friction.m = mesh.project_2d(md, md.friction.m, 1)
+            md.friction.C = mesh._project_2d(md, md.friction.C, 1)
+            md.friction.m = mesh._project_2d(md, md.friction.m, 1)
         else:
             raise Exception('pyissm.model.Model.collapse: Friction type not supported for collapse.')
 
         # Observations
         if not np.isnan(md.inversion.vx_obs).all():
-            md.inversion.vx_obs = mesh.project_2d(md, md.inversion.vx_obs, md.mesh.numberoflayers)
+            md.inversion.vx_obs = mesh._project_2d(md, md.inversion.vx_obs, md.mesh.numberoflayers)
         if not np.isnan(md.inversion.vy_obs).all():
-            md.inversion.vy_obs = mesh.project_2d(md, md.inversion.vy_obs, md.mesh.numberoflayers)
+            md.inversion.vy_obs = mesh._project_2d(md, md.inversion.vy_obs, md.mesh.numberoflayers)
         if not np.isnan(md.inversion.vel_obs).all():
-            md.inversion.vel_obs = mesh.project_2d(md, md.inversion.vel_obs, md.mesh.numberoflayers)
+            md.inversion.vel_obs = mesh._project_2d(md, md.inversion.vel_obs, md.mesh.numberoflayers)
         if not np.isnan(md.inversion.thickness_obs).all():
-            md.inversion.thickness_obs = mesh.project_2d(md, md.inversion.thickness_obs, md.mesh.numberoflayers)
+            md.inversion.thickness_obs = mesh._project_2d(md, md.inversion.thickness_obs, md.mesh.numberoflayers)
         if not np.isnan(md.inversion.cost_functions_coefficients).all():
-            md.inversion.cost_functions_coefficients = mesh.project_2d(md, md.inversion.cost_functions_coefficients, md.mesh.numberoflayers)
+            md.inversion.cost_functions_coefficients = mesh._project_2d(md, md.inversion.cost_functions_coefficients, md.mesh.numberoflayers)
         if isinstance(md.inversion.min_parameters, np.ndarray) and md.inversion.min_parameters.size > 1:
-            md.inversion.min_parameters = mesh.project_2d(md, md.inversion.min_parameters, md.mesh.numberoflayers)
+            md.inversion.min_parameters = mesh._project_2d(md, md.inversion.min_parameters, md.mesh.numberoflayers)
         if isinstance(md.inversion.max_parameters, np.ndarray) and md.inversion.max_parameters.size > 1:
-            md.inversion.max_parameters = mesh.project_2d(md, md.inversion.max_parameters, md.mesh.numberoflayers)
+            md.inversion.max_parameters = mesh._project_2d(md, md.inversion.max_parameters, md.mesh.numberoflayers)
         if isinstance(md.smb, classes.smb.default) and not np.isnan(md.smb.mass_balance).all():
-            md.smb.mass_balance = mesh.project_2d(md, md.smb.mass_balance, md.mesh.numberoflayers)
+            md.smb.mass_balance = mesh._project_2d(md, md.smb.mass_balance, md.mesh.numberoflayers)
         elif isinstance(md.smb, classes.smb.henning) and not np.isnan(md.smb.smbref).all():
-            md.smb.smbref = mesh.project_2d(md, md.smb.smbref, md.mesh.numberoflayers)
+            md.smb.smbref = mesh._project_2d(md, md.smb.smbref, md.mesh.numberoflayers)
 
         # Results
         if not np.isnan(md.initialization.vx).all():
@@ -1013,34 +1013,34 @@ class Model():
         if not np.isnan(md.initialization.temperature).all():
             md.initialization.temperature = mesh.depth_average(md, md.initialization.temperature)
         if not np.isnan(md.initialization.pressure).all():
-            md.initialization.pressure = mesh.project_2d(md, md.initialization.pressure, 1)
+            md.initialization.pressure = mesh._project_2d(md, md.initialization.pressure, 1)
         if not np.isnan(md.initialization.sediment_head).all():
-            md.initialization.sediment_head = mesh.project_2d(md, md.initialization.sediment_head, 1)
+            md.initialization.sediment_head = mesh._project_2d(md, md.initialization.sediment_head, 1)
         if not np.isnan(md.initialization.epl_head).all():
-            md.initialization.epl_head = mesh.project_2d(md, md.initialization.epl_head, 1)
+            md.initialization.epl_head = mesh._project_2d(md, md.initialization.epl_head, 1)
         if not np.isnan(md.initialization.epl_thickness).all():
-            md.initialization.epl_thickness = mesh.project_2d(md, md.initialization.epl_thickness, 1)
+            md.initialization.epl_thickness = mesh._project_2d(md, md.initialization.epl_thickness, 1)
         if not np.isnan(md.initialization.waterfraction).all():
-            md.initialization.waterfraction = mesh.project_2d(md, md.initialization.waterfraction, 1)
+            md.initialization.waterfraction = mesh._project_2d(md, md.initialization.waterfraction, 1)
         if not np.isnan(md.initialization.watercolumn).all():
-            md.initialization.watercolumn = mesh.project_2d(md, md.initialization.watercolumn, 1)
+            md.initialization.watercolumn = mesh._project_2d(md, md.initialization.watercolumn, 1)
         if not np.isnan(md.initialization.debris).all():
-            md.initialization.debris = mesh.project_2d(md, md.initialization.debris, 1)
+            md.initialization.debris = mesh._project_2d(md, md.initialization.debris, 1)
 
         # Element types
         if not np.isnan(md.flowequation.element_equation).all():
-            md.flowequation.element_equation = mesh.project_2d(md, md.flowequation.element_equation, 1)
-            md.flowequation.vertex_equation = mesh.project_2d(md, md.flowequation.vertex_equation, 1)
-            md.flowequation.borderSSA = mesh.project_2d(md, md.flowequation.borderSSA, 1)
-            md.flowequation.borderHO = mesh.project_2d(md, md.flowequation.borderHO, 1)
-            md.flowequation.borderFS = mesh.project_2d(md, md.flowequation.borderFS, 1)
+            md.flowequation.element_equation = mesh._project_2d(md, md.flowequation.element_equation, 1)
+            md.flowequation.vertex_equation = mesh._project_2d(md, md.flowequation.vertex_equation, 1)
+            md.flowequation.borderSSA = mesh._project_2d(md, md.flowequation.borderSSA, 1)
+            md.flowequation.borderHO = mesh._project_2d(md, md.flowequation.borderHO, 1)
+            md.flowequation.borderFS = mesh._project_2d(md, md.flowequation.borderFS, 1)
 
         # Boundary conditions
-        md.stressbalance.spcvx = mesh.project_2d(md, md.stressbalance.spcvx, md.mesh.numberoflayers)
-        md.stressbalance.spcvy = mesh.project_2d(md, md.stressbalance.spcvy, md.mesh.numberoflayers)
-        md.stressbalance.spcvz = mesh.project_2d(md, md.stressbalance.spcvz, md.mesh.numberoflayers)
-        md.stressbalance.referential = mesh.project_2d(md, md.stressbalance.referential, md.mesh.numberoflayers)
-        md.stressbalance.loadingforce = mesh.project_2d(md, md.stressbalance.loadingforce, md.mesh.numberoflayers)
+        md.stressbalance.spcvx = mesh._project_2d(md, md.stressbalance.spcvx, md.mesh.numberoflayers)
+        md.stressbalance.spcvy = mesh._project_2d(md, md.stressbalance.spcvy, md.mesh.numberoflayers)
+        md.stressbalance.spcvz = mesh._project_2d(md, md.stressbalance.spcvz, md.mesh.numberoflayers)
+        md.stressbalance.referential = mesh._project_2d(md, md.stressbalance.referential, md.mesh.numberoflayers)
+        md.stressbalance.loadingforce = mesh._project_2d(md, md.stressbalance.loadingforce, md.mesh.numberoflayers)
 
         # TODO:
         # - Check if md.mesh.numberoflayershould really be offset by 1.
@@ -1050,12 +1050,12 @@ class Model():
         #   another part of the API.
         #
         if np.size(md.masstransport.spcthickness) > 1:
-            md.masstransport.spcthickness = mesh.project_2d(md, md.masstransport.spcthickness, md.mesh.numberoflayers)
+            md.masstransport.spcthickness = mesh._project_2d(md, md.masstransport.spcthickness, md.mesh.numberoflayers)
         if np.size(md.damage.spcdamage) > 1:  # and not np.isnan(md.damage.spcdamage).all():
-            md.damage.spcdamage = mesh.project_2d(md, md.damage.spcdamage, md.mesh.numberoflayers - 1)
+            md.damage.spcdamage = mesh._project_2d(md, md.damage.spcdamage, md.mesh.numberoflayers - 1)
         if np.size(md.levelset.spclevelset) > 1:
-            md.levelset.spclevelset = mesh.project_2d(md, md.levelset.spclevelset, md.mesh.numberoflayers - 1)
-        md.thermal.spctemperature = mesh.project_2d(md, md.thermal.spctemperature, md.mesh.numberoflayers - 1)
+            md.levelset.spclevelset = mesh._project_2d(md, md.levelset.spclevelset, md.mesh.numberoflayers - 1)
+        md.thermal.spctemperature = mesh._project_2d(md, md.thermal.spctemperature, md.mesh.numberoflayers - 1)
 
         # hydrologydc variables
         if isinstance(md.hydrology, classes.hydrology.dc):
@@ -1074,17 +1074,17 @@ class Model():
                     isvector = False
                 #we collapse only fields that are vertices or element based
                 if isvector:
-                    md.hydrology.__dict__[field] = mesh.project_2d(md, md.hydrology.__dict__[field], 1)
+                    md.hydrology.__dict__[field] = mesh._project_2d(md, md.hydrology.__dict__[field], 1)
 
         # materials
         md.materials.rheology_B = mesh.depth_average(md, md.materials.rheology_B)
-        md.materials.rheology_n = mesh.project_2d(md, md.materials.rheology_n, 1)
+        md.materials.rheology_n = mesh._project_2d(md, md.materials.rheology_n, 1)
 
         # dsl
         if np.size(md.dsl.sea_surface_height_above_geoid) > 1:
-            md.dsl.sea_surface_height_above_geoid = mesh.project_2d(md, md.dsl.sea_surface_height_above_geoid, 1)
+            md.dsl.sea_surface_height_above_geoid = mesh._project_2d(md, md.dsl.sea_surface_height_above_geoid, 1)
         if np.size(md.dsl.sea_water_pressure_at_sea_floor) > 1:
-            md.dsl.sea_water_pressure_at_sea_floor = mesh.project_2d(md, md.dsl.sea_water_pressure_at_sea_floor, 1)
+            md.dsl.sea_water_pressure_at_sea_floor = mesh._project_2d(md, md.dsl.sea_water_pressure_at_sea_floor, 1)
 
         # damage
         if md.damage.isdamage:
@@ -1092,15 +1092,15 @@ class Model():
 
         # Special for thermal modeling
         if not np.isnan(md.basalforcings.groundedice_melting_rate).all():
-            md.basalforcings.groundedice_melting_rate = mesh.project_2d(md, md.basalforcings.groundedice_melting_rate, 1)
+            md.basalforcings.groundedice_melting_rate = mesh._project_2d(md, md.basalforcings.groundedice_melting_rate, 1)
         if hasattr(md.basalforcings, 'floatingice_melting_rate') and not np.isnan(md.basalforcings.floatingice_melting_rate).all():
-            md.basalforcings.floatingice_melting_rate = mesh.project_2d(md, md.basalforcings.floatingice_melting_rate, 1)
-        md.basalforcings.geothermalflux = mesh.project_2d(md, md.basalforcings.geothermalflux, 1) # bedrock only gets geothermal flux
+            md.basalforcings.floatingice_melting_rate = mesh._project_2d(md, md.basalforcings.floatingice_melting_rate, 1)
+        md.basalforcings.geothermalflux = mesh._project_2d(md, md.basalforcings.geothermalflux, 1) # bedrock only gets geothermal flux
 
         if hasattr(md.calving, 'coeff') and not np.isnan(md.calving.coeff).all():
-            md.calving.coeff = mesh.project_2d(md, md.calving.coeff, 1)
+            md.calving.coeff = mesh._project_2d(md, md.calving.coeff, 1)
         if hasattr(md.frontalforcings, 'meltingrate') and not np.isnan(md.frontalforcings.meltingrate).all():
-            md.frontalforcings.meltingrate = mesh.project_2d(md, md.frontalforcings.meltingrate, 1)
+            md.frontalforcings.meltingrate = mesh._project_2d(md, md.frontalforcings.meltingrate, 1)
 
         # Update of connectivity matrix
         md.mesh.average_vertex_connectivity = 25
@@ -1110,21 +1110,21 @@ class Model():
         elements2d = md.mesh.numberofelements2d
 
         # Parameters
-        md.geometry.surface = mesh.project_2d(md, md.geometry.surface, 1)
-        md.geometry.thickness = mesh.project_2d(md, md.geometry.thickness, 1)
-        md.geometry.base = mesh.project_2d(md, md.geometry.base, 1)
+        md.geometry.surface = mesh._project_2d(md, md.geometry.surface, 1)
+        md.geometry.thickness = mesh._project_2d(md, md.geometry.thickness, 1)
+        md.geometry.base = mesh._project_2d(md, md.geometry.base, 1)
         if not np.isnan(md.geometry.bed).all():
-            md.geometry.bed = mesh.project_2d(md, md.geometry.bed, 1)
+            md.geometry.bed = mesh._project_2d(md, md.geometry.bed, 1)
         if not np.isnan(md.mask.ocean_levelset).all():
-            md.mask.ocean_levelset = mesh.project_2d(md, md.mask.ocean_levelset, 1)
+            md.mask.ocean_levelset = mesh._project_2d(md, md.mask.ocean_levelset, 1)
         if not np.isnan(md.mask.ice_levelset).all():
-            md.mask.ice_levelset = mesh.project_2d(md, md.mask.ice_levelset, 1)
+            md.mask.ice_levelset = mesh._project_2d(md, md.mask.ice_levelset, 1)
 
         # lat/long
         if np.size(md.mesh.lat) == md.mesh.numberofvertices:
-            md.mesh.lat = mesh.project_2d(md, md.mesh.lat, 1)
+            md.mesh.lat = mesh._project_2d(md, md.mesh.lat, 1)
         if np.size(md.mesh.long) == md.mesh.numberofvertices:
-            md.mesh.long = mesh.project_2d(md, md.mesh.long, 1)
+            md.mesh.long = mesh._project_2d(md, md.mesh.long, 1)
 
         # outputdefinitions
         if md.outputdefinition.definitions:
@@ -1137,9 +1137,9 @@ class Model():
                             # Get subfields
                             for solutionsubfield, subfield in list(fieldi.__dict__.items()):
                                 if np.size(subfield) == md.mesh.numberofvertices:
-                                    setattr(fieldr, solutionsubfield, mesh.project_2d(md, subfield, 1))
+                                    setattr(fieldr, solutionsubfield, mesh._project_2d(md, subfield, 1))
                                 elif np.size(subfield) == md.mesh.numberofelements:
-                                    setattr(fieldr, solutionsubfield, mesh.project_2d(md, subfield, 1))
+                                    setattr(fieldr, solutionsubfield, mesh._project_2d(md, subfield, 1))
 
         # Initialize 2d mesh
         mesh2d = classes.mesh.mesh2d()
@@ -1153,16 +1153,16 @@ class Model():
         # if not np.isnan(md.mesh.elementconnectivity).all():
         #     mesh.elementconnectivity = project2d(md, md.mesh.elementconnectivity, 1)
         if np.size(md.mesh.lat) == md.mesh.numberofvertices:
-            mesh2d.lat = mesh.project_2d(md, md.mesh.lat, 1)
+            mesh2d.lat = mesh._project_2d(md, md.mesh.lat, 1)
         if np.size(md.mesh.long) == md.mesh.numberofvertices:
-            mesh2d.long = mesh.project_2d(md, md.mesh.long, 1)
+            mesh2d.long = mesh._project_2d(md, md.mesh.long, 1)
         mesh.epsg = md.mesh.epsg
         if np.size(md.mesh.scale_factor) == md.mesh.numberofvertices:
-            mesh2d.scale_factor = mesh.project_2d(md, md.mesh.scale_factor, 1)
+            mesh2d.scale_factor = mesh._project_2d(md, md.mesh.scale_factor, 1)
         if hasattr(md.mesh, 'vertexonboundary') and not np.isnan(md.mesh.vertexonboundary).all():
-            mesh2d.vertexonboundary = mesh.project_2d(md, md.mesh.vertexonboundary, 1)
+            mesh2d.vertexonboundary = mesh._project_2d(md, md.mesh.vertexonboundary, 1)
         if hasattr(md.mesh, 'elementonboundary') and not np.isnan(md.mesh.elementonboundary).all():
-            mesh2d.elementonboundary = mesh.project_2d(md, md.mesh.elementonboundary, 1)
+            mesh2d.elementonboundary = mesh._project_2d(md, md.mesh.elementonboundary, 1)
         md.mesh = mesh2d
         md.mesh.vertexconnectivity = wrappers.NodeConnectivity(md.mesh.elements, md.mesh.numberofvertices)
         md.mesh.elementconnectivity = wrappers.ElementConnectivity(md.mesh.elements, md.mesh.vertexconnectivity)
