@@ -10,7 +10,7 @@ md.cluster.np = 1
 md.transient.ishydrology = True
 md.transient.issmb = True
 md.hydrology = pyissm.model.classes.hydrology.dc()
-md.hydrology = md.hydrology.initialise(md)
+md.hydrology = md.hydrology.initialize(md)
 md.smb = pyissm.model.classes.smb.gradientscomponents()
 
 md.hydrology.isefficientlayer = 1

@@ -120,7 +120,7 @@ class default(class_registry.manage_state):
         return md
     
     # Initialise empty fields of correct dimensions
-    def _initialize(self, md):
+    def initialize(self, md):
         """
         Initialise [basalforcings.default] empty fields.
 
@@ -132,8 +132,8 @@ class default(class_registry.manage_state):
 
             >>> md.basalforcings = pyissm.model.classes.basalforcings.default()
             # At this point, initial fields are np.nan
-            # After calling _initialize, they will be set to default shapes/values with warnings issued.
-            >>> md.basalforcings._initialize(md)
+            # After calling initialize, they will be set to default shapes/values with warnings issued.
+            >>> md.basalforcings.initialize(md)
         """
 
         if np.all(np.isnan(self.groundedice_melting_rate)):
@@ -316,7 +316,7 @@ class pico(class_registry.manage_state):
         return md
     
     # Initialise empty fields of correct dimensions
-    def _initialize(self, md):
+    def initialize(self, md):
         """
         Initialise [basalforcings.pico] empty fields.
 
@@ -328,8 +328,8 @@ class pico(class_registry.manage_state):
 
             >>> md.basalforcings = pyissm.model.classes.basalforcings.pico()
             # At this point, initial fields are np.nan
-            # After calling _initialize, they will be set to default shapes/values with warnings issued.
-            >>> md.basalforcings._initialize(md)
+            # After calling initialize, they will be set to default shapes/values with warnings issued.
+            >>> md.basalforcings.initialize(md)
         """
 
         if np.isnan(self.maxboxcount):
@@ -526,7 +526,7 @@ class linear(class_registry.manage_state):
         return md
 
     # Initialise empty fields of correct dimensions
-    def _initialize(self, md):
+    def initialize(self, md):
         """
         Initialise [basalforcings.linear] empty fields.
 
@@ -538,8 +538,8 @@ class linear(class_registry.manage_state):
 
             >>> md.basalforcings = pyissm.model.classes.basalforcings.linear()
             # At this point, initial fields are np.nan
-            # After calling _initialize, they will be set to default shapes/values with warnings issued.
-            >>> md.basalforcings._initialize(md)
+            # After calling initialize, they will be set to default shapes/values with warnings issued.
+            >>> md.basalforcings.initialize(md)
         """
         
         if np.all(np.isnan(self.groundedice_melting_rate)):
@@ -770,7 +770,7 @@ class lineararma(class_registry.manage_state):
         return md
     
     # Initialise empty fields of correct dimensions
-    def _initialize(self, md):
+    def initialize(self, md):
         """
         Initialise [basalforcings.lineararma] empty fields.
 
@@ -782,8 +782,8 @@ class lineararma(class_registry.manage_state):
 
             >>> md.basalforcings = pyissm.model.classes.basalforcings.lineararma()
             # At this point, initial fields are np.nan
-            # After calling _initialize, they will be set to default shapes/values with warnings issued.
-            >>> md.basalforcings._initialize(md)
+            # After calling initialize, they will be set to default shapes/values with warnings issued.
+            >>> md.basalforcings.initialize(md)
         """
 
         if np.all(np.isnan(self.groundedice_melting_rate)):
@@ -1017,7 +1017,7 @@ class mismip(class_registry.manage_state):
         return md
     
     # Initialise empty fields of correct dimensions
-    def _initialize(self, md):
+    def initialize(self, md):
         """
         Initialise [basalforcings.mismip] empty fields.
 
@@ -1029,8 +1029,8 @@ class mismip(class_registry.manage_state):
 
             >>> md.basalforcings = pyissm.model.classes.basalforcings.mismip()
             # At this point, initial fields are np.nan
-            # After calling _initialize, they will be set to default shapes/values with warnings issued.
-            >>> md.basalforcings._initialize(md)
+            # After calling initialize, they will be set to default shapes/values with warnings issued.
+            >>> md.basalforcings.initialize(md)
         """
 
         if np.all(np.isnan(self.groundedice_melting_rate)):
@@ -1238,7 +1238,7 @@ class plume(class_registry.manage_state):
         return md
 
     # Initialise empty fields of correct dimensions
-    def _initialize(self, md):
+    def initialize(self, md):
         """
         Initialise [basalforcings.plume] empty fields.
 
@@ -1250,8 +1250,8 @@ class plume(class_registry.manage_state):
 
             >>> md.basalforcings = pyissm.model.classes.basalforcings.plume()
             # At this point, initial fields are np.nan
-            # After calling _initialize, they will be set to default shapes/values with warnings issued.
-            >>> md.basalforcings._initialize(md)
+            # After calling initialize, they will be set to default shapes/values with warnings issued.
+            >>> md.basalforcings.initialize(md)
         """
 
         if np.all(np.isnan(self.groundedice_melting_rate)):
@@ -1425,7 +1425,7 @@ class spatiallinear(class_registry.manage_state):
         return md
         
     # Initialise empty fields of correct dimensions
-    def _initialize(self, md):
+    def initialize(self, md):
         """
         Initialise [basalforcings.spatiallinear] empty fields.
 
@@ -1437,8 +1437,8 @@ class spatiallinear(class_registry.manage_state):
 
             >>> md.basalforcings = pyissm.model.classes.basalforcings.spatiallinear()
             # At this point, initial fields are np.nan
-            # After calling _initialize, they will be set to default shapes/values with warnings issued.
-            >>> md.basalforcings._initialize(md)
+            # After calling initialize, they will be set to default shapes/values with warnings issued.
+            >>> md.basalforcings.initialize(md)
         """
 
         if np.all(np.isnan(self.groundedice_melting_rate)):

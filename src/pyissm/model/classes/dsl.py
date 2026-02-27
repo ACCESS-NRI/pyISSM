@@ -105,7 +105,7 @@ class default(class_registry.manage_state):
         return md
     
     # Initialise empty fields of correct dimensions
-    def _initialize(self, md):
+    def initialize(self, md):
         """
         Initialise [dsl.default] empty fields.
 
@@ -117,8 +117,8 @@ class default(class_registry.manage_state):
 
             >>> md.dsl = pyissm.model.classes.dsl.default()
             # At this point, initial fields are np.nan
-            # After calling _initialize, they will be set to default shapes/values with warnings issued.
-            >>> md.dsl._initialize(md)
+            # After calling initialize, they will be set to default shapes/values with warnings issued.
+            >>> md.dsl.initialize(md)
         """
 
         if np.all(np.isnan(self.global_average_thermosteric_sea_level)):
