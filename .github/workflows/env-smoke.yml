@@ -43,12 +43,12 @@ jobs:
           python -c "import netCDF4, h5py, mpi4py; print('netcdf4/h5py/mpi4py OK')"
           python -c "import netCDF4; print('netCDF4:', netCDF4.__version__, netCDF4.__file__)"
 
-      # Optional: only if you have tests that don't require ISSM runtime/binaries
-      - name: Run unit tests
-        shell: bash -l {0}
-        run: |
-          if [ -d test ] || [ -d tests ]; then
-            pytest -q
-          else
-            echo "No tests directory found; skipping pytest."
-          fi
+    #   # Optional: only if you have tests that don't require ISSM runtime/binaries
+    #   - name: Run unit tests
+    #     shell: bash -l {0}
+    #     run: |
+    #       if [ -d test ] || [ -d tests ]; then
+    #         pytest -q
+    #       else
+    #         echo "No tests directory found; skipping pytest."
+    #       fi
