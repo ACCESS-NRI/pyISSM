@@ -1,0 +1,54 @@
+name: env-smoke
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  conda-env:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-file: environment.yaml
+          # If your env name is not "pyissm" in the yaml, that's fine.
+          # setup-micromamba will still create/activate the env from the file.
+          cache-environment: true
+          cache-environment-key: env-${{ runner.os }}-${{ hashFiles('environment.yaml') }}
+
+      - name: Show Python + conda info
+        shell: bash -l {0}
+        run: |
+          which python
+          python -V
+          micromamba info
+          micromamba list
+
+      - name: Install pyISSM (editable)
+        shell: bash -l {0}
+        run: |
+          pip install -e .
+
+      - name: Smoke imports
+        shell: bash -l {0}
+        run: |
+          python -c "import pyissm; print('pyissm import OK')"
+          python -c "import netCDF4, h5py, mpi4py; print('netcdf4/h5py/mpi4py OK')"
+          python -c "import netCDF4; print('netCDF4:', netCDF4.__version__, netCDF4.__file__)"
+
+      # Optional: only if you have tests that don't require ISSM runtime/binaries
+      - name: Run unit tests
+        shell: bash -l {0}
+        run: |
+          if [ -d test ] || [ -d tests ]; then
+            pytest -q
+          else
+            echo "No tests directory found; skipping pytest."
+          fi
