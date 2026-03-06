@@ -1,4 +1,4 @@
-name: pyissm_test
+name: pyissm
 channels:
   - accessnri
   - conda-forge

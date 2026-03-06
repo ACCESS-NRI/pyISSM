@@ -1,0 +1,81 @@
+name: Run ISSM-pyISSM Tests
+
+on:
+  workflow_call:
+    inputs:
+      build-type:
+        description: Type of ISSM build to restore from the cache
+        required: true
+        type: string
+      test-args:
+        description: Arguments to pass to run-tests.py
+        required: false
+        type: string
+
+env:
+  ISSM_DIR: ${{ github.workspace }}/issm
+
+jobs:
+  test:
+    name: Run ISSM-pyISSM Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout pyISSM
+        uses: actions/checkout@v4
+
+      - name: Get latest ISSM release tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LATEST=$(gh release view --repo access-nri/issm --json tagName -q .tagName)
+          echo "ISSM_RELEASE=$LATEST" >> $GITHUB_ENV
+          echo "Using release: $LATEST"
+
+      - name: Checkout ISSM latest release
+        uses: actions/checkout@v4
+        with:
+          repository: access-nri/issm
+          ref: ${{ env.ISSM_RELEASE }}
+          path: issm
+
+      - name: Restore ISSM cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.ISSM_DIR }}
+          key: ${{ inputs.build-type }}-${{ env.ISSM_RELEASE }}-python3.11-${{ runner.os }}
+
+      - name: Set up micromamba environment
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-file: environment.yaml
+          environment-name: pyissm
+          init-shell: bash
+          cache-environment: true
+          cache-environment-key: pyissm-${{ runner.os }}-${{ hashFiles('environment.yaml') }}
+
+      - name: Show environment info
+        shell: bash -l {0}
+        run: |
+          which python
+          python -V
+          micromamba list
+
+      - name: Install pyISSM
+        shell: bash -l {0}
+        run: |
+          pip install --upgrade pip setuptools wheel
+          pip install --upgrade --force-reinstall --editable .
+
+      - name: Check wrappers
+        shell: bash -l {0}
+        run: |
+          python -c "import pyissm; print('Wrappers installed:', pyissm.tools.wrappers.check_wrappers_installed())"
+
+      - name: Run tests
+        shell: bash -l {0}
+        run: |
+          source "$ISSM_DIR/etc/environment.sh"
+          cd test/ci_tests
+          python -u ./run-tests.py ${{ inputs.test-args }}
