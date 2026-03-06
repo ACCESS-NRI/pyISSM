@@ -40,3 +40,11 @@ jobs:
     with:
       build-type: "issm-AD"
       test-args: "--range 3015:3481" 
+  
+  # Job 6: Test conda environment and pyISSM installation
+  conda_env_test:
+    needs: build_issm
+    uses: access-nri/pyISSM/.github/workflows/conda-issm-tests.yml@justinh2002/conda_environment
+    with:
+      build-type: "issm"
+      test-args: "--range 1:999"

@@ -1,0 +1,42 @@
+name: pyissm
+channels:
+  - accessnri
+  - conda-forge
+  - nodefaults
+
+dependencies:
+  # --- match analysis3 core pins that matter for the ISSM/pyISSM stack ---
+  - python==3.11.*
+  - numpy==1.26.*
+  - scipy==1.16.*
+  - pandas==2.3.*
+  - matplotlib>=3.10.*
+
+  # --- NetCDF/HDF5 stack (MPI/OpenMPI variants like analysis3) ---
+  - netcdf4==1.7.*
+  - libnetcdf=*=mpi_openmpi*
+  - hdf5=1.14.*=mpi_openmpi*
+  - openmpi==4.1.6
+  - mpi4py
+  - h5py
+  - cftime
+
+  # --- runtime utils you had in the small file / commonly needed ---
+  - xarray==2025.10.1
+  - attrs
+  - pyyaml
+
+  # --- Jupyter support (keep light, kernel-only) ---
+  - ipykernel
+
+  # --- install tooling (match analysis3 era) ---
+  - pip=26.*
+  - setuptools
+  - wheel
+
+  # If you often use JupyterLab in this env, uncomment:
+  - jupyterlab==4.5.0
+
+  # --- install pyISSM from your local checkout ---
+  - pip:
+      - .
