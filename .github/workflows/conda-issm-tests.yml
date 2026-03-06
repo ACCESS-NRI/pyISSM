@@ -11,9 +11,6 @@ on:
         description: Arguments to pass to run-tests.py
         required: false
         type: string
-  pull_request:
-  push:
-    branches: [main, master]
 env:
   ISSM_DIR: ${{ github.workspace }}/issm
 
@@ -47,6 +44,9 @@ jobs:
         with:
           path: ${{ env.ISSM_DIR }}
           key: ${{ inputs.build-type }}-${{ env.ISSM_RELEASE }}-python3.11-${{ runner.os }}
+
+      - name: Show cache result
+        run: echo "cache-hit=${{ steps.issm-cache.outputs.cache-hit }}"
 
       - name: Set up micromamba environment
         uses: mamba-org/setup-micromamba@v2
