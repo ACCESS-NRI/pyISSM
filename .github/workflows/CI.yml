@@ -47,4 +47,4 @@ jobs:
     uses: access-nri/pyISSM/.github/workflows/conda-issm-tests.yml@justinh2002/conda_environment
     with:
       build-type: "issm"
-      test-args: "--range 1:10"
+      test-args: "--range 1:999"
