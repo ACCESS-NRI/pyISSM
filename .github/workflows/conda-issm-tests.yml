@@ -74,13 +74,13 @@ jobs:
         shell: bash -l {0}
         run: |
           source "$ISSM_DIR/etc/environment.sh"
-          export PYTHONPATH="$ISSM_DIR/path/to/wrappers:$PYTHONPATH"
+          export PYTHONPATH="$ISSM_DIR/src/wrappers:$PYTHONPATH"
           python -c "import pyissm; print('Wrappers installed:', pyissm.tools.wrappers.check_wrappers_installed())"
 
       - name: Run tests
         shell: bash -l {0}
         run: |
           source "$ISSM_DIR/etc/environment.sh"
-          export PYTHONPATH="$ISSM_DIR/path/to/wrappers:$PYTHONPATH"
+          export PYTHONPATH="$ISSM_DIR/src/wrappers:$PYTHONPATH"
           cd test/ci_tests
           python -u ./run-tests.py ${{ inputs.test-args }}
