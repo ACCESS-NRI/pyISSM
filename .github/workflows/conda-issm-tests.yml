@@ -11,7 +11,9 @@ on:
         description: Arguments to pass to run-tests.py
         required: false
         type: string
-
+  pull_request:
+  push:
+    branches: [main, master]
 env:
   ISSM_DIR: ${{ github.workspace }}/issm
 
