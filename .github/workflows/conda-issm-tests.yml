@@ -1,4 +1,4 @@
-name: Run ISSM-pyISSM Tests
+name: Run ISSM-pyISSM Tests [conda environment]
 
 on:
   workflow_call:
@@ -19,7 +19,7 @@ env:
 
 jobs:
   test:
-    name: Run ISSM-pyISSM Tests
+    name: Run ISSM-pyISSM Tests [conda environment]
     runs-on: ubuntu-latest
     timeout-minutes: 90
 
@@ -63,7 +63,7 @@ jobs:
           which python
           python -V
           micromamba list
-
+          
       - name: Install pyISSM
         shell: bash -l {0}
         run: |
@@ -73,6 +73,7 @@ jobs:
       - name: Check wrappers
         shell: bash -l {0}
         run: |
+          source "$ISSM_DIR/etc/environment.sh"
           python -c "import pyissm; print('Wrappers installed:', pyissm.tools.wrappers.check_wrappers_installed())"
 
       - name: Run tests
