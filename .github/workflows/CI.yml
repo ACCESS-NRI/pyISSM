@@ -42,7 +42,7 @@ jobs:
       test-args: "--range 3015:3481" 
   
   # Job 6: Test conda environment and pyISSM installation
-  conda_env_smoke_test:
+  conda_env_test:
     needs: build_issm
     uses: access-nri/pyISSM/.github/workflows/conda-issm-tests.yml@justinh2002/conda_environment
     with:
