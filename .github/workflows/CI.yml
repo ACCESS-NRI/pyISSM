@@ -43,6 +43,7 @@ jobs:
   
   # Job 6: Test conda environment and pyISSM installation
   conda_env_smoke_test:
+    needs: build_issm
     uses: access-nri/pyISSM/.github/workflows/conda-issm-tests.yml@main
     with:
       build-type: "issm"
