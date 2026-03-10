@@ -32,6 +32,18 @@ dependencies = [
     "PyYAML"
 ]
 
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0",
+    "pytest-cov",
+]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov",
+    "black",
+    "ruff",
+]
+
 [project.urls]
 Homepage = "https://github.com/ACCESS-NRI/pyISSM"
 Repository = "https://github.com/ACCESS-NRI/pyISSM"
