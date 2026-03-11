@@ -5,8 +5,11 @@ Tests cover:
 - Mesh creation (get_mesh)
 - Mesh processing (process_mesh)
 - Node type identification (find_node_types)
+<<<<<<< HEAD
 - Nodal functions (get_nodal_functions_coeff)
 - Element areas (get_element_areas_volumes)
+=======
+>>>>>>> c2e7b5e (add all pytest utility and CI)
 
 Note: These tests require the ISSM backend to be available.
 """
@@ -17,6 +20,7 @@ from types import SimpleNamespace
 import matplotlib.tri as tri
 
 try:
+<<<<<<< HEAD
     from pyissm.model.mesh import (
         get_mesh, 
         process_mesh, 
@@ -24,11 +28,17 @@ try:
         get_nodal_functions_coeff,
         get_element_areas_volumes,
     )
+=======
+    from pyissm.model.mesh import get_mesh, process_mesh, find_node_types
+>>>>>>> c2e7b5e (add all pytest utility and CI)
     ISSM_AVAILABLE = True
 except ImportError:
     ISSM_AVAILABLE = False
     get_mesh = process_mesh = find_node_types = None
+<<<<<<< HEAD
     get_nodal_functions_coeff = get_element_areas_volumes = None
+=======
+>>>>>>> c2e7b5e (add all pytest utility and CI)
 
 pytestmark = pytest.mark.skipif(
     not ISSM_AVAILABLE,
