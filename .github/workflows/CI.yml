@@ -48,3 +48,10 @@ jobs:
     with:
       build-type: "issm"
       test-args: "--range 1:999"
+
+  # Job 7: Run pytest unit tests
+  pytest_unit:
+    needs: build_issm
+    uses: ./.github/workflows/pytest-unit.yml
+    with:
+      build-type: "issm"

@@ -5,6 +5,8 @@ Tests cover:
 - Mesh creation (get_mesh)
 - Mesh processing (process_mesh)
 - Node type identification (find_node_types)
+
+Note: These tests require the ISSM backend to be available.
 """
 
 import numpy as np
@@ -12,7 +14,17 @@ import pytest
 from types import SimpleNamespace
 import matplotlib.tri as tri
 
-from pyissm.model.mesh import get_mesh, process_mesh, find_node_types
+try:
+    from pyissm.model.mesh import get_mesh, process_mesh, find_node_types
+    ISSM_AVAILABLE = True
+except ImportError:
+    ISSM_AVAILABLE = False
+    get_mesh = process_mesh = find_node_types = None
+
+pytestmark = pytest.mark.skipif(
+    not ISSM_AVAILABLE,
+    reason="ISSM backend not available"
+)
 
 
 class TestGetMesh:

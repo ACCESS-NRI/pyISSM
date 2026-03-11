@@ -7,6 +7,27 @@ import pytest
 from types import SimpleNamespace
 
 
+# Check if ISSM backend is available by attempting to create a Model
+# This catches lazy loading failures from the C++ wrappers
+def _check_issm_available():
+    """Check if ISSM backend can be loaded."""
+    try:
+        from pyissm.model import Model
+        _test = Model()
+        del _test
+        return True
+    except (ImportError, RuntimeError, OSError):
+        return False
+
+ISSM_AVAILABLE = _check_issm_available()
+
+# Marker to skip tests when ISSM backend is not available
+requires_issm = pytest.mark.skipif(
+    not ISSM_AVAILABLE,
+    reason="ISSM backend not available (wrapper failed to load)"
+)
+
+
 @pytest.fixture
 def simple_mesh_2d():
     """

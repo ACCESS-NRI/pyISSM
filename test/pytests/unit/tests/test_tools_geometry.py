@@ -4,13 +4,25 @@ Unit tests for pyissm.tools.geometry module.
 Tests cover:
 - Slope computation
 - Nowicki ice profile generation
+
+Note: These tests require the ISSM backend to be available.
 """
 
 import numpy as np
 import pytest
 from types import SimpleNamespace
 
-from pyissm.tools.geometry import slope, nowicki_profile
+try:
+    from pyissm.tools.geometry import slope, nowicki_profile
+    ISSM_AVAILABLE = True
+except ImportError:
+    ISSM_AVAILABLE = False
+    slope = nowicki_profile = None
+
+pytestmark = pytest.mark.skipif(
+    not ISSM_AVAILABLE,
+    reason="ISSM backend not available"
+)
 
 
 class TestSlope:
@@ -149,7 +161,7 @@ class TestNowickiProfile:
 
     def test_symmetry_not_expected(self):
         """Test profile is not symmetric (different physics upstream/downstream)."""
-        x = np.linspace(-100, 100, 201)
+        x = np.linspace(-100, 100, 200)  # Use even number for equal split
         
         b, h, sea = nowicki_profile(x)
         

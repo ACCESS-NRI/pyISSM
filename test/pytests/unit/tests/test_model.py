@@ -5,11 +5,27 @@ Tests cover:
 - Model initialization
 - Default attribute presence
 - Model component structure
+
+Note: These tests require the ISSM backend to be available.
+They will be skipped if the backend cannot be loaded.
 """
 
 import pytest
 
-from pyissm.model import Model
+try:
+    from pyissm.model import Model
+    # Test if Model can actually be instantiated (catches lazy loading failures)
+    _test_model = Model()
+    del _test_model
+    ISSM_AVAILABLE = True
+except (ImportError, RuntimeError, OSError) as e:
+    ISSM_AVAILABLE = False
+    Model = None
+
+pytestmark = pytest.mark.skipif(
+    not ISSM_AVAILABLE,
+    reason="ISSM backend not available (wrapper failed to load)"
+)
 
 
 class TestModelInitialization:

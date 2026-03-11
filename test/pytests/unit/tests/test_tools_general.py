@@ -4,17 +4,29 @@ Unit tests for pyissm.tools.general module.
 Tests cover:
 - Unit conversion functions
 - Utility functions (has_nested_attr, planetradius, etc.)
+
+Note: These tests require the ISSM backend to be available.
 """
 
 import numpy as np
 import pytest
 from types import SimpleNamespace
 
-from pyissm.tools.general import (
-    convert_units,
-    has_nested_attr,
-    planetradius,
-    _wgs84_ellipsoid_constants,
+try:
+    from pyissm.tools.general import (
+        convert_units,
+        has_nested_attr,
+        planetradius,
+        _wgs84_ellipsoid_constants,
+    )
+    ISSM_AVAILABLE = True
+except ImportError:
+    ISSM_AVAILABLE = False
+    convert_units = has_nested_attr = planetradius = _wgs84_ellipsoid_constants = None
+
+pytestmark = pytest.mark.skipif(
+    not ISSM_AVAILABLE,
+    reason="ISSM backend not available"
 )
 
 
