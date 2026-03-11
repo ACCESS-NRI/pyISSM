@@ -5,6 +5,8 @@ Tests cover:
 - Mesh creation (get_mesh)
 - Mesh processing (process_mesh)
 - Node type identification (find_node_types)
+- Nodal functions (get_nodal_functions_coeff)
+- Element areas (get_element_areas_volumes)
 
 Note: These tests require the ISSM backend to be available.
 """
@@ -15,11 +17,18 @@ from types import SimpleNamespace
 import matplotlib.tri as tri
 
 try:
-    from pyissm.model.mesh import get_mesh, process_mesh, find_node_types
+    from pyissm.model.mesh import (
+        get_mesh, 
+        process_mesh, 
+        find_node_types,
+        get_nodal_functions_coeff,
+        get_element_areas_volumes,
+    )
     ISSM_AVAILABLE = True
 except ImportError:
     ISSM_AVAILABLE = False
     get_mesh = process_mesh = find_node_types = None
+    get_nodal_functions_coeff = get_element_areas_volumes = None
 
 pytestmark = pytest.mark.skipif(
     not ISSM_AVAILABLE,
@@ -268,3 +277,111 @@ class TestMeshEdgeCases:
         
         assert len(mesh.x) == n * n
         assert len(mesh.triangles) > 0
+
+
+class TestGetNodalFunctionsCoeff:
+    """Tests for get_nodal_functions_coeff function."""
+
+    def test_basic_triangle(self):
+        """Test nodal function coefficients for a single triangle."""
+        # Create a simple triangle
+        x = np.array([0.0, 1.0, 0.5])
+        y = np.array([0.0, 0.0, np.sqrt(3)/2])
+        index = np.array([[0, 1, 2]])  # 0-based indexing for direct use
+        
+        alpha, beta, gamma = get_nodal_functions_coeff(index, x, y)
+        
+        # Should return arrays for each vertex in each element
+        # Shape should be (numberofelements, 3) for 2D
+        assert alpha is not None
+        assert beta is not None
+        assert gamma is not None
+        assert alpha.shape == (1, 3)
+        assert beta.shape == (1, 3)
+        
+    def test_rectangular_domain(self):
+        """Test nodal functions on a rectangular mesh."""
+        # Create a simple rectangular domain with 2 triangles
+        x = np.array([0.0, 1.0, 1.0, 0.0])
+        y = np.array([0.0, 0.0, 1.0, 1.0])
+        index = np.array([[0, 1, 2], [0, 2, 3]])  # 0-based
+        
+        alpha, beta, gamma = get_nodal_functions_coeff(index, x, y)
+        
+        assert alpha.shape[0] == 2  # 2 elements
+        assert beta.shape[0] == 2
+
+
+class TestGetElementAreasVolumes:
+    """Tests for get_element_areas_volumes function."""
+
+    def test_unit_triangle_area(self):
+        """Test area calculation for a unit right triangle."""
+        # Right triangle with legs of length 1
+        x = np.array([0.0, 1.0, 0.0])
+        y = np.array([0.0, 0.0, 1.0])
+        index = np.array([[0, 1, 2]])  # 0-based
+        
+        areas = get_element_areas_volumes(index, x, y)
+        
+        # Area of right triangle with legs 1 = 0.5
+        assert len(areas) == 1
+        np.testing.assert_almost_equal(abs(areas[0]), 0.5, decimal=10)
+
+    def test_equilateral_triangle_area(self):
+        """Test area of equilateral triangle."""
+        side = 2.0
+        height = np.sqrt(3)
+        x = np.array([0.0, side, side/2])
+        y = np.array([0.0, 0.0, height])
+        index = np.array([[0, 1, 2]])
+        
+        areas = get_element_areas_volumes(index, x, y)
+        
+        # Area = (sqrt(3)/4) * side^2
+        expected_area = (np.sqrt(3) / 4) * side**2
+        np.testing.assert_almost_equal(abs(areas[0]), expected_area, decimal=10)
+
+    def test_multiple_elements(self):
+        """Test area calculation for multiple elements."""
+        # Square domain split into 2 triangles
+        x = np.array([0.0, 1.0, 1.0, 0.0])
+        y = np.array([0.0, 0.0, 1.0, 1.0])
+        index = np.array([[0, 1, 2], [0, 2, 3]])
+        
+        areas = get_element_areas_volumes(index, x, y)
+        
+        # Each triangle should have area 0.5
+        assert len(areas) == 2
+        np.testing.assert_almost_equal(abs(areas[0]), 0.5, decimal=10)
+        np.testing.assert_almost_equal(abs(areas[1]), 0.5, decimal=10)
+        
+        # Total area should be 1.0 (unit square)
+        np.testing.assert_almost_equal(np.sum(np.abs(areas)), 1.0, decimal=10)
+
+    def test_scaled_mesh(self):
+        """Test that areas scale correctly with mesh size."""
+        scale = 10.0
+        
+        x = np.array([0.0, scale, 0.0])
+        y = np.array([0.0, 0.0, scale])
+        index = np.array([[0, 1, 2]])
+        
+        areas = get_element_areas_volumes(index, x, y)
+        
+        # Area should scale as square of linear dimension
+        expected_area = 0.5 * scale * scale
+        np.testing.assert_almost_equal(abs(areas[0]), expected_area, decimal=8)
+
+    def test_multiple_elements_consistency(self):
+        """Test that areas are computed consistently for multiple elements."""
+        # Create mesh with 4 triangles covering a unit square
+        x = np.array([0.0, 1.0, 1.0, 0.0, 0.5])
+        y = np.array([0.0, 0.0, 1.0, 1.0, 0.5])
+        # 4 triangles meeting at center point (1-based indexing)
+        index = np.array([[1, 2, 5], [2, 3, 5], [3, 4, 5], [4, 1, 5]])
+        
+        areas = get_element_areas_volumes(index, x, y)
+        
+        # Total area should be 1.0 (unit square)
+        np.testing.assert_almost_equal(np.sum(np.abs(areas)), 1.0, decimal=10)

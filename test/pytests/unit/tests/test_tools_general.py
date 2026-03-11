@@ -4,6 +4,8 @@ Unit tests for pyissm.tools.general module.
 Tests cover:
 - Unit conversion functions
 - Utility functions (has_nested_attr, planetradius, etc.)
+- Coordinate conversion functions (xy_to_ll, ll_to_xy)
+- Field extraction functions (extract_field_layer)
 
 Note: These tests require the ISSM backend to be available.
 """
@@ -18,11 +20,15 @@ try:
         has_nested_attr,
         planetradius,
         _wgs84_ellipsoid_constants,
+        xy_to_ll,
+        ll_to_xy,
+        extract_field_layer,
     )
     ISSM_AVAILABLE = True
 except ImportError:
     ISSM_AVAILABLE = False
     convert_units = has_nested_attr = planetradius = _wgs84_ellipsoid_constants = None
+    xy_to_ll = ll_to_xy = extract_field_layer = None
 
 pytestmark = pytest.mark.skipif(
     not ISSM_AVAILABLE,
@@ -280,3 +286,133 @@ class TestConvertUnitsRoundTrip:
         recovered = convert_units(unit_b, unit_a, converted)
         
         assert np.isclose(recovered, original, rtol=1e-10)
+
+
+class TestXYToLL:
+    """Tests for xy_to_ll coordinate conversion."""
+
+    def test_origin_returns_pole_south(self):
+        """Test that origin (0,0) returns the pole for south hemisphere."""
+        # Use array input to avoid scalar indexing issue in the function
+        lat, lon = xy_to_ll(np.array([0.0]), np.array([0.0]), sign=-1, central_meridian=0, standard_parallel=71)
+        assert np.isclose(lat[0], -90.0, atol=0.1)
+
+    def test_origin_returns_pole_north(self):
+        """Test that origin (0,0) returns the pole for north hemisphere."""
+        lat, lon = xy_to_ll(np.array([0.0]), np.array([0.0]), sign=1, central_meridian=45, standard_parallel=70)
+        assert np.isclose(lat[0], 90.0, atol=0.1)
+
+    def test_invalid_sign_raises(self):
+        """Test that invalid sign raises ValueError."""
+        with pytest.raises(ValueError, match="sign should be either"):
+            xy_to_ll(0, 0, sign=0)
+
+    def test_partial_params_raises(self):
+        """Test that specifying only one parameter raises ValueError."""
+        with pytest.raises(ValueError, match="Specify both"):
+            xy_to_ll(0, 0, sign=1, central_meridian=45)
+
+    def test_array_input(self):
+        """Test that array inputs work correctly."""
+        x = np.array([0, 1000, 2000])
+        y = np.array([0, 1000, 2000])
+        lat, lon = xy_to_ll(x, y, sign=-1, central_meridian=0, standard_parallel=71)
+        assert lat.shape == (3,)
+        assert lon.shape == (3,)
+
+    def test_output_within_valid_range(self):
+        """Test that output is within valid lat/lon range."""
+        x = np.array([100000, -100000, 0])
+        y = np.array([0, 100000, -100000])
+        lat, lon = xy_to_ll(x, y, sign=-1, central_meridian=0, standard_parallel=71)
+        assert np.all(np.abs(lat) <= 90)
+        assert np.all(np.abs(lon) <= 360)
+
+
+class TestLLToXY:
+    """Tests for ll_to_xy coordinate conversion."""
+
+    def test_pole_returns_origin_south(self):
+        """Test that south pole returns origin."""
+        # Use array input to avoid scalar indexing issue
+        x, y = ll_to_xy(np.array([-90.0]), np.array([0.0]), sign=-1, central_meridian=0, standard_parallel=71)
+        assert np.isclose(x[0], 0, atol=1)
+        assert np.isclose(y[0], 0, atol=1)
+
+    def test_pole_returns_origin_north(self):
+        """Test that north pole returns origin."""
+        x, y = ll_to_xy(np.array([90.0]), np.array([0.0]), sign=1, central_meridian=45, standard_parallel=70)
+        assert np.isclose(x[0], 0, atol=1)
+        assert np.isclose(y[0], 0, atol=1)
+
+    def test_invalid_sign_raises(self):
+        """Test that invalid sign raises ValueError."""
+        with pytest.raises(ValueError, match="sign should be either"):
+            ll_to_xy(0, 0, sign=2)
+
+    def test_partial_params_raises(self):
+        """Test that specifying only one parameter raises ValueError."""
+        with pytest.raises(ValueError, match="Specify both"):
+            ll_to_xy(0, 0, sign=-1, standard_parallel=71)
+
+    def test_array_input(self):
+        """Test that array inputs work correctly."""
+        lat = np.array([-70, -75, -80])
+        lon = np.array([0, 45, 90])
+        x, y = ll_to_xy(lat, lon, sign=-1, central_meridian=0, standard_parallel=71)
+        assert x.shape == (3,)
+        assert y.shape == (3,)
+
+
+class TestCoordinateRoundTrip:
+    """Round-trip tests for coordinate conversions."""
+
+    @pytest.mark.parametrize("sign,cm,sp", [
+        (-1, 0, 71),    # South polar stereographic
+        (1, 45, 70),    # North polar stereographic
+    ])
+    def test_ll_to_xy_to_ll_roundtrip(self, sign, cm, sp):
+        """Test that converting ll->xy->ll returns original values."""
+        # Use coordinates away from pole for better precision
+        lat_orig = sign * 75.0
+        lon_orig = 45.0
+        
+        x, y = ll_to_xy(lat_orig, lon_orig, sign=sign, central_meridian=cm, standard_parallel=sp)
+        lat_back, lon_back = xy_to_ll(x, y, sign=sign, central_meridian=cm, standard_parallel=sp)
+        
+        assert np.isclose(lat_back, lat_orig, atol=1e-6)
+        # Longitude may wrap around, so compare mod 360
+        assert np.isclose((lon_back - lon_orig) % 360, 0, atol=1e-6) or \
+               np.isclose((lon_back - lon_orig) % 360, 360, atol=1e-6)
+
+
+class TestExtractFieldLayer:
+    """Tests for extract_field_layer function."""
+
+    def test_extracts_correct_layer(self, fake_model_3d):
+        """Test that correct layer is extracted from 3D field."""
+        # Create a 3D field with distinct values per layer
+        n2d = fake_model_3d.mesh.numberofvertices2d
+        nlayers = fake_model_3d.mesh.numberoflayers
+        field = np.arange(n2d * nlayers, dtype=float)
+        
+        # Extract layer 2
+        layer_data, indices = extract_field_layer(fake_model_3d, field, layer=2)
+        
+        assert len(layer_data) == n2d
+        assert len(indices) == n2d
+
+    def test_layer_out_of_bounds_raises(self, fake_model_3d):
+        """Test that invalid layer raises IndexError (out of bounds access)."""
+        field = np.ones(fake_model_3d.mesh.numberofvertices)
+        
+        with pytest.raises(IndexError):
+            extract_field_layer(fake_model_3d, field, layer=100)
+
+    def test_2d_model_raises(self, fake_model_2d):
+        """Test that 2D model raises TypeError."""
+        field = np.ones(fake_model_2d.mesh.numberofvertices)
+        
+        with pytest.raises(TypeError, match="not 3D"):
+            extract_field_layer(fake_model_2d, field, layer=1)
+
