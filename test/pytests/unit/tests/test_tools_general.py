@@ -4,8 +4,11 @@ Unit tests for pyissm.tools.general module.
 Tests cover:
 - Unit conversion functions
 - Utility functions (has_nested_attr, planetradius, etc.)
+<<<<<<< HEAD
 - Coordinate conversion functions (xy_to_ll, ll_to_xy)
 - Field extraction functions (extract_field_layer)
+=======
+>>>>>>> c2e7b5e (add all pytest utility and CI)
 
 Note: These tests require the ISSM backend to be available.
 """
@@ -20,15 +23,21 @@ try:
         has_nested_attr,
         planetradius,
         _wgs84_ellipsoid_constants,
+<<<<<<< HEAD
         xy_to_ll,
         ll_to_xy,
         extract_field_layer,
+=======
+>>>>>>> c2e7b5e (add all pytest utility and CI)
     )
     ISSM_AVAILABLE = True
 except ImportError:
     ISSM_AVAILABLE = False
     convert_units = has_nested_attr = planetradius = _wgs84_ellipsoid_constants = None
+<<<<<<< HEAD
     xy_to_ll = ll_to_xy = extract_field_layer = None
+=======
+>>>>>>> c2e7b5e (add all pytest utility and CI)
 
 pytestmark = pytest.mark.skipif(
     not ISSM_AVAILABLE,
