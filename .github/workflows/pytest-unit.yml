@@ -1,0 +1,87 @@
+name: Run pyISSM pytest unit tests
+
+on:
+  workflow_call:
+    inputs:
+      build-type:
+        description: Type of ISSM build to restore from the cache (optional for pure Python tests)
+        required: false
+        type: string
+        default: "issm"
+      python-version:
+        description: Python version to use
+        required: false
+        type: string
+        default: "3.11"
+
+env:
+  ISSM_DIR: ${{ github.workspace }}/issm
+
+jobs:
+  pytest:
+    name: pytest unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout pyISSM
+        uses: actions/checkout@v4
+
+      - name: Get latest ISSM release tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LATEST=$(gh release view --repo access-nri/issm --json tagName -q .tagName)
+          echo "ISSM_RELEASE=$LATEST" >> $GITHUB_ENV
+          echo "Using release: $LATEST"
+
+      - name: Checkout ISSM latest release
+        uses: actions/checkout@v4
+        with:
+          repository: access-nri/issm
+          ref: ${{ env.ISSM_RELEASE }}
+          path: issm
+
+      - name: Restore ISSM cache
+        id: issm-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.ISSM_DIR }}
+          key: ${{ inputs.build-type }}-${{ env.ISSM_RELEASE }}-python${{ inputs.python-version }}-${{ runner.os }}
+
+      - name: Set up micromamba environment
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-file: environment.yaml
+          environment-name: pyissm
+          init-shell: bash
+          cache-environment: true
+          cache-environment-key: pyissm-${{ runner.os }}-${{ hashFiles('environment.yaml') }}
+
+      - name: Install pyISSM with test dependencies
+        shell: bash -l {0}
+        run: |
+          pip install --upgrade pip setuptools wheel
+          pip install --upgrade --force-reinstall --editable ".[test]"
+
+      - name: Run pytest unit tests
+        shell: bash -l {0}
+        run: |
+          # Source ISSM environment if available
+          if [ -f "$ISSM_DIR/etc/environment.sh" ]; then
+            source "$ISSM_DIR/etc/environment.sh"
+            export PYTHONPATH="$ISSM_DIR/src/wrappers:$PYTHONPATH"
+            export LD_LIBRARY_PATH="$CONDA_PREFIX/lib:${LD_LIBRARY_PATH:-}"
+          fi
+          
+          # Run pytest with verbose output and coverage
+          pytest test/pytests/unit -v --tb=short
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pytest-results
+          path: |
+            .pytest_cache/
+          retention-days: 7
