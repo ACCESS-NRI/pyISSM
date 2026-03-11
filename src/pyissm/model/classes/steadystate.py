@@ -34,7 +34,7 @@ class steadystate(class_registry.manage_state):
         Returns a detailed string representation of the steadystate parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -60,9 +60,9 @@ class steadystate(class_registry.manage_state):
     def __repr__(self):
         s = '   steadystate solution parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'reltol', 'relative tolerance criterion'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'maxiter', 'maximum number of iterations'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional requested outputs'))
+        s += '{}\n'.format(class_utils._field_display(self, 'reltol', 'relative tolerance criterion'))
+        s += '{}\n'.format(class_utils._field_display(self, 'maxiter', 'maximum number of iterations'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional requested outputs'))
         return s
 
     # Define class string
@@ -82,12 +82,12 @@ class steadystate(class_registry.manage_state):
         if np.isnan(md.stressbalance.reltol):
             md.check_message("for a steadystate computation, stressbalance.reltol (relative convergence criterion) must be defined!")
 
-        class_utils.check_field(md, fieldname = 'steadystate.requested_outputs', string_list = True)
+        class_utils._check_field(md, fieldname = 'steadystate.requested_outputs', string_list = True)
 
         return md
 
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -111,8 +111,8 @@ class steadystate(class_registry.manage_state):
         outputs = []
 
         ## Set default_outputs
-        _, stressbalance_defaults = md.stressbalance.process_outputs(md, return_default_outputs = True)
-        _, thermal_defaults = md.thermal.process_outputs(md, return_default_outputs = True)
+        _, stressbalance_defaults = md.stressbalance._process_outputs(md, return_default_outputs = True)
+        _, thermal_defaults = md.thermal._process_outputs(md, return_default_outputs = True)
         default_outputs = stressbalance_defaults + thermal_defaults
 
         ## Loop through all requested outputs
@@ -150,8 +150,8 @@ class steadystate(class_registry.manage_state):
         """
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'reltol', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'maxiter', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.steadystate.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'reltol', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'maxiter', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.steadystate.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
 

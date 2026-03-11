@@ -80,15 +80,15 @@ class misfit(class_registry.manage_state):
     def __repr__(self):
         s = '   Misfit:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'name', 'identifier for this misfit response'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'definitionstring', 'string that identifies this output definition uniquely, from "Outputdefinition[1 - 10]"'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'model_string', 'string for field that is modeled'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'observation', 'observed field that we compare the model against'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'observation_string', 'observation string'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'local', 'is the response local to the elements, or global? (default is 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'timeinterpolation', 'interpolation routine used to interpolate misfit between two time steps (default is "nearestneighbor"'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'weights', 'weights (at vertices) to apply to the misfit'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'weights_string', 'string for weights for identification purposes'))
+        s += '{}\n'.format(class_utils._field_display(self, 'name', 'identifier for this misfit response'))
+        s += '{}\n'.format(class_utils._field_display(self, 'definitionstring', 'string that identifies this output definition uniquely, from "Outputdefinition[1 - 10]"'))
+        s += '{}\n'.format(class_utils._field_display(self, 'model_string', 'string for field that is modeled'))
+        s += '{}\n'.format(class_utils._field_display(self, 'observation', 'observed field that we compare the model against'))
+        s += '{}\n'.format(class_utils._field_display(self, 'observation_string', 'observation string'))
+        s += '{}\n'.format(class_utils._field_display(self, 'local', 'is the response local to the elements, or global? (default is 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'timeinterpolation', 'interpolation routine used to interpolate misfit between two time steps (default is "nearestneighbor"'))
+        s += '{}\n'.format(class_utils._field_display(self, 'weights', 'weights (at vertices) to apply to the misfit'))
+        s += '{}\n'.format(class_utils._field_display(self, 'weights_string', 'string for weights for identification purposes'))
         return s
 
     # Define class string
@@ -105,13 +105,13 @@ class misfit(class_registry.manage_state):
         for i in range(100):
             OutputdefinitionStringArray.append('Outputdefinition' + str(i))
 
-        class_utils.check_field(md, fieldname = 'self.definitionstring', field = self.definitionstring, values = OutputdefinitionStringArray)
+        class_utils._check_field(md, fieldname = 'self.definitionstring', field = self.definitionstring, values = OutputdefinitionStringArray)
         if type(self.timeinterpolation) != str:
             raise TypeError('pyissm.model.classes.misfit.check_consistency: "timeinterpolation" field should be a string!')
 
-        class_utils.check_field(md, fieldname = 'self.observation', field = self.observation, timeseries = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'self.timeinterpolation', field = self.timeinterpolation, values = ['nearestneighbor'])
-        class_utils.check_field(md, fieldname = 'self.weights', field = self.weights, timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'self.observation', field = self.observation, timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'self.timeinterpolation', field = self.timeinterpolation, values = ['nearestneighbor'])
+        class_utils._check_field(md, fieldname = 'self.weights', field = self.weights, timeseries = True, allow_nan = False, allow_inf = False)
 
         return md
 
@@ -138,11 +138,11 @@ class misfit(class_registry.manage_state):
         fieldnames = ['name', 'definitionstring', 'model_string', 'observation_string', 'timeinterpolation',
                       'weights_string']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj=self, fieldname=field, format='String')
+            execute._write_model_field(fid, prefix, obj=self, fieldname=field, format='String')
 
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'observation', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'local', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'weights', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'observation', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'local', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'weights', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         
 

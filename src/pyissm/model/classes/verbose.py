@@ -66,15 +66,15 @@ class verbose(class_registry.manage_state):
     def __repr__(self):
         s = '   verbose parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'mprocessor', 'processor verbosity'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'module', 'module verbosity'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'solution', 'solution verbosity'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'solver', 'solver verbosity'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'convergence', 'convergence verbosity'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'control', 'control verbosity'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'qmu', 'QMU verbosity'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'autodiff', 'autodiff verbosity'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'smb', 'SMB verbosity'))
+        s += '{}\n'.format(class_utils._field_display(self, 'mprocessor', 'processor verbosity'))
+        s += '{}\n'.format(class_utils._field_display(self, 'module', 'module verbosity'))
+        s += '{}\n'.format(class_utils._field_display(self, 'solution', 'solution verbosity'))
+        s += '{}\n'.format(class_utils._field_display(self, 'solver', 'solver verbosity'))
+        s += '{}\n'.format(class_utils._field_display(self, 'convergence', 'convergence verbosity'))
+        s += '{}\n'.format(class_utils._field_display(self, 'control', 'control verbosity'))
+        s += '{}\n'.format(class_utils._field_display(self, 'qmu', 'QMU verbosity'))
+        s += '{}\n'.format(class_utils._field_display(self, 'autodiff', 'autodiff verbosity'))
+        s += '{}\n'.format(class_utils._field_display(self, 'smb', 'SMB verbosity'))
         return s
 
     # Define class string
@@ -169,4 +169,4 @@ class verbose(class_registry.manage_state):
         """
 
         ## Write fields
-        execute.WriteData(fid, prefix, name = 'md.verbose', data = self.VerboseToBinary(), format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.verbose', data = self.VerboseToBinary(), format = 'Integer')

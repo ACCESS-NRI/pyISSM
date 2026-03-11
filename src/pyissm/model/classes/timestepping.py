@@ -84,13 +84,13 @@ class default(class_registry.manage_state):
     def __repr__(self):
         s = '   timestepping parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'start_time', 'simulation starting time [yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'final_time', 'final time to stop the simulation [yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'time_step', 'length of time steps [yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'interp_forcing', 'interpolate in time between requested forcing values? (0 or 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'average_forcing', 'average in time if there are several forcing values between steps? (0 or 1, default is 0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'cycle_forcing', 'cycle through forcing? (0 or 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coupling_time', 'length of coupling time steps with ocean model [yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'start_time', 'simulation starting time [yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'final_time', 'final time to stop the simulation [yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'time_step', 'length of time steps [yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'interp_forcing', 'interpolate in time between requested forcing values? (0 or 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'average_forcing', 'average in time if there are several forcing values between steps? (0 or 1, default is 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'cycle_forcing', 'cycle through forcing? (0 or 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coupling_time', 'length of coupling time steps with ocean model [yr]'))
         return s
 
     # Define class string
@@ -100,18 +100,18 @@ class default(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        class_utils.check_field(md, fieldname = 'timestepping.start_time', scalar = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'timestepping.final_time', scalar = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'timestepping.time_step', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'timestepping.interp_forcing', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'timestepping.average_forcing', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'timestepping.cycle_forcing', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'timestepping.start_time', scalar = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'timestepping.final_time', scalar = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'timestepping.time_step', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'timestepping.interp_forcing', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'timestepping.average_forcing', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'timestepping.cycle_forcing', scalar = True, values = [0, 1])
         
         if (self.final_time - self.start_time) < 0:
             md.check_message('timestepping.final_time should be larger than timestepping.start_time')
         
         if solution == 'TransientSolution':
-            class_utils.check_field(md, fieldname = 'timestepping.time_step', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'timestepping.time_step', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
 
         return md
 
@@ -135,17 +135,17 @@ class default(class_registry.manage_state):
         """
 
         ## Write header field
-        execute.WriteData(fid, prefix, name = 'md.timestepping.type', data = 1, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.timestepping.type', data = 1, format = 'Integer')
 
         ## Write Double fields (all consistent format)
         fieldnames = ['start_time', 'final_time', 'time_step', 'coupling_time']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double', scale = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double', scale = md.constants.yts)
 
         ## Write Boolean fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'interp_forcing', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'average_forcing', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'cycle_forcing', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'interp_forcing', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'average_forcing', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'cycle_forcing', format = 'Boolean')
 
 ## ------------------------------------------------------
 ## timestepping.adaptive
@@ -242,16 +242,16 @@ class adaptive(class_registry.manage_state):
     def __repr__(self):
         s = '   timestepping.adaptive parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'start_time', 'simulation starting time [yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "start_time", "simulation starting time [yr]"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "final_time", "final time to stop the simulation [yr]"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "time_step_min", "minimum length of time steps [yr]"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "time_step_max", "maximum length of time steps [yr]"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "cfl_coefficient", "coefficient applied to cfl condition"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "interp_forcing", "interpolate in time between requested forcing values ? (0 or 1)"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'average_forcing', 'average in time if there are several forcing values between steps? (0 or 1, default is 0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "cycle_forcing", "cycle through forcing ? (0 or 1)"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "coupling_time", "coupling time steps with ocean model [yr]"))
+        s += '{}\n'.format(class_utils._field_display(self, 'start_time', 'simulation starting time [yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, "start_time", "simulation starting time [yr]"))
+        s += '{}\n'.format(class_utils._field_display(self, "final_time", "final time to stop the simulation [yr]"))
+        s += '{}\n'.format(class_utils._field_display(self, "time_step_min", "minimum length of time steps [yr]"))
+        s += '{}\n'.format(class_utils._field_display(self, "time_step_max", "maximum length of time steps [yr]"))
+        s += '{}\n'.format(class_utils._field_display(self, "cfl_coefficient", "coefficient applied to cfl condition"))
+        s += '{}\n'.format(class_utils._field_display(self, "interp_forcing", "interpolate in time between requested forcing values ? (0 or 1)"))
+        s += '{}\n'.format(class_utils._field_display(self, 'average_forcing', 'average in time if there are several forcing values between steps? (0 or 1, default is 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, "cycle_forcing", "cycle through forcing ? (0 or 1)"))
+        s += '{}\n'.format(class_utils._field_display(self, "coupling_time", "coupling time steps with ocean model [yr]"))
         return s
 
     # Define class string
@@ -261,17 +261,17 @@ class adaptive(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        class_utils.check_field(md, fieldname = 'timestepping.start_time', scalar = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'timestepping.final_time', scalar = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'timestepping.time_step_min', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'timestepping.time_step_max', scalar = True, ge = md.timestepping.time_step_min, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'timestepping.cfl_coefficient', scalar = True, gt = 0, le = 1)
+        class_utils._check_field(md, fieldname = 'timestepping.start_time', scalar = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'timestepping.final_time', scalar = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'timestepping.time_step_min', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'timestepping.time_step_max', scalar = True, ge = md.timestepping.time_step_min, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'timestepping.cfl_coefficient', scalar = True, gt = 0, le = 1)
         if self.final_time - self.start_time < 0:
             md.check_message("timestepping.final_time should be larger than timestepping.start_time")
-        class_utils.check_field(md, fieldname = 'timestepping.interp_forcing', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'timestepping.average_forcing', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'timestepping.cycle_forcing', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'timestepping.coupling_time', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'timestepping.interp_forcing', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'timestepping.average_forcing', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'timestepping.cycle_forcing', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'timestepping.coupling_time', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
 
         return md
 
@@ -295,15 +295,15 @@ class adaptive(class_registry.manage_state):
         """
 
         ## Write header field
-        execute.WriteData(fid, prefix, name = 'md.timestepping.type', data = 2, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.timestepping.type', data = 2, format = 'Integer')
 
         ## Write Double fields (all consistent format)
         fieldnames = ['start_time', 'final_time', 'time_step_min', 'time_step_max', 'coupling_time']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Double', scale = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'cfl_coefficient', format = 'Double')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double', scale = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'cfl_coefficient', format = 'Double')
 
         ## Write Boolean fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'interp_forcing', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'average_forcing', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'cycle_forcing', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'interp_forcing', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'average_forcing', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'cycle_forcing', format = 'Boolean')

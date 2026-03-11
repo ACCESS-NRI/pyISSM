@@ -75,12 +75,12 @@ class masstransport(class_registry.manage_state):
     def __repr__(self):
         s = '   Masstransport solution parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'spcthickness', 'thickness constraints (NaN means no constraint) [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isfreesurface', 'do we use free surfaces (FS only) or mass conservation'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'min_thickness', 'minimum ice thickness allowed [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'hydrostatic_adjustment', 'adjustment of ice shelves surface and bed elevations: ''Incremental'' or ''Absolute'' '))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'stabilization', '0: no stabilization, 1: artificial diffusion, 2: streamline upwinding, 3: discontinuous Galerkin, 4: flux corrected transport, 5: streamline upwind Petrov-Galerkin (SUPG)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'spcthickness', 'thickness constraints (NaN means no constraint) [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isfreesurface', 'do we use free surfaces (FS only) or mass conservation'))
+        s += '{}\n'.format(class_utils._field_display(self, 'min_thickness', 'minimum ice thickness allowed [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'hydrostatic_adjustment', 'adjustment of ice shelves surface and bed elevations: ''Incremental'' or ''Absolute'' '))
+        s += '{}\n'.format(class_utils._field_display(self, 'stabilization', '0: no stabilization, 1: artificial diffusion, 2: streamline upwinding, 3: discontinuous Galerkin, 4: flux corrected transport, 5: streamline upwind Petrov-Galerkin (SUPG)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -89,11 +89,11 @@ class masstransport(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
         Extrude masstransport fields to 3D
         """
-        self.spcthickness = mesh.project_3d(md, vector = self.spcthickness, type = 'node')
+        self.spcthickness = mesh._project_3d(md, vector = self.spcthickness, type = 'node')
             
         return self
     
@@ -103,19 +103,19 @@ class masstransport(class_registry.manage_state):
         if ('MasstransportAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.ismasstransport):
             return md
 
-        class_utils.check_field(md, fieldname = 'masstransport.spcthickness', timeseries = True, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'masstransport.isfreesurface', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'masstransport.hydrostatic_adjustment', values = ['Absolute', 'Incremental'])
-        class_utils.check_field(md, fieldname = 'masstransport.stabilization', values = [0, 1, 2, 3, 4, 5])
-        class_utils.check_field(md, fieldname = 'masstransport.min_thickness', gt = 0)
-        class_utils.check_field(md, fieldname = 'masstransport.requested_outputs', string_list = True)
+        class_utils._check_field(md, fieldname = 'masstransport.spcthickness', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'masstransport.isfreesurface', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'masstransport.hydrostatic_adjustment', values = ['Absolute', 'Incremental'])
+        class_utils._check_field(md, fieldname = 'masstransport.stabilization', values = [0, 1, 2, 3, 4, 5])
+        class_utils._check_field(md, fieldname = 'masstransport.min_thickness', gt = 0)
+        class_utils._check_field(md, fieldname = 'masstransport.requested_outputs', string_list = True)
         if not np.any(np.isnan(self.vertex_pairing)) and len(self.vertex_pairing) > 0:
-            class_utils.check_field(md, fieldname = 'stressbalance.vertex_pairing', gt = 0)
+            class_utils._check_field(md, fieldname = 'stressbalance.vertex_pairing', gt = 0)
 
         return md
     
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -177,12 +177,12 @@ class masstransport(class_registry.manage_state):
 
         ## Write header field
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'spcthickness', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'isfreesurface', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'min_thickness', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'hydrostatic_adjustment', format = 'String')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'stabilization', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'vertex_pairing', format = 'DoubleMat', mattype = 3)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'penalty_factor', format = 'Double')
-        execute.WriteData(fid, prefix, name = 'md.masstransport.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'spcthickness', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'isfreesurface', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'min_thickness', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'hydrostatic_adjustment', format = 'String')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'stabilization', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'vertex_pairing', format = 'DoubleMat', mattype = 3)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'penalty_factor', format = 'Double')
+        execute._write_model_field(fid, prefix, name = 'md.masstransport.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 

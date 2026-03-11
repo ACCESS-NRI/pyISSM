@@ -57,10 +57,10 @@ class private(class_registry.manage_state):
     def __repr__(self):
         s = '   private parameters -- do not change:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isconsistent', 'is model self consistent?'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'runtimename', 'name of the run launched'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'bamg', 'structure with mesh properties constructed if bamg is used to mesh the domain'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'solution', 'type of solution launched'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isconsistent', 'is model self consistent?'))
+        s += '{}\n'.format(class_utils._field_display(self, 'runtimename', 'name of the run launched'))
+        s += '{}\n'.format(class_utils._field_display(self, 'bamg', 'structure with mesh properties constructed if bamg is used to mesh the domain'))
+        s += '{}\n'.format(class_utils._field_display(self, 'solution', 'type of solution launched'))
         return s
 
     # Define class string

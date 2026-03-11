@@ -44,7 +44,7 @@ class sampling(class_registry.manage_state):
         Returns a detailed string representation of the sampling parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -78,20 +78,20 @@ class sampling(class_registry.manage_state):
         s = '   Sampling parameters:\n'
 
         s += '      Parameters of PDE operator (kappa^2 I-Laplacian)^(alpha/2)(tau):\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'kappa', 'coefficient of the identity operator'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'tau', 'scaling coefficient of the solution (default: 1.0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'alpha', 'exponent in PDE operator, (default: 2.0, BiLaplacian covariance operator)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'kappa', 'coefficient of the identity operator'))
+        s += '{}\n'.format(class_utils._field_display(self, 'tau', 'scaling coefficient of the solution (default: 1.0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'alpha', 'exponent in PDE operator, (default: 2.0, BiLaplacian covariance operator)'))
         s += '\n'
         s += '      Parameters of Robin boundary conditions nabla () \\cdot normvec + beta ():\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'robin', 'Apply Robin boundary conditions (1 if applied and 0 for homogenous Neumann boundary conditions) (default: 0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'beta', 'Coefficient in Robin boundary conditions (to be defined for robin = 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'robin', 'Apply Robin boundary conditions (1 if applied and 0 for homogenous Neumann boundary conditions) (default: 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'beta', 'Coefficient in Robin boundary conditions (to be defined for robin = 1)'))
         s += '\n'
         s += '      Parameters for first-order autoregressive process (X_t = phi X_{t-1} + noise) (if transient):\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'phi', 'Temporal correlation factor (|phi|<1 for stationary process, phi = 1 for random walk process) (default 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'phi', 'Temporal correlation factor (|phi|<1 for stationary process, phi = 1 for random walk process) (default 0)'))
         s += '\n'
         s += '      Other parameters of stochastic sampler:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'seed', 'Seed for pseudorandom number generator (given seed if >=0 and random seed if <0) (default: -1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested (not implemented yet)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'seed', 'Seed for pseudorandom number generator (given seed if >=0 and random seed if <0) (default: -1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested (not implemented yet)'))
         return s
 
     # Define class string
@@ -105,20 +105,20 @@ class sampling(class_registry.manage_state):
         if 'SamplingAnalysis' not in analyses:
             return md
 
-        class_utils.check_field(md, fieldname = 'sampling.kappa', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'sampling.tau', gt = 0, numel = 1, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'sampling.robin', numel = 1, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'sampling.kappa', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'sampling.tau', gt = 0, numel = 1, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'sampling.robin', numel = 1, values = [0, 1])
         if md.sampling.robin:
-            class_utils.check_field(md, fieldname = 'sampling.beta', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'sampling.beta', size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
     
-        class_utils.check_field(md, fieldname = 'sampling.alpha', numel = 1, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'sampling.seed', numel = 1, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'sampling.requested_outputs', string_list = True)
+        class_utils._check_field(md, fieldname = 'sampling.alpha', numel = 1, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'sampling.seed', numel = 1, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'sampling.requested_outputs', string_list = True)
 
         return md
     
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -181,10 +181,10 @@ class sampling(class_registry.manage_state):
         ## Write DoubleMat fields (all consistent formats)
         fieldnames = ['kappa', 'tau', 'beta', 'phi']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
 
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'alpha', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'robin', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'seed', format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.sampling.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'alpha', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'robin', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'seed', format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.sampling.requested_outputs', data = self._process_outputs(md), format = 'StringArray')

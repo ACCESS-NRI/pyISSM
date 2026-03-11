@@ -1,78 +1,68 @@
 import numpy as np
-from pyissm.model.classes import class_utils
-from pyissm.model.classes import class_registry
+from pyissm.model.classes import class_utils, class_registry
 from pyissm.model import execute, mesh
 
 @class_registry.register_class
 class damage(class_registry.manage_state):
     """
-    Damage mechanics parameters class for ISSM.
+    Damage mechanics class for ISSM.
 
-    This class encapsulates parameters for damage mechanics in the ISSM (Ice Sheet System Model) framework.
-    Damage mechanics models the evolution of cracks and fractures in ice, affecting ice rheology and flow.
-    It is particularly important for modeling ice shelf stability, calving, and fracture propagation.
+    This class contains parameters for damage mechanics in the ISSM framework.
+    Damage mechanics models the evolution of cracks and fractures in ice, affecting
+    ice rheology and flow. It is particularly important for modeling ice shelf stability,
+    calving, and fracture propagation.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    isdamage : int, default=0
+    isdamage : :class:`int`, default=0
         Is damage mechanics being used? [0 (default) or 1].
-    D : float, default=0
+    D : :class:`float`, default=0
         Damage tensor (scalar for now).
-    law : float, default=0
+    law : :class:`float`, default=0
         Damage law ['0: analytical', '1: pralong'].
-    spcdamage : ndarray, default=nan
+    spcdamage : :class:`numpy.ndarray`, default=np.nan
         Damage constraints (NaN means no constraint).
-    max_damage : float, default=1 - 1e-5
+    max_damage : :class:`float`, default=1 - 1e-5
         Maximum possible damage (0 <= max_damage < 1).
-    stabilization : float, default=4
+    stabilization : :class:`float`, default=4
         Stabilization method: 0=no stabilization, 1=artificial diffusion, 2=SUPG (not working), 4=flux corrected transport.
-    maxiter : float, default=100
+    maxiter : :class:`float`, default=100
         Maximum number of non-linear iterations.
-    elementinterp : str, default='P1'
+    elementinterp : :class:`str`, default='P1'
         Interpolation scheme for finite elements ['P1', 'P2'].
-    stress_threshold : float, default=1.3e5
+    stress_threshold : :class:`float`, default=1.3e5
         Stress threshold for damage initiation [Pa].
-    stress_ubound : float, default=nan
+    stress_ubound : :class:`float`, default=np.nan
         Stress upper bound for damage healing [Pa].
-    kappa : float, default=2.8
+    kappa : :class:`float`, default=2.8
         Ductility parameter for stress softening and damage [> 1].
-    c1 : float, default=0
+    c1 : :class:`float`, default=0
         Damage parameter 1.
-    c2 : float, default=0
+    c2 : :class:`float`, default=0
         Damage parameter 2.
-    c3 : float, default=0
+    c3 : :class:`float`, default=0
         Damage parameter 3.
-    c4 : float, default=0
+    c4 : :class:`float`, default=0
         Damage parameter 4.
-    healing : float, default=0
+    healing : :class:`float`, default=0
         Healing parameter.
-    equiv_stress : float, default=0
+    equiv_stress : :class:`float`, default=0
         Equivalent stress parameter.
-    requested_outputs : list, default=['default']
+    requested_outputs : :class:`list`, default=['default']
         Additional outputs requested.
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the damage parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the damage parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
-        Process requested outputs, expanding 'default' to appropriate outputs.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.damage = pyissm.model.classes.damage()
-    md.damage.isdamage = 1
+    .. code-block:: python
+    
+        >>> md.damage = pyissm.model.classes.damage()
+        >>> md.damage.isdamage = 1
     """
 
     # Initialise with default parameters
@@ -102,24 +92,24 @@ class damage(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   Damage:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isdamage', 'is damage mechanics being used? [0 (default) or 1]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "D", "damage tensor (scalar for now)"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "law", "damage law ['0: analytical', '1: pralong']"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "spcdamage", "damage constraints (NaN means no constraint)"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "max_damage", "maximum possible damage (0 <=max_damage < 1)"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "stabilization", "0: no stabilization, 1: artificial diffusion, 2: SUPG (not working), 4: flux corrected transport"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "maxiter", "maximum number of non linear iterations"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "elementinterp", "interpolation scheme for finite elements [''P1'', ''P2'']"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "stress_threshold", "stress threshold for damage initiation (Pa)"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "stress_ubound", "stress upper bound for damage healing (Pa)"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "kappa", "ductility parameter for stress softening and damage [ > 1]"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "c1", "damage parameter 1 "))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "c2", "damage parameter 2 "))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "c3", "damage parameter 3 "))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "c4", "damage parameter 4 "))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "healing", "damage healing parameter"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, "equiv_stress", "0: von Mises, 1: max principal"))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isdamage', 'is damage mechanics being used? [0 (default) or 1]'))
+        s += '{}\n'.format(class_utils._field_display(self, "D", "damage tensor (scalar for now)"))
+        s += '{}\n'.format(class_utils._field_display(self, "law", "damage law ['0: analytical', '1: pralong']"))
+        s += '{}\n'.format(class_utils._field_display(self, "spcdamage", "damage constraints (NaN means no constraint)"))
+        s += '{}\n'.format(class_utils._field_display(self, "max_damage", "maximum possible damage (0 <=max_damage < 1)"))
+        s += '{}\n'.format(class_utils._field_display(self, "stabilization", "0: no stabilization, 1: artificial diffusion, 2: SUPG (not working), 4: flux corrected transport"))
+        s += '{}\n'.format(class_utils._field_display(self, "maxiter", "maximum number of non linear iterations"))
+        s += '{}\n'.format(class_utils._field_display(self, "elementinterp", "interpolation scheme for finite elements [''P1'', ''P2'']"))
+        s += '{}\n'.format(class_utils._field_display(self, "stress_threshold", "stress threshold for damage initiation (Pa)"))
+        s += '{}\n'.format(class_utils._field_display(self, "stress_ubound", "stress upper bound for damage healing (Pa)"))
+        s += '{}\n'.format(class_utils._field_display(self, "kappa", "ductility parameter for stress softening and damage [ > 1]"))
+        s += '{}\n'.format(class_utils._field_display(self, "c1", "damage parameter 1 "))
+        s += '{}\n'.format(class_utils._field_display(self, "c2", "damage parameter 2 "))
+        s += '{}\n'.format(class_utils._field_display(self, "c3", "damage parameter 3 "))
+        s += '{}\n'.format(class_utils._field_display(self, "c4", "damage parameter 4 "))
+        s += '{}\n'.format(class_utils._field_display(self, "healing", "damage healing parameter"))
+        s += '{}\n'.format(class_utils._field_display(self, "equiv_stress", "0: von Mises, 1: max principal"))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -128,37 +118,55 @@ class damage(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
         Extrude damage fields to 3D
         """
-        self.D = mesh.project_3d(md, vector = self.D, type = 'node')
-        self.spcdamage = mesh.project_3d(md, vector = self.spcdamage, type = 'node')
+        self.D = mesh._project_3d(md, vector = self.D, type = 'node')
+        self.spcdamage = mesh._project_3d(md, vector = self.spcdamage, type = 'node')
             
         return self
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        class_utils.check_field(md, fieldname = "damage.isdamage", scalar = True, values = [0, 1])
+        """
+        Check consistency of the [damage] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
+        class_utils._check_field(md, fieldname = "damage.isdamage", scalar = True, values = [0, 1])
 
         if self.isdamage:
-            class_utils.check_field(md, fieldname = "damage.D", ge = 0, le = self.max_damage, size = (md.mesh.numberofvertices, ))
-            class_utils.check_field(md, fieldname = "damage.max_damage", ge = 0, lt = 1)
-            class_utils.check_field(md, fieldname = "damage.law", scalar = True, values = [0, 1, 2, 3])
-            class_utils.check_field(md, fieldname = "damage.spcdamage", allow_inf = True, timeseries = True)
-            class_utils.check_field(md, fieldname = "damage.stabilization", scalar = True, values = [0, 1, 2, 4])
-            class_utils.check_field(md, fieldname = "damage.maxiter", ge = 0)
-            class_utils.check_field(md, fieldname = "damage.elementinterp", values = ["P1", "P2"])
-            class_utils.check_field(md, fieldname = "damage.stress_threshold", ge = 0)
-            class_utils.check_field(md, fieldname = "damage.stress_ubound", ge = 0)
-            class_utils.check_field(md, fieldname = "damage.kappa", gt = 1)
-            class_utils.check_field(md, fieldname = "damage.healing", ge = 0)
-            class_utils.check_field(md, fieldname = "damage.c1", ge = 0)
-            class_utils.check_field(md, fieldname = "damage.c2", ge = 0)
-            class_utils.check_field(md, fieldname = "damage.c3", ge = 0)
-            class_utils.check_field(md, fieldname = "damage.c4", ge = 0)
-            class_utils.check_field(md, fieldname = "damage.equiv_stress", scalar = True, values = [0, 1])
-            class_utils.check_field(md, fieldname = "damage.requested_outputs", string_list = True)
+            class_utils._check_field(md, fieldname = "damage.D", ge = 0, le = self.max_damage, size = (md.mesh.numberofvertices, ))
+            class_utils._check_field(md, fieldname = "damage.max_damage", ge = 0, lt = 1)
+            class_utils._check_field(md, fieldname = "damage.law", scalar = True, values = [0, 1, 2, 3])
+            class_utils._check_field(md, fieldname = "damage.spcdamage", allow_inf = True, timeseries = True)
+            class_utils._check_field(md, fieldname = "damage.stabilization", scalar = True, values = [0, 1, 2, 4])
+            class_utils._check_field(md, fieldname = "damage.maxiter", ge = 0)
+            class_utils._check_field(md, fieldname = "damage.elementinterp", values = ["P1", "P2"])
+            class_utils._check_field(md, fieldname = "damage.stress_threshold", ge = 0)
+            class_utils._check_field(md, fieldname = "damage.stress_ubound", ge = 0)
+            class_utils._check_field(md, fieldname = "damage.kappa", gt = 1)
+            class_utils._check_field(md, fieldname = "damage.healing", ge = 0)
+            class_utils._check_field(md, fieldname = "damage.c1", ge = 0)
+            class_utils._check_field(md, fieldname = "damage.c2", ge = 0)
+            class_utils._check_field(md, fieldname = "damage.c3", ge = 0)
+            class_utils._check_field(md, fieldname = "damage.c4", ge = 0)
+            class_utils._check_field(md, fieldname = "damage.equiv_stress", scalar = True, values = [0, 1])
+            class_utils._check_field(md, fieldname = "damage.requested_outputs", string_list = True)
 
         elif self.law != 0:
             if solution == "DamageEvolutionSolution":
@@ -167,24 +175,24 @@ class damage(class_registry.manage_state):
         return md
     
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
-        Process requested outputs, expanding 'default' to appropriate outputs.
+        Process requested outputs for [damage] parameters, expanding 'default' to appropriate outputs.
 
         Parameters
         ----------
-        md : ISSM model object, optional
+        md : :class:`pyissm.model.Model`, optional
             Model object containing mesh information.
-        return_default_outputs : bool, default=False
+        return_default_outputs : :class:`bool`, default=False
             Whether to also return the list of default outputs.
             
         Returns
         -------
-        outputs : list
+        outputs : :class:`list`
             List of output strings with 'default' expanded to actual output names.
-        default_outputs : list, optional
+        default_outputs : :class:`list`, optional
             Returned only if `return_default_outputs=True`.
         """
 
@@ -220,38 +228,38 @@ class damage(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
         """
         
         ## Write Boolean fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'isdamage', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'isdamage', format = 'Boolean')
 
         ## If damage is enabled, write additional fields
         if self.isdamage:
             ## Write Integer fields
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'law', format = 'Integer')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'stabilization', format = 'Integer')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'maxiter', format = 'Integer')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'equiv_stress', format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'law', format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'stabilization', format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'maxiter', format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'equiv_stress', format = 'Integer')
 
             ## Write DoubleMat fields
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'D', format = 'DoubleMat', mattype = 1)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'spcdamage', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'D', format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'spcdamage', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
             ## Write Double fields
             fieldnames = ['max_damage', 'stress_threshold', 'stress_ubound', 'kappa', 'c1', 'c2', 'c3', 'c4', 'healing']
             for fieldname in fieldnames:
-                execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'Double')
+                execute._write_model_field(fid, prefix, obj = self, fieldname = fieldname, format = 'Double')
 
             ## Write other fields
-            execute.WriteData(fid, prefix, name = 'md.damage.elementinterp', data = self.elementinterp, format = 'String')
-            execute.WriteData(fid, prefix, name = 'md.damage.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+            execute._write_model_field(fid, prefix, name = 'md.damage.elementinterp', data = self.elementinterp, format = 'String')
+            execute._write_model_field(fid, prefix, name = 'md.damage.requested_outputs', data = self._process_outputs(md), format = 'StringArray')

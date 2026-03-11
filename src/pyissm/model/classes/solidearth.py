@@ -60,7 +60,7 @@ class earth(class_registry.manage_state):
         Returns a detailed string representation of the solid earth parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -103,15 +103,15 @@ class earth(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   solidearth inputs, forcings, and settings:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'planetradius', 'planet radius [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'transitions', 'indices into parts of the mesh that will be icecaps'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'transfercount', 'number of icecaps vertices are part of'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'partitionice', 'ice partition vector for barystatic contribution'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'partitionhydro', 'hydro partition vector for barystatic contribution'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'partitionocean', 'ocean partition vector for barystatic contribution'))
+        s += '{}\n'.format(class_utils._field_display(self, 'planetradius', 'planet radius [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'transitions', 'indices into parts of the mesh that will be icecaps'))
+        s += '{}\n'.format(class_utils._field_display(self, 'transfercount', 'number of icecaps vertices are part of'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'partitionice', 'ice partition vector for barystatic contribution'))
+        s += '{}\n'.format(class_utils._field_display(self, 'partitionhydro', 'hydro partition vector for barystatic contribution'))
+        s += '{}\n'.format(class_utils._field_display(self, 'partitionocean', 'ocean partition vector for barystatic contribution'))
         if not self.external:
-            s += '{}\n'.format(class_utils.fielddisplay(self, 'external', 'external solution, of the type solidearthsolution'))
+            s += '{}\n'.format(class_utils._field_display(self, 'external', 'external solution, of the type solidearthsolution'))
         return s
 
     # Define class string
@@ -120,11 +120,11 @@ class earth(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude solidearth.earth fields to 3D
+        Extrude [solidearth.earth] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.solidearth.earth.extrude: 3D extrusion not implemented for solidearth.earth. Returning unchanged (2D) solidearth fields.')
+        warnings.warn('pyissm.model.classes.solidearth.earth._extrude: 3D extrusion not implemented for solidearth.earth. Returning unchanged (2D) solidearth fields.')
 
         return self
 
@@ -134,7 +134,7 @@ class earth(class_registry.manage_state):
         if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc):
             return md
 
-        class_utils.check_field(md, fieldname = 'solidearth.requested_outputs', string_list = True)
+        class_utils._check_field(md, fieldname = 'solidearth.requested_outputs', string_list = True)
 
         settings.check_consistency(md, solution, analyses)
         lovenumbers.check_consistency(md, solution, analyses)
@@ -146,7 +146,7 @@ class earth(class_registry.manage_state):
         return md
 
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -223,16 +223,16 @@ class earth(class_registry.manage_state):
             npartocean = 0
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'planetradius', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'transitions', format = 'MatArray')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'transfercount', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'partitionice', mattype = 1, format = 'DoubleMat')
-        execute.WriteData(fid, prefix, name = 'md.solidearth.npartice', data = npartice, format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'partitionhydro', mattype = 1, format = 'DoubleMat')
-        execute.WriteData(fid, prefix, name = 'md.solidearth.nparthydro', data = nparthydro, format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'partitionocean', mattype = 1, format = 'DoubleMat')
-        execute.WriteData(fid, prefix, name = 'md.solidearth.npartocean', data = npartocean, format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.solidearth.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'planetradius', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'transitions', format = 'MatArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'transfercount', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'partitionice', mattype = 1, format = 'DoubleMat')
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.npartice', data = npartice, format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'partitionhydro', mattype = 1, format = 'DoubleMat')
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.nparthydro', data = nparthydro, format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'partitionocean', mattype = 1, format = 'DoubleMat')
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.npartocean', data = npartocean, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
         ## Marshall sub-objects
         self.settings.marshall_class(fid, prefix, md)
@@ -241,12 +241,12 @@ class earth(class_registry.manage_state):
 
         ## Write conditional fields
         if self.external:
-            execute.WriteData(fid, prefix, name = 'md.solidearth.isexternal', data = 1, format = 'Integer')
+            execute._write_model_field(fid, prefix, name = 'md.solidearth.isexternal', data = 1, format = 'Integer')
 
             ## If external exists, it will contain a marshall_class() function.
             self.external.marshall_class(prefix, md, fid)
         else:
-            execute.WriteData(fid, prefix, name = 'md.solidearth.isexternal', data = 0, format = 'Integer')
+            execute._write_model_field(fid, prefix, name = 'md.solidearth.isexternal', data = 0, format = 'Integer')
 
 ## ------------------------------------------------------
 ## solidearth.europa
@@ -300,7 +300,7 @@ class europa(class_registry.manage_state):
         Returns a detailed string representation of the solid body parameters.
     __str__(self)
         Returns a short string identifying the class.
-    process_outputs(self, md=None, return_default_outputs=False)
+    _process_outputs(self, md=None, return_default_outputs=False)
         Process requested outputs, expanding 'default' to appropriate outputs.
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
@@ -344,15 +344,15 @@ class europa(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   solidearth inputs, forcings, and settings:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'planetradius', 'planet radius [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'transitions', 'indices into parts of the mesh that will be icecaps'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'transfercount', 'number of icecaps vertices are part of'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'partitionice', 'ice partition vector for barystatic contribution'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'partitionhydro', 'hydro partition vector for barystatic contribution'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'partitionocean', 'ocean partition vector for barystatic contribution'))
+        s += '{}\n'.format(class_utils._field_display(self, 'planetradius', 'planet radius [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'transitions', 'indices into parts of the mesh that will be icecaps'))
+        s += '{}\n'.format(class_utils._field_display(self, 'transfercount', 'number of icecaps vertices are part of'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'partitionice', 'ice partition vector for barystatic contribution'))
+        s += '{}\n'.format(class_utils._field_display(self, 'partitionhydro', 'hydro partition vector for barystatic contribution'))
+        s += '{}\n'.format(class_utils._field_display(self, 'partitionocean', 'ocean partition vector for barystatic contribution'))
         if not self.external:
-            s += '{}\n'.format(class_utils.fielddisplay(self, 'external', 'external solution, of the type solidearthsolution'))
+            s += '{}\n'.format(class_utils._field_display(self, 'external', 'external solution, of the type solidearthsolution'))
         return s
 
     # Define class string
@@ -361,11 +361,11 @@ class europa(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude solidearth.europa fields to 3D
+        Extrude [solidearth.europa] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.solidearth.europa.extrude: 3D extrusion not implemented for solidearth.europa. Returning unchanged (2D) solidearth fields.')
+        warnings.warn('pyissm.model.classes.solidearth.europa._extrude: 3D extrusion not implemented for solidearth.europa. Returning unchanged (2D) solidearth fields.')
 
         return self
     
@@ -375,19 +375,19 @@ class europa(class_registry.manage_state):
         if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc):
             return md
 
-        class_utils.check_field(md, fieldname = 'solidearth.requested_outputs', string_list = True)
+        class_utils._check_field(md, fieldname = 'solidearth.requested_outputs', string_list = True)
 
         settings.check_consistency(md, solution, analyses)
         lovenumbers.check_consistency(md, solution, analyses)
         rotational.check_consistency(md, solution, analyses)
         if self.external:
             if not isinstance(self.external, solution):
-                raise Exception('pyissm.model.classes.solidearth.earth.check_consistency: external field should be a pyissm.model.classes.solidearth.solution')
+                raise Exception('pyissm.model.classes.solidearth.europa.check_consistency: external field should be a pyissm.model.classes.solidearth.solution')
             self.external.check_consistency(md, solution, analyses)
         return md
     
     # Process requested outputs, expanding 'default' to appropriate outputs
-    def process_outputs(self,
+    def _process_outputs(self,
                         md = None,
                         return_default_outputs = False):
         """
@@ -464,16 +464,16 @@ class europa(class_registry.manage_state):
             npartocean = 0
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'planetradius', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'transitions', format = 'MatArray')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'transfercount', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'partitionice', mattype = 1, format = 'DoubleMat')
-        execute.WriteData(fid, prefix, name = 'md.solidearth.npartice', data = npartice, format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'partitionhydro', mattype = 1, format = 'DoubleMat')
-        execute.WriteData(fid, prefix, name = 'md.solidearth.nparthydro', data = nparthydro, format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'partitionocean', mattype = 1, format = 'DoubleMat')
-        execute.WriteData(fid, prefix, name = 'md.solidearth.npartocean', data = npartocean, format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.solidearth.requested_outputs', data = self.process_outputs(md), format = 'StringArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'planetradius', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'transitions', format = 'MatArray')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'transfercount', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'partitionice', mattype = 1, format = 'DoubleMat')
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.npartice', data = npartice, format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'partitionhydro', mattype = 1, format = 'DoubleMat')
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.nparthydro', data = nparthydro, format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'partitionocean', mattype = 1, format = 'DoubleMat')
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.npartocean', data = npartocean, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
         ## Marshall sub-objects
         self.settings.marshall_class(fid, prefix, md)
@@ -482,12 +482,12 @@ class europa(class_registry.manage_state):
 
         ## Write conditional fields
         if self.external:
-            execute.WriteData(fid, prefix, name = 'md.solidearth.isexternal', data = 1, format = 'Integer')
+            execute._write_model_field(fid, prefix, name = 'md.solidearth.isexternal', data = 1, format = 'Integer')
 
             ## If external exists, it will contain a marshall_class() function.
             self.external.marshall_class(prefix, md, fid)
         else:
-            execute.WriteData(fid, prefix, name = 'md.solidearth.isexternal', data = 0, format = 'Integer')
+            execute._write_model_field(fid, prefix, name = 'md.solidearth.isexternal', data = 0, format = 'Integer')
 
 ## ------------------------------------------------------
 ## solidearth.settings
@@ -606,23 +606,23 @@ class settings(class_registry.manage_state):
     def __repr__(self):
         s = '   solidearth settings:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'reltol', 'sea level change relative convergence criterion (default, NaN: not applied)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'abstol', 'sea level change absolute convergence criterion (default, NaN: not applied)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'maxiter', 'maximum number of nonlinear iterations'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'grdocean', 'does this planet have an ocean, if set to 1: global water mass is conserved in GRD module (default: 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ocean_area_scaling', 'correction for model representation of ocean area (default: No correction)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sealevelloading', 'enables surface loading from sea-level change (default: 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isgrd', 'compute GRD patterns (default: 1'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'compute_bp_grd', 'compute GRD patterns for bottom pressure loads (default 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'runfrequency', 'how many time steps we skip before we run solidearthsettings solver during transient (default: 1)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'selfattraction', 'enables surface mass load to perturb the gravity field'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'elastic', 'enables elastic deformation from surface loading'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'viscous', 'enables viscous deformation from surface loading'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'rotation', 'enables polar motion to feedback on the GRD fields'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'degacc', 'accuracy (default: .01 deg) for numerical discretization of the Green\'s functions'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'timeacc', 'time accuracy (default: 1 year) for numerical discretization of the Green\'s functions'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'grdmodel', 'type of deformation model, 0 for no GRD, 1 for spherical GRD model (SESAW model), 2 for half-space planar GRD (visco-elastic model from Ivins)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'cross_section_shape', '1: square-edged (default). 2: elliptical. See iedge in GiaDeflectionCore'))
+        s += '{}\n'.format(class_utils._field_display(self, 'reltol', 'sea level change relative convergence criterion (default, NaN: not applied)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'abstol', 'sea level change absolute convergence criterion (default, NaN: not applied)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'maxiter', 'maximum number of nonlinear iterations'))
+        s += '{}\n'.format(class_utils._field_display(self, 'grdocean', 'does this planet have an ocean, if set to 1: global water mass is conserved in GRD module (default: 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ocean_area_scaling', 'correction for model representation of ocean area (default: No correction)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sealevelloading', 'enables surface loading from sea-level change (default: 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isgrd', 'compute GRD patterns (default: 1'))
+        s += '{}\n'.format(class_utils._field_display(self, 'compute_bp_grd', 'compute GRD patterns for bottom pressure loads (default 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'runfrequency', 'how many time steps we skip before we run solidearthsettings solver during transient (default: 1)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'selfattraction', 'enables surface mass load to perturb the gravity field'))
+        s += '{}\n'.format(class_utils._field_display(self, 'elastic', 'enables elastic deformation from surface loading'))
+        s += '{}\n'.format(class_utils._field_display(self, 'viscous', 'enables viscous deformation from surface loading'))
+        s += '{}\n'.format(class_utils._field_display(self, 'rotation', 'enables polar motion to feedback on the GRD fields'))
+        s += '{}\n'.format(class_utils._field_display(self, 'degacc', 'accuracy (default: .01 deg) for numerical discretization of the Green\'s functions'))
+        s += '{}\n'.format(class_utils._field_display(self, 'timeacc', 'time accuracy (default: 1 year) for numerical discretization of the Green\'s functions'))
+        s += '{}\n'.format(class_utils._field_display(self, 'grdmodel', 'type of deformation model, 0 for no GRD, 1 for spherical GRD model (SESAW model), 2 for half-space planar GRD (visco-elastic model from Ivins)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'cross_section_shape', '1: square-edged (default). 2: elliptical. See iedge in GiaDeflectionCore'))
         return s
 
     # Define class string
@@ -631,11 +631,11 @@ class settings(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude solidearth.settings fields to 3D
+        Extrude [solidearth.settings] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.solidearth.settings.extrude: 3D extrusion not implemented for solidearth.settings. Returning unchanged (2D) solidearth fields.')
+        warnings.warn('pyissm.model.classes.solidearth.settings._extrude: 3D extrusion not implemented for solidearth.settings. Returning unchanged (2D) solidearth fields.')
 
         return self
     
@@ -645,15 +645,15 @@ class settings(class_registry.manage_state):
         if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc):
             return md
 
-        class_utils.check_field(md, fieldname = 'solidearth.settings.reltol', scalar = True)
-        class_utils.check_field(md, fieldname = 'solidearth.settings.abstol', scalar = True)
-        class_utils.check_field(md, fieldname = 'solidearth.settings.maxiter', scalar = True, ge = 1)
-        class_utils.check_field(md, fieldname = 'solidearth.settings.runfrequency', scalar = True, ge = 1)
-        class_utils.check_field(md, fieldname = 'solidearth.settings.degacc', scalar = True, ge = 1e-10)
-        class_utils.check_field(md, fieldname = 'solidearth.settings.timeacc', scalar = True, gt = 0)
-        class_utils.check_field(md, fieldname = 'solidearth.settings.horiz', values = [0, 1], allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.settings.grdmodel', ge = 0, le = 2)
-        class_utils.check_field(md, fieldname = 'solidearth.settings.cross_section_shape', scalar = True, values = [1, 2])
+        class_utils._check_field(md, fieldname = 'solidearth.settings.reltol', scalar = True)
+        class_utils._check_field(md, fieldname = 'solidearth.settings.abstol', scalar = True)
+        class_utils._check_field(md, fieldname = 'solidearth.settings.maxiter', scalar = True, ge = 1)
+        class_utils._check_field(md, fieldname = 'solidearth.settings.runfrequency', scalar = True, ge = 1)
+        class_utils._check_field(md, fieldname = 'solidearth.settings.degacc', scalar = True, ge = 1e-10)
+        class_utils._check_field(md, fieldname = 'solidearth.settings.timeacc', scalar = True, gt = 0)
+        class_utils._check_field(md, fieldname = 'solidearth.settings.horiz', values = [0, 1], allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.settings.grdmodel', ge = 0, le = 2)
+        class_utils._check_field(md, fieldname = 'solidearth.settings.cross_section_shape', scalar = True, values = [1, 2])
 
         if self.elastic and not self.selfattraction:
             raise Exception('pyissm.model.classes.solidearth.settings.check_consistency: need selfattraction on if elastic flag is set')
@@ -698,20 +698,20 @@ class settings(class_registry.manage_state):
         ## Write Double fields
         fieldnames = ['reltol', 'abstol', 'degacc']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, name = 'md.solidearth.settings.' + field, data = getattr(self, field), format = 'Double')
+            execute._write_model_field(fid, prefix, name = 'md.solidearth.settings.' + field, data = getattr(self, field), format = 'Double')
 
         ## Write Integer fields
         fieldnames = ['maxiter', 'runfrequency', 'horiz', 'sealevelloading', 'isgrd', 'compute_bp_grd', 'grdmodel', 'cross_section_shape']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, name = 'md.solidearth.settings.' + field, data = getattr(self, field), format = 'Integer')
+            execute._write_model_field(fid, prefix, name = 'md.solidearth.settings.' + field, data = getattr(self, field), format = 'Integer')
 
         ## Write Boolean fields
         fieldnames = ['selfattraction', 'elastic', 'viscous', 'rotation', 'grdocean', 'ocean_area_scaling']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, name = 'md.solidearth.settings.' + field, data = getattr(self, field), format = 'Boolean')
+            execute._write_model_field(fid, prefix, name = 'md.solidearth.settings.' + field, data = getattr(self, field), format = 'Boolean')
         
         ## Write other fields
-        execute.WriteData(fid, prefix, name = 'md.solidearth.settings.timeacc', data = getattr(self, 'timeacc'), format = 'Double', scale = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.settings.timeacc', data = getattr(self, 'timeacc'), format = 'Double', scale = md.constants.yts)
 
 ## ------------------------------------------------------
 ## solidearth.solution
@@ -788,10 +788,10 @@ class solution(class_registry.manage_state):
         s = '   solidearth solution:\n'
         s += '         units for time series is (yr)\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'displacementeast', 'solid-Earth Eastwards bedrock displacement series (m)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'displacementnorth', 'solid-Earth Northwards bedrock displacement time series (m)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'displacementup', 'solid-Earth bedrock uplift time series (m)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'geoid', 'solid-Earth geoid time series (m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'displacementeast', 'solid-Earth Eastwards bedrock displacement series (m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'displacementnorth', 'solid-Earth Northwards bedrock displacement time series (m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'displacementup', 'solid-Earth bedrock uplift time series (m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'geoid', 'solid-Earth geoid time series (m)'))
         return s
 
     # Define class string
@@ -800,20 +800,20 @@ class solution(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude solidearth.solution fields to 3D
+        Extrude [solidearth.solution] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.solidearth.solution.extrude: 3D extrusion not implemented for solidearth.solution. Returning unchanged (2D) solidearth fields.')
+        warnings.warn('pyissm.model.classes.solidearth.solution._extrude: 3D extrusion not implemented for solidearth.solution. Returning unchanged (2D) solidearth fields.')
 
         return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        class_utils.check_field(md, fieldname = 'solidearth.external.displacementeast', timeseries = True, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.external.displacementnorth', timeseries = True, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.external.displacementup', timeseries = True, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.external.geoid', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.external.displacementeast', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.external.displacementnorth', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.external.displacementup', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.external.geoid', timeseries = True, allow_inf = False)
 
         return md
 
@@ -857,9 +857,9 @@ class solution(class_registry.manage_state):
             geoid_rate = np.append(geoid_rate,time[:-1].reshape(1,-1),axis = 0)
 
         ## Write fields
-        execute.WriteData(fid, prefix, name = 'md.solidearth.external.nature', data = 0, format = 'Integer')
-        execute.WriteData(fid, prefix, name = 'md.solidearth.external.displacementeast', data = displacementeast_rate, format = 'DoubleMat',  mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.solidearth.external.displacementup', data = displacementup_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.solidearth.external.displacementnorth', data = displacementnorth_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.solidearth.external.geoid', data = geoid_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.external.nature', data = 0, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.external.displacementeast', data = displacementeast_rate, format = 'DoubleMat',  mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.external.displacementup', data = displacementup_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.external.displacementnorth', data = displacementnorth_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.external.geoid', data = geoid_rate, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 

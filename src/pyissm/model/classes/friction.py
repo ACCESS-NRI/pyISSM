@@ -1,6 +1,9 @@
+"""
+Friction classes for ISSM.
+"""
+
 import numpy as np
-from pyissm.model.classes import class_utils
-from pyissm.model.classes import class_registry
+from pyissm.model.classes import class_utils, class_registry
 from pyissm.model import execute, mesh
 
 ## ------------------------------------------------------
@@ -9,47 +12,39 @@ from pyissm.model import execute, mesh
 @class_registry.register_class
 class default(class_registry.manage_state):
     """
-    Default friction parameters class for ISSM.
+    Default friction class for ISSM.
 
-    This class encapsulates the default parameters for friction in the ISSM (Ice Sheet System Model) framework.
-    It defines the main friction-related parameters.
+    This class contains the parameters for the default (Budd) friction law in the ISSM framework.
+    It defines the main friction-related parameters specific to the Budd law.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    coefficient : ndarray, default=np.nan
+    coefficient : :class:`nump.ndarray`, default=np.nan
         Friction coefficient [SI].
-    p : ndarray, default=np.nan
+    p : :class:`nump.ndarray`, default=np.nan
         p exponent.
-    q : ndarray, default=np.nan
+    q : :class:`nump.ndarray`, default=np.nan
         q exponent.
-    coupling : int, default=0
+    coupling : :class:`int`, default=0
         Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet).
-    linearize : int, default=0
+    linearize : :class:`int`, default=0
         0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0).
-    effective_pressure : ndarray, default=np.nan
+    effective_pressure : :class:`nump.ndarray`, default=np.nan
         Effective Pressure for the forcing if not coupled [Pa].
-    effective_pressure_limit : ndarray, default=0
+    effective_pressure_limit : :class:`nump.ndarray`, default=0
         Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the friction parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the friction parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.friction = pyissm.model.classes.friction.default()
+    .. code-block:: python
+
+        >>> md.friction = pyissm.model.classes.friction.default()
     """
 
     # Initialise with default parameters
@@ -70,13 +65,13 @@ class default(class_registry.manage_state):
         s = 'Basal shear stress parameters: Sigma_b = coefficient^2 * Neff ^r * |u_b|^(s - 1) * u_b,\n'
         s += '(effective stress Neff = rho_ice * g * thickness + rho_water * g * base, r = q / p and s = 1 / p)\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficient', 'friction coefficient [SI]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'p', 'p exponent'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'q', 'q exponent'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coupling', 'Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'linearize', '0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coefficient', 'friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'p', 'p exponent'))
+        s += '{}\n'.format(class_utils._field_display(self, 'q', 'q exponent'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coupling', 'Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'linearize', '0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
         return s
 
     # Define class string
@@ -85,13 +80,13 @@ class default(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude friction.default fields to 3D
+        Extrude [friction.default] fields to 3D
         """
-        self.coefficient = mesh.project_3d(md, vector = self.coefficient, type = 'node', layer = 1)
-        self.p = mesh.project_3d(md, vector = self.p, type = 'element')
-        self.q = mesh.project_3d(md, vector = self.q, type = 'element')
+        self.coefficient = mesh._project_3d(md, vector = self.coefficient, type = 'node', layer = 1)
+        self.p = mesh._project_3d(md, vector = self.p, type = 'element')
+        self.q = mesh._project_3d(md, vector = self.q, type = 'element')
         if self.coupling in[3, 4]:
             self.effective_pressure = mesh.project3d(md, vector = self.effective_pressure, type = 'node', layer = 1)
 
@@ -99,6 +94,23 @@ class default(class_registry.manage_state):
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [friction.default] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if necessary analyses or solutions not specified
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
@@ -106,15 +118,15 @@ class default(class_registry.manage_state):
         if solution == 'TransientSolution' and not md.transient.isstressbalance and not md.transient.isthermal:
             return md
         
-        class_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.p", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2, 3, 4])
-        class_utils.check_field(md, fieldname = "friction.linearize", scalar = True, values = [0, 1, 2])
-        class_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)
+        class_utils._check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.p", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2, 3, 4])
+        class_utils._check_field(md, fieldname = "friction.linearize", scalar = True, values = [0, 1, 2])
+        class_utils._check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)
 
         if self.coupling == 3:
-            class_utils.check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
 
         return md
 
@@ -125,13 +137,13 @@ class default(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -139,26 +151,26 @@ class default(class_registry.manage_state):
 
         ## Write headers to file
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, data = 1, name = 'md.friction.law', format = 'Integer')
+        execute._write_model_field(fid, prefix, data = 1, name = 'md.friction.law', format = 'Integer')
 
         ## Write coefficient field
         if isinstance(self.coefficient, np.ndarray) and ((self.coefficient.shape[0] == md.mesh.numberofvertices) or (self.coefficient.shape[0] == md.mesh.numberofvertices + 1)):
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'coefficient', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'coefficient', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         elif isinstance(self.coefficient, np.ndarray) and ((self.coefficient.shape[0] == md.mesh.numberofelements) or (self.coefficient.shape[0] == md.mesh.numberofelements + 1)):
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'coefficient', format = 'DoubleMat', mattype = 2, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'coefficient', format = 'DoubleMat', mattype = 2, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
         else:
             raise RuntimeError('friction coefficient time series should be a vertex or element time series')
         
         ## Write other fields with specific formats
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'p', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'q', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'coupling', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'linearize', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure_limit', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'p', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'q', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'coupling', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'linearize', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'effective_pressure_limit', format = 'Double')
         
         ## Write conditional effective pressure
         if (self.coupling == 3) or (self.coupling == 4):
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'effective_pressure', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         elif self.coupling > 4:
             raise ValueError(f'md.friction.coupling = {self.coupling} is not implemented yet')
         
@@ -169,47 +181,39 @@ class default(class_registry.manage_state):
 @class_registry.register_class
 class coulomb(class_registry.manage_state):
     """
-    Coulomb friction parameters class for ISSM.
+    Coulomb friction class for ISSM.
 
-    This class encapsulates the parameters for the Coulomb friction law in the ISSM (Ice Sheet System Model) framework.
+    This class contains the parameters for the Coulomb friction law in the ISSM framework.
     It defines the main friction-related parameters specific to the Coulomb law.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    coefficient : ndarray, default=np.nan
+    coefficient : :class:`numpy.ndarray`, default=np.nan
         Power law (Weertman) friction coefficient [SI].
-    coefficientcoulomb : ndarray, default=np.nan
+    coefficientcoulomb : :class:`numpy.ndarray`, default=np.nan
         Coulomb friction coefficient [SI].
-    p : ndarray, default=np.nan
+    p : :class:`numpy.ndarray`, default=np.nan
         p exponent.
-    q : ndarray, default=np.nan
+    q : :class:`numpy.ndarray`, default=np.nan
         q exponent.
-    coupling : int, default=0
+    coupling : :class:`int`, default=0
         Coupling flag: 0 for default, 1 for forcing (provide md.friction.effective_pressure), 2 for coupled (not implemented yet).
-    effective_pressure : =ndarray, default=np.nan
+    effective_pressure : :class:`numpy.ndarray`, default=np.nan
         Effective Pressure for the forcing if not coupled [Pa].
-    effective_pressure_limit : =ndarray, default=0
+    effective_pressure_limit : :class:`numpy.ndarray`, default=0
         Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the friction parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the friction parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.friction = pyissm.model.classes.friction.coulomb()
+    .. code-block:: python
+        
+        >>> md.friction = pyissm.model.classes.friction.coulomb()
     """
 
     # Initialise with default parameters
@@ -230,13 +234,13 @@ class coulomb(class_registry.manage_state):
         s = 'Basal shear stress parameters: Sigma_b = min(coefficient^2 * Neff ^r * |u_b|^(s - 1) * u_b,\n'
         s += 'coefficientcoulomb^2 * Neff), (effective stress Neff = rho_ice * g * thickness + rho_water * g * bed, r = q / p and s = 1 / p).\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficient', 'power law (Weertman) friction coefficient [SI]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficientcoulomb', 'Coulomb friction coefficient [SI]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'p', 'p exponent'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'q', 'q exponent'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coupling', 'Coupling flag: 0 for default, 1 for forcing(provide md.friction.effective_pressure)  and 2 for coupled(not implemented yet)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coefficient', 'power law (Weertman) friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coefficientcoulomb', 'Coulomb friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'p', 'p exponent'))
+        s += '{}\n'.format(class_utils._field_display(self, 'q', 'q exponent'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coupling', 'Coupling flag: 0 for default, 1 for forcing(provide md.friction.effective_pressure)  and 2 for coupled(not implemented yet)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
         return s
 
     # Define class string
@@ -245,37 +249,54 @@ class coulomb(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude friction.coulomb fields to 3D
+        Extrude [friction.coulomb] fields to 3D
         """
-        self.coefficient = mesh.project_3d(md, vector = self.coefficient, type = 'node',  layer = 1)
-        self.coefficientcoulomb = mesh.project_3d(md, vector = self.coefficientcoulomb, type = 'node', layer = 1)
-        self.p = mesh.project_3d(md, vector = self.p, type = 'element')
-        self.q = mesh.project_3d(md, vector = self.q, type = 'element')
+        self.coefficient = mesh._project_3d(md, vector = self.coefficient, type = 'node',  layer = 1)
+        self.coefficientcoulomb = mesh._project_3d(md, vector = self.coefficientcoulomb, type = 'node', layer = 1)
+        self.p = mesh._project_3d(md, vector = self.p, type = 'element')
+        self.q = mesh._project_3d(md, vector = self.q, type = 'element')
         if self.coupling == 1:
-            self.effective_pressure = mesh.project_3d(md, vector = self.effective_pressure, type = 'node', layer = 1)
+            self.effective_pressure = mesh._project_3d(md, vector = self.effective_pressure, type = 'node', layer = 1)
         elif self.coupling >= 2:
-            raise ValueError('pyissm.model.classes.friction.coulomb.extrude: md.friction.coupling >= 2 not implemented yet.')
+            raise ValueError('pyissm.model.classes.friction.coulomb._extrude: md.friction.coupling >= 2 not implemented yet.')
             
         return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [friction.coulomb] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if necessary analyses or solutions not specified
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        class_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.coefficientcoulomb", timeseries = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.p", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2])
-        class_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)
+        class_utils._check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.coefficientcoulomb", timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.p", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2])
+        class_utils._check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)
 
         if self.coupling == 1:
-            class_utils.check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
         elif self.coupling == 2:
             raise ValueError('pyissm.model.classes.friction.coulomb.check_consistency: md.friction.coupling = 2 (coupled) is not implemented yet')
         elif self.coupling > 2:
@@ -290,13 +311,13 @@ class coulomb(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -304,19 +325,19 @@ class coulomb(class_registry.manage_state):
 
         ## Write headers to file
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.friction.law', data = 7, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.friction.law', data = 7, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'coefficient', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'coefficientcoulomb', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'p', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'q', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'coupling', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure_limit', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'coefficient', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'coefficientcoulomb', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'p', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'q', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'coupling', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'effective_pressure_limit', format = 'Double')
 
         ## Write conditional effective pressure
         if self.coupling == 1:
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'effective_pressure', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         elif self.coupling > 1:
             raise ValueError(f'md.friction.coupling = {self.coupling} is not implemented yet')
 
@@ -326,47 +347,39 @@ class coulomb(class_registry.manage_state):
 @class_registry.register_class
 class coulomb2(class_registry.manage_state):
     """
-    Coulomb2 friction parameters class for ISSM.
+    Coulomb2 friction class for ISSM.
 
-    This class encapsulates the parameters for the Coulomb2 friction law in the ISSM (Ice Sheet System Model) framework.
+    This class contains the parameters for the Coulomb2 friction law in the ISSM framework.
     It defines the main friction-related parameters specific to the Coulomb2 law.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    coefficient : ndarray, default=np.nan
+    coefficient : :class:`numpy.ndarray`, default=np.nan
         Power law (Weertman) friction coefficient [SI].
-    coefficientcoulomb : ndarray, default=np.nan
+    coefficientcoulomb : :class:`numpy.ndarray`, default=np.nan
         Coulomb friction coefficient [SI].
-    p : ndarray, default=np.nan
+    p : :class:`numpy.ndarray`, default=np.nan
         p exponent.
-    q : ndarray, default=np.nan
+    q : :class:`numpy.ndarray`, default=np.nan
         q exponent.
-    coupling : int, default=0
+    coupling : :class:`int`, default=0
         Coupling flag: 0 for default, 1 for forcing (provide md.friction.effective_pressure), 2 for coupled (not implemented yet).
-    effective_pressure : ndarray, default=np.nan
+    effective_pressure : :class:`numpy.ndarray`, default=np.nan
         Effective Pressure for the forcing if not coupled [Pa].
-    effective_pressure_limit : ndarray, default=0
+    effective_pressure_limit : :class:`numpy.ndarray`, default=0
         Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the friction parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the friction parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.friction = pyissm.model.classes.friction.coulomb2()
+    .. code-block:: python
+    
+        >>> md.friction = pyissm.model.classes.friction.coulomb2()
     """
 
     # Initialise with default parameters
@@ -387,13 +400,13 @@ class coulomb2(class_registry.manage_state):
         s = 'Basal shear stress parameters: Sigma_b = min(coefficient^2 * Neff ^r * |u_b|^(s - 1) * u_b,\n'
         s += 'coefficientcoulomb^2 * Neff), (effective stress Neff = rho_ice * g * thickness + rho_water * g * bed, r = q / p and s = 1 / p).\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficient', 'power law (Weertman) friction coefficient [SI]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficientcoulomb', 'Coulomb friction coefficient [SI]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'p', 'p exponent'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'q', 'q exponent'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coupling', 'Coupling flag: 0 for default, 1 for forcing(provide md.friction.effective_pressure)  and 2 for coupled(not implemented yet)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coefficient', 'power law (Weertman) friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coefficientcoulomb', 'Coulomb friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'p', 'p exponent'))
+        s += '{}\n'.format(class_utils._field_display(self, 'q', 'q exponent'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coupling', 'Coupling flag: 0 for default, 1 for forcing(provide md.friction.effective_pressure)  and 2 for coupled(not implemented yet)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
         return s
 
     # Define class string
@@ -402,37 +415,54 @@ class coulomb2(class_registry.manage_state):
         return s
 
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude friction.coulomb2 fields to 3D
+        Extrude [friction.coulomb2] fields to 3D
         """
-        self.coefficient = mesh.project_3d(md, vector = self.coefficient, type = 'node',  layer = 1)
-        self.coefficientcoulomb = mesh.project_3d(md, vector = self.coefficientcoulomb, type = 'node', layer = 1)
-        self.p = mesh.project_3d(md, vector = self.p, type = 'element')
-        self.q = mesh.project_3d(md, vector = self.q, type = 'element')
+        self.coefficient = mesh._project_3d(md, vector = self.coefficient, type = 'node',  layer = 1)
+        self.coefficientcoulomb = mesh._project_3d(md, vector = self.coefficientcoulomb, type = 'node', layer = 1)
+        self.p = mesh._project_3d(md, vector = self.p, type = 'element')
+        self.q = mesh._project_3d(md, vector = self.q, type = 'element')
         if self.coupling == 1:
-            self.effective_pressure = mesh.project_3d(md, vector = self.effective_pressure, type = 'node', layer = 1)
+            self.effective_pressure = mesh._project_3d(md, vector = self.effective_pressure, type = 'node', layer = 1)
         elif self.coupling >= 2:
-            raise ValueError('pyissm.model.classes.friction.coulomb2.extrude: md.friction.coupling >= 2 not implemented yet.')
+            raise ValueError('pyissm.model.classes.friction.coulomb2._extrude: md.friction.coupling >= 2 not implemented yet.')
             
         return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [friction.coulomb2] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if necessary analyses or solutions not specified
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        class_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.coefficientcoulomb", timeseries = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.p", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2])
-        class_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)
+        class_utils._check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.coefficientcoulomb", timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.p", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2])
+        class_utils._check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)
 
         if self.coupling == 1:
-            class_utils.check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
         elif self.coupling == 2:
             raise ValueError('pyissm.model.classes.friction.coulomb.check_consistency: md.friction.coupling = 2 (coupled) is not implemented yet')
         elif self.coupling > 2:
@@ -447,13 +477,13 @@ class coulomb2(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -461,19 +491,19 @@ class coulomb2(class_registry.manage_state):
 
         ## Write headers to file
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.friction.law', data = 7, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.friction.law', data = 7, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'coefficient', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'coefficientcoulomb', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'p', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'q', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'coupling', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure_limit', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'coefficient', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'coefficientcoulomb', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'p', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'q', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'coupling', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'effective_pressure_limit', format = 'Double')
 
         ## Write conditional effective pressure
         if self.coupling == 1:
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'effective_pressure', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         elif self.coupling > 1:
             raise ValueError(f'md.friction.coupling = {self.coupling} is not implemented yet')
 
@@ -483,45 +513,37 @@ class coulomb2(class_registry.manage_state):
 @class_registry.register_class
 class hydro(class_registry.manage_state):
     """
-    Hydro friction parameters class for ISSM.
+    Hydro friction class for ISSM.
 
-    This class encapsulates the parameters for the hydro (Gagliardini 2007) friction law in the ISSM (Ice Sheet System Model) framework.
+    This class contains the parameters for the hydro (Gagliardini 2007) friction law in the ISSM framework.
     It defines the main friction-related parameters specific to the hydro law.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    coupling : int, default=0
+    coupling : :class:`int`, default=0
         Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: use coupled model (not implemented yet).
-    q : ndarray, default=np.nan
+    q : :class:`numpy.ndarray`, default=np.nan
         Friction law exponent q >= 1.
-    C : ndarray, default=np.nan
+    C : :class:`numpy.ndarray`, default=np.nan
         Friction law max value (Iken bound).
-    As : ndarray, default=np.nan
+    As : :class:`numpy.ndarray`, default=np.nan
         Sliding parameter without cavitation [m Pa^-n s^-1].
-    effective_pressure : ndarray, default=np.nan
+    effective_pressure : :class:`numpy.ndarray`, default=np.nan
         Effective Pressure for the forcing if not coupled [Pa].
-    effective_pressure_limit : ndarray, default=0
+    effective_pressure_limit : :class:`numpy.ndarray`, default=0
         Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the friction parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the friction parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.friction = pyissm.model.classes.friction.hydro()
+    .. code-block:: python
+
+        >>> md.friction = pyissm.model.classes.friction.hydro()
     """
 
     # Initialise with default parameters
@@ -540,12 +562,12 @@ class hydro(class_registry.manage_state):
     def __repr__(self):
         s = 'Effective Pressure based friction law described in Gagliardini 2007\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coupling', 'Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'q', 'friction law exponent q >= 1'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'C', 'friction law max value (Iken bound)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'As', 'Sliding Parameter without cavitation [m Pa^ - n s^ - 1]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coupling', 'Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'q', 'friction law exponent q >= 1'))
+        s += '{}\n'.format(class_utils._field_display(self, 'C', 'friction law max value (Iken bound)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'As', 'Sliding Parameter without cavitation [m Pa^ - n s^ - 1]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
         return s
 
     # Define class string
@@ -554,36 +576,53 @@ class hydro(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude friction.hydro fields to 3D
+        Extrude [friction.hydro] fields to 3D
         """
-        self.q = mesh.project_3d(md, vector = self.q, type = 'element')
-        self.C = mesh.project_3d(md, vector = self.C, type = 'element')
-        self.As = mesh.project_3d(md, vector = self.As, type = 'element')
-        self.q = mesh.project_3d(md, vector = self.q, type = 'element')
+        self.q = mesh._project_3d(md, vector = self.q, type = 'element')
+        self.C = mesh._project_3d(md, vector = self.C, type = 'element')
+        self.As = mesh._project_3d(md, vector = self.As, type = 'element')
+        self.q = mesh._project_3d(md, vector = self.q, type = 'element')
         if self.coupling in [3, 4]:
-            self.effective_pressure = mesh.project_3d(md, vector = self.effective_pressure, type = 'node', layer = 1)
+            self.effective_pressure = mesh._project_3d(md, vector = self.effective_pressure, type = 'node', layer = 1)
         elif self.coupling > 2:
-            raise ValueError('pyissm.model.classes.friction.hydro.extrude: md.friction.coupling > 4 not implemented yet.')
+            raise ValueError('pyissm.model.classes.friction.hydro._extrude: md.friction.coupling > 4 not implemented yet.')
             
         return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [friction.hydro] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if necessary analyses or solutions not specified
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        class_utils.check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2, 3, 4])
-        class_utils.check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.C", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.As", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)       
+        class_utils._check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2, 3, 4])
+        class_utils._check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.C", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.As", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)       
 
         if self.coupling == 3:
-            class_utils.check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
         elif self.coupling > 4:
             raise ValueError(f'pyissm.model.classes.friction.hydro.check_consistency: md.friction.coupling = {self.coupling} is not implemented yet. Use md.friction.coupling <= 4.')
 
@@ -596,13 +635,13 @@ class hydro(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -610,18 +649,18 @@ class hydro(class_registry.manage_state):
 
         ## Write headers to file
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.friction.law', data = 3, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.friction.law', data = 3, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'q', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'C', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'As', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'coupling', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure_limit', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'q', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'C', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'As', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'coupling', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'effective_pressure_limit', format = 'Double')
 
         ## Write conditional effective pressure
         if self.coupling in [3, 4]:
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'effective_pressure', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         elif self.coupling > 4:
             raise ValueError(f'md.friction.coupling = {self.coupling} is not implemented yet')
 
@@ -631,43 +670,35 @@ class hydro(class_registry.manage_state):
 @class_registry.register_class
 class josh(class_registry.manage_state):
     """
-    Josh friction parameters class for ISSM.
+    Josh friction class for ISSM.
 
-    This class encapsulates the parameters for the Josh friction law in the ISSM (Ice Sheet System Model) framework.
+    This class contains the parameters for the Josh friction law in the ISSM framework.
     It defines the main friction-related parameters specific to the Josh law.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    coefficient : ndarray, default=np.nan
+    coefficient : :class:`numpy.ndarray`, default=np.nan
         Friction coefficient [SI].
-    pressure_adjusted_temperature : ndarray, default=np.nan
+    pressure_adjusted_temperature : :class:`numpy.ndarray`, default=np.nan
         Friction pressure_adjusted_temperature (T - Tpmp) [K].
-    gamma : ndarray, default=1.
+    gamma : :class:`numpy.ndarray`, default=1.
         (T - Tpmp)/gamma [K].
-    effective_pressure_limit : ndarray, default=0
+    effective_pressure_limit : :class:`numpy.ndarray`, default=0
         Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).
     coefficient_max : float, default=300.
         effective friction C = min(coefficient_max, sqrt(exp(T_b(modern) - T_b(t))/gamma) * coefficient)
 
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the friction parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the friction parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
-
     Examples
     --------
-    md.friction = pyissm.model.classes.friction.josh()
+    .. code-block:: python
+
+        >>> md.friction = pyissm.model.classes.friction.josh()
     """
 
     # Initialise with default parameters
@@ -686,11 +717,11 @@ class josh(class_registry.manage_state):
         s = 'Basal shear stress parameters: Sigma_b = coefficient^2 * Neff ^r * |u_b|^(s - 1) * u_b,\n'
         s += '(effective stress Neff = rho_ice * g * thickness + rho_water * g * base, r = q / p and s = 1 / p)\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficient', 'friction coefficient [SI]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'pressure_adjusted_temperature', 'friction pressure_adjusted_temperature (T - Tpmp) [K]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'gamma', '(T - Tpmp)/gamma [K]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficient_max', 'effective friction C = min(coefficient_max, sqrt(exp(T_b(modern) - T_b(t))/gamma) * coefficient)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coefficient', 'friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'pressure_adjusted_temperature', 'friction pressure_adjusted_temperature (T - Tpmp) [K]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'gamma', '(T - Tpmp)/gamma [K]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coefficient_max', 'effective friction C = min(coefficient_max, sqrt(exp(T_b(modern) - T_b(t))/gamma) * coefficient)'))
         return s
 
     # Define class string
@@ -699,28 +730,45 @@ class josh(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude friction.josh fields to 3D
+        Extrude [friction.josh] fields to 3D
         """
-        self.coefficient = mesh.project_3d(md, vector = self.coefficient, type = 'node', layer = 1)
-        self.pressure_adjusted_temperature = mesh.project_3d(md, vector = self.pressure_adjusted_temperature, type = 'node', layer = 1)
+        self.coefficient = mesh._project_3d(md, vector = self.coefficient, type = 'node', layer = 1)
+        self.pressure_adjusted_temperature = mesh._project_3d(md, vector = self.pressure_adjusted_temperature, type = 'node', layer = 1)
             
         return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [friction.josh] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if necessary analyses or solutions not specified
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        class_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.pressure_adjusted_temperature", allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.gamma", gt = 0, scalar = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)       
-        class_utils.check_field(md, fieldname = "friction.coefficient_max", scalar = True, gt = 0, allow_nan = False, allow_inf = False)       
-        class_utils.check_field(md, fieldname = "initialization.temperature", size = 'universal', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.pressure_adjusted_temperature", allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.gamma", gt = 0, scalar = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)       
+        class_utils._check_field(md, fieldname = "friction.coefficient_max", scalar = True, gt = 0, allow_nan = False, allow_inf = False)       
+        class_utils._check_field(md, fieldname = "initialization.temperature", size = 'universal', allow_nan = False, allow_inf = False)
 
         return md
     
@@ -731,13 +779,13 @@ class josh(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -745,14 +793,14 @@ class josh(class_registry.manage_state):
 
         ## Write headers to file
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.friction.law', data = 9, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.friction.law', data = 9, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'coefficient', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'pressure_adjusted_temperature', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'gamma', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure_limit', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'coefficient_max', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'coefficient', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'pressure_adjusted_temperature', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'gamma', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'effective_pressure_limit', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'coefficient_max', format = 'Double')
 
 ## ------------------------------------------------------
 ## friction.pism
@@ -760,45 +808,37 @@ class josh(class_registry.manage_state):
 @class_registry.register_class
 class pism(class_registry.manage_state):
     """
-    PISM friction parameters class for ISSM.
+    PISM friction class for ISSM.
 
-    This class encapsulates the parameters for the PISM friction law in the ISSM (Ice Sheet System Model) framework.
+    This class contains the parameters for the PISM friction law in the ISSM framework.
     It defines the main friction-related parameters specific to the PISM law.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    pseudoplasticity_exponent : float, default=0.6
+    pseudoplasticity_exponent : :class:`float`, default=0.6
         Pseudoplasticity exponent [dimensionless].
-    threshold_speed : float, default=100.
+    threshold_speed : :class:`float`, default=100.
         Threshold speed [m/yr].
-    delta : float, default=0.02
+    delta : :class:`float`, default=0.02
         Lower limit of the effective pressure, expressed as a fraction of overburden pressure [dimensionless].
-    void_ratio : float, default=0.69
+    void_ratio : :class:`float`, default=0.69
         Void ratio at a reference effective pressure [dimensionless].
-    till_friction_angle : float, default=np.nan
+    till_friction_angle : :class:`float`, default=np.nan
         Till friction angle [deg], recommended default: 30 deg.
-    sediment_compressibility_coefficient : float, default=np.nan
+    sediment_compressibility_coefficient : :class:`float`, default=np.nan
         Coefficient of compressibility of the sediment [dimensionless], recommended default: 0.12.
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the friction parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the friction parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.friction = pyissm.model.classes.friction.pism()
+    .. code-block:: python
+
+        >>> md.friction = pyissm.model.classes.friction.pism()
     """
 
     # Initialise with default parameters
@@ -817,12 +857,12 @@ class pism(class_registry.manage_state):
     def __repr__(self):
         s = 'Basal shear stress parameters for the PISM friction law (See Aschwanden et al. 2016 for more details)\n'
 
-        s += "{}\n".format(class_utils.fielddisplay(self, 'pseudoplasticity_exponent', 'pseudoplasticity exponent [dimensionless]'))
-        s += "{}\n".format(class_utils.fielddisplay(self, 'threshold_speed', 'threshold speed [m / yr]'))
-        s += "{}\n".format(class_utils.fielddisplay(self, 'delta', 'lower limit of the effective pressure, expressed as a fraction of overburden pressure [dimensionless]'))
-        s += "{}\n".format(class_utils.fielddisplay(self, 'void_ratio', 'void ratio at a reference effective pressure [dimensionless]'))
-        s += "{}\n".format(class_utils.fielddisplay(self, 'till_friction_angle', 'till friction angle [deg], recommended default: 30 deg'))
-        s += "{}\n".format(class_utils.fielddisplay(self, 'sediment_compressibility_coefficient', 'coefficient of compressibility of the sediment [dimensionless], recommended default: 0.12'))
+        s += "{}\n".format(class_utils._field_display(self, 'pseudoplasticity_exponent', 'pseudoplasticity exponent [dimensionless]'))
+        s += "{}\n".format(class_utils._field_display(self, 'threshold_speed', 'threshold speed [m / yr]'))
+        s += "{}\n".format(class_utils._field_display(self, 'delta', 'lower limit of the effective pressure, expressed as a fraction of overburden pressure [dimensionless]'))
+        s += "{}\n".format(class_utils._field_display(self, 'void_ratio', 'void ratio at a reference effective pressure [dimensionless]'))
+        s += "{}\n".format(class_utils._field_display(self, 'till_friction_angle', 'till friction angle [deg], recommended default: 30 deg'))
+        s += "{}\n".format(class_utils._field_display(self, 'sediment_compressibility_coefficient', 'coefficient of compressibility of the sediment [dimensionless], recommended default: 0.12'))
         return s
 
     # Define class string
@@ -831,17 +871,34 @@ class pism(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude friction.pism fields to 3D
+        Extrude [friction.pism] fields to 3D
         """
-        self.till_friction_angle = mesh.project_3d(md, vector = self.till_friction_angle, type = 'node', layer = 1)
-        self.sediment_compressibility_coefficient = mesh.project_3d(md, vector = self.sediment_compressibility_coefficient, type = 'node', layer = 1)
+        self.till_friction_angle = mesh._project_3d(md, vector = self.till_friction_angle, type = 'node', layer = 1)
+        self.sediment_compressibility_coefficient = mesh._project_3d(md, vector = self.sediment_compressibility_coefficient, type = 'node', layer = 1)
             
         return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [friction.pism] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if necessary analyses or solutions not specified
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
@@ -849,12 +906,12 @@ class pism(class_registry.manage_state):
         if solution == 'TransientSolution' and not md.transient.isstressbalance and not md.transient.isthermal:
             return md
 
-        class_utils.check_field(md, fieldname = 'friction.pseudoplasticity_exponent', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.threshold_speed', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.delta', scalar = True, gt = 0, lt = 1, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.void_ratio', scalar = True, gt = 0, lt = 1, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.till_friction_angle', gt = 0, lt = 360., size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.sediment_compressibility_coefficient', gt = 0., lt = 1., size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.pseudoplasticity_exponent', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.threshold_speed', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.delta', scalar = True, gt = 0, lt = 1, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.void_ratio', scalar = True, gt = 0, lt = 1, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.till_friction_angle', gt = 0, lt = 360., size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.sediment_compressibility_coefficient', gt = 0., lt = 1., size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
 
         return md
 
@@ -865,13 +922,13 @@ class pism(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -879,15 +936,15 @@ class pism(class_registry.manage_state):
 
         ## Write headers to file
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.friction.law', data = 10, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.friction.law', data = 10, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'pseudoplasticity_exponent', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'threshold_speed', format = 'Double', scale = 1. / md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'delta', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'void_ratio', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'till_friction_angle', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'sediment_compressibility_coefficient', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'pseudoplasticity_exponent', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'threshold_speed', format = 'Double', scale = 1. / md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'delta', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'void_ratio', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'till_friction_angle', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'sediment_compressibility_coefficient', format = 'DoubleMat', mattype = 1)
 
 ## ------------------------------------------------------
 ## friction.regcoulomb
@@ -895,39 +952,31 @@ class pism(class_registry.manage_state):
 @class_registry.register_class
 class regcoulomb(class_registry.manage_state):
     """
-    Regularized Coulomb friction parameters class for ISSM.
+    Regularized Coulomb friction class for ISSM.
 
-    This class encapsulates the parameters for the regularized Coulomb friction law (Joughin et al., 2019) in the ISSM (Ice Sheet System Model) framework.
+    This class contains the parameters for the regularized Coulomb friction law (Joughin et al., 2019) in the ISSM framework.
     It defines the main friction-related parameters specific to the regularized Coulomb law.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    C : float or ndarray, default=np.nan
+    C : :class:`float` or :class:`numpy.ndarray`, default=np.nan
         Friction coefficient [SI].
-    u0 : float or ndarray, default=1000
+    u0 : :class:`float` or :class:`numpy.ndarray`, default=1000
         Velocity controlling plastic limit.
-    m : float or ndarray, default=np.nan
+    m : :class:`float` or :class:`numpy.ndarray`, default=np.nan
         m exponent (set to m = 3 in original paper).
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the friction parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the friction parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.friction = pyissm.model.classes.friction.regcoulomb()
+    .. code-block:: python
+    
+        >>> md.friction = pyissm.model.classes.friction.regcoulomb()
     """
 
     # Initialise with default parameters
@@ -949,9 +998,9 @@ class regcoulomb(class_registry.manage_state):
         s += '      tau_b = -  ____________________________\n'
         s += '                     (|u|/u0 + 1)^(1/m)      \n'
         s += '\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'C', 'friction coefficient [SI]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'm', 'm exponent (set to m = 3 in original paper)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'u0', 'velocity controlling plastic limit'))
+        s += '{}\n'.format(class_utils._field_display(self, 'C', 'friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'm', 'm exponent (set to m = 3 in original paper)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'u0', 'velocity controlling plastic limit'))
         return s
 
     # Define class string
@@ -960,25 +1009,42 @@ class regcoulomb(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude friction.regcoloumb fields to 3D
+        Extrude [friction.regcoulomb] fields to 3D
         """
-        self.C = mesh.project_3d(md, vector = self.C, type = 'node')
-        self.m = mesh.project_3d(md, vector = self.m, type = 'element')
+        self.C = mesh._project_3d(md, vector = self.C, type = 'node')
+        self.m = mesh._project_3d(md, vector = self.m, type = 'element')
             
         return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [friction.regcoulomb] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if necessary analyses or solutions not specified
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        class_utils.check_field(md, fieldname = 'friction.C', timeseries = True, ge = 0., allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.u0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, ), gt = 0., allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.C', timeseries = True, ge = 0., allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.u0', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, ), gt = 0., allow_nan = False, allow_inf = False)
 
         return md
 
@@ -989,13 +1055,13 @@ class regcoulomb(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -1003,12 +1069,12 @@ class regcoulomb(class_registry.manage_state):
 
         ## Write headers to file
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.friction.law', data = 14, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.friction.law', data = 14, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'C', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'u0', format = 'Double', scale = 1. / md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'm', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'C', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'u0', format = 'Double', scale = 1. / md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'm', format = 'DoubleMat', mattype = 2)
 
 ## ------------------------------------------------------
 ## friction.regcoulomb2
@@ -1016,41 +1082,33 @@ class regcoulomb(class_registry.manage_state):
 @class_registry.register_class
 class regcoulomb2(class_registry.manage_state):
     """
-    Regularized Coulomb 2 friction parameters class for ISSM.
+    Regularized Coulomb 2 friction class for ISSM.
 
-    This class encapsulates the parameters for the regularized Coulomb 2 friction law (see Zoet and Iverson 2020 or Choi et al., 2022) in the ISSM (Ice Sheet System Model) framework.
+    This class contains the parameters for the regularized Coulomb 2 friction law (see Zoet and Iverson 2020 or Choi et al., 2022) in the ISSM framework.
     It defines the main friction-related parameters specific to the regularized Coulomb 2 law.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    C : \ndarray, default=np.nan
+    C : :class:`numpy.ndarray`, default=np.nan
         Friction coefficient [SI].
-    K : ndarray, default=np.nan
+    K : :class:`numpy.ndarray`, default=np.nan
         K parameter for velocity controlling plastic limit.
-    m : ndarray, default=np.nan
+    m : :class:`numpy.ndarray`, default=np.nan
         m exponent.
-    effective_pressure_limit : float, default=0
+    effective_pressure_limit : :class:`float`, default=0
         Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the friction parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the friction parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.friction = pyissm.model.classes.friction.regcoulomb2()
+    .. code-block:: python
+        
+        >>> md.friction = pyissm.model.classes.friction.regcoulomb2()
     """
 
     # Initialise with default parameters
@@ -1073,10 +1131,10 @@ class regcoulomb2(class_registry.manage_state):
         s += '      tau_b = -  ____________________________\n'
         s += '                   (|u| + (K*N)^m)^(1/m)     \n'
         s += '\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'C', 'friction coefficient [SI]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'm', 'm exponent'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'K', '(K * N) ^ m to be velocity controlling plastic limit'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'C', 'friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'm', 'm exponent'))
+        s += '{}\n'.format(class_utils._field_display(self, 'K', '(K * N) ^ m to be velocity controlling plastic limit'))
+        s += '{}\n'.format(class_utils._field_display(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
         return s
 
     # Define class string
@@ -1085,26 +1143,43 @@ class regcoulomb2(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude friction.regcoloumb2 fields to 3D
+        Extrude [friction.regcoulomb2] fields to 3D
         """
-        self.C = mesh.project_3d(md, vector = self.C, type = 'node')
-        self.m = mesh.project_3d(md, vector = self.m, type = 'element')
-        self.K = mesh.project_3d(md, vector = self.K, type = 'node')
+        self.C = mesh._project_3d(md, vector = self.C, type = 'node')
+        self.m = mesh._project_3d(md, vector = self.m, type = 'element')
+        self.K = mesh._project_3d(md, vector = self.K, type = 'node')
             
         return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [friction.regcoulomb2] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if necessary analyses or solutions not specified
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        class_utils.check_field(md, fieldname = 'friction.C', timeseries = True, ge = 0., allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.K', gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, ), gt = 0., allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.C', timeseries = True, ge = 0., allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.K', gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, ), gt = 0., allow_nan = False, allow_inf = False)
 
         return md
 
@@ -1115,13 +1190,13 @@ class regcoulomb2(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -1129,13 +1204,13 @@ class regcoulomb2(class_registry.manage_state):
 
         ## Write headers to file
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.friction.law', data = 15, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.friction.law', data = 15, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'C', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'K', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'm', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure_limit', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'C', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'K', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'm', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'effective_pressure_limit', format = 'Double')
 
 ## ------------------------------------------------------
 ## friction.schoof
@@ -1143,45 +1218,37 @@ class regcoulomb2(class_registry.manage_state):
 @class_registry.register_class
 class schoof(class_registry.manage_state):
     """
-    Schoof friction parameters class for ISSM.
+    Schoof friction class for ISSM.
 
-    This class encapsulates the parameters for the Schoof sliding law in the ISSM (Ice Sheet System Model) framework.
+    This class contains the parameters for the Schoof sliding law in the ISSM framework.
     It defines the main friction-related parameters specific to the Schoof law.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    C : ndarray, default=np.nan
+    C : :class:`numpy.ndarray`, default=np.nan
         Friction coefficient [SI].
-    Cmax : ndarray, default=np.nan
+    Cmax : :class:`numpy.ndarray`, default=np.nan
         Iken's bound (typically between 0.17 and 0.84) [SI].
-    m : ndarray, default=np.nan
+    m : :class:`numpy.ndarray`, default=np.nan
         m exponent (generally taken as m = 1/n = 1/3).
-    coupling : int, default=0
+    coupling : :class:`int`, default=0
         Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet).
-    effective_pressure : ndarray, default=np.nan
+    effective_pressure : :class:`numpy.ndarray`, default=np.nan
         Effective Pressure for the forcing if not coupled [Pa].
-    effective_pressure_limit : float, default=0
+    effective_pressure_limit : :class:`float`, default=0
         Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the friction parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the friction parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.friction = pyissm.model.classes.friction.schoof()
+    .. code-block:: python
+
+        >>> md.friction = pyissm.model.classes.friction.schoof()
     """
 
     # Initialise with default parameters
@@ -1206,12 +1273,12 @@ class schoof(class_registry.manage_state):
         s += '      tau_b = - _____________________________   u_b   \n'
         s += '               (1+(C^2/(Cmax N))^1/m |u_b| )^m          \n'
         s += '\n'
-        s += "{}\n".format(class_utils.fielddisplay(self, 'C', 'friction coefficient [SI]'))
-        s += "{}\n".format(class_utils.fielddisplay(self, 'Cmax', 'Iken\'s bound (typically between 0.17 and 0.84) [SI]'))
-        s += "{}\n".format(class_utils.fielddisplay(self, 'm', 'm exponent (generally taken as m = 1/n = 1/3)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coupling', 'Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
-        s += "{}\n".format(class_utils.fielddisplay(self, 'effective_pressure_limit', 'fNeff do not allow to fall below a certain limit: effective_pressure_limit*rho_ice*g*thickness (default 0)'))
+        s += "{}\n".format(class_utils._field_display(self, 'C', 'friction coefficient [SI]'))
+        s += "{}\n".format(class_utils._field_display(self, 'Cmax', 'Iken\'s bound (typically between 0.17 and 0.84) [SI]'))
+        s += "{}\n".format(class_utils._field_display(self, 'm', 'm exponent (generally taken as m = 1/n = 1/3)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coupling', 'Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
+        s += "{}\n".format(class_utils._field_display(self, 'effective_pressure_limit', 'fNeff do not allow to fall below a certain limit: effective_pressure_limit*rho_ice*g*thickness (default 0)'))
         return s
 
     # Define class string
@@ -1220,33 +1287,50 @@ class schoof(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude friction.schoof fields to 3D
+        Extrude [friction.schoof] fields to 3D
         """
-        self.C = mesh.project_3d(md, vector = self.C, type = 'node')
-        self.Cmax = mesh.project_3d(md, vector = self.Cmax, type = 'node')
-        self.m = mesh.project_3d(md, vector = self.m, type = 'element')
+        self.C = mesh._project_3d(md, vector = self.C, type = 'node')
+        self.Cmax = mesh._project_3d(md, vector = self.Cmax, type = 'node')
+        self.m = mesh._project_3d(md, vector = self.m, type = 'element')
         if self.coupling in [3, 4]:
-            self.effective_pressure = mesh.project_3d(md, vector = self.effective_pressure, type = 'node', layer = 1)
+            self.effective_pressure = mesh._project_3d(md, vector = self.effective_pressure, type = 'node', layer = 1)
             
         return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [friction.schoof] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if necessary analyses or solutions not specified
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        class_utils.check_field(md, fieldname = 'friction.C', timeseries = True, gt = 0., allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.Cmax', timeseries = True, gt = 0., allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, ), gt = 0., allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.effective_pressure_limit', scalar = True, ge = 0.)
-        class_utils.check_field(md, fieldname = 'friction.coupling', scalar = True, values = [0, 1, 2, 3, 4])
+        class_utils._check_field(md, fieldname = 'friction.C', timeseries = True, gt = 0., allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.Cmax', timeseries = True, gt = 0., allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, ), gt = 0., allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.effective_pressure_limit', scalar = True, ge = 0.)
+        class_utils._check_field(md, fieldname = 'friction.coupling', scalar = True, values = [0, 1, 2, 3, 4])
         
         if self.coupling == 3:
-            class_utils.check_field(md, fieldname = 'friction.effective_pressure', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'friction.effective_pressure', timeseries = True, allow_nan = False, allow_inf = False)
 
         return md
     
@@ -1257,13 +1341,13 @@ class schoof(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -1271,18 +1355,18 @@ class schoof(class_registry.manage_state):
 
         ## Write headers to file
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.friction.law', data = 11, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.friction.law', data = 11, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'C', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'Cmax', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'm', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'coupling', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure_limit', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'C', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'Cmax', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'm', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'coupling', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'effective_pressure_limit', format = 'Double')
 
         ## Write conditional effective pressure
         if self.coupling in [3, 4]:
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'effective_pressure', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'effective_pressure', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         elif self.coupling > 4:
             raise ValueError(f'md.friction.coupling = {self.coupling} is not implemented yet')
 
@@ -1292,35 +1376,27 @@ class schoof(class_registry.manage_state):
 @class_registry.register_class
 class shakti(class_registry.manage_state):
     """
-    Shakti friction parameters class for ISSM.
+    Shakti friction class for ISSM.
 
-    This class encapsulates the parameters for the Shakti friction law in the ISSM (Ice Sheet System Model) framework.
+    This class contains the parameters for the Shakti friction law in the ISSM framework.
     It defines the main friction-related parameters specific to the Shakti law.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    coefficient : ndarray, default=np.nan
+    coefficient : :class:`numpy.ndarray`, default=np.nan
         Friction coefficient [SI].
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the friction parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the friction parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.friction = pyissm.model.classes.friction.shakti()
+    .. code-block:: python
+    
+        >>> md.friction = pyissm.model.classes.friction.shakti()
     """
 
     # Initialise with default parameters
@@ -1335,7 +1411,7 @@ class shakti(class_registry.manage_state):
         s = 'Basal shear stress parameters: Sigma_b = coefficient^2 * Neff * u_b\n'
 
         s += '(effective stress Neff = rho_ice * g * thickness + rho_water * g * (head - b))\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficient', 'friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coefficient', 'friction coefficient [SI]'))
         return s
 
     # Define class string
@@ -1344,22 +1420,39 @@ class shakti(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude friction.shakti fields to 3D
+        Extrude [friction.shakti] fields to 3D
         """
-        self.coefficient = mesh.project_3d(md, vector = self.coefficient, type = 'node', layer = 1)
+        self.coefficient = mesh._project_3d(md, vector = self.coefficient, type = 'node', layer = 1)
             
         return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [friction.shakti] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if necessary analyses or solutions not specified
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        class_utils.check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
 
         return md
     
@@ -1370,13 +1463,13 @@ class shakti(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -1384,10 +1477,10 @@ class shakti(class_registry.manage_state):
 
         ## Write headers to file
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.friction.law', data = 8, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.friction.law', data = 8, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'coefficient', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'coefficient', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
 ## ------------------------------------------------------
 ## friction.waterlayer
@@ -1395,43 +1488,35 @@ class shakti(class_registry.manage_state):
 @class_registry.register_class
 class waterlayer(class_registry.manage_state):
     """
-    Waterlayer friction parameters class for ISSM.
+    Waterlayer friction class for ISSM.
 
-    This class encapsulates the parameters for the waterlayer friction law in the ISSM (Ice Sheet System Model) framework.
+    This class contains the parameters for the waterlayer friction law in the ISSM framework.
     It defines the main friction-related parameters specific to the waterlayer law.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    coefficient : ndarray, default=np.nan
+    coefficient : :class:`numpy.ndarray`, default=np.nan
         Friction coefficient [SI].
-    f : ndarray, default=np.nan
+    f : :class:`numpy.ndarray`, default=np.nan
         f variable for effective pressure.
-    p : ndarray, default=np.nan
+    p : :class:`numpy.ndarray`, default=np.nan
         p exponent.
-    q : ndarray, default=np.nan
+    q : :class:`numpy.ndarray`, default=np.nan
         q exponent.
-    water_layer : ndarray, default=np.nan
+    water_layer : :class:`numpy.ndarray`, default=np.nan
         Water thickness at the base of the ice (m).
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the friction parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the friction parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.friction = pyissm.model.classes.friction.waterlayer()
+    .. code-block:: python
+    
+        >>> md.friction = pyissm.model.classes.friction.waterlayer()
     """
 
     # Initialise with default parameters
@@ -1449,11 +1534,11 @@ class waterlayer(class_registry.manage_state):
     def __repr__(self):
         s = 'Basal shear stress parameters: tau_b = coefficient^2 * Neff ^r * |u_b|^(s - 1) * u_b * 1 / f(T)\n(effective stress Neff = rho_ice * g * thickness + rho_water * g * (bed + water_layer), r = q / p and s = 1 / p)\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'coefficient', 'frictiontemp coefficient [SI]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'f', 'f variable for effective pressure'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'p', 'p exponent'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'q', 'q exponent'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'water_layer', 'water thickness at the base of the ice (m)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coefficient', 'frictiontemp coefficient [SI]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'f', 'f variable for effective pressure'))
+        s += '{}\n'.format(class_utils._field_display(self, 'p', 'p exponent'))
+        s += '{}\n'.format(class_utils._field_display(self, 'q', 'q exponent'))
+        s += '{}\n'.format(class_utils._field_display(self, 'water_layer', 'water thickness at the base of the ice (m)'))
         return s
 
     # Define class string
@@ -1462,29 +1547,46 @@ class waterlayer(class_registry.manage_state):
         return s
 
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude friction.schoof fields to 3D
+        Extrude [friction.waterlayer] fields to 3D
         """
-        self.coefficient = mesh.project_3d(md, vector = self.coefficient, type = 'node', layer = '1')
-        self.p = mesh.project_3d(md, vector = self.p, type = 'element')
-        self.p = mesh.project_3d(md, vector = self.q, type = 'element')
-        self.water_layer = mesh.project_3d(md, vector = self.water_layer, type = 'node', layer = 1)
+        self.coefficient = mesh._project_3d(md, vector = self.coefficient, type = 'node', layer = '1')
+        self.p = mesh._project_3d(md, vector = self.p, type = 'element')
+        self.q = mesh._project_3d(md, vector = self.q, type = 'element')
+        self.water_layer = mesh._project_3d(md, vector = self.water_layer, type = 'node', layer = 1)
             
         return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [friction.waterlayer] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if necessary analyses or solutions not specified
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        class_utils.check_field(md, fieldname = 'friction.coefficient', timeseries = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.f', scalar = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.q', size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.p', size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'thermal.spctemperature', timeseries = True, ge = 0., allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.coefficient', timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.f', scalar = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.q', size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.p', size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'thermal.spctemperature', timeseries = True, ge = 0., allow_inf = False)
 
         return md
 
@@ -1495,13 +1597,13 @@ class waterlayer(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -1509,14 +1611,14 @@ class waterlayer(class_registry.manage_state):
 
         ## Write headers to file
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.friction.law', data = 5, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.friction.law', data = 5, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'coefficient', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'f', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'p', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'q', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'water_layer', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'coefficient', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'f', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'p', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'q', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'water_layer', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         
 ## ------------------------------------------------------
 ## friction.weertman
@@ -1524,39 +1626,31 @@ class waterlayer(class_registry.manage_state):
 @class_registry.register_class
 class weertman(class_registry.manage_state):
     """
-    Weertman friction parameters class for ISSM.
+    Weertman friction class for ISSM.
 
-    This class encapsulates the parameters for the Weertman sliding law in the ISSM (Ice Sheet System Model) framework.
+    This class contains the parameters for the Weertman sliding law in the ISSM framework.
     It defines the main friction-related parameters specific to the Weertman law.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    C : ndarray, default=np.nan
+    C : :class:`numpy.ndarray`, default=np.nan
         Friction coefficient [SI].
-    m : ndarray, default=np.nan
+    m : :class:`numpy.ndarray`, default=np.nan
         m exponent.
-    linearize : int, default=0
+    linearize : :class:`int`, default=0
         0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0).
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the friction parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the friction parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.friction = pyissm.model.classes.friction.weertman()
+    .. code-block:: python
+    
+        >>> md.friction = pyissm.model.classes.friction.weertman()
     """
 
     # Initialise with default parameters
@@ -1572,9 +1666,9 @@ class weertman(class_registry.manage_state):
     def __repr__(self):
         s = 'Weertman sliding law parameters: Sigma_b = C^(- 1 / m) * |u_b|^(1 / m - 1) * u_b\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'C', 'friction coefficient [SI]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'm', 'm exponent'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'linearize', '0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'C', 'friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'm', 'm exponent'))
+        s += '{}\n'.format(class_utils._field_display(self, 'linearize', '0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0)'))
         return s
 
     # Define class string
@@ -1583,25 +1677,42 @@ class weertman(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude friction.weertman fields to 3D
+        Extrude [friction.weertman] fields to 3D
         """
-        self.C = mesh.project_3d(md, vector = self.C, type = 'node', layer = 1)
-        self.m = mesh.project_3d(md, vector = self.p, type = 'element')
+        self.C = mesh._project_3d(md, vector = self.C, type = 'node', layer = 1)
+        self.m = mesh._project_3d(md, vector = self.m, type = 'element')
 
         return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [friction.weertman] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if necessary analyses or solutions not specified
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
         
-        class_utils.check_field(md, fieldname = 'friction.C', timeseries = True, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'friction.linearize', scalar = True, values = [0, 1, 2])
+        class_utils._check_field(md, fieldname = 'friction.C', timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.linearize', scalar = True, values = [0, 1, 2])
 
         return md
 
@@ -1612,13 +1723,13 @@ class weertman(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -1626,9 +1737,9 @@ class weertman(class_registry.manage_state):
 
         ## Write headers to file
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.friction.law', data = 2, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.friction.law', data = 2, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'C', format = 'DoubleMat', mattype = 1)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'm', format = 'DoubleMat', mattype = 2)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'linearize', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'C', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'm', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'linearize', format = 'Integer')

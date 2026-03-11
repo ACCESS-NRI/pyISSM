@@ -68,15 +68,15 @@ class levelset(class_registry.manage_state):
     def __repr__(self):
         s = '   Level-set parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'stabilization', '0: No Stabilization - No stabilization techniques applied.'))
+        s += '{}\n'.format(class_utils._field_display(self, 'stabilization', '0: No Stabilization - No stabilization techniques applied.'))
         s += '{}\n'.format('                             1: Artificial Diffusivity - Most stable, but least accurate.')
         s += '{}\n'.format('                             2: Streamline Upwinding')
         s += '{}\n'.format('                             5: SUPG - Most accurate, but may be unstable in some applications.')
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'spclevelset', 'Levelset constraints (NaN means no constraint)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'reinit_frequency', 'Amount of time steps after which the levelset function in re-initialized'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'kill_icebergs', 'remove floating icebergs to prevent rigid body motions (1: true, 0: false)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'migration_max', 'maximum allowed migration rate (m/a)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'fe', 'Finite Element type: \'P1\' (default), or \'P2\''))
+        s += '{}\n'.format(class_utils._field_display(self, 'spclevelset', 'Levelset constraints (NaN means no constraint)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'reinit_frequency', 'Amount of time steps after which the levelset function in re-initialized'))
+        s += '{}\n'.format(class_utils._field_display(self, 'kill_icebergs', 'remove floating icebergs to prevent rigid body motions (1: true, 0: false)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'migration_max', 'maximum allowed migration rate (m/a)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'fe', 'Finite Element type: \'P1\' (default), or \'P2\''))
         return s
 
     # Define class string
@@ -85,11 +85,11 @@ class levelset(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
         Extrude levelset fields to 3D
         """
-        self.spclevelset = mesh.project_3d(md, vector = self.spclevelset, type = 'node')
+        self.spclevelset = mesh._project_3d(md, vector = self.spclevelset, type = 'node')
             
         return self
 
@@ -99,11 +99,11 @@ class levelset(class_registry.manage_state):
         if (solution != 'TransientSolution') or (not md.transient.ismovingfront):
             return md
 
-        class_utils.check_field(md, fieldname = 'levelset.spclevelset', timeseries = True, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'levelset.stabilization', scalar = True, values = [0, 1, 2, 5, 6])
-        class_utils.check_field(md, fieldname = 'levelset.kill_icebergs', scalar = True, values = [0, 1])
-        class_utils.check_field(md, fieldname = 'levelset.migration_max', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'levelset.fe', values = ['P1', 'P2'])
+        class_utils._check_field(md, fieldname = 'levelset.spclevelset', timeseries = True, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'levelset.stabilization', scalar = True, values = [0, 1, 2, 5, 6])
+        class_utils._check_field(md, fieldname = 'levelset.kill_icebergs', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'levelset.migration_max', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'levelset.fe', values = ['P1', 'P2'])
 
         return md
 
@@ -127,9 +127,9 @@ class levelset(class_registry.manage_state):
         """
         
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'stabilization', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'spclevelset', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'reinit_frequency', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'kill_icebergs', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'migration_max', format = 'Double', scale = 1. / md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'fe', format = 'String')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'stabilization', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'spclevelset', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'reinit_frequency', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'kill_icebergs', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'migration_max', format = 'Double', scale = 1. / md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'fe', format = 'String')

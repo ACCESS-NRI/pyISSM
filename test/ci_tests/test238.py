@@ -28,7 +28,7 @@ for imonth in range(0, 12):
 md.thermal.spctemperature = np.mean(md.smb.temperatures_presentday[0:md.mesh.numberofvertices, :], axis=1).reshape(-1, 1)
 md.thermal.spctemperature = md.thermal.spctemperature - 10
 md.initialization.temperature = md.thermal.spctemperature
-md.smb.initialise(md)
+md.smb.initialize(md)
 
 # creating precipitation
 md.smb.precipitations_presentday = np.zeros((md.mesh.numberofvertices, 12))

@@ -61,10 +61,10 @@ class nodalvalue(class_registry.manage_state):
     def __repr__(self):
         s = '   nodalvalue parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'name', 'identifier for this nodalvalue response'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'definitionstring', 'string that identifies this output definition uniquely, from \'Outputdefinition[1-10]\''))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'model_string', 'string for field that is being retrieved'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'node', 'vertex index at which we retrieve the value'))
+        s += '{}\n'.format(class_utils._field_display(self, 'name', 'identifier for this nodalvalue response'))
+        s += '{}\n'.format(class_utils._field_display(self, 'definitionstring', 'string that identifies this output definition uniquely, from \'Outputdefinition[1-10]\''))
+        s += '{}\n'.format(class_utils._field_display(self, 'model_string', 'string for field that is being retrieved'))
+        s += '{}\n'.format(class_utils._field_display(self, 'node', 'vertex index at which we retrieve the value'))
         return s
 
     # Define class string
@@ -79,8 +79,8 @@ class nodalvalue(class_registry.manage_state):
         OutputdefinitionStringArray = []
         for i in range(100):
             OutputdefinitionStringArray.append('Outputdefinition{}'.format(i))
-        class_utils.check_field(md, fieldname = 'self.definitionstring', field = self.definitionstring, values = OutputdefinitionStringArray)
-        class_utils.check_field(md, fieldname = 'self.node', field = self.node, values = range(md.mesh.numberofvertices))
+        class_utils._check_field(md, fieldname = 'self.definitionstring', field = self.definitionstring, values = OutputdefinitionStringArray)
+        class_utils._check_field(md, fieldname = 'self.node', field = self.node, values = range(md.mesh.numberofvertices))
         
         return md
 
@@ -104,7 +104,7 @@ class nodalvalue(class_registry.manage_state):
         """
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'name', format = 'String')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'definitionstring', format = 'String')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'model_string', format = 'String')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'node', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'name', format = 'String')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'definitionstring', format = 'String')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'model_string', format = 'String')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'node', format = 'Integer')

@@ -93,19 +93,19 @@ class lovenumbers(class_registry.manage_state):
         s += '****      NOT YET IMPLEMENTED      ****\n'
         s += '---------------------------------------\n\n'
         s += '   lovenumbers parameters:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'h', 'load Love number for radial displacement'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'k', 'load Love number for gravitational potential perturbation'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'l', 'load Love number for horizontal displacements'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'th', 'tidal load Love number (deg 2)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'tk', 'tidal load Love number (deg 2)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'tl', 'tidal load Love number (deg 2)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'tk2secular', 'secular fluid Love number'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'pmtf_colinear', 'Colinear component of the Polar Motion Transfer Function (e.g. x-motion due to x-component perturbation of the inertia tensor)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'pmtf_ortho', 'Orthogonal component of the Polar Motion Transfer Function (couples x and y components, only used for Chandler Wobble)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'istime', 'time (default: 1) or frequency love numbers (0)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'timefreq', 'time/frequency vector (yr or 1/yr)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'pmtf_colinear', 'Colinear component of the Polar Motion Transfer Function (e.g. x-motion due to x-component perturbation of the inertia tensor)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'pmtf_ortho', 'Orthogonal component of the Polar Motion Transfer Function (couples x and y components, only used for Chandler Wobble)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'h', 'load Love number for radial displacement'))
+        s += '{}\n'.format(class_utils._field_display(self, 'k', 'load Love number for gravitational potential perturbation'))
+        s += '{}\n'.format(class_utils._field_display(self, 'l', 'load Love number for horizontal displacements'))
+        s += '{}\n'.format(class_utils._field_display(self, 'th', 'tidal load Love number (deg 2)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'tk', 'tidal load Love number (deg 2)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'tl', 'tidal load Love number (deg 2)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'tk2secular', 'secular fluid Love number'))
+        s += '{}\n'.format(class_utils._field_display(self, 'pmtf_colinear', 'Colinear component of the Polar Motion Transfer Function (e.g. x-motion due to x-component perturbation of the inertia tensor)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'pmtf_ortho', 'Orthogonal component of the Polar Motion Transfer Function (couples x and y components, only used for Chandler Wobble)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'istime', 'time (default: 1) or frequency love numbers (0)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'timefreq', 'time/frequency vector (yr or 1/yr)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'pmtf_colinear', 'Colinear component of the Polar Motion Transfer Function (e.g. x-motion due to x-component perturbation of the inertia tensor)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'pmtf_ortho', 'Orthogonal component of the Polar Motion Transfer Function (couples x and y components, only used for Chandler Wobble)'))
         return s
 
     # Define class string
@@ -118,17 +118,17 @@ class lovenumbers(class_registry.manage_state):
         if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc):
             return
         
-        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.h', allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.k', allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.l', allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.th', allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.tk', allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.tl', allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.tk2secular', allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.pmtf_colinear', allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.pmtf_ortho', allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.timefreq', allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.lovenumbers.istime', values = [0, 1], allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.lovenumbers.h', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.lovenumbers.k', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.lovenumbers.l', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.lovenumbers.th', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.lovenumbers.tk', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.lovenumbers.tl', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.lovenumbers.tk2secular', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.lovenumbers.pmtf_colinear', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.lovenumbers.pmtf_ortho', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.lovenumbers.timefreq', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.lovenumbers.istime', values = [0, 1], allow_nan = False, allow_inf = False)
 
         # Check that love numbers are provided at the same level of accuracy
         if (self.h.shape[0] != self.k.shape[0]) or (self.h.shape[0] != self.l.shape[0]):
@@ -164,7 +164,7 @@ class lovenumbers(class_registry.manage_state):
         ## Write DoubleMat fields
         fieldname = ['h', 'k', 'l', 'th', 'tk', 'tl', 'pmtf_colinear', 'pmtf_ortho']
         for field in fieldname:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
 
         ## Write conditional fields
         if (self.istime):
@@ -172,8 +172,8 @@ class lovenumbers(class_registry.manage_state):
         else:
             scale = 1.0 / md.constants.yts
 
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'timefreq', format = 'DoubleMat', mattype = 1, scale = scale)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'timefreq', format = 'DoubleMat', mattype = 1, scale = scale)
 
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'tk2secular', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'istime', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'tk2secular', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'istime', format = 'Boolean')

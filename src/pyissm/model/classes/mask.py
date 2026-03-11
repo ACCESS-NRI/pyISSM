@@ -53,8 +53,8 @@ class mask(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   mask parameters:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ice_levelset', 'presence of ice if < 0, icefront position if = 0, no ice if > 0'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ocean_levelset', 'presence of ocean if < 0, coastline/grounding line if = 0, no ocean if > 0'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ice_levelset', 'presence of ice if < 0, icefront position if = 0, no ice if > 0'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ocean_levelset', 'presence of ocean if < 0, coastline/grounding line if = 0, no ocean if > 0'))
         return s
 
     # Define class string
@@ -63,12 +63,12 @@ class mask(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
         Extrude mask fields to 3D
         """
-        self.ice_levelset = mesh.project_3d(md, vector = self.ice_levelset, type = 'node')
-        self.ocean_levelset = mesh.project_3d(md, vector = self.ocean_levelset, type = 'node')
+        self.ice_levelset = mesh._project_3d(md, vector = self.ice_levelset, type = 'node')
+        self.ocean_levelset = mesh._project_3d(md, vector = self.ocean_levelset, type = 'node')
         
         return self
     
@@ -78,7 +78,7 @@ class mask(class_registry.manage_state):
         if solution == 'LoveSolution':
             return md
 
-        class_utils.check_field(md, fieldname = 'mask.ice_levelset', size = (md.mesh.numberofvertices, ))
+        class_utils._check_field(md, fieldname = 'mask.ice_levelset', size = (md.mesh.numberofvertices, ))
         is_ice = np.array(md.mask.ice_levelset <= 0, int)
         if np.sum(is_ice) == 0:
             raise ValueError('pyissm.model.classes.mask.check_consistency: mask.ice_levelset does not contain any ice (all values > 0)')
@@ -107,4 +107,4 @@ class mask(class_registry.manage_state):
         ## Write fields (consistent format for all)
         fieldnames = ['ice_levelset', 'ocean_levelset']
         for fieldname in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = fieldname, format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)

@@ -75,14 +75,14 @@ class stochasticforcing(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   stochasticforcing parameters:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isstochasticforcing', 'is stochasticity activated?'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'fields', 'fields with stochasticity applied, ex: [\'smb.default\',\'calving.default\']'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'defaultdimension', 'dimensionality of the noise terms (does not apply to fields with their specific dimension)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'default_id', 'id of each element for partitioning of the noise terms (does not apply to fields with their specific partition)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'covariance', 'covariance matrix for within- and between-fields covariance (units must be squared field units),multiple matrices can be concatenated along 3rd dimension to apply different covariances in time'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'timecovariance', 'starting dates at which covariances apply (only applicabe if multiple covariance matrices are prescribed)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'stochastictimestep', 'timestep at which new stochastic noise terms are generated (default: md.timestepping.time_step)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'randomflag', 'whether to apply real randomness (true) or pseudo-randomness with fixed seed (false)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isstochasticforcing', 'is stochasticity activated?'))
+        s += '{}\n'.format(class_utils._field_display(self, 'fields', 'fields with stochasticity applied, ex: [\'smb.default\',\'calving.default\']'))
+        s += '{}\n'.format(class_utils._field_display(self, 'defaultdimension', 'dimensionality of the noise terms (does not apply to fields with their specific dimension)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'default_id', 'id of each element for partitioning of the noise terms (does not apply to fields with their specific partition)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'covariance', 'covariance matrix for within- and between-fields covariance (units must be squared field units),multiple matrices can be concatenated along 3rd dimension to apply different covariances in time'))
+        s += '{}\n'.format(class_utils._field_display(self, 'timecovariance', 'starting dates at which covariances apply (only applicabe if multiple covariance matrices are prescribed)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'stochastictimestep', 'timestep at which new stochastic noise terms are generated (default: md.timestepping.time_step)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'randomflag', 'whether to apply real randomness (true) or pseudo-randomness with fixed seed (false)'))
         s += 'Available fields:\n'
         s += '   BasalforcingsDeepwaterMeltingRatearma\n'
         s += '   BasalforcingsSpatialDeepwaterMeltingRate\n'
@@ -103,11 +103,11 @@ class stochasticforcing(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
         Extrude stochasticforcing fields to 3D
         """
-        self.default_id = mesh.project_3d(md, vector = self.default_id, type = 'element')
+        self.default_id = mesh._project_3d(md, vector = self.default_id, type = 'element')
 
         return self
     
@@ -267,16 +267,16 @@ class stochasticforcing(class_registry.manage_state):
                             f"{f1} and {f2} have different arma_timestep and non-zero covariance"
                         )
 
-        class_utils.check_field(md, fieldname = 'stochasticforcing.isstochasticforcing', values = [0, 1])
-        class_utils.check_field(md, fieldname = 'stochasticforcing.fields', numel = num_fields, cell = True, values = class_utils.supported_stochastic_forcings())
-        class_utils.check_field(md, fieldname = 'stochasticforcing.covariance', size = (size_tot, size_tot, numtcovmat), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'stochasticforcing.stochastictimestep', ge = md.timestepping.time_step, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'stochasticforcing.randomflag', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'stochasticforcing.isstochasticforcing', values = [0, 1])
+        class_utils._check_field(md, fieldname = 'stochasticforcing.fields', numel = num_fields, cell = True, values = class_utils.supported_stochastic_forcings())
+        class_utils._check_field(md, fieldname = 'stochasticforcing.covariance', size = (size_tot, size_tot, numtcovmat), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'stochasticforcing.stochastictimestep', ge = md.timestepping.time_step, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'stochasticforcing.randomflag', scalar = True, values = [0, 1])
         if(numtcovmat > 1):
-            class_utils.check_field(md, fieldname = 'stochasticforcing.timecovariance', ge = md.timestepping.start_time, le = md.timestepping.final_time, size = (1, numtcovmat), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'stochasticforcing.timecovariance', ge = md.timestepping.start_time, le = md.timestepping.final_time, size = (1, numtcovmat), allow_nan = False, allow_inf = False)
         if checkdefaults:
-            class_utils.check_field(md, fieldname = 'stochasticforcing.defaultdimension', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'stochasticforcing.default_id', ge = 0, le = self.defaultdimension, size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'stochasticforcing.defaultdimension', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'stochasticforcing.default_id', ge = 0, le = self.defaultdimension, size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
 
         return md
 
@@ -300,7 +300,7 @@ class stochasticforcing(class_registry.manage_state):
         """
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'isstochasticforcing', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'isstochasticforcing', format = 'Boolean')
 
         ## Conditional writing
         ## NOTE: Taken from $ISSM_DIR/src/classes/stochasticforcing.py
@@ -380,13 +380,13 @@ class stochasticforcing(class_registry.manage_state):
             dimensions = dimensions.reshape(1, len(dimensions))
 
             ## Write fields
-            execute.WriteData(fid, prefix, name = 'md.stochasticforcing.num_fields', data = num_fields, format = 'Integer')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'fields', format = 'StringArray')
-            execute.WriteData(fid, prefix, name = 'md.stochasticforcing.dimensions', data = dimensions, format = 'IntMat')
-            execute.WriteData(fid, prefix, name = 'md.stochasticforcing.default_id', data = self.default_id - 1, format = 'IntMat', mattype = 2) # 0-indexed
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'defaultdimension', format = 'Integer')
-            execute.WriteData(fid, prefix, name = 'md.stochasticforcing.num_timescovariance', data = numtcovmat, format = 'Integer')
-            execute.WriteData(fid, prefix, name = 'md.stochasticforcing.covariance', data = tempcovariance2d, format = 'DoubleMat')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'timecovariance', format = 'DoubleMat', scale = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'stochastictimestep', format = 'Double', scale = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'randomflag', format = 'Boolean')
+            execute._write_model_field(fid, prefix, name = 'md.stochasticforcing.num_fields', data = num_fields, format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'fields', format = 'StringArray')
+            execute._write_model_field(fid, prefix, name = 'md.stochasticforcing.dimensions', data = dimensions, format = 'IntMat')
+            execute._write_model_field(fid, prefix, name = 'md.stochasticforcing.default_id', data = self.default_id - 1, format = 'IntMat', mattype = 2) # 0-indexed
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'defaultdimension', format = 'Integer')
+            execute._write_model_field(fid, prefix, name = 'md.stochasticforcing.num_timescovariance', data = numtcovmat, format = 'Integer')
+            execute._write_model_field(fid, prefix, name = 'md.stochasticforcing.covariance', data = tempcovariance2d, format = 'DoubleMat')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'timecovariance', format = 'DoubleMat', scale = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'stochastictimestep', format = 'Double', scale = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'randomflag', format = 'Boolean')
