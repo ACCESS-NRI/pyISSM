@@ -1,0 +1,180 @@
+name: ISSM Performance Benchmark
+
+on:
+  workflow_dispatch:
+env:
+  PYTHON_VERSION: "3.11"
+  BENCHMARK_TEST: "test/general/benchmarking/test_benchmark_test110.py::test110_runtime_benchmark"
+  SLOWDOWN_THRESHOLD_PERCENT: "20"
+
+jobs:
+  benchmark:
+    name: Benchmark (${{ matrix.version_name }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - version_name: main
+            checkout_ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.ref || github.ref_name }}
+          - version_name: pr
+            checkout_ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+
+    steps:
+      - name: Checkout target ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.checkout_ref }}
+          fetch-depth: 0
+
+      - name: Show checked out commit
+        run: |
+          echo "Version name: ${{ matrix.version_name }}"
+          echo "Checkout ref: ${{ matrix.checkout_ref }}"
+          git rev-parse HEAD
+          git log -1 --oneline
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install Python dependencies
+        run: |
+          pip install pytest
+          pip install -e .
+
+      - name: Build/setup ISSM for this checkout
+        run: |
+          echo "Replace this block with your actual ISSM build/setup steps."
+          echo "Because this job checks out either main or the PR commit,"
+          echo "the build done here will correspond to that version's code."
+          #
+          # Example placeholders:
+          # ./scripts/build_issm.sh
+          # ./scripts/install_pyissm_test_deps.sh
+          #
+          # If your test environment needs env vars, export them here:
+          # echo "ISSM_DIR=/path/to/issm" >> "$GITHUB_ENV"
+
+      - name: Run benchmark
+        run: |
+          mkdir -p benchmark-results
+          pytest -s "${{ env.BENCHMARK_TEST }}" | tee "benchmark-results/${{ matrix.version_name }}.log"
+
+      - name: Extract average runtime
+        shell: bash
+        run: |
+          python - <<'PY'
+          import pathlib
+          import re
+          import sys
+
+          version_name = "${{ matrix.version_name }}"
+          log_path = pathlib.Path(f"benchmark-results/{version_name}.log")
+          text = log_path.read_text()
+
+          match = re.search(r"avg\s*:\s*([0-9.]+)\s*s", text)
+          if not match:
+              print(f"Could not find average runtime in {log_path}", file=sys.stderr)
+              sys.exit(1)
+
+          avg = match.group(1)
+          out_path = pathlib.Path(f"benchmark-results/{version_name}_avg.txt")
+          out_path.write_text(avg + "\n")
+          print(f"Extracted average runtime for {version_name}: {avg} s")
+          PY
+
+      - name: Upload benchmark artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-${{ matrix.version_name }}
+          path: benchmark-results/
+
+  compare:
+    name: Compare benchmark results
+    runs-on: ubuntu-latest
+    needs: benchmark
+    timeout-minutes: 30
+
+    steps:
+      - name: Download main benchmark artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: benchmark-main
+          path: benchmark-main
+
+      - name: Download PR benchmark artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: benchmark-pr
+          path: benchmark-pr
+
+      - name: Compare runtimes
+        run: |
+          python - <<'PY'
+          import pathlib
+          import sys
+
+          threshold_percent = float("${{ env.SLOWDOWN_THRESHOLD_PERCENT }}")
+
+          main_avg_path = pathlib.Path("benchmark-main/main_avg.txt")
+          pr_avg_path = pathlib.Path("benchmark-pr/pr_avg.txt")
+
+          if not main_avg_path.exists():
+              print(f"Missing {main_avg_path}", file=sys.stderr)
+              sys.exit(1)
+          if not pr_avg_path.exists():
+              print(f"Missing {pr_avg_path}", file=sys.stderr)
+              sys.exit(1)
+
+          main_avg = float(main_avg_path.read_text().strip())
+          pr_avg = float(pr_avg_path.read_text().strip())
+
+          if main_avg <= 0:
+              print("Main runtime must be > 0", file=sys.stderr)
+              sys.exit(1)
+
+          slowdown_percent = ((pr_avg - main_avg) / main_avg) * 100.0
+          speedup_percent = ((main_avg - pr_avg) / main_avg) * 100.0
+
+          print(f"Main average runtime: {main_avg:.3f} s")
+          print(f"PR average runtime:   {pr_avg:.3f} s")
+          print(f"Relative change:      {slowdown_percent:.2f}%")
+
+          summary = pathlib.Path("benchmark_summary.md")
+          summary.write_text(
+              "\n".join([
+                  "# ISSM Performance Benchmark Summary",
+                  "",
+                  f"- Main average runtime: **{main_avg:.3f} s**",
+                  f"- PR average runtime: **{pr_avg:.3f} s**",
+                  f"- Relative slowdown: **{slowdown_percent:.2f}%**",
+                  f"- Relative speedup: **{speedup_percent:.2f}%**",
+                  f"- Failure threshold: **{threshold_percent:.2f}%**",
+                  "",
+              ])
+          )
+
+          if slowdown_percent > threshold_percent:
+              print(
+                  f"Performance regression detected: PR is slower than main by "
+                  f"{slowdown_percent:.2f}% (threshold {threshold_percent:.2f}%).",
+                  file=sys.stderr,
+              )
+              sys.exit(1)
+
+          print("No significant performance regression detected.")
+          PY
+
+      - name: Upload comparison summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-summary
+          path: benchmark_summary.md
