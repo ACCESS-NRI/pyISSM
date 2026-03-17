@@ -186,7 +186,7 @@ jobs:
         run: |
           source "$ISSM_DIR/etc/environment.sh"
           mkdir -p benchmark-results
-          python test/general/benchmarking/test_benchmark_test110.py | tee benchmark-results/main.log
+          python test_benchmark_test110.py | tee benchmark-results/main.log
 
       - name: Extract main average runtime
         working-directory: repo
@@ -383,7 +383,7 @@ jobs:
         run: |
           source "$ISSM_DIR/etc/environment.sh"
           mkdir -p benchmark-results
-          python test/general/benchmarking/test_benchmark_test110.py | tee benchmark-results/pr.log
+          python test_benchmark_test110.py | tee benchmark-results/pr.log
 
       - name: Extract PR average runtime
         working-directory: repo
