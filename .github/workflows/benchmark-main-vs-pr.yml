@@ -121,14 +121,14 @@ jobs:
         run: make -j4 install
 
       - name: Run benchmark on main
-        working-directory: repo/test/general/benchmarking
+        working-directory: repo/test/general
         shell: bash
         env:
           ISSM_DIR: ${{ env.ISSM_DIR }}
         run: |
           source "$ISSM_DIR/etc/environment.sh"
-          mkdir -p ../../../benchmark-results
-          pytest -s test_benchmark_test110.py | tee ../../../benchmark-results/main.log
+          mkdir -p ../../benchmark-results
+          pytest -s benchmarking/test_benchmark_test110.py | tee ../../benchmark-results/main.log
 
       - name: Extract main average runtime
         working-directory: repo
@@ -258,14 +258,14 @@ jobs:
         run: make -j4 install
 
       - name: Run benchmark on PR
-        working-directory: repo/test/general/benchmarking
+        working-directory: repo/test/general
         shell: bash
         env:
           ISSM_DIR: ${{ env.ISSM_DIR }}
         run: |
           source "$ISSM_DIR/etc/environment.sh"
-          mkdir -p ../../../benchmark-results
-          pytest -s test_benchmark_test110.py | tee ../../../benchmark-results/pr.log
+          mkdir -p ../../benchmark-results
+          pytest -s benchmarking/test_benchmark_test110.py | tee ../../benchmark-results/pr.log
 
       - name: Extract PR average runtime
         working-directory: repo
