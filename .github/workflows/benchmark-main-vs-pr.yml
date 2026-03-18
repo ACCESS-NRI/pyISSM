@@ -128,7 +128,7 @@ jobs:
         run: |
           source "$ISSM_DIR/etc/environment.sh"
           mkdir -p ../../../benchmark-results
-          pytest -s ../general/test/benchmarking/test_benchmark_test110.py | tee ../../../benchmark-results/pr.log
+          pytest -s ../test/general/benchmarking/test_benchmark_test110.py | tee ../../../benchmark-results/pr.log
 
       - name: Extract main average runtime
         working-directory: repo
@@ -265,7 +265,7 @@ jobs:
         run: |
           source "$ISSM_DIR/etc/environment.sh"
           mkdir -p ../../../benchmark-results
-          pytest -s ../general/test/benchmarking/test_benchmark_test110.py | tee ../../../benchmark-results/pr.log
+          pytest -s ../test/general/benchmarking/test_benchmark_test110.py | tee ../../../benchmark-results/pr.log
 
       - name: Extract PR average runtime
         working-directory: repo
