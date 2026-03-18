@@ -1,4 +1,5 @@
 import os.path
+from pathlib import Path
 import pyissm
 import numpy as np
 import inspect
@@ -16,11 +17,14 @@ md.geometry.surface = md.geometry.base + md.geometry.thickness
 md.geometry.bed = md.geometry.base - 10
 
 # Initial velocity
-x = np.array(pyissm.tools.archive.arch_read('../assets/Data/SquareShelfConstrained.arch', 'x'))
-y = np.array(pyissm.tools.archive.arch_read('../assets/Data/SquareShelfConstrained.arch', 'y'))
-vx = np.array(pyissm.tools.archive.arch_read('../assets/Data/SquareShelfConstrained.arch', 'vx'))
-vy = np.array(pyissm.tools.archive.arch_read('../assets/Data/SquareShelfConstrained.arch', 'vy'))
-index = np.array(pyissm.tools.archive.arch_read('../assets/Data/SquareShelfConstrained.arch', 'index').astype(int))
+ASSETS_DIR = Path(__file__).resolve().parents[1]
+ARCHIVE_FILE = ASSETS_DIR / "Data" / "SquareShelfConstrained.arch"
+
+x = np.array(pyissm.tools.archive.arch_read(str(ARCHIVE_FILE), 'x'))
+y = np.array(pyissm.tools.archive.arch_read(str(ARCHIVE_FILE), 'y'))
+vx = np.array(pyissm.tools.archive.arch_read(str(ARCHIVE_FILE), 'vx'))
+vy = np.array(pyissm.tools.archive.arch_read(str(ARCHIVE_FILE), 'vy'))
+index = np.array(pyissm.tools.archive.arch_read(str(ARCHIVE_FILE), 'index').astype(int))
 md.initialization.vx = pyissm.tools.wrappers.InterpFromMeshToMesh2d(index, x, y, vx, md.mesh.x, md.mesh.y)
 md.initialization.vy = pyissm.tools.wrappers.InterpFromMeshToMesh2d(index, x, y, vy, md.mesh.x, md.mesh.y)
 md.initialization.vz = np.zeros((md.mesh.numberofvertices))
