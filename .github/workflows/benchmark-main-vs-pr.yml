@@ -180,7 +180,6 @@ jobs:
     #       PY
 
       - name: Run benchmark on main
-        working-directory: repo
         env:
           ISSM_DIR: ${{ env.ISSM_DIR }}
         run: |
