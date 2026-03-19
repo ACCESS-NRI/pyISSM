@@ -269,8 +269,8 @@ jobs:
 
       - name: Extract PR average runtime
         working-directory: repo
+        shell: python
         run: |
-          python - <<'PY'
           import pathlib
           import re
           import sys
@@ -284,7 +284,6 @@ jobs:
           avg = match.group(1)
           pathlib.Path("benchmark-results/pr_avg.txt").write_text(avg + "\n")
           print(f"PR average runtime: {avg} s")
-          PY
 
       - name: Upload PR benchmark artifact
         uses: actions/upload-artifact@v4
