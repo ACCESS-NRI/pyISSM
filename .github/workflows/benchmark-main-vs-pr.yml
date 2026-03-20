@@ -24,19 +24,25 @@ jobs:
     timeout-minutes: 180
     env:
       ISSM_DIR: ${{ github.workspace }}/issm
+      CC: ${{ github.workspace }}/issm/externalpackages/petsc/install/bin/mpicc
+      CXX: ${{ github.workspace }}/issm/externalpackages/petsc/install/bin/mpicxx
+      FC: ${{ github.workspace }}/issm/externalpackages/petsc/install/bin/mpifort
+      F77: ${{ github.workspace }}/issm/externalpackages/petsc/install/bin/mpifort
+      F90: ${{ github.workspace }}/issm/externalpackages/petsc/install/bin/mpifort
 
     steps:
       - name: Checkout pyISSM main
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.base.ref }}
+          ref: ${{ github.event.pull_request.base.sha }}
           path: repo
 
       - name: Show checked out main commit
         working-directory: repo
         run: |
+          echo "Expected base SHA: ${{ github.event.pull_request.base.sha }}"
           git rev-parse HEAD
-          git log -1 --oneline
+          git show -1 --stat
 
       - name: Get latest ISSM release tag
         env:
@@ -87,12 +93,7 @@ jobs:
         working-directory: issm
         shell: bash
         run: |
-          export CC="$ISSM_DIR/externalpackages/petsc/install/bin/mpicc"
-          export CXX="$ISSM_DIR/externalpackages/petsc/install/bin/mpicxx"
-          export FC="$ISSM_DIR/externalpackages/petsc/install/bin/mpifort"
-          export F77="$FC"
-          export F90="$FC"
-          export PYTHON_ROOT="${{ env.pythonLocation }}"
+          export PYTHON_ROOT="$pythonLocation"
           source "$ISSM_DIR/etc/environment.sh"
           autoreconf -ivf
           ./configure \
@@ -123,8 +124,6 @@ jobs:
       - name: Run benchmark on main
         working-directory: repo/test/general
         shell: bash
-        env:
-          ISSM_DIR: ${{ env.ISSM_DIR }}
         run: |
           source "$ISSM_DIR/etc/environment.sh"
           mkdir -p ../../benchmark-results
@@ -132,8 +131,8 @@ jobs:
 
       - name: Extract main average runtime
         working-directory: repo
+        shell: python
         run: |
-          python - <<'PY'
           import pathlib
           import re
           import sys
@@ -147,7 +146,6 @@ jobs:
           avg = match.group(1)
           pathlib.Path("benchmark-results/main_avg.txt").write_text(avg + "\n")
           print(f"Main average runtime: {avg} s")
-          PY
 
       - name: Upload main benchmark artifact
         uses: actions/upload-artifact@v4
@@ -161,6 +159,11 @@ jobs:
     timeout-minutes: 180
     env:
       ISSM_DIR: ${{ github.workspace }}/issm
+      CC: ${{ github.workspace }}/issm/externalpackages/petsc/install/bin/mpicc
+      CXX: ${{ github.workspace }}/issm/externalpackages/petsc/install/bin/mpicxx
+      FC: ${{ github.workspace }}/issm/externalpackages/petsc/install/bin/mpifort
+      F77: ${{ github.workspace }}/issm/externalpackages/petsc/install/bin/mpifort
+      F90: ${{ github.workspace }}/issm/externalpackages/petsc/install/bin/mpifort
 
     steps:
       - name: Checkout pyISSM PR
@@ -172,8 +175,9 @@ jobs:
       - name: Show checked out PR commit
         working-directory: repo
         run: |
+          echo "Expected PR head SHA: ${{ github.event.pull_request.head.sha }}"
           git rev-parse HEAD
-          git log -1 --oneline
+          git show -1 --stat
 
       - name: Get latest ISSM release tag
         env:
@@ -224,12 +228,7 @@ jobs:
         working-directory: issm
         shell: bash
         run: |
-          export CC="$ISSM_DIR/externalpackages/petsc/install/bin/mpicc"
-          export CXX="$ISSM_DIR/externalpackages/petsc/install/bin/mpicxx"
-          export FC="$ISSM_DIR/externalpackages/petsc/install/bin/mpifort"
-          export F77="$FC"
-          export F90="$FC"
-          export PYTHON_ROOT="${{ env.pythonLocation }}"
+          export PYTHON_ROOT="$pythonLocation"
           source "$ISSM_DIR/etc/environment.sh"
           autoreconf -ivf
           ./configure \
@@ -260,8 +259,6 @@ jobs:
       - name: Run benchmark on PR
         working-directory: repo/test/general
         shell: bash
-        env:
-          ISSM_DIR: ${{ env.ISSM_DIR }}
         run: |
           source "$ISSM_DIR/etc/environment.sh"
           mkdir -p ../../benchmark-results
@@ -311,8 +308,8 @@ jobs:
           path: benchmark-pr
 
       - name: Compare runtimes
+        shell: python
         run: |
-          python - <<'PY'
           import pathlib
           import sys
 
@@ -348,7 +345,6 @@ jobs:
               sys.exit(1)
 
           print("No significant performance regression detected.")
-          PY
 
       - name: Upload comparison summary
         uses: actions/upload-artifact@v4
