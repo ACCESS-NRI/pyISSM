@@ -145,6 +145,23 @@ class mesh2d(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the mesh2d parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         # Early return if LoveSolution requested
         if solution == 'LoveSolution':
             return md
@@ -363,6 +380,23 @@ class mesh2dvertical(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the mesh2dvertical parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         # Early return if LoveSolution requested
         if solution == 'LoveSolution':
             return md
@@ -628,6 +662,23 @@ class mesh3dprisms(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):            
+        """
+        Check consistency of the mesh3dprisms parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         class_utils._check_field(md, fieldname = 'mesh.x', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         class_utils._check_field(md, fieldname = 'mesh.y', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
         class_utils._check_field(md, fieldname = 'mesh.z', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
@@ -848,6 +899,23 @@ class mesh3dsurface(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the mesh3dsurface parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         if solution == 'ThermalSolution':
             md.check_message('thermal not supported for 3d surface mesh')
             
