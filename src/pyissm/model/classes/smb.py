@@ -89,6 +89,23 @@ class default(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the smb.default parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         # Early return if required analysis/solutions are not present
         if solution == 'TransientSolution' and not md.transient.issmb:
             return
@@ -330,6 +347,23 @@ class arma(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the smb.arma parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         if 'MasstransportAnalysis' in analyses:
             nbas = md.smb.num_basins
             nprm = md.smb.num_params
@@ -701,6 +735,23 @@ class components(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the smb.components parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         if 'MasstransportAnalysis' in analyses:
             class_utils._check_field(md, fieldname = 'smb.accumulation', timeseries = True, allow_nan = False, allow_inf = False)
             class_utils._check_field(md, fieldname = 'smb.runoff', timeseries = True, allow_nan = False, allow_inf = False)
@@ -984,6 +1035,23 @@ class d18opdd(class_registry.manage_state):
         return self
     
     def checkconsistency(self, md, solution, analyses):
+        """
+        Check consistency of the smb.d18opdd parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         if 'MasstransportAnalysis' in analyses:
             class_utils._check_field(md, fieldname = 'smb.desfac', le = 1, scalar = True)
             class_utils._check_field(md, fieldname = 'smb.s0p', size = (md.mesh.numberofvertices, ), ge = 0, allow_nan = False, allow_inf = False)
@@ -1547,6 +1615,23 @@ class gemb(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the smb.gemb parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         class_utils._check_field(md, fieldname = 'smb.isgraingrowth', values = [0, 1])
         class_utils._check_field(md, fieldname = 'smb.isalbedo', values = [0, 1])
@@ -1911,6 +1996,23 @@ class gradients(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the smb.gradients parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         if 'MasstransportAnalysis' in analyses:
             class_utils._check_field(md, fieldname = 'smb.href', timeseries = True, allow_nan = False, allow_inf = False)
             class_utils._check_field(md, fieldname = 'smb.smbref', timeseries = True, allow_nan = False, allow_inf = False)
@@ -2123,6 +2225,23 @@ class gradientscomponents(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the smb.gradientscomponents parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         if 'MasstransportAnalysis' in analyses:
             class_utils._check_field(md, fieldname = 'smb.accualti', scalar = True, allow_nan = False, allow_inf = False)
             class_utils._check_field(md, fieldname = 'smb.accuref', singletimeseries = True, allow_nan = False, allow_inf = False)
@@ -2342,6 +2461,23 @@ class gradientsela(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the smb.gradientsela parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         if 'MasstransportAnalysis' in analyses:
             class_utils._check_field(md, fieldname = 'smb.ela', timeseries = True, allow_nan = False, allow_inf = False)
             class_utils._check_field(md, fieldname = 'smb.b_pos', timeseries = True, allow_nan = False, allow_inf = False)
@@ -2527,6 +2663,23 @@ class henning(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the smb.henning parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         if solution == 'TransientSolution' and not md.transient.issmb:
             return
         if 'MasstransportAnalysis' in analyses:
@@ -2734,6 +2887,23 @@ class meltcomponents(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the smb.meltcomponents parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         if 'MasstransportAnalysis' in analyses:
             class_utils._check_field(md, fieldname = 'smb.accumulation', timeseries = True, allow_nan = False, allow_inf = False)
             class_utils._check_field(md, fieldname = 'smb.evaporation', timeseries = True, allow_nan = False, allow_inf = False)
@@ -3050,6 +3220,23 @@ class pdd(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the smb.pdd parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         if 'MasstransportAnalysis' in analyses:
             class_utils._check_field(md, fieldname = 'smb.desfac', le = 1, scalar = True)
@@ -3359,6 +3546,23 @@ class pddSicopolis(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the smb.pddSicopolis parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         if solution == 'TransientSolution' and not md.transient.issmb:
             return
         if 'MasstransportAnalysis' in analyses:
@@ -3645,6 +3849,23 @@ class semic(class_registry.manage_state):
         return self
     
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the smb.semic parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         if 'MasstransportAnalysis' in analyses:
             md = class_utils._check_field(md, fieldname = 'smb.desfac', le = 1, scalar = True)
             md = class_utils._check_field(md, fieldname = 'smb.s0gcm', ge = 0, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
