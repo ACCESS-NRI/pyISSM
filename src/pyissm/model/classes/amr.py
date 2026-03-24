@@ -162,7 +162,7 @@ class amr(class_registry.manage_state):
     # Marshall method for saving the amr parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [amr] parameters to a binary file.
+        Marshall [amr.amr] parameters to a binary file.
 
         Parameters
         ----------

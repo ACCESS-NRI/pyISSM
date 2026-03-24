@@ -82,7 +82,7 @@ class debug(class_registry.manage_state):
     # Marshall method for saving the debug parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [debug] parameters to a binary file.
+        Marshall [debug.debug] parameters to a binary file.
 
         Parameters
         ----------

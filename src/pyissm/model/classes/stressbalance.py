@@ -229,7 +229,7 @@ class stressbalance(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the stressbalance parameters.
+        Check consistency of the [stressbalance.stressbalance] parameters.
 
         Parameters
         ----------
@@ -295,7 +295,7 @@ class stressbalance(class_registry.manage_state):
     # Marshall method for saving the stressbalance parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [stressbalance] parameters to a binary file.
+        Marshall [stressbalance.stressbalance] parameters to a binary file.
 
         Parameters
         ----------

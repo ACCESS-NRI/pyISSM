@@ -131,7 +131,7 @@ class earth(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the earth parameters.
+        Check consistency of the [solidearth.earth] parameters.
 
         Parameters
         ----------
@@ -389,7 +389,7 @@ class europa(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the europa parameters.
+        Check consistency of the [solidearth.europa] parameters.
 
         Parameters
         ----------
@@ -676,7 +676,7 @@ class settings(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the settings parameters.
+        Check consistency of the [solidearth.settings] parameters.
 
         Parameters
         ----------
@@ -862,7 +862,7 @@ class solution(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the solution parameters.
+        Check consistency of the [solidearth.solution] parameters.
 
         Parameters
         ----------

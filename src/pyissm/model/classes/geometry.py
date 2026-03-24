@@ -121,7 +121,7 @@ class geometry(class_registry.manage_state):
     # Marshall method for saving the geometry parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [geometry] parameters to a binary file.
+        Marshall [geometry.geometry] parameters to a binary file.
 
         Parameters
         ----------

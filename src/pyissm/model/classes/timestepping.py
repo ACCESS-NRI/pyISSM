@@ -101,7 +101,7 @@ class default(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the default parameters.
+        Check consistency of the [timestepping.default] parameters.
 
         Parameters
         ----------
@@ -279,7 +279,7 @@ class adaptive(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the adaptive parameters.
+        Check consistency of the [timestepping.adaptive] parameters.
 
         Parameters
         ----------

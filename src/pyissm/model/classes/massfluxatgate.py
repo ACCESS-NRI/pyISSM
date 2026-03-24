@@ -80,7 +80,7 @@ class massfluxatgate(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the massfluxatgate parameters.
+        Check consistency of the [massfluxatgate.massfluxatgate] parameters.
 
         Parameters
         ----------
@@ -118,7 +118,7 @@ class massfluxatgate(class_registry.manage_state):
     # Marshall method for saving the massfluxatgate parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [massfluxatgate] parameters to a binary file.
+        Marshall [massfluxatgate.massfluxatgate] parameters to a binary file.
 
         Parameters
         ----------

@@ -116,7 +116,7 @@ class esa(class_registry.manage_state):
                         md = None,
                         return_default_outputs = False):
         """
-        Process requested outputs for [esa] parameters, expanding 'default' to appropriate outputs.
+        Process requested outputs for [esa.esa] parameters, expanding 'default' to appropriate outputs.
 
         Parameters
         ----------
@@ -156,7 +156,7 @@ class esa(class_registry.manage_state):
     # Marshall method for saving the esa parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [esa] parameters to a binary file.
+        Marshall [esa.esa] parameters to a binary file.
 
         Parameters
         ----------

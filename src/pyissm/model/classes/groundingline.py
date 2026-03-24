@@ -109,7 +109,7 @@ class groundingline(class_registry.manage_state):
                         md = None,
                         return_default_outputs = False):
         """
-        Process requested outputs for [groundingline] parameters, expanding 'default' to appropriate outputs.
+        Process requested outputs for [groundingline.groundingline] parameters, expanding 'default' to appropriate outputs.
 
         Parameters
         ----------
@@ -149,7 +149,7 @@ class groundingline(class_registry.manage_state):
     # Marshall method for saving the groundingline parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [groundingline] parameters to a binary file.
+        Marshall [groundingline.groundingline] parameters to a binary file.
 
         Parameters
         ----------

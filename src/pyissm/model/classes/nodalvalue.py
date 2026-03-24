@@ -75,7 +75,7 @@ class nodalvalue(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the nodalvalue parameters.
+        Check consistency of the [nodalvalue.nodalvalue] parameters.
 
         Parameters
         ----------
@@ -104,7 +104,7 @@ class nodalvalue(class_registry.manage_state):
     # Marshall method for saving the nodalvalue parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [nodalvalue] parameters to a binary file.
+        Marshall [nodalvalue.nodalvalue] parameters to a binary file.
 
         Parameters
         ----------

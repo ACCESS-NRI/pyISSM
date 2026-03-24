@@ -179,7 +179,7 @@ class damage(class_registry.manage_state):
                         md = None,
                         return_default_outputs = False):
         """
-        Process requested outputs for [damage] parameters, expanding 'default' to appropriate outputs.
+        Process requested outputs for [damage.damage] parameters, expanding 'default' to appropriate outputs.
 
         Parameters
         ----------
@@ -224,7 +224,7 @@ class damage(class_registry.manage_state):
     # Marshall method for saving the damage parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [damage] parameters to a binary file.
+        Marshall [damage.damage] parameters to a binary file.
 
         Parameters
         ----------

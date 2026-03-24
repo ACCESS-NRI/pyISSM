@@ -66,7 +66,7 @@ class rotational(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the rotational parameters.
+        Check consistency of the [rotational.rotational] parameters.
 
         Parameters
         ----------
@@ -95,7 +95,7 @@ class rotational(class_registry.manage_state):
     # Marshall method for saving the rotational parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [rotational] parameters to a binary file.
+        Marshall [rotational.rotational] parameters to a binary file.
 
         Parameters
         ----------

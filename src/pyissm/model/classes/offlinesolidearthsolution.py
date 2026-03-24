@@ -68,7 +68,7 @@ class offlinesolidearthsolution(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the offlinesolidearthsolution parameters.
+        Check consistency of the [offlinesolidearthsolution.offlinesolidearthsolution] parameters.
 
         Parameters
         ----------
@@ -98,7 +98,7 @@ class offlinesolidearthsolution(class_registry.manage_state):
     # Marshall method for saving the offlinesolidearthsolution parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [offlinesolidearthsolution] parameters to a binary file.
+        Marshall [offlinesolidearthsolution.offlinesolidearthsolution] parameters to a binary file.
 
         Parameters
         ----------

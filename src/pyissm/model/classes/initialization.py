@@ -283,7 +283,7 @@ class initialization(class_registry.manage_state):
     # Marshall method for saving the initialization parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [initialization] parameters to a binary file.
+        Marshall [initialization.initialization] parameters to a binary file.
 
         Parameters
         ----------

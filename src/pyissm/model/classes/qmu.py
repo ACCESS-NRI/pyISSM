@@ -67,7 +67,7 @@ class default(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the qmu parameters.
+        Check consistency of the [qmu.default] parameters.
 
         Parameters
         ----------
@@ -89,7 +89,7 @@ class default(class_registry.manage_state):
     # Marshall method for saving the qmu parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [qmu] parameters to a binary file.
+        Marshall [qmu.default] parameters to a binary file.
 
         Parameters
         ----------

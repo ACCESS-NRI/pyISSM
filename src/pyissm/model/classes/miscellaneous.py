@@ -69,7 +69,7 @@ class miscellaneous(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the miscellaneous parameters.
+        Check consistency of the [miscellaneous.miscellaneous] parameters.
 
         Parameters
         ----------
@@ -91,7 +91,7 @@ class miscellaneous(class_registry.manage_state):
     # Marshall method for saving the miscellaneous parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [miscellaneous] parameters to a binary file.
+        Marshall [miscellaneous.miscellaneous] parameters to a binary file.
 
         Parameters
         ----------

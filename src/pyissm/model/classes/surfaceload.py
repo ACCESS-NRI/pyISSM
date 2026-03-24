@@ -70,7 +70,7 @@ class surfaceload(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the surfaceload parameters.
+        Check consistency of the [surfaceload.surfaceload] parameters.
 
         Parameters
         ----------
@@ -102,7 +102,7 @@ class surfaceload(class_registry.manage_state):
     # Marshall method for saving the surfaceload parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [surfaceload] parameters to a binary file.
+        Marshall [surfaceload.surfaceload] parameters to a binary file.
 
         Parameters
         ----------

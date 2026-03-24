@@ -99,7 +99,7 @@ class misfit(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the misfit parameters.
+        Check consistency of the [misfit.misfit] parameters.
 
         Parameters
         ----------
@@ -135,7 +135,7 @@ class misfit(class_registry.manage_state):
     # Marshall method for saving the misfit parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [misfit] parameters to a binary file.
+        Marshall [misfit.misfit] parameters to a binary file.
 
         Parameters
         ----------

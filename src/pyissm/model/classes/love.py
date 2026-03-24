@@ -189,7 +189,7 @@ class default(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the love.default parameters.
+        Check consistency of the [love.default] parameters.
 
         Parameters
         ----------
@@ -453,7 +453,7 @@ class fourier(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the love.fourier parameters.
+        Check consistency of the [love.fourier] parameters.
 
         Parameters
         ----------

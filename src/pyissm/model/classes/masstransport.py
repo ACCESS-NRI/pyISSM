@@ -100,7 +100,7 @@ class masstransport(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the masstransport parameters.
+        Check consistency of the [masstransport.masstransport] parameters.
 
         Parameters
         ----------
@@ -176,7 +176,7 @@ class masstransport(class_registry.manage_state):
     # Marshall method for saving the masstransport parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [masstransport] parameters to a binary file.
+        Marshall [masstransport.masstransport] parameters to a binary file.
 
         Parameters
         ----------

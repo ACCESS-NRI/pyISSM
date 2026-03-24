@@ -90,7 +90,7 @@ class default(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the smb.default parameters.
+        Check consistency of the [smb.default] parameters.
 
         Parameters
         ----------
@@ -348,7 +348,7 @@ class arma(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the smb.arma parameters.
+        Check consistency of the [smb.arma] parameters.
 
         Parameters
         ----------
@@ -736,7 +736,7 @@ class components(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the smb.components parameters.
+        Check consistency of the [smb.components] parameters.
 
         Parameters
         ----------
@@ -1036,7 +1036,7 @@ class d18opdd(class_registry.manage_state):
     
     def checkconsistency(self, md, solution, analyses):
         """
-        Check consistency of the smb.d18opdd parameters.
+        Check consistency of the [smb.d18opdd] parameters.
 
         Parameters
         ----------
@@ -1616,7 +1616,7 @@ class gemb(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the smb.gemb parameters.
+        Check consistency of the [smb.gemb] parameters.
 
         Parameters
         ----------
@@ -1997,7 +1997,7 @@ class gradients(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the smb.gradients parameters.
+        Check consistency of the [smb.gradients] parameters.
 
         Parameters
         ----------
@@ -2226,7 +2226,7 @@ class gradientscomponents(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the smb.gradientscomponents parameters.
+        Check consistency of the [smb.gradientscomponents] parameters.
 
         Parameters
         ----------
@@ -2462,7 +2462,7 @@ class gradientsela(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the smb.gradientsela parameters.
+        Check consistency of the [smb.gradientsela] parameters.
 
         Parameters
         ----------
@@ -2664,7 +2664,7 @@ class henning(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the smb.henning parameters.
+        Check consistency of the [smb.henning] parameters.
 
         Parameters
         ----------
@@ -2888,7 +2888,7 @@ class meltcomponents(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the smb.meltcomponents parameters.
+        Check consistency of the [smb.meltcomponents] parameters.
 
         Parameters
         ----------
@@ -3221,7 +3221,7 @@ class pdd(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the smb.pdd parameters.
+        Check consistency of the [smb.pdd] parameters.
 
         Parameters
         ----------
@@ -3547,7 +3547,7 @@ class pddSicopolis(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the smb.pddSicopolis parameters.
+        Check consistency of the [smb.pddSicopolis] parameters.
 
         Parameters
         ----------
@@ -3850,7 +3850,7 @@ class semic(class_registry.manage_state):
     
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the smb.semic parameters.
+        Check consistency of the [smb.semic] parameters.
 
         Parameters
         ----------

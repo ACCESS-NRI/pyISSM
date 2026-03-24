@@ -115,7 +115,7 @@ class lovenumbers(class_registry.manage_state):
     
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the lovenumbers parameters.
+        Check consistency of the [lovenumbers.lovenumbers] parameters.
 
         Parameters
         ----------
@@ -162,7 +162,7 @@ class lovenumbers(class_registry.manage_state):
     # Marshall method for saving the lovenumbers parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [lovenumbers] parameters to a binary file.
+        Marshall [lovenumbers.lovenumbers] parameters to a binary file.
 
         Parameters
         ----------

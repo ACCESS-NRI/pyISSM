@@ -69,7 +69,7 @@ class radaroverlay(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the radaroverlay parameters.
+        Check consistency of the [radaroverlay.radaroverlay] parameters.
 
         Parameters
         ----------

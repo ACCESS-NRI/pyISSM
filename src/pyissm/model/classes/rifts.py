@@ -66,7 +66,7 @@ class rifts(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the rifts parameters.
+        Check consistency of the [rifts.rifts] parameters.
 
         Parameters
         ----------
@@ -109,7 +109,7 @@ class rifts(class_registry.manage_state):
     # Marshall method for saving the rifts parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [rifts] parameters to a binary file.
+        Marshall [rifts.rifts] parameters to a binary file.
 
         Parameters
         ----------

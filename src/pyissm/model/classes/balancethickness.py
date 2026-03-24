@@ -100,7 +100,7 @@ class balancethickness(class_registry.manage_state):
     # Marshall method for saving the balancethickness parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [balancethickness] parameters to a binary file.
+        Marshall [balancethickness.balancethickness] parameters to a binary file.
 
         Parameters
         ----------

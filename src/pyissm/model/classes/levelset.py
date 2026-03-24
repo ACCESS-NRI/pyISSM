@@ -96,7 +96,7 @@ class levelset(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the levelset parameters.
+        Check consistency of the [levelset.levelset] parameters.
 
         Parameters
         ----------
@@ -127,7 +127,7 @@ class levelset(class_registry.manage_state):
     # Marshall method for saving the levelset parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [levelset] parameters to a binary file.
+        Marshall [levelset.levelset] parameters to a binary file.
 
         Parameters
         ----------

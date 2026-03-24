@@ -112,7 +112,7 @@ class issmsettings(class_registry.manage_state):
     # Marshall method for saving the issmsettings parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [issmsettings] parameters to a binary file.
+        Marshall [issmsettings.issmsettings] parameters to a binary file.
 
         Parameters
         ----------

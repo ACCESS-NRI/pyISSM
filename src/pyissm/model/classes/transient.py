@@ -133,7 +133,7 @@ class transient(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the transient parameters.
+        Check consistency of the [transient.transient] parameters.
 
         Parameters
         ----------
@@ -248,7 +248,7 @@ class transient(class_registry.manage_state):
     # Marshall method for saving the transient parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [transient] parameters to a binary file.
+        Marshall [transient.transient] parameters to a binary file.
 
         Parameters
         ----------

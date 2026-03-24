@@ -71,7 +71,7 @@ class outputdefinition(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the outputdefinition parameters.
+        Check consistency of the [outputdefinition.outputdefinition] parameters.
 
         Parameters
         ----------
@@ -98,7 +98,7 @@ class outputdefinition(class_registry.manage_state):
     # Marshall method for saving the outputdefinition parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [outputdefinition] parameters to a binary file.
+        Marshall [outputdefinition.outputdefinition] parameters to a binary file.
 
         Parameters
         ----------

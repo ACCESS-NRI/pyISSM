@@ -73,7 +73,7 @@ class steadystate(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the steadystate parameters.
+        Check consistency of the [steadystate.steadystate] parameters.
 
         Parameters
         ----------
@@ -150,7 +150,7 @@ class steadystate(class_registry.manage_state):
     # Marshall method for saving the steadystate parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [steadystate] parameters to a binary file.
+        Marshall [steadystate.steadystate] parameters to a binary file.
 
         Parameters
         ----------

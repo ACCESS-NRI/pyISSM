@@ -95,7 +95,7 @@ class constants(class_registry.manage_state):
     # Marshall method for saving the constants parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [constants] parameters to a binary file.
+        Marshall [constants.constants] parameters to a binary file.
 
         Parameters
         ----------

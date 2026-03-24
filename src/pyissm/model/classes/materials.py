@@ -135,7 +135,7 @@ class ice(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the ice parameters.
+        Check consistency of the [materials.ice] parameters.
 
         Parameters
         ----------
@@ -304,7 +304,7 @@ class hydro(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the hydro parameters.
+        Check consistency of the [materials.hydro] parameters.
 
         Parameters
         ----------
@@ -478,7 +478,7 @@ class litho(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the litho parameters.
+        Check consistency of the [materials.litho] parameters.
 
         Parameters
         ----------
@@ -701,7 +701,7 @@ class damageice(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the damageice parameters.
+        Check consistency of the [materials.damageice] parameters.
 
         Parameters
         ----------
@@ -904,7 +904,7 @@ class enhancedice(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the enhancedice parameters.
+        Check consistency of the [materials.enhancedice] parameters.
 
         Parameters
         ----------
@@ -1109,7 +1109,7 @@ class estar(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the estar parameters.
+        Check consistency of the [materials.estar] parameters.
 
         Parameters
         ----------

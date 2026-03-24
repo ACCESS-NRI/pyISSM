@@ -66,7 +66,7 @@ class default(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the results.default parameters.
+        Check consistency of the [results.default] parameters.
 
         Parameters
         ----------
@@ -145,7 +145,7 @@ class resultsdakota(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the results.resultsdakota parameters.
+        Check consistency of the [results.resultsdakota] parameters.
 
         Parameters
         ----------
@@ -239,7 +239,7 @@ class solution(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the results.solution parameters.
+        Check consistency of the [results.solution] parameters.
 
         Parameters
         ----------
@@ -402,7 +402,7 @@ class solutionstep(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the results.solutionstep parameters.
+        Check consistency of the [results.solutionstep] parameters.
 
         Parameters
         ----------

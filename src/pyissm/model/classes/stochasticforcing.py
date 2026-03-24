@@ -114,7 +114,7 @@ class stochasticforcing(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the stochasticforcing parameters.
+        Check consistency of the [stochasticforcing.stochasticforcing] parameters.
 
         Parameters
         ----------
@@ -300,7 +300,7 @@ class stochasticforcing(class_registry.manage_state):
     # Marshall method for saving the stochasticforcing parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [stochasticforcing] parameters to a binary file.
+        Marshall [stochasticforcing.stochasticforcing] parameters to a binary file.
 
         Parameters
         ----------

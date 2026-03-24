@@ -102,7 +102,7 @@ class sampling(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the sampling parameters.
+        Check consistency of the [sampling.sampling] parameters.
 
         Parameters
         ----------
@@ -179,7 +179,7 @@ class sampling(class_registry.manage_state):
     # Marshall method for saving the sampling parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [sampling] parameters to a binary file.
+        Marshall [sampling.sampling] parameters to a binary file.
 
         Parameters
         ----------

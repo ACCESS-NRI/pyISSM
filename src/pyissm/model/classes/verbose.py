@@ -85,7 +85,7 @@ class verbose(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the verbose parameters.
+        Check consistency of the [verbose.verbose] parameters.
 
         Parameters
         ----------
@@ -169,7 +169,7 @@ class verbose(class_registry.manage_state):
     # Marshall method for saving the verbose parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [verbose] parameters to a binary file.
+        Marshall [verbose.verbose] parameters to a binary file.
 
         Parameters
         ----------

@@ -147,7 +147,7 @@ class debris(class_registry.manage_state):
                         md = None,
                         return_default_outputs = False):
         """
-        Process requested outputs for [debris] parameters, expanding 'default' to appropriate outputs.
+        Process requested outputs for [debris.debris] parameters, expanding 'default' to appropriate outputs.
 
         Parameters
         ----------
@@ -187,7 +187,7 @@ class debris(class_registry.manage_state):
     # Marshall method for saving the debris parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [debris] parameters to a binary file.
+        Marshall [debris.debris] parameters to a binary file.
 
         Parameters
         ----------

@@ -95,7 +95,7 @@ class toolkits(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the toolkits parameters.
+        Check consistency of the [toolkits.toolkits] parameters.
 
         Parameters
         ----------

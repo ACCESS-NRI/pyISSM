@@ -93,7 +93,7 @@ class regionaloutput(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the regionaloutput parameters.
+        Check consistency of the [regionaloutput.regionaloutput] parameters.
 
         Parameters
         ----------
@@ -134,7 +134,7 @@ class regionaloutput(class_registry.manage_state):
     # Marshall method for saving the regionaloutput parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [regionaloutput] parameters to a binary file.
+        Marshall [regionaloutput.regionaloutput] parameters to a binary file.
 
         Parameters
         ----------

@@ -71,7 +71,7 @@ class private(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the private parameters.
+        Check consistency of the [private.private] parameters.
 
         Parameters
         ----------

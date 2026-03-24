@@ -168,7 +168,7 @@ class autodiff(class_registry.manage_state):
     # Marshall method for saving the autodiff parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [autodiff] parameters to a binary file.
+        Marshall [autodiff.autodiff] parameters to a binary file.
 
         Parameters
         ----------

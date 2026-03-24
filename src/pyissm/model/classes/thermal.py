@@ -125,7 +125,7 @@ class thermal(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the thermal parameters.
+        Check consistency of the [thermal.thermal] parameters.
 
         Parameters
         ----------
@@ -220,7 +220,7 @@ class thermal(class_registry.manage_state):
     # Marshall method for saving the thermal parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [thermal] parameters to a binary file.
+        Marshall [thermal.thermal] parameters to a binary file.
 
         Parameters
         ----------

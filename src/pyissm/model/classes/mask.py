@@ -75,7 +75,7 @@ class mask(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the mask parameters.
+        Check consistency of the [mask.mask] parameters.
 
         Parameters
         ----------
@@ -105,7 +105,7 @@ class mask(class_registry.manage_state):
     # Marshall method for saving the mask parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [mask] parameters to a binary file.
+        Marshall [mask.mask] parameters to a binary file.
 
         Parameters
         ----------

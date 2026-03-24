@@ -146,7 +146,7 @@ class mesh2d(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the mesh2d parameters.
+        Check consistency of the [mesh.mesh2d] parameters.
 
         Parameters
         ----------
@@ -381,7 +381,7 @@ class mesh2dvertical(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the mesh2dvertical parameters.
+        Check consistency of the [mesh.mesh2dvertical] parameters.
 
         Parameters
         ----------
@@ -663,7 +663,7 @@ class mesh3dprisms(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):            
         """
-        Check consistency of the mesh3dprisms parameters.
+        Check consistency of the [mesh.mesh3dprisms] parameters.
 
         Parameters
         ----------
@@ -900,7 +900,7 @@ class mesh3dsurface(class_registry.manage_state):
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
-        Check consistency of the mesh3dsurface parameters.
+        Check consistency of the [mesh.mesh3dsurface] parameters.
 
         Parameters
         ----------
