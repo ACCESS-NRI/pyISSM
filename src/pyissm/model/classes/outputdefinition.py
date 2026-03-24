@@ -70,6 +70,23 @@ class outputdefinition(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the outputdefinition parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         class_utils._check_field(md, fieldname = 'outputdefinition.definitions', string_list = True)
         
         # Loop over definitions and check their consistency

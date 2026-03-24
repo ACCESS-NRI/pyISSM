@@ -98,6 +98,23 @@ class misfit(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the misfit parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         if type(self.name) != str:
             raise TypeError('pyissm.model.classes.misfit.check_consistency: "name" field should be a string!')
 

@@ -124,6 +124,23 @@ class thermal(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the thermal parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         # Early return if required analyses/solution are not present
         if ('ThermalAnalysis' not in analyses and 'EnthalpyAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isthermal):
             return md

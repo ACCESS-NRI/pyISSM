@@ -67,6 +67,23 @@ class offlinesolidearthsolution(class_registry.manage_state):
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the offlinesolidearthsolution parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         # Early return if required analyses and solutions not present
         if ('SealevelchangeAnalysis' not in analyses) or ((solution=='TransientSolution') and (md.solidearth.settings.isgrd==1)): 
             print('pyissm.model.classes.offlinesolidearthsolution.check_consistency: trying to run GRD patterns while supplying an offline solution for those patterns!')

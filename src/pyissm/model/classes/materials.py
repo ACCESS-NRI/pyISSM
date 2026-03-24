@@ -134,6 +134,23 @@ class ice(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the ice parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         if solution == 'TransientSolution' and md.transient.isslc:
             class_utils._check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
         else:
@@ -286,6 +303,23 @@ class hydro(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the hydro parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         class_utils._check_field(md, fieldname = 'materials.rho_ice', gt = 0)
         class_utils._check_field(md, fieldname = 'materials.rho_water', gt = 0)
         class_utils._check_field(md, fieldname = 'materials.earth_density', scalar = True, gt = 0)
@@ -443,6 +477,23 @@ class litho(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the litho parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         # Early return if not LoveAnalysis
         if 'LoveAnalysis' not in analyses:
             return md
@@ -649,6 +700,23 @@ class damageice(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the damageice parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         class_utils._check_field(md, fieldname = 'materials.rho_ice', gt = 0)
         class_utils._check_field(md, fieldname = 'materials.rho_water', gt = 0)
         class_utils._check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
@@ -835,6 +903,23 @@ class enhancedice(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the enhancedice parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         class_utils._check_field(md, fieldname = 'materials.rho_ice', gt = 0)
         class_utils._check_field(md, fieldname = 'materials.rho_water', gt = 0)
         class_utils._check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
@@ -1023,6 +1108,23 @@ class estar(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the estar parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         class_utils._check_field(md, fieldname = 'materials.rho_ice', gt = 0)
         class_utils._check_field(md, fieldname = 'materials.rho_water', gt = 0)
         class_utils._check_field(md, fieldname = 'materials.rho_freshwater', gt = 0)
