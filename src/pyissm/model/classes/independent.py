@@ -84,7 +84,7 @@ class independent(class_registry.manage_state):
         return s
     
     # Check model consistency
-    def check_consistency(self, md, i, solution, analyses):
+    def check_consistency(self, md, solution, analyses):
         """
         Check consistency of the [independent] parameters.
 
@@ -92,8 +92,6 @@ class independent(class_registry.manage_state):
         ----------
         md : :class:`pyissm.model.Model`
             The model object to check.
-        i : :class:`int`
-            Index of this independent variable.
         solution : :class:`str`
             The solution name to check.
         analyses : list of :class:`str`
