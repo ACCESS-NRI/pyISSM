@@ -65,8 +65,8 @@ Once created, you can activate the environment with:
 
    conda activate pyissm
 
-Alternatively, for NCI Gadi users, you can use the ACCESS-MED Containerised Conda Environment `analysis3` conda environment maintained within the `xp65` project. More information and instructions can be found on 
-the `ACCESS-Analysis-Conda GitHub repository <https://github.com/ACCESS-NRI/ACCESS-Analysis-Conda>`_.
+Alternatively, for NCI Gadi users, you can use the `conda/analysis3 Python Environment` environment maintained within the `xp65` project. More information and instructions on how to use `conda/analysis3` can be found on 
+the `ACCESS-Hive Docs conda/analysis3 page <https://docs.access-hive.org.au/getting_started/environments/>`_.
 
 Verifying the Installation
 --------------------------
