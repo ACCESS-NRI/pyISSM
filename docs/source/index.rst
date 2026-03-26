@@ -13,11 +13,11 @@ Welcome to the pyISSM documentation!
 
 Quick Links
 -------------------
-- :doc:`Overview <overview>`_ - A high-level introduction to pyISSM features and capabilities.
-- :doc:`Installation <installation>`_ - Instructions for installing pyISSM.
-- :doc:`Tutorials <tutorials>`_ - Hands-on tutorials demonstrating common pyISSM workflows.
-- :doc:`API Reference <pyissm>`_ - Detailed API documentation for pyISSM submodules and classes.
-- :doc:`Contributing Guidelines <contributing>`_ - How to contribute to pyISSM development and documentation.
+- :doc:`Overview <overview>` - A high-level introduction to pyISSM features and capabilities.
+- :doc:`Installation <installation>` - Instructions for installing pyISSM.
+- :doc:`Tutorials <tutorials>` - Hands-on tutorials demonstrating common pyISSM workflows.
+- :doc:`API Reference <pyissm>` - Detailed API documentation for pyISSM submodules and classes.
+- :doc:`Contributing Guidelines <contributing>` - How to contribute to pyISSM development and documentation.
 
 Getting Started
 -------------------
