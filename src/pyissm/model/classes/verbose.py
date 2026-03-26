@@ -7,44 +7,44 @@ class verbose(class_registry.manage_state):
     """
     Verbose parameters class for ISSM.
 
-    This class encapsulates verbose parameters that control the level of output and logging in the ISSM (Ice Sheet System Model) framework.
-    It stores settings for logging frequency, output file paths, and other related options.
+    This class encapsulates verbose parameters that control the level of output
+    and logging in the ISSM (Ice Sheet System Model) framework. It allows users
+    to enable or disable verbosity for different components of the model.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values
+        in ``other`` differ from default values, they will override the default values.
 
     Attributes
     ----------
-    surface : ndarray, default=nan
-        Ice upper surface elevation [m].
-    thickness : ndarray, default=nan
-        Ice thickness [m].
-    base : ndarray, default=nan
-        Ice base elevation [m].
-    bed : ndarray, default=nan
-        Bed elevation [m].
-    hydrostatic_ratio : float, default=nan
-        Hydrostatic ratio for floating ice.
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the geometry parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the geometry parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file
+    mprocessor : :class:`int`, default=0
+        Processor verbosity (0 or 1).
+    module : :class:`int`, default=0
+        Module verbosity (0 or 1).
+    solution : :class:`int`, default=1
+        Solution verbosity (0 or 1).
+    solver : :class:`int`, default=0
+        Solver verbosity (0 or 1).
+    convergence : :class:`int`, default=0
+        Convergence verbosity (0 or 1).
+    control : :class:`int`, default=1
+        Control verbosity (0 or 1).
+    qmu : :class:`int`, default=1
+        QMU (Dakota) verbosity (0 or 1).
+    autodiff : :class:`int`, default=0
+        Automatic differentiation verbosity (0 or 1).
+    smb : :class:`int`, default=0
+        Surface mass balance verbosity (0 or 1).
 
     Examples
     --------
-    md.geometry = pyissm.model.classes.geometry()
-    md.geometry.surface = surface_elevation
-    md.geometry.thickness = ice_thickness
-    md.geometry.bed = bed_elevation
+    .. code-block:: python
+
+        >>> md.verbose = pyissm.model.classes.verbose()
+        >>> md.verbose.solution = 1
+        >>> md.verbose.convergence = 1
     """
 
     # Initialise with default parameters
@@ -66,15 +66,15 @@ class verbose(class_registry.manage_state):
     def __repr__(self):
         s = '   verbose parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'mprocessor', 'processor verbosity'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'module', 'module verbosity'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'solution', 'solution verbosity'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'solver', 'solver verbosity'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'convergence', 'convergence verbosity'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'control', 'control verbosity'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'qmu', 'QMU verbosity'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'autodiff', 'autodiff verbosity'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'smb', 'SMB verbosity'))
+        s += '{}\n'.format(class_utils._field_display(self, 'mprocessor', 'processor verbosity'))
+        s += '{}\n'.format(class_utils._field_display(self, 'module', 'module verbosity'))
+        s += '{}\n'.format(class_utils._field_display(self, 'solution', 'solution verbosity'))
+        s += '{}\n'.format(class_utils._field_display(self, 'solver', 'solver verbosity'))
+        s += '{}\n'.format(class_utils._field_display(self, 'convergence', 'convergence verbosity'))
+        s += '{}\n'.format(class_utils._field_display(self, 'control', 'control verbosity'))
+        s += '{}\n'.format(class_utils._field_display(self, 'qmu', 'QMU verbosity'))
+        s += '{}\n'.format(class_utils._field_display(self, 'autodiff', 'autodiff verbosity'))
+        s += '{}\n'.format(class_utils._field_display(self, 'smb', 'SMB verbosity'))
         return s
 
     # Define class string
@@ -84,6 +84,23 @@ class verbose(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [verbose.verbose] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         # No checks
         return md
     
@@ -152,7 +169,7 @@ class verbose(class_registry.manage_state):
     # Marshall method for saving the verbose parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [verbose] parameters to a binary file.
+        Marshall [verbose.verbose] parameters to a binary file.
 
         Parameters
         ----------
@@ -169,4 +186,4 @@ class verbose(class_registry.manage_state):
         """
 
         ## Write fields
-        execute.WriteData(fid, prefix, name = 'md.verbose', data = self.VerboseToBinary(), format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.verbose', data = self.VerboseToBinary(), format = 'Integer')

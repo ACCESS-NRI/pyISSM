@@ -67,9 +67,9 @@ class massfluxatgate(class_registry.manage_state):
     def __repr__(self):
         s = '   massfluxatgate parameters:\n'
         
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'name', 'identifier for this massfluxatgate response'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'definitionstring', 'string that identifies this output definition uniquely, from Outputdefinition[1 - 100]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'profilename', 'name of file (shapefile or argus file) defining a profile (or gate)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'name', 'identifier for this massfluxatgate response'))
+        s += '{}\n'.format(class_utils._field_display(self, 'definitionstring', 'string that identifies this output definition uniquely, from Outputdefinition[1 - 100]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'profilename', 'name of file (shapefile or argus file) defining a profile (or gate)'))
         return s
 
     # Define class string
@@ -79,6 +79,23 @@ class massfluxatgate(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [massfluxatgate.massfluxatgate] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         if not isinstance(self.name, str):
             raise RuntimeError("pyissm.model.classes.massfluxatgate.check_consistency: 'name' field should be a string.")
 
@@ -90,7 +107,7 @@ class massfluxatgate(class_registry.manage_state):
             x = 'Outputdefinition' + str(i)
             OutputdefinitionStringArray.append(x)
 
-        class_utils.check_field(md, field = self.definitionstring, values = OutputdefinitionStringArray)
+        class_utils._check_field(md, field = self.definitionstring, values = OutputdefinitionStringArray)
 
         # Check the profilename points to a file!:
         if not os.path.isfile(self.profilename):
@@ -101,7 +118,7 @@ class massfluxatgate(class_registry.manage_state):
     # Marshall method for saving the massfluxatgate parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [massfluxatgate] parameters to a binary file.
+        Marshall [massfluxatgate.massfluxatgate] parameters to a binary file.
 
         Parameters
         ----------
@@ -128,7 +145,7 @@ class massfluxatgate(class_registry.manage_state):
             raise RuntimeError('massfluxatgate.marshall_class: Python wrappers not installed. Unable to compute segments for mass flux variable, required to marshall class.')
 
         ## Write fields
-        execute.WriteData(fid, prefix, data = self.name, name = 'md.massfluxatgate.name', format = 'String')
-        execute.WriteData(fid, prefix, data = self.definitionstring, name = 'md.massfluxatgate.definitionstring', format = 'String')
-        execute.WriteData(fid, prefix, data = self.segments, name = 'md.massfluxatgate.segments', format = 'DoubleMat', mattype = 1)
+        execute._write_model_field(fid, prefix, data = self.name, name = 'md.massfluxatgate.name', format = 'String')
+        execute._write_model_field(fid, prefix, data = self.definitionstring, name = 'md.massfluxatgate.definitionstring', format = 'String')
+        execute._write_model_field(fid, prefix, data = self.segments, name = 'md.massfluxatgate.segments', format = 'DoubleMat', mattype = 1)
 

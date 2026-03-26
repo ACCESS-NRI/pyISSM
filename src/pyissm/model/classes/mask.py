@@ -53,8 +53,8 @@ class mask(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   mask parameters:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ice_levelset', 'presence of ice if < 0, icefront position if = 0, no ice if > 0'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ocean_levelset', 'presence of ocean if < 0, coastline/grounding line if = 0, no ocean if > 0'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ice_levelset', 'presence of ice if < 0, icefront position if = 0, no ice if > 0'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ocean_levelset', 'presence of ocean if < 0, coastline/grounding line if = 0, no ocean if > 0'))
         return s
 
     # Define class string
@@ -63,22 +63,39 @@ class mask(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
         Extrude mask fields to 3D
         """
-        self.ice_levelset = mesh.project_3d(md, vector = self.ice_levelset, type = 'node')
-        self.ocean_levelset = mesh.project_3d(md, vector = self.ocean_levelset, type = 'node')
+        self.ice_levelset = mesh._project_3d(md, vector = self.ice_levelset, type = 'node')
+        self.ocean_levelset = mesh._project_3d(md, vector = self.ocean_levelset, type = 'node')
         
         return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [mask.mask] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         # Early return if LoveSolution requested
         if solution == 'LoveSolution':
             return md
 
-        class_utils.check_field(md, fieldname = 'mask.ice_levelset', size = (md.mesh.numberofvertices, ))
+        class_utils._check_field(md, fieldname = 'mask.ice_levelset', size = (md.mesh.numberofvertices, ))
         is_ice = np.array(md.mask.ice_levelset <= 0, int)
         if np.sum(is_ice) == 0:
             raise ValueError('pyissm.model.classes.mask.check_consistency: mask.ice_levelset does not contain any ice (all values > 0)')
@@ -88,7 +105,7 @@ class mask(class_registry.manage_state):
     # Marshall method for saving the mask parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [mask] parameters to a binary file.
+        Marshall [mask.mask] parameters to a binary file.
 
         Parameters
         ----------
@@ -107,4 +124,4 @@ class mask(class_registry.manage_state):
         ## Write fields (consistent format for all)
         fieldnames = ['ice_levelset', 'ocean_levelset']
         for fieldname in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = fieldname, format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = fieldname, format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)

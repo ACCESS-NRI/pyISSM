@@ -50,7 +50,7 @@ class outputdefinition(class_registry.manage_state):
     def __repr__(self):
         s = '   Output definitions:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'definitions', 'List of potential outputs that can be requested, but which need additional data to be defined'))
+        s += '{}\n'.format(class_utils._field_display(self, 'definitions', 'List of potential outputs that can be requested, but which need additional data to be defined'))
         return s
 
     # Define class string
@@ -59,18 +59,35 @@ class outputdefinition(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
         Extrude outputdefinition fields to 3D
         """
         for definition in self.definitions:
-            definition.extrude(md)
+            definition._extrude(md)
 
         return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        class_utils.check_field(md, fieldname = 'outputdefinition.definitions', string_list = True)
+        """
+        Check consistency of the [outputdefinition.outputdefinition] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+        class_utils._check_field(md, fieldname = 'outputdefinition.definitions', string_list = True)
         
         # Loop over definitions and check their consistency
         for definition in self.definitions:
@@ -81,7 +98,7 @@ class outputdefinition(class_registry.manage_state):
     # Marshall method for saving the outputdefinition parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [outputdefinition] parameters to a binary file.
+        Marshall [outputdefinition.outputdefinition] parameters to a binary file.
 
         Parameters
         ----------
@@ -109,4 +126,4 @@ class outputdefinition(class_registry.manage_state):
         
         ## Remove duplicates
         unique_data = np.unique(data)
-        execute.WriteData(fid, prefix, name = 'md.outputdefinition.list', data = unique_data, format = 'StringArray')
+        execute._write_model_field(fid, prefix, name = 'md.outputdefinition.list', data = unique_data, format = 'StringArray')

@@ -1,7 +1,10 @@
+"""
+Frontal Forcings classes for ISSM.
+"""
+
 import numpy as np
 import warnings
-from pyissm.model.classes import class_utils
-from pyissm.model.classes import class_registry
+from pyissm.model.classes import class_utils, class_registry
 from pyissm.model import execute, mesh
 
 ## ------------------------------------------------------
@@ -10,37 +13,29 @@ from pyissm.model import execute, mesh
 @class_registry.register_class
 class default(class_registry.manage_state):
     """
-    Default frontalforcings parameters class for ISSM.
+    Default frontalforcings class for ISSM.
 
-    This class encapsulates the default parameters for frontal forcings in the ISSM (Ice Sheet System Model) framework.
+    This class contains the default parameters for frontal forcings in the ISSM framework.
     It defines the main frontal forcing-related parameters.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    meltingrate : ndarray, default=np.nan
+    meltingrate : :class:`numpy.ndarray`, default=np.nan
         Melting rate at given location [m/a].
-    ablationrate : ndarray, default=np.nan
+    ablationrate : :class:`numpy.ndarray`, default=np.nan
         Frontal ablation rate at given location [m/a], it contains both calving and melting.
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the frontalforcings parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the frontalforcings parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.frontalforcings = pyissm.model.classes.frontalforcings.default()
+    .. code-block:: python
+    
+        >>> md.frontalforcings = pyissm.model.classes.frontalforcings.default()
     """
 
     # Initialise with default parameters
@@ -55,8 +50,8 @@ class default(class_registry.manage_state):
     def __repr__(self):
         s = '   Frontalforcings parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'meltingrate', 'melting rate at given location [m/a]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ablationrate', 'frontal ablation rate at given location [m/a], it contains both calving and melting'))
+        s += '{}\n'.format(class_utils._field_display(self, 'meltingrate', 'melting rate at given location [m/a]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ablationrate', 'frontal ablation rate at given location [m/a], it contains both calving and melting'))
         return s
 
     # Define class string
@@ -65,25 +60,42 @@ class default(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude frontalforcings.default fields to 3D
+        Extrude [frontalforcings.default] fields to 3D
         """
-        self.meltingrate = mesh.project_3d(md, vector = self.meltingrate, type = 'node')
-        self.ablationrate = mesh.project_3d(md, vector = self.ablationrate, type = 'node')
+        self.meltingrate = mesh._project_3d(md, vector = self.meltingrate, type = 'node')
+        self.ablationrate = mesh._project_3d(md, vector = self.ablationrate, type = 'node')
             
         return self
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [frontalforcings.default] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         # Early return if not transient movingfront analysis
         if (solution != 'TransientSolution') or (not md.transient.ismovingfront):
             return md
 
-        class_utils.check_field(md, fieldname = 'frontalforcings.meltingrate', timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'frontalforcings.meltingrate', timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
         if not np.isnan(md.frontalforcings.ablationrate):
-            class_utils.check_field(md, fieldname = 'frontalforcings.ablationrate', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.ablationrate', timeseries = True, allow_nan = False, allow_inf = False)
             
         return md
     
@@ -94,13 +106,13 @@ class default(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -108,14 +120,14 @@ class default(class_registry.manage_state):
 
         ## Write headers to file
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.frontalforcings.parameterization', data = 1, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.frontalforcings.parameterization', data = 1, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'meltingrate', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts, scale = 1. / md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'meltingrate', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts, scale = 1. / md.constants.yts)
 
         ## Write conditional field
         if not np.isnan(self.ablationrate).all():
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'ablationrate', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts, scale = 1. / md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'ablationrate', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts, scale = 1. / md.constants.yts)
 
 ## ------------------------------------------------------
 ## frontalforcings.rignot
@@ -123,41 +135,33 @@ class default(class_registry.manage_state):
 @class_registry.register_class
 class rignot(class_registry.manage_state):
     """
-    Rignot frontalforcings parameters class for ISSM.
+    Rignot frontalforcings class for ISSM.
 
-    This class encapsulates the parameters for frontal forcings based on the Rignot methodology in the ISSM (Ice Sheet System Model) framework.
+    This class contains the parameters for frontal forcings based on the Rignot methodology in the ISSM framework.
     It defines the main frontal forcing-related parameters specific to the Rignot approach.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    basin_id : ndarray, default=np.nan
+    basin_id : :class:`numpy.ndarray`, default=np.nan
         Basin ID for elements.
-    num_basins : int, default=0
+    num_basins : :class:`int`, default=0
         Number of basins.
-    subglacial_discharge : ndarray, default=np.nan
+    subglacial_discharge : :class:`numpy.ndarray`, default=np.nan
         Sum of subglacial discharge for each basin [m/d].
-    thermalforcing : ndarray, default=np.nan
+    thermalforcing : :class:`numpy.ndarray`, default=np.nan
         Thermal forcing [°C].
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the Rignot frontalforcings parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the Rignot frontalforcings parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.frontalforcings = pyissm.model.classes.frontalforcings.rignot()
+    .. code-block:: python
+    
+        >>> md.frontalforcings = pyissm.model.classes.frontalforcings.rignot()
     """
 
     # Initialise with default parameters
@@ -174,10 +178,10 @@ class rignot(class_registry.manage_state):
     def __repr__(self):
         s = '   Frontalforcings parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'basin_id', 'basin ID for elements'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'num_basins', 'number of basins'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'subglacial_discharge', 'sum of subglacial discharge for each basin [m/d]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'thermalforcing', 'thermal forcing [∘C]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'basin_id', 'basin ID for elements'))
+        s += '{}\n'.format(class_utils._field_display(self, 'num_basins', 'number of basins'))
+        s += '{}\n'.format(class_utils._field_display(self, 'subglacial_discharge', 'sum of subglacial discharge for each basin [m/d]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'thermalforcing', 'thermal forcing [∘C]'))
         return s
 
     # Define class string
@@ -186,24 +190,42 @@ class rignot(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude frontalforcings.rignot fields to 3D
+        Extrude [frontalforcings.rignot] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.frontalforcings.rignot.extrude: 3D extrusion not implemented for frontalforcings.rignot. Returning unchanged (2D) frontalforcing fields.')
+        warnings.warn('pyissm.model.classes.frontalforcings.rignot._extrude: 3D extrusion not implemented for frontalforcings.rignot. Returning unchanged (2D) frontalforcing fields.')
             
         return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [frontalforcings.rignot] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         # Early return
         if (solution != 'TransientSolution') or (not md.transient.ismovingfront):
             return md
 
-        class_utils.check_field(md, fieldname = 'frontalforcings.num_basins', scalar = True, gt = 0, allow_nan = True, allow_inf = True)
-        class_utils.check_field(md, fieldname = 'frontalforcings.basin_id', ge = 0, le = md.frontalforcings.num_basins, size = (md.mesh.numberofelements, ), allow_inf = False)
-        class_utils.check_field(md, fieldname = 'frontalforcings.subglacial_discharge', timeseries = True, ge = 0, allow_nan = False, allow_inf = True)
-        class_utils.check_field(md, fieldname = 'frontalforcings.thermalforcing', timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'frontalforcings.num_basins', scalar = True, gt = 0, allow_nan = True, allow_inf = True)
+        class_utils._check_field(md, fieldname = 'frontalforcings.basin_id', ge = 0, le = md.frontalforcings.num_basins, size = (md.mesh.numberofelements, ), allow_inf = False)
+        class_utils._check_field(md, fieldname = 'frontalforcings.subglacial_discharge', timeseries = True, ge = 0, allow_nan = False, allow_inf = True)
+        class_utils._check_field(md, fieldname = 'frontalforcings.thermalforcing', timeseries = True, allow_nan = False, allow_inf = False)
 
         return md
     
@@ -214,13 +236,13 @@ class rignot(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -228,13 +250,13 @@ class rignot(class_registry.manage_state):
 
         ## Write headers to file
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.frontalforcings.parameterization', data = 2, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.frontalforcings.parameterization', data = 2, format = 'Integer')
 
         ## Write fields
-        execute.WriteData(fid, prefix, name = 'md.frontalforcings.basin_id', data = self.basin_id - 1, format = 'IntMat', mattype = 2) # 0-indexed
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'num_basins', format = 'Integer')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'subglacial_discharge', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'thermalforcing', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.frontalforcings.basin_id', data = self.basin_id - 1, format = 'IntMat', mattype = 2) # 0-indexed
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'num_basins', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'subglacial_discharge', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'thermalforcing', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
 ## ------------------------------------------------------
 ## frontalforcings.rignotarma
@@ -242,87 +264,81 @@ class rignot(class_registry.manage_state):
 @class_registry.register_class
 class rignotarma(class_registry.manage_state):
     """
-    RignotARMA frontalforcings parameters class for ISSM.
+    RignotARMA frontalforcings class for ISSM.
 
-    This class encapsulates the parameters for frontal forcings based on the Rignot methodology with ARMA (AutoRegressive Moving Average) modeling in the ISSM (Ice Sheet System Model) framework.
-    It defines the main frontal forcing-related parameters specific to the RignotARMA approach, including polynomial trends, breakpoints, ARMA coefficients, and subglacial discharge modeling.
+    This class contains the parameters for frontal forcings based on the Rignot 
+    methodology with ARMA (AutoRegressive Moving Average) modeling in the ISSM framework.
+    It defines the main frontal forcing-related parameters specific to the RignotARMA approach,
+    including polynomial trends, breakpoints, ARMA coefficients, and subglacial discharge modeling.
 
     Parameters
     ----------
     other : any, optional
-        Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
 
     Attributes
     ----------
-    num_basins : int, default=0
+    num_basins : :class:`int`, default=0
         Number of different basins.
-    num_params : int, default=0
+    num_params : :class:`int`, default=0
         Number of different parameters in the piecewise-polynomial (1:intercept only, 2:with linear trend, 3:with quadratic trend, etc.).
-    num_breaks : int, default=0
+    num_breaks : :class:`int`, default=0
         Number of different breakpoints in the piecewise-polynomial (separating num_breaks+1 periods).
-    polynomialparams : ndarray, default=np.nan
+    polynomialparams : :class:`numpy.ndarray`, default=np.nan
         Coefficients for the polynomial (const, trend, quadratic, etc.), dim1 for basins, dim2 for periods, dim3 for orders.
-    datebreaks : ndarray, default=np.nan
+    datebreaks : :class:`numpy.ndarray`, default=np.nan
         Dates at which the breakpoints in the piecewise polynomial occur (1 row per basin) [yr].
-    ar_order : int, default=0
+    ar_order : :class:`int`, default=0
         Order of the autoregressive model.
-    ma_order : int, default=0
+    ma_order : :class:`int`, default=0
         Order of the moving-average model.
-    arma_timestep : int, default=0
+    arma_timestep : :class:`int`, default=0
         Time resolution of the ARMA model [yr].
-    arlag_coefs : ndarray, default=np.nan
+    arlag_coefs : :class:`numpy.ndarray`, default=np.nan
         Basin-specific vectors of AR lag coefficients.
-    malag_coefs : ndarray, default=np.nan
+    malag_coefs : :class:`numpy.ndarray`, default=np.nan
         Basin-specific vectors of MA lag coefficients.
-    monthlyvals_intercepts : ndarray, default=np.nan
+    monthlyvals_intercepts : :class:`numpy.ndarray`, default=np.nan
         Monthly intercept values for each basin.
-    monthlyvals_trends : ndarray, default=np.nan
+    monthlyvals_trends : :class:`numpy.ndarray`, default=np.nan
         Monthly trend values for each basin.
-    monthlyvals_numbreaks : int, default=0
+    monthlyvals_numbreaks : :class:`int`, default=0
         Number of breakpoints for monthly values.
-    monthlyvals_datebreaks : ndarray, default=np.nan
+    monthlyvals_datebreaks : :class:`numpy.ndarray`, default=np.nan
         Dates at which the monthly value breakpoints occur.
-    basin_id : ndarray, default=np.nan
+    basin_id : :class:`numpy.ndarray`, default=np.nan
         Basin number assigned to each element.
-    subglacial_discharge : ndarray, default=np.nan
+    subglacial_discharge : :class:`numpy.ndarray`, default=np.nan
         Sum of subglacial discharge for each basin [m/d].
-    isdischargearma : int, default=0
+    isdischargearma : :class:`int`, default=0
         Whether an ARMA model is also used for the subglacial discharge (if 0: subglacial_discharge is used, if 1: sd_ parameters are used).
-    sd_ar_order : int, default=0
+    sd_ar_order : :class:`int`, default=0
         Order of the subglacial discharge autoregressive model.
-    sd_ma_order : int, default=0
+    sd_ma_order : :class:`int`, default=0
         Order of the subglacial discharge moving-average model.
-    sd_arma_timestep : int, default=0
+    sd_arma_timestep : :class:`int`, default=0
         Time resolution of the subglacial discharge ARMA model [yr].
-    sd_arlag_coefs : ndarray, default=np.nan
+    sd_arlag_coefs : :class:`numpy.ndarray`, default=np.nan
         Basin-specific vectors of AR lag coefficients for subglacial discharge.
-    sd_malag_coefs : ndarray, default=np.nan
+    sd_malag_coefs : :class:`numpy.ndarray`, default=np.nan
         Basin-specific vectors of MA lag coefficients for subglacial discharge.
-    sd_monthlyfrac : ndarray, default=np.nan
+    sd_monthlyfrac : :class:`numpy.ndarray`, default=np.nan
         Basin-specific vectors of 12 values with fraction of the annual discharge occurring every month.
-    sd_num_breaks : int, default=0
+    sd_num_breaks : :class:`int`, default=0
         Number of different breakpoints in the subglacial discharge piecewise-polynomial (separating sd_num_breaks+1 periods).
-    sd_num_params : int, default=0
+    sd_num_params : :class:`int`, default=0
         Number of different parameters in the subglacial discharge piecewise-polynomial.
-    sd_polynomialparams : ndarray, default=np.nan
+    sd_polynomialparams : :class:`numpy.ndarray`, default=np.nan
         Coefficients for the subglacial discharge polynomial (const, trend, quadratic, etc.).
-    sd_datebreaks : ndarray, default=np.nan
+    sd_datebreaks : :class:`numpy.ndarray`, default=np.nan
         Dates at which the breakpoints in the subglacial discharge piecewise polynomial occur (1 row per basin) [yr].
-
-    Methods
-    -------
-    __init__(self, other=None)
-        Initializes the RignotARMA frontalforcings parameters, optionally inheriting from another instance.
-    __repr__(self)
-        Returns a detailed string representation of the RignotARMA frontalforcings parameters.
-    __str__(self)
-        Returns a short string identifying the class.
-    marshall_class(self, fid, prefix, md=None)
-        Marshall parameters to a binary file.
 
     Examples
     --------
-    md.frontalforcings = pyissm.model.classes.frontalforcings.rignotarma()
+    .. code-block:: python
+    
+        >>> md.frontalforcings = pyissm.model.classes.frontalforcings.rignotarma()
     """
 
     # Initialise with default parameters
@@ -362,29 +378,29 @@ class rignotarma(class_registry.manage_state):
     def __repr__(self):
         s = '   Frontalforcings parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'num_basins', 'number of different basins [unitless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'basin_id', 'basin number assigned to each element [unitless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'num_breaks', 'number of different breakpoints in the piecewise-polynomial (separating num_breaks+1 periods)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'num_params', 'number of different parameters in the piecewise-polynomial (1:intercept only, 2:with linear trend, 3:with quadratic trend, etc.)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'polynomialparams', 'coefficients for the polynomial (const,trend,quadratic,etc.),dim1 for basins,dim2 for periods,dim3 for orders, ex: polyparams=cat(num_params,intercepts,trendlinearcoefs,trendquadraticcoefs)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'datebreaks', 'dates at which the breakpoints in the piecewise polynomial occur (1 row per basin) [yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ar_order', 'order of the autoregressive model [unitless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'ma_order', 'order of the moving-average model [unitless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'arma_timestep', 'time resolution of the ARMA model [yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'arlag_coefs', 'basin-specific vectors of AR lag coefficients [unitless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'malag_coefs', 'basin-specific vectors of MA lag coefficients [unitless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'isdischargearma','whether an ARMA model is also used for the subglacial discharge (if 0: subglacial_discharge is used, if 1: sd_ parameters are used)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'subglacial_discharge', 'sum of subglacial discharge for each basin [m/d]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sd_ar_order','order of the subglacial discharge autoregressive model [unitless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sd_ma_order','order of the subglacial discharge moving-average model [unitless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sd_arma_timestep','time resolution of the subglacial discharge autoregressive model [yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sd_arlag_coefs','basin-specific vectors of AR lag coefficients for subglacial discharge [unitless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sd_malag_coefs','basin-specific vectors of MA lag coefficients for subglacial discharge [unitless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sd_monthlyfrac','basin-specific vectors of 12 values with fraction of the annual discharge occuring every month [unitless]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sd_num_params','number of different parameters in the subglacial discharge piecewise-polynomial (1:intercept only, 2:with linear trend, 3:with quadratic trend, etc.)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sd_num_breaks','number of different breakpoints in the subglacial discharge piecewise-polynomial (separating sd_num_breaks+1 periods)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sd_datebreaks','dates at which the breakpoints in the piecewise polynomial occur (1 row per basin) [yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'sd_polynomialparams','coefficients for the sd_polynomial (const,trend,quadratic,etc.),dim1 for basins,dim2 for periods,dim3 for orders'))
+        s += '{}\n'.format(class_utils._field_display(self, 'num_basins', 'number of different basins [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'basin_id', 'basin number assigned to each element [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'num_breaks', 'number of different breakpoints in the piecewise-polynomial (separating num_breaks+1 periods)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'num_params', 'number of different parameters in the piecewise-polynomial (1:intercept only, 2:with linear trend, 3:with quadratic trend, etc.)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'polynomialparams', 'coefficients for the polynomial (const,trend,quadratic,etc.),dim1 for basins,dim2 for periods,dim3 for orders, ex: polyparams=cat(num_params,intercepts,trendlinearcoefs,trendquadraticcoefs)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'datebreaks', 'dates at which the breakpoints in the piecewise polynomial occur (1 row per basin) [yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ar_order', 'order of the autoregressive model [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ma_order', 'order of the moving-average model [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'arma_timestep', 'time resolution of the ARMA model [yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'arlag_coefs', 'basin-specific vectors of AR lag coefficients [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'malag_coefs', 'basin-specific vectors of MA lag coefficients [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isdischargearma','whether an ARMA model is also used for the subglacial discharge (if 0: subglacial_discharge is used, if 1: sd_ parameters are used)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'subglacial_discharge', 'sum of subglacial discharge for each basin [m/d]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sd_ar_order','order of the subglacial discharge autoregressive model [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sd_ma_order','order of the subglacial discharge moving-average model [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sd_arma_timestep','time resolution of the subglacial discharge autoregressive model [yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sd_arlag_coefs','basin-specific vectors of AR lag coefficients for subglacial discharge [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sd_malag_coefs','basin-specific vectors of MA lag coefficients for subglacial discharge [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sd_monthlyfrac','basin-specific vectors of 12 values with fraction of the annual discharge occuring every month [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sd_num_params','number of different parameters in the subglacial discharge piecewise-polynomial (1:intercept only, 2:with linear trend, 3:with quadratic trend, etc.)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sd_num_breaks','number of different breakpoints in the subglacial discharge piecewise-polynomial (separating sd_num_breaks+1 periods)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sd_datebreaks','dates at which the breakpoints in the piecewise polynomial occur (1 row per basin) [yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'sd_polynomialparams','coefficients for the sd_polynomial (const,trend,quadratic,etc.),dim1 for basins,dim2 for periods,dim3 for orders'))
         return s
 
     # Define class string
@@ -393,16 +409,34 @@ class rignotarma(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude frontalforcings.rignotarma fields to 3D
+        Extrude [frontalforcings.rignotarma] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.frontalforcings.rignotarma.extrude: 3D extrusion not implemented for frontalforcings.rignotarma. Returning unchanged (2D) frontalforcing fields.')
+        warnings.warn('pyissm.model.classes.frontalforcings.rignotarma._extrude: 3D extrusion not implemented for frontalforcings.rignotarma. Returning unchanged (2D) frontalforcing fields.')
             
         return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [frontalforcings.rignotarma] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
         ## NOTE: Logic checks here taken from $ISSM_DIR/src/m/classes/frontalforcingsrignotarma.py
 
         # Early return if not transient movingfront analysis
@@ -414,29 +448,29 @@ class rignotarma(class_registry.manage_state):
         nbrk  = md.frontalforcings.num_breaks
         nMbrk = md.frontalforcings.monthlyvals_numbreaks
 
-        class_utils.check_field(md, fieldname = 'frontalforcings.num_basins', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'frontalforcings.num_params', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'frontalforcings.num_breaks', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'frontalforcings.basin_id', ge = 0, le = md.frontalforcings.num_basins, size = (md.mesh.numberofelements, ), allow_inf = False)
-        class_utils.check_field(md, fieldname = 'frontalforcings.subglacial_discharge', timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'frontalforcings.num_basins', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'frontalforcings.num_params', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'frontalforcings.num_breaks', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'frontalforcings.basin_id', ge = 0, le = md.frontalforcings.num_basins, size = (md.mesh.numberofelements, ), allow_inf = False)
+        class_utils._check_field(md, fieldname = 'frontalforcings.subglacial_discharge', timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
         
         if len(np.shape(self.polynomialparams)) == 1:
             self.polynomialparams = np.array([[self.polynomialparams]])
         if(nbas>1 and nbrk>=1 and nprm>1):
-            class_utils.check_field(md, fieldname = 'frontalforcings.polynomialparams', size = (nbas, nbrk+1, nprm), numel = nbas*(nbrk+1)*nprm, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.polynomialparams', size = (nbas, nbrk+1, nprm), numel = nbas*(nbrk+1)*nprm, allow_nan = False, allow_inf = False)
         elif(nbas==1):
-            class_utils.check_field(md, fieldname = 'frontalforcings.polynomialparams', size = (nprm, nbrk+1), numel = nbas*(nbrk+1)*nprm, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.polynomialparams', size = (nprm, nbrk+1), numel = nbas*(nbrk+1)*nprm, allow_nan = False, allow_inf = False)
         elif(nbrk==0):
-            class_utils.check_field(md, fieldname = 'frontalforcings.polynomialparams', size = (nbas, nprm), numel = nbas*(nbrk+1)*nprm, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.polynomialparams', size = (nbas, nprm), numel = nbas*(nbrk+1)*nprm, allow_nan = False, allow_inf = False)
         elif(nprm==1):
-            class_utils.check_field(md, fieldname = 'frontalforcings.polynomialparams', size = (nbas, nbrk), numel = nbas*(nbrk+1)*nprm, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'frontalforcings.ar_order', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'frontalforcings.ma_order', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'frontalforcings.arma_timestep', scalar = True, ge = md.timestepping.time_step, allow_nan = False, allow_inf = False) # ARMA time step cannot be finer than ISSM timestep
-        class_utils.check_field(md, fieldname = 'frontalforcings.arlag_coefs', size = (md.frontalforcings.num_basins, md.frontalforcings.ar_order), allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'frontalforcings.malag_coefs', size = (md.frontalforcings.num_basins, md.frontalforcings.ma_order), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.polynomialparams', size = (nbas, nbrk), numel = nbas*(nbrk+1)*nprm, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'frontalforcings.ar_order', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'frontalforcings.ma_order', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'frontalforcings.arma_timestep', scalar = True, ge = md.timestepping.time_step, allow_nan = False, allow_inf = False) # ARMA time step cannot be finer than ISSM timestep
+        class_utils._check_field(md, fieldname = 'frontalforcings.arlag_coefs', size = (md.frontalforcings.num_basins, md.frontalforcings.ar_order), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'frontalforcings.malag_coefs', size = (md.frontalforcings.num_basins, md.frontalforcings.ma_order), allow_nan = False, allow_inf = False)
         if(nbrk>0):
-            class_utils.check_field(md, fieldname = 'frontalforcings.datebreaks', size = (nbas, nbrk), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.datebreaks', size = (nbas, nbrk), allow_nan = False, allow_inf = False)
         elif(np.size(md.frontalforcings.datebreaks)==0 or np.all(np.isnan(md.frontalforcings.datebreaks))):
             pass
         else:
@@ -453,55 +487,55 @@ class rignotarma(class_registry.manage_state):
         else:
             isMonthlyTrend = False
         if(isMonthly):
-            class_utils.check_field(md, fieldname = 'frontalforcings.monthlyvals_numbreaks', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.monthlyvals_numbreaks', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
             if(nbas>1 and nMbrk>=1):
-                class_utils.check_field(md, fieldname = 'frontalforcings.monthlyvals_intercepts', size = (nbas, 12, nMbrk+1), numel = nbas*(nMbrk+1)*12, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'frontalforcings.monthlyvals_intercepts', size = (nbas, 12, nMbrk+1), numel = nbas*(nMbrk+1)*12, allow_nan = False, allow_inf = False)
                 if(isMonthlyTrend):
-                    class_utils.check_field(md, fieldname = 'frontalforcings.monthlyvals_trends', size = (nbas, 12, nMbrk+1), numel = nbas*(nMbrk+1)*12, allow_nan = False, allow_inf = False)
+                    class_utils._check_field(md, fieldname = 'frontalforcings.monthlyvals_trends', size = (nbas, 12, nMbrk+1), numel = nbas*(nMbrk+1)*12, allow_nan = False, allow_inf = False)
             elif(nbas==1):
-               class_utils.check_field(md, fieldname = 'frontalforcings.monthlyvals_intercepts', size = (nMbrk+1, 12), numel = nbas*(nMbrk+1)*12, allow_nan = False, allow_inf = False)
+               class_utils._check_field(md, fieldname = 'frontalforcings.monthlyvals_intercepts', size = (nMbrk+1, 12), numel = nbas*(nMbrk+1)*12, allow_nan = False, allow_inf = False)
                if(isMonthlyTrend):
-                  class_utils.check_field(md, fieldname = 'frontalforcings.monthlyvals_trends', size = (nMbrk+1, 12), numel = nbas*(nMbrk+1)*12, allow_nan = False, allow_inf = False)
+                  class_utils._check_field(md, fieldname = 'frontalforcings.monthlyvals_trends', size = (nMbrk+1, 12), numel = nbas*(nMbrk+1)*12, allow_nan = False, allow_inf = False)
             elif(nMbrk==0):
-               class_utils.check_field(md, fieldname = 'frontalforcings.monthlyvals_intercepts', size = (nbas, 12), numel = nbas*(nMbrk+1)+12, allow_nan = False, allow_inf = False)
+               class_utils._check_field(md, fieldname = 'frontalforcings.monthlyvals_intercepts', size = (nbas, 12), numel = nbas*(nMbrk+1)+12, allow_nan = False, allow_inf = False)
                if(isMonthlyTrend):
-                  class_utils.check_field(md, fieldname = 'frontalforcings.monthlyvals_trends', size = (nbas, 12), numel = nbas*(nMbrk+1)*12, allow_nan = False, allow_inf = False)
+                  class_utils._check_field(md, fieldname = 'frontalforcings.monthlyvals_trends', size = (nbas, 12), numel = nbas*(nMbrk+1)*12, allow_nan = False, allow_inf = False)
         if(nMbrk>0):
-            class_utils.check_field(md, fieldname = 'frontalforcings.monthlyvals_datebreaks', size = (nbas,nMbrk), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.monthlyvals_datebreaks', size = (nbas,nMbrk), allow_nan = False, allow_inf = False)
         elif(np.size(md.frontalforcings.monthlyvals_datebreaks)==0 or np.all(np.isnan(md.frontalforcings.monthlyvals_datebreaks))):
             pass
         else:
             raise RuntimeError('md.frontalforcings.monthlyvals_numbreaks is 0 but md.frontalforcings.monthlyvals_datebreaks is not empty')
 
         ### Chacking subglacial discharge ###
-        class_utils.check_field(md, fieldname = 'frontalforcings.isdischargearma', scalar = True, values = [0, 1])
+        class_utils._check_field(md, fieldname = 'frontalforcings.isdischargearma', scalar = True, values = [0, 1])
         if(self.isdischargearma==0):
-            class_utils.check_field(md, fieldname = 'frontalforcings.subglacial_discharge', timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.subglacial_discharge', timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
         else:
             sdnbrk  = md.frontalforcings.sd_num_breaks
             sdnprm  = md.frontalforcings.sd_num_params
-            class_utils.check_field(md, fieldname = 'frontalforcings.sd_ar_order', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'frontalforcings.sd_ma_order',scalar = True, ge = 0, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'frontalforcings.sd_arma_timestep', scalar = True, ge = max(1, md.timestepping.time_step), allow_nan = False, allow_inf = False) #ARMA time step cannot be finer than ISSM timestep and annual timestep
-            class_utils.check_field(md, fieldname = 'frontalforcings.sd_arlag_coefs', size = (md.frontalforcings.num_basins, md.frontalforcings.sd_ar_order), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'frontalforcings.sd_malag_coefs', size = (md.frontalforcings.num_basins, md.frontalforcings.sd_ma_order), allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'frontalforcings.sd_monthlyfrac', size = (md.frontalforcings.num_basins, 12), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.sd_ar_order', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.sd_ma_order',scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.sd_arma_timestep', scalar = True, ge = max(1, md.timestepping.time_step), allow_nan = False, allow_inf = False) #ARMA time step cannot be finer than ISSM timestep and annual timestep
+            class_utils._check_field(md, fieldname = 'frontalforcings.sd_arlag_coefs', size = (md.frontalforcings.num_basins, md.frontalforcings.sd_ar_order), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.sd_malag_coefs', size = (md.frontalforcings.num_basins, md.frontalforcings.sd_ma_order), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.sd_monthlyfrac', size = (md.frontalforcings.num_basins, 12), allow_nan = False, allow_inf = False)
             if(np.any(abs(np.sum(self.sd_monthlyfrac,axis=1)-1)>1e-3)):
                 raise RuntimeError('the 12 entries for each basin of md.frontalforcings.sd_monthlyfrac should add up to 1')
-            class_utils.check_field(md, fieldname = 'frontalforcings.sd_num_params', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-            class_utils.check_field(md, fieldname = 'frontalforcings.sd_num_breaks', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.sd_num_params', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'frontalforcings.sd_num_breaks', scalar = True, ge = 0, allow_nan = False, allow_inf = False)
             if len(np.shape(self.sd_polynomialparams)) == 1:
                 self.sd_polynomialparams = np.array([[self.sd_polynomialparams]])
             if(nbas>1 and sdnbrk>=1 and sdnprm>1):
-                class_utils.check_field(md, fieldname = 'frontalforcings.sd_polynomialparams', size = (nbas, sdnbrk+1, sdnprm), numel = nbas*(sdnbrk+1)*sdnprm, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'frontalforcings.sd_polynomialparams', size = (nbas, sdnbrk+1, sdnprm), numel = nbas*(sdnbrk+1)*sdnprm, allow_nan = False, allow_inf = False)
             elif(nbas==1):
-                class_utils.check_field(md, fieldname = 'frontalforcings.sd_polynomialparams', size = (nprm, nbrk+1), numel = nbas*(sdnbrk+1)*sdnprm, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'frontalforcings.sd_polynomialparams', size = (nprm, nbrk+1), numel = nbas*(sdnbrk+1)*sdnprm, allow_nan = False, allow_inf = False)
             elif(sdnbrk==0):
-                class_utils.check_field(md, fieldname = 'frontalforcings.sd_polynomialparams', size = (nbas, sdnprm), numel = nbas*(sdnbrk+1)*sdnprm, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'frontalforcings.sd_polynomialparams', size = (nbas, sdnprm), numel = nbas*(sdnbrk+1)*sdnprm, allow_nan = False, allow_inf = False)
             elif(sdnprm==1):
-                class_utils.check_field(md, fieldname = 'frontalforcings.sd_polynomialparams', size = (nbas, sdnbrk), numel = nbas*(sdnbrk+1)*sdnprm, allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'frontalforcings.sd_polynomialparams', size = (nbas, sdnbrk), numel = nbas*(sdnbrk+1)*sdnprm, allow_nan = False, allow_inf = False)
             if(sdnbrk>0):
-                class_utils.check_field(md, fieldname = 'frontalforcings.sd_datebreaks', size = (nbas, sdnbrk), allow_nan = False, allow_inf = False)
+                class_utils._check_field(md, fieldname = 'frontalforcings.sd_datebreaks', size = (nbas, sdnbrk), allow_nan = False, allow_inf = False)
             elif(np.size(md.frontalforcings.sd_datebreaks)==0 or np.all(np.isnan(md.frontalforcings.sd_datebreaks))):
                 pass
             else:
@@ -516,13 +550,13 @@ class rignotarma(class_registry.manage_state):
 
         Parameters
         ----------
-        fid : file object
+        fid : :class:`file object`
             The file object to write the binary data to.
-        prefix : str
+        prefix : :class:`str`
             Prefix string used for data identification in the binary file.
-        md : ISSM model object, optional.
+        md : :class:`pyissm.model.Model`, optional
             ISSM model object needed in some cases.
-
+            
         Returns
         -------
         None
@@ -626,40 +660,40 @@ class rignotarma(class_registry.manage_state):
 
         ## Write headers to file
         # NOTE: data types must match the expected types in the ISSM code.
-        execute.WriteData(fid, prefix, name = 'md.frontalforcings.parameterization', data = 3, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.frontalforcings.parameterization', data = 3, format = 'Integer')
 
         ## Write Integer fields
         fieldnames = ['num_basins', 'num_breaks', 'num_params', 'ar_order', 'ma_order', 'monthlyvals_numbreaks']
         for field in fieldnames:
-            execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Integer')
 
         ## Write DoubleMat fields
-        execute.WriteData(fid, prefix, name = 'md.frontalforcings.polynomialparams', data = polyParams_scaled_2d, format = 'DoubleMat')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'arlag_coefs', format = 'DoubleMat', yts = md.constants.yts)
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'malag_coefs', format = 'DoubleMat', yts = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.frontalforcings.datebreaks', data = dbreaks, format = 'DoubleMat', scale = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.frontalforcings.monthlyvals_datebreaks', data = dMbreaks, format = 'DoubleMat', scale = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.frontalforcings.monthlyvals_intercepts', data = interceptsM, format = 'DoubleMat')
-        execute.WriteData(fid, prefix, name = 'md.frontalforcings.monthlyvals_trends', data = trendsM, format = 'DoubleMat', scale = 1. / md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.frontalforcings.polynomialparams', data = polyParams_scaled_2d, format = 'DoubleMat')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'arlag_coefs', format = 'DoubleMat', yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'malag_coefs', format = 'DoubleMat', yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.frontalforcings.datebreaks', data = dbreaks, format = 'DoubleMat', scale = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.frontalforcings.monthlyvals_datebreaks', data = dMbreaks, format = 'DoubleMat', scale = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.frontalforcings.monthlyvals_intercepts', data = interceptsM, format = 'DoubleMat')
+        execute._write_model_field(fid, prefix, name = 'md.frontalforcings.monthlyvals_trends', data = trendsM, format = 'DoubleMat', scale = 1. / md.constants.yts)
 
         ## Write other fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'isdischargearma', format = 'Boolean')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'arma_timestep', format = 'Double', scale = md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.frontalforcings.basin_id', data =  self.basin_id - 1, format = 'IntMat', mattype = 2)  # 0-indexed
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'isdischargearma', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'arma_timestep', format = 'Double', scale = md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.frontalforcings.basin_id', data =  self.basin_id - 1, format = 'IntMat', mattype = 2)  # 0-indexed
 
         ## Write conditional fields
         if(self.isdischargearma == 0):
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'subglacial_discharge', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'subglacial_discharge', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         else:
             ## Write Integer fields
             fieldnames = ['sd_num_breaks', 'sd_num_params', 'sd_ar_order', 'sd_ma_order']
             for field in fieldnames:
-                execute.WriteData(fid, prefix, obj = self, fieldname = field, format = 'Integer')
+                execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Integer')
             
             ## Write DoubleMat fields
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'sd_arma_timestep', format = 'Double', scale = md.constants.yts)
-            execute.WriteData(fid, prefix, name = 'md.frontalforcings.sd_polynomialparams', data = sdpolyParams_scaled_2d, format = 'DoubleMat')
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'sd_arlag_coefs',format = 'DoubleMat', yts = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname ='sd_malag_coefs', format = 'DoubleMat', yts = md.constants.yts)
-            execute.WriteData(fid, prefix, name = 'md.frontalforcings.sd_datebreaks', data = sd_dbreaks, format = 'DoubleMat',scale = md.constants.yts)
-            execute.WriteData(fid, prefix, obj = self, fieldname = 'sd_monthlyfrac',format = 'DoubleMat', yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'sd_arma_timestep', format = 'Double', scale = md.constants.yts)
+            execute._write_model_field(fid, prefix, name = 'md.frontalforcings.sd_polynomialparams', data = sdpolyParams_scaled_2d, format = 'DoubleMat')
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'sd_arlag_coefs',format = 'DoubleMat', yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname ='sd_malag_coefs', format = 'DoubleMat', yts = md.constants.yts)
+            execute._write_model_field(fid, prefix, name = 'md.frontalforcings.sd_datebreaks', data = sd_dbreaks, format = 'DoubleMat',scale = md.constants.yts)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'sd_monthlyfrac',format = 'DoubleMat', yts = md.constants.yts)

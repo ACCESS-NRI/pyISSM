@@ -55,9 +55,9 @@ class radaroverlay(class_registry.manage_state):
     def __repr__(self):
         s = '   radaroverlay parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'pwr', 'radar power image (matrix)'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'x', 'corresponding x coordinates [m]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'y', 'corresponding y coordinates [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'pwr', 'radar power image (matrix)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'x', 'corresponding x coordinates [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'y', 'corresponding y coordinates [m]'))
 
         return s
 
@@ -68,5 +68,22 @@ class radaroverlay(class_registry.manage_state):
 
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [radaroverlay.radaroverlay] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         # No checks
         return md
