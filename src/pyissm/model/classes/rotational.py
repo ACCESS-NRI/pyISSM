@@ -53,9 +53,9 @@ class rotational(class_registry.manage_state):
     def __repr__(self):
         s = '   rotational parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'equatorialmoi', 'mean equatorial moment of inertia [kg m^2]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'polarmoi', 'polar moment of inertia [kg m^2]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'angularvelocity', 'mean rotational velocity of earth [per second]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'equatorialmoi', 'mean equatorial moment of inertia [kg m^2]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'polarmoi', 'polar moment of inertia [kg m^2]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'angularvelocity', 'mean rotational velocity of earth [per second]'))
         return s
 
     # Define class string
@@ -65,20 +65,37 @@ class rotational(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [rotational.rotational] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         # Early return if required analysis/solutions are not present
         if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc):
             return md
         
-        class_utils.check_field(md, fieldname = 'solidearth.rotational.equatorialmoi', allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.rotational.polarmoi', allow_nan = False, allow_inf = False)
-        class_utils.check_field(md, fieldname = 'solidearth.rotational.angularvelocity', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.rotational.equatorialmoi', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.rotational.polarmoi', allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'solidearth.rotational.angularvelocity', allow_nan = False, allow_inf = False)
         
         return md
 
     # Marshall method for saving the rotational parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [rotational] parameters to a binary file.
+        Marshall [rotational.rotational] parameters to a binary file.
 
         Parameters
         ----------
@@ -95,6 +112,6 @@ class rotational(class_registry.manage_state):
         """
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'equatorialmoi', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'polarmoi', format = 'Double')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'angularvelocity', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'equatorialmoi', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'polarmoi', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'angularvelocity', format = 'Double')

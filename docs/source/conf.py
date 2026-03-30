@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('../src'))
 project = 'pyissm'
 author = 'ACCESS-NRI'
 copyright = f"{datetime.now().year}, {author}"
-release = 'v0.0.1.dev190126'
+release = 'v0.0.1.dev_260219'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -51,8 +51,10 @@ autosummary_generate = True
 
 autodoc_default_options = {
     "members": True,
-    "undoc-members": True,
-    "show-inheritance": True,
+    "undoc-members": False, # Ignore members with no docstring
+    "private-members": False, # Ignore private members (those starting with _)
+    "special-members": False, # Ignore special members (those starting and ending with __)
+    "show-inheritance": False,
 }
 
 templates_path = ['_templates']

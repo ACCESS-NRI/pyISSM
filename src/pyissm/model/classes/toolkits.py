@@ -84,7 +84,7 @@ class toolkits(class_registry.manage_state):
     def __repr__(self):
         s = "List of toolkits options per analysis:\n\n"
         for analysis in list(vars(self).keys()):
-            s += "{}\n".format(class_utils.fielddisplay(self, analysis, ''))
+            s += "{}\n".format(class_utils._field_display(self, analysis, ''))
         return s
 
     # Define class string
@@ -94,6 +94,23 @@ class toolkits(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [toolkits.toolkits] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
 
         supported_analyses = class_utils.supported_analyses()
 

@@ -61,10 +61,10 @@ class nodalvalue(class_registry.manage_state):
     def __repr__(self):
         s = '   nodalvalue parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'name', 'identifier for this nodalvalue response'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'definitionstring', 'string that identifies this output definition uniquely, from \'Outputdefinition[1-10]\''))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'model_string', 'string for field that is being retrieved'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'node', 'vertex index at which we retrieve the value'))
+        s += '{}\n'.format(class_utils._field_display(self, 'name', 'identifier for this nodalvalue response'))
+        s += '{}\n'.format(class_utils._field_display(self, 'definitionstring', 'string that identifies this output definition uniquely, from \'Outputdefinition[1-10]\''))
+        s += '{}\n'.format(class_utils._field_display(self, 'model_string', 'string for field that is being retrieved'))
+        s += '{}\n'.format(class_utils._field_display(self, 'node', 'vertex index at which we retrieve the value'))
         return s
 
     # Define class string
@@ -74,20 +74,37 @@ class nodalvalue(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [nodalvalue.nodalvalue] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         if not isinstance(self.name, str):
             raise Exception("pyissm.model.classes.nodalvalue.check_consistency: 'name' field should be a string!")
         OutputdefinitionStringArray = []
         for i in range(100):
             OutputdefinitionStringArray.append('Outputdefinition{}'.format(i))
-        class_utils.check_field(md, fieldname = 'self.definitionstring', field = self.definitionstring, values = OutputdefinitionStringArray)
-        class_utils.check_field(md, fieldname = 'self.node', field = self.node, values = range(md.mesh.numberofvertices))
+        class_utils._check_field(md, fieldname = 'self.definitionstring', field = self.definitionstring, values = OutputdefinitionStringArray)
+        class_utils._check_field(md, fieldname = 'self.node', field = self.node, values = range(md.mesh.numberofvertices))
         
         return md
 
     # Marshall method for saving the nodalvalue parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [nodalvalue] parameters to a binary file.
+        Marshall [nodalvalue.nodalvalue] parameters to a binary file.
 
         Parameters
         ----------
@@ -104,7 +121,7 @@ class nodalvalue(class_registry.manage_state):
         """
 
         ## Write fields
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'name', format = 'String')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'definitionstring', format = 'String')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'model_string', format = 'String')
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'node', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'name', format = 'String')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'definitionstring', format = 'String')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'model_string', format = 'String')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'node', format = 'Integer')

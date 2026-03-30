@@ -9,7 +9,7 @@ md.cluster.np = 1
 
 md.transient.ishydrology = True
 md.hydrology = pyissm.model.classes.hydrology.dc()
-md.hydrology = md.hydrology.initialise(md)
+md.hydrology = md.hydrology.initialize(md)
 
 md.hydrology.isefficientlayer = 0
 md.hydrology.mask_thawed_node = np.ones((md.mesh.numberofvertices))

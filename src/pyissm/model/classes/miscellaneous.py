@@ -56,9 +56,9 @@ class miscellaneous(class_registry.manage_state):
     def __repr__(self):
         s = '   miscellaneous parameters:\n'
 
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'notes', 'notes in a cell of strings'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'name', 'model name'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'dummy', 'empty field to store some data'))
+        s += '{}\n'.format(class_utils._field_display(self, 'notes', 'notes in a cell of strings'))
+        s += '{}\n'.format(class_utils._field_display(self, 'name', 'model name'))
+        s += '{}\n'.format(class_utils._field_display(self, 'dummy', 'empty field to store some data'))
         return s
 
     # Define class string
@@ -68,13 +68,30 @@ class miscellaneous(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
-        class_utils.check_field(md, fieldname = 'miscellaneous.name', allow_empty = False)
+        """
+        Check consistency of the [miscellaneous.miscellaneous] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+        class_utils._check_field(md, fieldname = 'miscellaneous.name', allow_empty = False)
         return md
 
     # Marshall method for saving the miscellaneous parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [miscellaneous] parameters to a binary file.
+        Marshall [miscellaneous.miscellaneous] parameters to a binary file.
 
         Parameters
         ----------
@@ -91,4 +108,4 @@ class miscellaneous(class_registry.manage_state):
         """
 
         ## Write field
-        execute.WriteData(fid, prefix, obj = self, fieldname = 'name', format = 'String')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'name', format = 'String')

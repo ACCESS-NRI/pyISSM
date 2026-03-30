@@ -56,23 +56,40 @@ class default(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude qmu.default fields to 3D
+        Extrude [qmu.default] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.qmu.default.extrude: 3D extrusion not implemented for qmu.default. Returning unchanged (2D) qmu fields.')
+        warnings.warn('pyissm.model.classes.qmu.default._extrude: 3D extrusion not implemented for qmu.default. Returning unchanged (2D) qmu fields.')
 
         return self
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [qmu.default] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         # Checks not yet implemented
         return md
 
     # Marshall method for saving the qmu parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [qmu] parameters to a binary file.
+        Marshall [qmu.default] parameters to a binary file.
 
         Parameters
         ----------
@@ -89,8 +106,8 @@ class default(class_registry.manage_state):
         """
 
         ## Write fields (Turn off)
-        execute.WriteData(fid, prefix, name = 'md.qmu.isdakota', data = False, format = 'Boolean')
-        execute.WriteData(fid, prefix, name = 'md.qmu.mass_flux_segments_present', data = False, format = 'Boolean')
+        execute._write_model_field(fid, prefix, name = 'md.qmu.isdakota', data = False, format = 'Boolean')
+        execute._write_model_field(fid, prefix, name = 'md.qmu.mass_flux_segments_present', data = False, format = 'Boolean')
 
         warnings.warn('pyissm.model.classes.qmu::qmu not yet implemented. Turning off qmu.')
 
@@ -132,11 +149,11 @@ class statistics(class_registry.manage_state):
         return s
     
     # Extrude to 3D mesh
-    def extrude(self, md):
+    def _extrude(self, md):
         """
-        Extrude qmu.statistics fields to 3D
+        Extrude [qmu.statistics] fields to 3D
         """
-        warnings.warn('pyissm.model.classes.qmu.statistics.extrude: 3D extrusion not implemented for qmu.statistics. Returning unchanged (2D) qmu fields.')
+        warnings.warn('pyissm.model.classes.qmu.statistics._extrude: 3D extrusion not implemented for qmu.statistics. Returning unchanged (2D) qmu fields.')
 
         return self
 

@@ -57,9 +57,9 @@ class surfaceload(class_registry.manage_state):
     # Define repr
     def __repr__(self):
         s = '   surfaceload:\n'
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'icethicknesschange', 'thickness change: ice height equivalent [mIce/yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'waterheightchange', 'water height change: water height equivalent [mWater/yr]'))
-        s += '{}\n'.format(class_utils.fielddisplay(self, 'otherchange', 'other loads (sediments) [kg/m^2/yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'icethicknesschange', 'thickness change: ice height equivalent [mIce/yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'waterheightchange', 'water height change: water height equivalent [mWater/yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'otherchange', 'other loads (sediments) [kg/m^2/yr]'))
         return s
 
     # Define class string
@@ -69,23 +69,40 @@ class surfaceload(class_registry.manage_state):
     
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [surfaceload.surfaceload] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
         # Early return if required analysis/solutions are not present
         if ('SealevelchangeAnalysis' not in analyses) or (solution == 'TransientSolution' and not md.transient.isslc):
             return md
         
         if type(self.icethicknesschange) == np.ndarray:
-            class_utils.check_field(md, fieldname = 'solidearth.surfaceload.icethicknesschange', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'solidearth.surfaceload.icethicknesschange', timeseries = True, allow_nan = False, allow_inf = False)
         if type(self.waterheightchange) == np.ndarray:
-            class_utils.check_field(md, fieldname = 'solidearth.surfaceload.waterheightchange', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'solidearth.surfaceload.waterheightchange', timeseries = True, allow_nan = False, allow_inf = False)
         if type(self.otherchange) == np.ndarray:
-            class_utils.check_field(md, fieldname = 'solidearth.surfaceload.otherchange', timeseries = True, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'solidearth.surfaceload.otherchange', timeseries = True, allow_nan = False, allow_inf = False)
 
         return md
     
     # Marshall method for saving the surfaceload parameters
     def marshall_class(self, fid, prefix, md = None):
         """
-        Marshall [surfaceload] parameters to a binary file.
+        Marshall [surfaceload.surfaceload] parameters to a binary file.
 
         Parameters
         ----------
@@ -112,7 +129,7 @@ class surfaceload(class_registry.manage_state):
             self.otherchange = np.zeros((md.mesh.numberofelements + 1, ))
 
         ## Write fields
-        execute.WriteData(fid, prefix, name = 'md.solidearth.surfaceload.icethicknesschange', data = self.icethicknesschange, format = 'MatArray', timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts, scale = 1 / md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.solidearth.surfaceload.waterheightchange', data = self.waterheightchange, format = 'MatArray', timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts, scale = 1 / md.constants.yts)
-        execute.WriteData(fid, prefix, name = 'md.solidearth.surfaceload.otherchange', data = self.otherchange, format = 'MatArray', timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts, scale = 1 / md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.surfaceload.icethicknesschange', data = self.icethicknesschange, format = 'MatArray', timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts, scale = 1 / md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.surfaceload.waterheightchange', data = self.waterheightchange, format = 'MatArray', timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts, scale = 1 / md.constants.yts)
+        execute._write_model_field(fid, prefix, name = 'md.solidearth.surfaceload.otherchange', data = self.otherchange, format = 'MatArray', timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts, scale = 1 / md.constants.yts)
 
