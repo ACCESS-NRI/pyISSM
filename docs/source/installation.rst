@@ -53,17 +53,20 @@ You can also install the latest development version directly from the GitHub rep
 
 pyISSM conda environment
 -------------------------------------------
-An `environment.yml` file is provided in the repository to create an optional conda environment with all necessary dependencies to use pyISSM. You can create the environment using the following command:
+An `environment.yml` file is provided in the repository to create an optional conda environment with all necessary dependencies to use pyISSM. It is recommended to use `mamba` to create the environment, as it is significantly faster than `conda` for resolving dependencies. You can create the environment using the following command:
 
 .. code-block:: bash
 
-   conda env create -f environment.yml
+   mamba env create -f environment.yml
 
 Once created, you can activate the environment with:
 
 .. code-block:: bash
 
    conda activate pyissm
+
+.. note::
+   If `mamba` is not available, you can install it via ``conda install -n base -c conda-forge mamba``, or alternatively replace ``mamba`` with ``conda`` in the above command.
 
 Alternatively, for NCI Gadi users, you can use the pre-installed `conda/analysis3 Python Environment` maintained within the `xp65` project to run pyISSM. More information and instructions on how to use `conda/analysis3` 
 can be found on the `ACCESS-Hive Docs conda/analysis3 page <https://docs.access-hive.org.au/getting_started/environments/>`_.
