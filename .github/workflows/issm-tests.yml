@@ -15,7 +15,7 @@ on:
         description: "Pinned ISSM release"
         required: true
         type: string
--# Set ISSM_DIR environment variable
+# Set ISSM_DIR environment variable
 env:
   ISSM_DIR: ${{ github.workspace }}/issm
 
@@ -30,9 +30,10 @@ jobs:
         python-version: ["3.9", "3.10", "3.11", "3.12"]
 
     steps:
+      # Checkout the pyISSM repo
       - name: Checkout pyISSM
         uses: actions/checkout@v4
-
+      # Set up python (for given version[s])
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
