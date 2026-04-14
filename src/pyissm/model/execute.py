@@ -6,6 +6,8 @@ from copy import copy
 import numpy as np
 import os
 import datetime
+import time
+import subprocess
 import warnings
 import collections
 
@@ -1309,8 +1311,101 @@ def postprocess_qmu(md):
     return
 
 def wait_on_lock(md):
-    print('wait_on_lock not implemented yet')
-    return
+    """
+    Wait for a running ISSM job to complete by polling for a lock file.
+
+    After the ISSM executable finishes, it writes a lock file
+    ``{model_name}.lock`` inside the job's execution directory on the
+    cluster. This function polls for that file at a fixed interval until
+    it appears (success) or the configured timeout is reached (failure).
+
+    Parameters
+    ----------
+    md : object
+        Model data structure. The following attributes are used:
+
+        - ``md.cluster.name`` — hostname of the cluster.
+        - ``md.cluster.login`` — SSH login name.
+        - ``md.cluster.port`` — SSH port (0 means default).
+        - ``md.cluster.executionpath`` — root execution directory on the
+          cluster.
+        - ``md.private.runtimename`` — subdirectory for this particular run.
+        - ``md.miscellaneous.name`` — model name (stem of the lock file).
+        - ``md.settings.waitonlock`` — maximum number of minutes to wait.
+        - ``md.verbose.solution`` — whether to print progress messages.
+
+    Returns
+    -------
+    bool
+        ``True`` if the lock file was detected within the timeout period,
+        ``False`` if the timeout expired before the lock file appeared.
+
+    Notes
+    -----
+    The expected lock file path is::
+
+        {cluster.executionpath}/{runtimename}/{model_name}.lock
+
+    When the cluster hostname matches the local hostname the check is
+    performed with :func:`os.path.exists`. Otherwise an SSH ``test -f``
+    command is used so that no output is produced on success or failure.
+
+    The poll interval is fixed at 5 seconds. A progress message is printed
+    every minute when ``md.verbose.solution`` is ``True``.
+    """
+
+    # Build path to the lock file written by the ISSM executable when done
+    lock_file = '{}/{}/{}.lock'.format(
+        md.cluster.executionpath,
+        md.private.runtimename,
+        md.miscellaneous.name
+    )
+
+    # Timeout in seconds (waitonlock is in minutes)
+    timeout_seconds = md.settings.waitonlock * 60
+    sleep_time = 5  # seconds between polls
+
+    # Determine whether the cluster is the local machine
+    is_local = (md.cluster.name.lower() == tools.config.get_hostname().lower())
+
+    elapsed = 0
+    last_print = -60  # ensures a message is printed on the first verbose tick
+
+    while elapsed < timeout_seconds:
+        # Check for the lock file
+        if is_local:
+            found = os.path.exists(lock_file)
+        else:
+            # Use SSH "test -f" — exit code 0 means file exists
+            if md.cluster.port:
+                check_cmd = 'ssh -l {} -p {:d} {} "test -f {}"'.format(
+                    md.cluster.login, int(md.cluster.port), md.cluster.name, lock_file)
+            else:
+                check_cmd = 'ssh -l {} {} "test -f {}"'.format(
+                    md.cluster.login, md.cluster.name, lock_file)
+            result = subprocess.run(check_cmd, shell=True,
+                                    stdout=subprocess.DEVNULL,
+                                    stderr=subprocess.DEVNULL)
+            found = (result.returncode == 0)
+
+        if found:
+            return True
+
+        # Print progress once per minute when verbose
+        if md.verbose.solution and (elapsed - last_print) >= 60:
+            print('  Waiting for lock file... ({:.0f}m {:.0f}s elapsed / {}m timeout)'.format(
+                elapsed // 60, elapsed % 60, md.settings.waitonlock))
+            last_print = elapsed
+
+        time.sleep(sleep_time)
+        elapsed += sleep_time
+
+    # Timed out without finding the lock file
+    warnings.warn(
+        'pyissm.execute.wait_on_lock: Timed out after {} minutes '
+        'waiting for lock file: {}'.format(md.settings.waitonlock, lock_file)
+    )
+    return False
 
 def load_results_from_cluster(md,
                               no_log = False,
