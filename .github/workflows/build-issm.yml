@@ -102,7 +102,7 @@ jobs:
         if: ${{ steps.cache-issm-build.outputs.cache-hit != 'true' }}
         working-directory: issm
         run: |
-          make -j4 
+          make -j4
           make install
 
       # If corredponding issm cache doesn't exist, package ISSM
