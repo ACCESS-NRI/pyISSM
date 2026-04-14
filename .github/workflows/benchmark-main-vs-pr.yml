@@ -119,7 +119,13 @@ jobs:
       - name: Compile ISSM
         if: steps.cache-issm-build.outputs.cache-hit != 'true'
         working-directory: issm
-        run: make -j4 install
+        run: |
+        make clean
+        make -j4
+        make install
+          make -j4
+          make install
+
 
       - name: Run benchmark on main
         working-directory: repo/test/general
@@ -254,7 +260,10 @@ jobs:
       - name: Compile ISSM
         if: steps.cache-issm-build.outputs.cache-hit != 'true'
         working-directory: issm
-        run: make -j4 install
+        run: |
+        make clean
+        make -j4
+        make install
 
       - name: Run benchmark on PR
         working-directory: repo/test/general
