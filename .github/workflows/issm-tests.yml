@@ -65,7 +65,7 @@ jobs:
           set -euxo pipefail
           export ISSM_DIR="${GITHUB_WORKSPACE}/issm"
           export PATH="$ISSM_DIR/bin:$PATH"
-          source "$ISSM_DIR/etc/environment.sh"
+          set +u; source "$ISSM_DIR/etc/environment.sh"; set -u
           echo "ISSM_DIR=$ISSM_DIR"
           which issm.exe
           ls -l "$ISSM_DIR/bin/issm.exe"
@@ -81,7 +81,7 @@ jobs:
           set -euxo pipefail
           export ISSM_DIR="${GITHUB_WORKSPACE}/issm"
           export PATH="$ISSM_DIR/bin:$PATH"
-          source "$ISSM_DIR/etc/environment.sh"
+          set +u; source "$ISSM_DIR/etc/environment.sh"; set -u
           python -c "import pyissm; print('Wrappers installed:', pyissm.tools.wrappers.check_wrappers_installed())"
 
       - name: Run tests
@@ -89,6 +89,6 @@ jobs:
           set -euxo pipefail
           export ISSM_DIR="${GITHUB_WORKSPACE}/issm"
           export PATH="$ISSM_DIR/bin:$PATH"
-          source "$ISSM_DIR/etc/environment.sh"
+          set +u; source "$ISSM_DIR/etc/environment.sh"; set -u
           cd ./test/ci_tests/
           python -u ./run-tests.py ${{ inputs.test-args }}
