@@ -11,6 +11,10 @@ on:
         description: Arguments to pass to run-tests.py
         required: false
         type: string
+      issm-release:
+        description: Pinned ISSM release tag
+        required: true
+        type: string
 env:
   ISSM_DIR: ${{ github.workspace }}/issm
 
@@ -24,13 +28,8 @@ jobs:
       - name: Checkout pyISSM
         uses: actions/checkout@v4
 
-      - name: Get latest ISSM release tag
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          LATEST=$(gh release view --repo access-nri/issm --json tagName -q .tagName)
-          echo "ISSM_RELEASE=$LATEST" >> $GITHUB_ENV
-          echo "Using release: $LATEST"
+      - name: Set ISSM release
+        run: echo "ISSM_RELEASE=${{ inputs.issm-release }}" >> $GITHUB_ENV
 
       - name: Checkout ISSM latest release
         uses: actions/checkout@v4

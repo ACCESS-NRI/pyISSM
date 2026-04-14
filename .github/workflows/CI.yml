@@ -15,20 +15,20 @@ jobs:
   
   # Job 1: Check dependencies and installation
   check_dependencies:
-    uses: access-nri/pyISSM/.github/workflows/check-dependencies.yml@main
+    uses: ./.github/workflows/check-dependencies.yml
 
   # Job 2: Build ISSM
   build_issm:
-    uses: access-nri/pyISSM/.github/workflows/build-issm.yml@main
+    uses: ./.github/workflows/build-issm.yml
 
   # Job 3: Build ISSM AD
   build_issm_ad:
-    uses: access-nri/pyISSM/.github/workflows/build-issm-ad.yml@main
+    uses: ./.github/workflows/build-issm-ad.yml
 
   # Job 4: Run ISSM tests
   issm_tests:
     needs: build_issm
-    uses: access-nri/pyISSM/.github/workflows/issm-tests.yml@main
+    uses: ./.github/workflows/issm-tests.yml
     with:
       build-type: "issm"
       test-args: "--range 1:999"
@@ -37,7 +37,7 @@ jobs:
   # Job 5: Run ISSM AD tests
   issm_ad_tests:
     needs: build_issm_ad
-    uses: access-nri/pyISSM/.github/workflows/issm-tests.yml@main
+    uses: ./.github/workflows/issm-tests.yml
     with:
       build-type: "issm-AD"
       test-args: "--range 3015:3481"
@@ -46,10 +46,11 @@ jobs:
   # Job 6: Test conda environment and pyISSM installation
   conda_env_test:
     needs: build_issm
-    uses: access-nri/pyISSM/.github/workflows/conda-issm-tests.yml@main
+    uses: ./.github/workflows/conda-issm-tests.yml
     with:
       build-type: "issm"
       test-args: "--range 1:999"
+      issm-release: "2026.04.13"
 
   # Job 7: Run pytest unit tests
   pytest_unit:
