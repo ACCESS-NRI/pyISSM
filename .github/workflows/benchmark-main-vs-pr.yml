@@ -71,15 +71,7 @@ jobs:
           python -m pip install numpy scipy netcdf4 matplotlib pytest
           python -m pip install -e ./repo
 
-      - name: Restore/build ISSM cache
-        uses: actions/cache@v4
-        id: cache-issm-build
-        with:
-          path: ${{ env.ISSM_DIR }}
-          key: issm-${{ env.ISSM_RELEASE }}-python${{ env.PYTHON_VERSION }}-${{ runner.os }}
-
       - name: Install external packages
-        if: steps.cache-issm-build.outputs.cache-hit != 'true'
         shell: bash
         run: |
           source "$ISSM_DIR/etc/environment.sh"
@@ -89,7 +81,6 @@ jobs:
           cd "$ISSM_DIR/externalpackages/semic"    && ./install.sh
 
       - name: Build ISSM
-        if: steps.cache-issm-build.outputs.cache-hit != 'true'
         working-directory: issm
         shell: bash
         run: |
@@ -117,13 +108,11 @@ jobs:
             --with-m1qn3-dir="${ISSM_DIR}/externalpackages/m1qn3/install"
 
       - name: Compile ISSM
-        if: steps.cache-issm-build.outputs.cache-hit != 'true'
         working-directory: issm
         run: |
           make clean
           make -j4
           make install
-
 
       - name: Run benchmark on main
         working-directory: repo/test/general
@@ -210,15 +199,7 @@ jobs:
           python -m pip install numpy scipy netcdf4 matplotlib pytest
           python -m pip install -e ./repo
 
-      - name: Restore/build ISSM cache
-        uses: actions/cache@v4
-        id: cache-issm-build
-        with:
-          path: ${{ env.ISSM_DIR }}
-          key: issm-${{ env.ISSM_RELEASE }}-python${{ env.PYTHON_VERSION }}-${{ runner.os }}
-
       - name: Install external packages
-        if: steps.cache-issm-build.outputs.cache-hit != 'true'
         shell: bash
         run: |
           source "$ISSM_DIR/etc/environment.sh"
@@ -228,7 +209,6 @@ jobs:
           cd "$ISSM_DIR/externalpackages/semic"    && ./install.sh
 
       - name: Build ISSM
-        if: steps.cache-issm-build.outputs.cache-hit != 'true'
         working-directory: issm
         shell: bash
         run: |
@@ -256,7 +236,6 @@ jobs:
             --with-m1qn3-dir="${ISSM_DIR}/externalpackages/m1qn3/install"
 
       - name: Compile ISSM
-        if: steps.cache-issm-build.outputs.cache-hit != 'true'
         working-directory: issm
         run: |
           make clean
