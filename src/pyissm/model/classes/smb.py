@@ -1612,7 +1612,7 @@ class gemb(class_registry.manage_state):
             self.teValue = mesh._project_3d(md, vector = self.teValue, type = 'element')
         if not np.isnan(self.mappedforcingpoint):
             self.mappedforcingpoint = mesh._project_3d(md, vector = self.mappedforcingpoint, type = 'element')
-        if not np.isnan(self.mappedforcingprecipscaling)
+        if not np.isnan(self.mappedforcingprecipscaling):
             self.mappedforcingprecipscaling = mesh._project_3d(md, vector = self.mappedforcingprecipscaling, type = 'element')
         
         return self
