@@ -1238,6 +1238,7 @@ class shakti(class_registry.manage_state):
         self.neumannflux = np.nan
         self.relaxation = 1
         self.storage = 0
+        self.melt_flag = 0
         self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
@@ -1260,6 +1261,7 @@ class shakti(class_registry.manage_state):
         s += '{}\n'.format(class_utils._field_display(self, 'spchead', 'water head constraints (NaN means no constraint) (m)'))
         s += '{}\n'.format(class_utils._field_display(self, 'relaxation', 'under - relaxation coefficient for nonlinear iteration'))
         s += '{}\n'.format(class_utils._field_display(self, 'storage', 'englacial storage coefficient (void ratio)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'melt_flag', 'User specified basal melt? 0: no (default), 1: use md.basalforcings.groundedice_melting_rate'))
         s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
@@ -1314,6 +1316,7 @@ class shakti(class_registry.manage_state):
         class_utils._check_field(md, fieldname = 'hydrology.spchead', timeseries = True, allow_inf = False)
         class_utils._check_field(md, fieldname = 'hydrology.relaxation', ge = 0)
         class_utils._check_field(md, fieldname = 'hydrology.storage', size = 'universal', ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.melt_flag', scalar = True, values = [0, 1])
         class_utils._check_field(md, fieldname = 'hydrology.requested_outputs', string_list = 1)
 
         return md
@@ -1410,6 +1413,7 @@ class shakti(class_registry.manage_state):
             )
         ) else (2, md.mesh.numberofelements + 1)
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'storage', format = 'DoubleMat', mattype = mattype, timeserieslength = tsl, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'melt_flag', format = 'Integer')
 
         ## Write other fields
         execute._write_model_field(fid, prefix, name = 'md.hydrology.requested_outputs', data = self._process_outputs(md), format = 'StringArray')

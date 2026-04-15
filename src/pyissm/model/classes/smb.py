@@ -1388,6 +1388,7 @@ class gemb(class_registry.manage_state):
         self.dulwrfValue = np.zeros((mesh.numberofelements,))
         self.mappedforcingpoint = np.nan
         self.mappedforcingelevation = np.nan
+        self.mappedforcingprecipscaling = 1.0 * np.ones((mesh.numberofelements,))
         self.lapseTaValue = -0.006
         self.lapsedlwrfValue = -0.032
         self.Dzini = 0.05 * np.ones((mesh.numberofelements, 2))
@@ -1494,6 +1495,7 @@ class gemb(class_registry.manage_state):
 
         s += '{}\n'.format(class_utils._field_display(self,'mappedforcingpoint','Mapping of which forcing point will map to each mesh element for ismappedforcing option (integer). Size number of elements.'))
         s += '{}\n'.format(class_utils._field_display(self,'mappedforcingelevation','The elevation of each mapped forcing location (m above sea level) for ismappedforcing option. Size number of forcing points.'))
+        s += '{}\n'.format(class_utils._field_display(self,'mappedforcingprecipscaling','PMap of a precipitation multiplier correction term to be applied to forcing P when ismappedforcing and isprecipforcingremapped options are true. Size number of elements. (Default is 1)'))
         s += '{}\n'.format(class_utils._field_display(self,'lapseTaValue','Temperature lapse rate of each mapped forcing location, if forcing has different grid and should be remapped for ismappedforcing option. (Default value is -0.006 K m-1., vector of mapping points)'))
         s += '{}\n'.format(class_utils._field_display(self,'lapsedlwrfValue','Longwave down lapse rate of each mapped forcing location, if forcing has different grid and should be remapped for ismappedforcing option. (Default value is -0.032 W m-2 m-1., vector of mapping points)'))
 
@@ -1501,7 +1503,7 @@ class gemb(class_registry.manage_state):
         s += '{}\n'.format(class_utils._field_display(self, 'Dzini', 'Initial cell depth when restart [m]'))
         s += '{}\n'.format(class_utils._field_display(self, 'Dini', 'Initial snow density when restart [kg m-3]'))
         s += '{}\n'.format(class_utils._field_display(self, 'Reini', 'Initial grain size when restart [mm]'))
-        s += '{}\n'.format(class_utils._field_display(self, 'Gdnini', 'Initial grain dricity when restart [-]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'Gdnini', 'Initial grain density when restart [-]'))
         s += '{}\n'.format(class_utils._field_display(self, 'Gspini', 'Initial grain sphericity when restart [-]'))
         s += '{}\n'.format(class_utils._field_display(self, 'ECini', 'Initial evaporation/condensation when restart [kg m-2]'))
         s += '{}\n'.format(class_utils._field_display(self, 'Wini', 'Initial snow water content when restart [kg m-2]'))
@@ -1610,6 +1612,8 @@ class gemb(class_registry.manage_state):
             self.teValue = mesh._project_3d(md, vector = self.teValue, type = 'element')
         if not np.isnan(self.mappedforcingpoint):
             self.mappedforcingpoint = mesh._project_3d(md, vector = self.mappedforcingpoint, type = 'element')
+        if not np.isnan(self.mappedforcingprecipscaling):
+            self.mappedforcingprecipscaling = mesh._project_3d(md, vector = self.mappedforcingprecipscaling, type = 'element')
         
         return self
     
@@ -1673,7 +1677,11 @@ class gemb(class_registry.manage_state):
             if np.prod(np.shape(self.lapsedlwrfValue)) == 1:
                 warnings.warn('pyissm.model.classes.smb.gemb: smb.lapsedlwrfValue is now a vector of mapped elements. Set to md.smb.lapsedlwrfValue * np.ones(np.shape(md.smb.mappedforcingelevation))')
             class_utils._check_field(md, fieldname = 'smb.lapseTaValue', size = (sizeta[0]-1, ), allow_nan = False, allow_inf = False)
-            class_utils._check_field(md, fieldname = 'smb.lapsedlwrfValue', size = (sizeta[0]-1, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.lapsedlwrfValue', size = (sizeta[0]-1, ), allow_nan = False, allow_inf = False)                       
+        if self.isprecipforcingremapped:
+            class_utils._check_field(md, fieldname = 'smb.mappedforcingprecipscaling', size = (md.mesh.numberofelements,), ge = 0, allow_nan = False, allow_inf = False)
+            if np.prod(np.shape(self.mappedforcingprecipscaling)) == 1:
+                warnings.warn('pyissm.model.classes.smb.gemb: smb.mappedforcingprecipscaling is now a vector of mapped elements. Set to md.smb.mappedforcingprecipscaling * np.ones(np.shape(md.smb.mappedforcingpoint))')
 
         class_utils._check_field(md, fieldname = 'smb.aIdx', values = [0, 1, 2, 3, 4], allow_nan = False, allow_inf = False)
         class_utils._check_field(md, fieldname = 'smb.eIdx', values = [0, 1, 2], allow_nan = False, allow_inf = False)
@@ -1849,6 +1857,8 @@ class gemb(class_registry.manage_state):
             execute._write_model_field(fid, prefix, obj = self, fieldname = 'mappedforcingelevation', format ='DoubleMat', mattype = 3)
             execute._write_model_field(fid, prefix, obj = self, fieldname = 'lapseTaValue', format ='DoubleMat', mattype = 3)
             execute._write_model_field(fid, prefix, obj = self, fieldname = 'lapsedlwrfValue', format ='DoubleMat', mattype = 3)
+        if self.isprecipforcingremapped:
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'mappedforcingprecipscaling', format ='DoubleMat', mattype = 2)
 
         ## Calculate dt from forcings
         ## NOTE: Taken from $ISSM_DIR/src/m/classes/SMBgemb.py
@@ -3570,8 +3580,8 @@ class pddSicopolis(class_registry.manage_state):
             class_utils._check_field(md, fieldname = 'smb.s0p', ge = 0, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
             class_utils._check_field(md, fieldname = 'smb.s0t', ge = 0, size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
             class_utils._check_field(md, fieldname = 'smb.rlaps', ge = 0, scalar = True)
-            class_utils._check_field(md, fieldname = 'smb.monthlytemperatures', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
-            class_utils._check_field(md, fieldname = 'smb.precipitation', size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.monthlytemperatures', gt = 0, lt = 300, size = (md.mesh.numberofvertices, 12), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.precipitation', size = (md.mesh.numberofvertices, 12), ge = 0, allow_nan = False, allow_inf = False)
             class_utils._check_field(md, fieldname = 'smb.pdd_fac_ice', gt = 0, scalar = True)
             class_utils._check_field(md, fieldname = 'smb.pdd_fac_snow', gt = 0, scalar = True)
         class_utils._check_field(md, fieldname = 'smb.steps_per_step', ge = 1, scalar = True)
