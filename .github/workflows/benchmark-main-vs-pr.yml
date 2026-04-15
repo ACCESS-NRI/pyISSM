@@ -120,7 +120,11 @@ jobs:
         if: steps.cache-issm-build.outputs.cache-hit != 'true'
         working-directory: issm
         run: |
+<<<<<<< Updated upstream
           make -j 4
+=======
+          make -j4
+>>>>>>> Stashed changes
           make install
 
       - name: Run benchmark on main
@@ -256,7 +260,13 @@ jobs:
       - name: Compile ISSM
         if: steps.cache-issm-build.outputs.cache-hit != 'true'
         working-directory: issm
+<<<<<<< Updated upstream
         run: make -j4 install
+=======
+        run: |
+          make -j4
+          make install
+>>>>>>> Stashed changes
 
       - name: Run benchmark on PR
         working-directory: repo/test/general

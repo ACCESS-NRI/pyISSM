@@ -1388,7 +1388,7 @@ class gemb(class_registry.manage_state):
         self.dulwrfValue = np.zeros((mesh.numberofelements,))
         self.mappedforcingpoint = np.nan
         self.mappedforcingelevation = np.nan
-        self.mappedforcingprecipscaling = np.nan
+        self.mappedforcingprecipscaling = 1.0 * np.ones((mesh.numberofelements,))
         self.lapseTaValue = -0.006
         self.lapsedlwrfValue = -0.032
         self.Dzini = 0.05 * np.ones((mesh.numberofelements, 2))
