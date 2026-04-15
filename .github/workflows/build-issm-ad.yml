@@ -30,7 +30,7 @@ jobs:
           echo "Using release: $LATEST"
       # Checkout the latest release of ISSM from access-nri/issm (use ISSM_RELEASE from above) into /issm directory.
       - name: Checkout ISSM latest release
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: access-nri/issm
           ref: ${{ env.ISSM_RELEASE }} # Build from latest release
@@ -38,7 +38,7 @@ jobs:
 
       # Set up python (for given version[s])
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -47,18 +47,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install numpy scipy netcdf4 matplotlib
-      # Build ISSM with AD (or load from existing corredponding cache)
-      # NOTE: Caches are ISSM release and python version specific
-      - name: Cache ISSM AD Build
-        uses: actions/cache@v3
-        id: cache-issm-ad-build
-        with:
-          path: ${{ env.ISSM_DIR }}
-          key: issm-AD-${{ env.ISSM_RELEASE }}-python${{ matrix.python-version }}-${{ runner.os }}
-
-      # If corredponding issm cache doesn't exist, install external packages
       - name: Install external packages
-        if: ${{ steps.cache-issm-ad-build.outputs.cache-hit != 'true' }}
         run: |
           source $ISSM_DIR/etc/environment.sh
           cd $ISSM_DIR/externalpackages/triangle   && ./install-linux.sh
@@ -67,9 +56,7 @@ jobs:
           cd $ISSM_DIR/externalpackages/gsl        && ./install.sh
           cd $ISSM_DIR/externalpackages/codipack   && ./install.sh
           cd $ISSM_DIR/externalpackages/medipack   && ./install.sh
-      # If corredponding issm cache doesn't exist, build ISSM
       - name: Build ISSM AD
-        if: ${{ steps.cache-issm-ad-build.outputs.cache-hit != 'true' }}
         working-directory: issm
         run: |
           export CC=$ISSM_DIR/externalpackages/petsc/install/bin/mpicc
@@ -105,21 +92,15 @@ jobs:
           --with-m1qn3-dir="${ISSM_DIR}/externalpackages/m1qn3/install" \
           --with-medipack-dir="${ISSM_DIR}/externalpackages/medipack/install" \
           --with-codipack-dir="${ISSM_DIR}/externalpackages/codipack/install"
-      # If corredponding issm cache doesn't exist, compile ISSM
       - name: Compile ISSM AD
-        if: ${{ steps.cache-issm-ad-build.outputs.cache-hit != 'true' }}
         working-directory: issm
         run: make -j4 install
 
-      # If corredponding issm cache doesn't exist, package ISSM
       - name: Package ISSM AD
-        if: ${{ steps.cache-issm-ad-build.outputs.cache-hit != 'true' }}
         run: |
           rm -rf issm/.git
           tar -czvf issm-AD-${{ env.ISSM_RELEASE }}-python${{ matrix.python-version }}-${{ runner.os }}.tar.gz -C issm .
-      # If corredponding issm cache doesn't exist, upload ISSM artifact
       - name: Upload ISSM AD artifact
-        if: ${{ steps.cache-issm-ad-build.outputs.cache-hit != 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: issm-AD-${{ env.ISSM_RELEASE }}-python${{ matrix.python-version }}-${{ runner.os }}
