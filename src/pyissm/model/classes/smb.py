@@ -1388,7 +1388,7 @@ class gemb(class_registry.manage_state):
         self.dulwrfValue = np.zeros((mesh.numberofelements,))
         self.mappedforcingpoint = np.nan
         self.mappedforcingelevation = np.nan
-        self.mappedforcingprecipscaling = 1.0
+        self.mappedforcingprecipscaling = np.nan
         self.lapseTaValue = -0.006
         self.lapsedlwrfValue = -0.032
         self.Dzini = 0.05 * np.ones((mesh.numberofelements, 2))
@@ -1677,9 +1677,9 @@ class gemb(class_registry.manage_state):
             if np.prod(np.shape(self.lapsedlwrfValue)) == 1:
                 warnings.warn('pyissm.model.classes.smb.gemb: smb.lapsedlwrfValue is now a vector of mapped elements. Set to md.smb.lapsedlwrfValue * np.ones(np.shape(md.smb.mappedforcingelevation))')
             class_utils._check_field(md, fieldname = 'smb.lapseTaValue', size = (sizeta[0]-1, ), allow_nan = False, allow_inf = False)
-            class_utils._check_field(md, fieldname = 'smb.lapsedlwrfValue', size = (sizeta[0]-1, ), allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.lapsedlwrfValue', size = (sizeta[0]-1, ), allow_nan = False, allow_inf = False)                       
         if self.isprecipforcingremapped:
-            class_utils._check_field(md, fieldname = 'smb.mappedforcingprecipscaling', size = (md.mesh.numberofelements, ), ge = 0, allow_nan = False, allow_inf = False)
+            class_utils._check_field(md, fieldname = 'smb.mappedforcingprecipscaling', size = (md.mesh.numberofelements,), ge = 0, allow_nan = False, allow_inf = False)
             if np.prod(np.shape(self.mappedforcingprecipscaling)) == 1:
                 warnings.warn('pyissm.model.classes.smb.gemb: smb.mappedforcingprecipscaling is now a vector of mapped elements. Set to md.smb.mappedforcingprecipscaling * np.ones(np.shape(md.smb.mappedforcingpoint))')
 
