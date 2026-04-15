@@ -62,7 +62,7 @@ segy = md.mesh.y[md.mesh.segments[:, 0] - 1]
 posA = np.intersect1d(np.intersect1d(np.array(np.where(segx < 1.)), np.array(np.where(segy > 400.))), np.array(np.where(segy < 600.)))
 pos = (md.mesh.segments[posA] - 1)[:, 2]
 md.hydrology.neumannflux[pos, :] = np.tile(0.05 * (1. - np.sin(2. * np.pi / (1. / 365.) * time)), (len(pos), 1))
-md.hydrology.melt_flag = 1
+
 # Execute model
 md = pyissm.model.execute.solve(md, 'Transient')
 
