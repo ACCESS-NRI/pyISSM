@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       build-type:
-        description: "Type of ISSM build to restore from the cache"
+        description: "Type of ISSM build to download from artifacts"
         required: true
         type: string
       test-args:
@@ -38,18 +38,15 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Restore ISSM cache
-        id: restore-issm
-        uses: actions/cache@v4
+      - name: Download ISSM artifact
+        uses: actions/download-artifact@v4
         with:
-          path: ${{ env.ISSM_DIR }}
-          key: ${{ inputs.build-type }}-${{ inputs.issm-release }}-python${{ matrix.python-version }}-${{ runner.os }}
+          name: ${{ inputs.build-type }}-${{ inputs.issm-release }}-python${{ matrix.python-version }}-${{ runner.os }}
 
-      - name: Fail if ISSM cache missing
-        if: steps.restore-issm.outputs.cache-hit != 'true'
+      - name: Extract ISSM artifact
         run: |
-          echo "Expected ISSM cache was not found."
-          exit 1
+          mkdir -p ${{ env.ISSM_DIR }}
+          tar -xzf ${{ inputs.build-type }}-${{ inputs.issm-release }}-python${{ matrix.python-version }}-${{ runner.os }}.tar.gz -C ${{ env.ISSM_DIR }}
 
       - name: Install Python dependencies
         run: |
