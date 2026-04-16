@@ -1,22 +1,28 @@
 {
     "creators": [
         {
-            "orcid": "0000-0003-3891-5444",
+            "orcid": "0000-0001-6541-2768",
             "affiliation": "ACCESS-NRI",
-            "name": "Beucher, Romain"
+            "name": "Bird, Lawrence"
         },
         {
+            "orcid": "0000-0002-5238-6115",
             "affiliation": "ACCESS-NRI",
-            "name": "Carouge, Claire"
+            "name": "Kin Jun Hew, Justin"
+        },
+        {
+            "orcid": "0000-0002-2320-4239",
+            "affiliation": "ACCESS-NRI",
+            "name": "Tetley, Michael G."
         }
     ],
 
     "license": "Apache-2.0",
 
-    "title": "ACCESS-NRI Template",
-    "decription": "Template repository for ACCESS-NRI, test",
+    "title": "pyISSM",
+    "description": "Python API for the Ice-sheet and Sea-level System Model (ISSM)",
 
-    "keywords": ["Climate", "Science", "ACCESS-NRI", "NCI"],
+    "keywords": ["Cryosphere", "Ice sheet modelling", "Climate", "Science", "ACCESS-NRI", "NCI"],
 
     "communities": [
         {"identifier": "access-nri"}
