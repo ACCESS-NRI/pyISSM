@@ -24,6 +24,7 @@ try:
         get_nodal_functions_coeff,
         get_element_areas_volumes,
     )
+    from pyissm.model.mesh import get_mesh, process_mesh, find_node_types
     ISSM_AVAILABLE = True
 except ImportError:
     ISSM_AVAILABLE = False
