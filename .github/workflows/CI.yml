@@ -52,6 +52,6 @@ jobs:
   # Job 7: Run pytest unit tests
   pytest_unit:
     needs: build_issm
-    uses: ./.github/workflows/pytest-unit.yml
+    uses: access-nri/pyISSM/.github/workflows/pytest-unit.yml@main
     with:
       build-type: "issm"
