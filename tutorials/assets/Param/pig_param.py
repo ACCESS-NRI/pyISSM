@@ -7,7 +7,7 @@ import numpy as np
 
 try:
     ## BY DEFAULT: Load data using the CCD
-    import datapool as dp
+    import ccdtools as dp
     print(f"All required datasets will be loaded from the ACCESS Community Cryosphere Datapool on {pyissm.tools.config.get_hostname()}.")
 
     catalog = dp.catalog.DataCatalog()
