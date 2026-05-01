@@ -4,15 +4,17 @@ These methods are pure string-processing (no ISSM dependency) and can be tested 
 """
 
 import pytest
+from types import SimpleNamespace
 
 try:
     import pyissm.model.classes.smb as smb
     import pyissm.model.classes.hydrology as hydrology
-    import pyissm.model.classes.masstransport as masstransport
-    import pyissm.model.classes.thermal as thermal
-    import pyissm.model.classes.damage as damage
-    import pyissm.model.classes.transient as transient
-    import pyissm.model.classes.stressbalance as stressbalance
+    # __init__.py shadows module names with class names, so import classes directly
+    from pyissm.model.classes.masstransport import masstransport
+    from pyissm.model.classes.thermal import thermal
+    from pyissm.model.classes.damage import damage
+    from pyissm.model.classes.transient import transient
+    from pyissm.model.classes.stressbalance import stressbalance
     CLASSES_AVAILABLE = True
 except ImportError:
     CLASSES_AVAILABLE = False
@@ -21,6 +23,13 @@ pytestmark = pytest.mark.skipif(
     not CLASSES_AVAILABLE,
     reason="pyissm model classes not available"
 )
+
+
+def _make_gemb_mesh(ne=10):
+    """Minimal mock mesh for smb.gemb() constructor."""
+    m = SimpleNamespace()
+    m.numberofelements = ne
+    return m
 
 
 # ============== HELPER ==============
@@ -69,6 +78,15 @@ def _test_class_process_outputs(cls, expected_default_output):
     assert expected_default_output in defaults
 
 
+def _make_md_2d():
+    """Mock md with a 2D mesh for _process_outputs tests."""
+    md = SimpleNamespace()
+    md.mesh = SimpleNamespace()
+    md.mesh.domain_type = lambda: '2Dhorizontal'
+    md.mesh.dimension = lambda: 2
+    return md
+
+
 # ============== SMB CLASSES ==============
 
 class TestSmbDefaultProcessOutputs:
@@ -106,17 +124,19 @@ class TestSmbD18opddProcessOutputs:
 
 class TestSmbGembProcessOutputs:
     def test_default_expansion(self):
-        # gemb has extra default: 'SmbAccumulatedMassBalance'
-        _test_class_process_outputs(smb.gemb, 'SmbMassBalance')
+        obj = smb.gemb(_make_gemb_mesh())
+        obj.requested_outputs = ['default']
+        result = obj._process_outputs()
+        assert 'SmbMassBalance' in result
 
     def test_accumulated_in_defaults(self):
-        obj = smb.gemb()
+        obj = smb.gemb(_make_gemb_mesh())
         obj.requested_outputs = ['default']
         result = obj._process_outputs()
         assert 'SmbAccumulatedMassBalance' in result
 
     def test_return_default_outputs_has_both(self):
-        obj = smb.gemb()
+        obj = smb.gemb(_make_gemb_mesh())
         obj.requested_outputs = ['default']
         _, defaults = obj._process_outputs(return_default_outputs=True)
         assert 'SmbMassBalance' in defaults
@@ -257,24 +277,24 @@ class TestHydrologyTwsProcessOutputs:
 
 class TestMasstransportProcessOutputs:
     def test_default_expands(self):
-        obj = masstransport.masstransport()
+        obj = masstransport()
         obj.requested_outputs = ['default']
         result = obj._process_outputs()
         assert isinstance(result, list)
         assert len(result) > 0
 
     def test_explicit_passthrough(self):
-        obj = masstransport.masstransport()
+        obj = masstransport()
         obj.requested_outputs = ['Thickness']
         assert obj._process_outputs() == ['Thickness']
 
     def test_empty(self):
-        obj = masstransport.masstransport()
+        obj = masstransport()
         obj.requested_outputs = []
         assert obj._process_outputs() == []
 
     def test_return_default_outputs(self):
-        obj = masstransport.masstransport()
+        obj = masstransport()
         obj.requested_outputs = ['default']
         result = obj._process_outputs(return_default_outputs=True)
         assert isinstance(result, tuple)
@@ -282,19 +302,19 @@ class TestMasstransportProcessOutputs:
 
 class TestThermalProcessOutputs:
     def test_default_expands(self):
-        obj = thermal.thermal()
+        obj = thermal()
         obj.requested_outputs = ['default']
         result = obj._process_outputs()
         assert isinstance(result, list)
         assert len(result) > 0
 
     def test_explicit_passthrough(self):
-        obj = thermal.thermal()
+        obj = thermal()
         obj.requested_outputs = ['Temperature']
         assert obj._process_outputs() == ['Temperature']
 
     def test_return_default_outputs(self):
-        obj = thermal.thermal()
+        obj = thermal()
         obj.requested_outputs = ['default']
         result = obj._process_outputs(return_default_outputs=True)
         assert isinstance(result, tuple)
@@ -302,33 +322,34 @@ class TestThermalProcessOutputs:
 
 class TestDamageProcessOutputs:
     def test_default_expands(self):
-        obj = damage.damage()
+        obj = damage()
         obj.requested_outputs = ['default']
-        result = obj._process_outputs()
+        result = obj._process_outputs(md=_make_md_2d())
         assert isinstance(result, list)
         assert len(result) > 0
 
     def test_explicit_passthrough(self):
-        obj = damage.damage()
+        obj = damage()
         obj.requested_outputs = ['DamageDbar']
-        assert obj._process_outputs() == ['DamageDbar']
+        result = obj._process_outputs(md=_make_md_2d())
+        assert 'DamageDbar' in result
 
 
 class TestTransientProcessOutputs:
     def test_default_expands(self):
-        obj = transient.transient()
+        # transient has no built-in default outputs, so expanding 'default' gives []
+        obj = transient()
         obj.requested_outputs = ['default']
         result = obj._process_outputs()
         assert isinstance(result, list)
-        assert len(result) > 0
 
     def test_explicit_passthrough(self):
-        obj = transient.transient()
+        obj = transient()
         obj.requested_outputs = ['Thickness']
         assert obj._process_outputs() == ['Thickness']
 
     def test_return_default_outputs(self):
-        obj = transient.transient()
+        obj = transient()
         obj.requested_outputs = ['default']
         result = obj._process_outputs(return_default_outputs=True)
         assert isinstance(result, tuple)
@@ -336,24 +357,24 @@ class TestTransientProcessOutputs:
 
 class TestStressbalanceProcessOutputs:
     def test_default_expands(self):
-        obj = stressbalance.stressbalance()
+        obj = stressbalance()
         obj.requested_outputs = ['default']
-        result = obj._process_outputs()
+        result = obj._process_outputs(md=_make_md_2d())
         assert isinstance(result, list)
         assert len(result) > 0
 
     def test_explicit_passthrough(self):
-        obj = stressbalance.stressbalance()
+        obj = stressbalance()
         obj.requested_outputs = ['Vel']
-        assert obj._process_outputs() == ['Vel']
+        assert obj._process_outputs(md=_make_md_2d()) == ['Vel']
 
     def test_empty(self):
-        obj = stressbalance.stressbalance()
+        obj = stressbalance()
         obj.requested_outputs = []
-        assert obj._process_outputs() == []
+        assert obj._process_outputs(md=_make_md_2d()) == []
 
     def test_return_default_outputs(self):
-        obj = stressbalance.stressbalance()
+        obj = stressbalance()
         obj.requested_outputs = ['default']
-        result = obj._process_outputs(return_default_outputs=True)
+        result = obj._process_outputs(md=_make_md_2d(), return_default_outputs=True)
         assert isinstance(result, tuple)

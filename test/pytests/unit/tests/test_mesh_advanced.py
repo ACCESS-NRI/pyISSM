@@ -171,14 +171,14 @@ class TestComputeMetric:
         index, x, y = two_triangle_mesh
         field = x ** 2 + y ** 2
         hessian = compute_hessian(index, x, y, field, 'node')
-        metric = compute_metric(hessian, 1.0, 0.01, 0.1, 10.0, np.array([]))
+        metric = compute_metric(hessian, 1.0, 0.01, 0.1, 10.0, np.array([], dtype=int))
         assert metric.shape == (len(x), 3)
 
     def test_no_nans_in_output(self, two_triangle_mesh):
         index, x, y = two_triangle_mesh
         field = x ** 2 + y ** 2
         hessian = compute_hessian(index, x, y, field, 'node')
-        metric = compute_metric(hessian, 1.0, 0.01, 0.1, 10.0, np.array([]))
+        metric = compute_metric(hessian, 1.0, 0.01, 0.1, 10.0, np.array([], dtype=int))
         assert not np.any(np.isnan(metric))
 
     def test_water_elements_set_to_hmax(self, two_triangle_mesh):
@@ -199,7 +199,7 @@ class TestComputeMetric:
         field = x ** 2 + y ** 2
         hessian = compute_hessian(index, x, y, field, 'node')
         hmin, hmax = 0.5, 5.0
-        metric = compute_metric(hessian, 1.0, 0.01, hmin, hmax, np.array([]))
+        metric = compute_metric(hessian, 1.0, 0.01, hmin, hmax, np.array([], dtype=int))
         # All diagonal entries should be in [1/hmax^2, 1/hmin^2]
         diag = np.abs(metric[:, 0])  # M11
         assert np.all(diag <= 1.0 / hmin**2 + 1e-10)

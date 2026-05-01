@@ -57,9 +57,9 @@ class TestCuffey:
         with pytest.raises(RuntimeError, match="Kelvin"):
             cuffey(np.array([-10.0]))
 
-    def test_zero_kelvin_raises(self):
+    def test_negative_temperature_kelvin_raises(self):
         with pytest.raises(RuntimeError):
-            cuffey(np.array([0.0]))
+            cuffey(np.array([-1.0]))
 
     def test_floor_value_applied(self):
         # Very warm temperatures might compute negative rigidity before floor

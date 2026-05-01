@@ -159,9 +159,16 @@ class TestSmbHenningInitialize:
 
 # ============== SMB.GEMB (no auto-initialize, just warns) ==============
 
+def _make_gemb_mesh(ne=10):
+    """Minimal mock mesh for smb.gemb() constructor."""
+    m = SimpleNamespace()
+    m.numberofelements = ne
+    return m
+
+
 class TestSmbGembInitialize:
     def test_returns_self(self):
-        obj = smb.gemb()
+        obj = smb.gemb(_make_gemb_mesh())
         md = _make_md()
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
@@ -169,7 +176,7 @@ class TestSmbGembInitialize:
         assert result is obj
 
     def test_emits_warning(self):
-        obj = smb.gemb()
+        obj = smb.gemb(_make_gemb_mesh())
         md = _make_md()
         with pytest.warns(UserWarning, match='smb.gemb'):
             obj.initialize(md)

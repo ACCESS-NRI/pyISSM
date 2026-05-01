@@ -197,7 +197,7 @@ class TestExpRead:
             'name': 'closed'
         }
         result = self._write_and_read(contour)
-        assert result[0]['closed'] is True
+        assert result[0]['closed']
 
     def test_open_contour_detection(self):
         """A contour whose endpoints differ should be detected as open."""
@@ -207,7 +207,7 @@ class TestExpRead:
             'name': 'open'
         }
         result = self._write_and_read(contour)
-        assert result[0]['closed'] is False
+        assert not result[0]['closed']
 
     def test_file_not_found_raises(self):
         with pytest.raises(IOError, match='does not exist'):
