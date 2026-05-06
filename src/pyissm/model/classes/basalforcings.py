@@ -307,8 +307,8 @@ class pico(class_registry.manage_state):
             class_utils._check_field(md, fieldname = "basalforcings.overturning_coeff", size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
 
         class_utils._check_field(md, fieldname = "basalforcings.gamma_T", scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils._check_field(md, fieldname = "basalforcings.farocean_temperature", size = (md.basalforcings.num_basins + 1, None), allow_nan = False, allow_inf = False)
-        class_utils._check_field(md, fieldname = "basalforcings.farocean_salinity", size = (md.basalforcings.num_basins + 1, None), gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "basalforcings.farocean_temperature", size = (md.basalforcings.num_basins + 1, ), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "basalforcings.farocean_salinity", size = (md.basalforcings.num_basins + 1, ), gt = 0, allow_nan = False, allow_inf = False)
         class_utils._check_field(md, fieldname = "basalforcings.isplume", scalar = True, values = [0, 1])
         class_utils._check_field(md, fieldname = "basalforcings.geothermalflux", timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
         class_utils._check_field(md, fieldname = "basalforcings.groundedice_melting_rate", timeseries = True, allow_nan = False, allow_inf = False)

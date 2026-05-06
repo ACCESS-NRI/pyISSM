@@ -86,8 +86,8 @@ def load_model(path):
                 continue
             val = group.getncattr(attr)
             
-            ## Convert "__EMPTY_LIST" back to an empty list
-            if isinstance(val, str) and val == "__EMPTY_LIST__":
+            ## Convert "__EMPTY_LIST" (modern pyISSM handling) or "emptycell"/"emptystruct" (legacy MATLAB handling) back to an empty list
+            if isinstance(val, str) and val in ("__EMPTY_LIST__", "emptycell", "emptystruct"):
                 val = []
 
             state[attr] = val
@@ -167,6 +167,7 @@ def load_model(path):
         - Floating-point NaN values are normalized to ``np.nan`` for consistency.
         - Dictionaries, lists, and tuples are processed recursively.
         - NumPy arrays are preserved, with floating-point NaNs normalized in-place.
+        - String values "True" and "False" are converted to integer 1 and 0, respectively.
 
         Parameters
         ----------
@@ -210,6 +211,14 @@ def load_model(path):
         elif isinstance(obj, np.generic):
             return obj.item()
         
+        elif isinstance(obj, str):
+            if obj == "True":
+                return 1
+            elif obj == "False":
+                return 0
+            else:
+                return obj
+            
         else:
             return obj
         
