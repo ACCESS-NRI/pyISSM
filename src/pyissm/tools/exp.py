@@ -5,6 +5,9 @@ Tools working with *.exp files for ISSM model domains and contours.
 import numpy as np
 import collections
 import os
+from pathlib import Path
+import geopandas as gpd
+from shapely.geometry import LineString, MultiLineString, Point, Polygon
 
 def exp_write(contours, filename):
     """
@@ -601,3 +604,204 @@ def isoline(md, field, value=0.0, output="struct", edges=None, amr=None):
 
     # default: "struct"
     return contours, edges_tria
+
+def shp_to_exp(shp_filename, exp_filename):
+    """
+    Convert a shapefile (.shp) to an Argus (.exp) file.
+
+    The function reads geometries from the input shapefile and converts them to contours in the exp file format.
+    Supported geometry types include Point, LineString, MultiLineString, and Polygon. Each contour in the exp file
+    will include coordinate data and optional attributes such as name and density. The function performs error checks
+    on file existence and extensions before processing.
+
+    Parameters
+    ----------
+    shp_filename : str or Path
+        Input shapefile.
+    exp_filename : str or Path
+        Output exp filename.
+
+    Returns
+    -------
+    None
+    """
+
+    # Convert to Path objects
+    shp_filename = Path(shp_filename)
+    exp_filename = Path(exp_filename)
+
+    # Error checks
+    if shp_filename.suffix.lower() != ".shp":
+        raise ValueError(
+            f"Shapefile {shp_filename} does not have extension '.shp'"
+        )
+
+    if exp_filename.suffix.lower() != ".exp":
+        raise ValueError(
+            f"Exp file {exp_filename} does not have extension '.exp'"
+        )
+
+    if not shp_filename.exists():
+        raise FileNotFoundError(
+            f"Shapefile {shp_filename} does not exist"
+        )
+
+    # Read shapefile
+    gdf = gpd.read_file(shp_filename)
+
+    contours = []
+
+    # Loop over geometries in the shapefile and convert to exp contours
+    for _, row in gdf.iterrows():
+
+        geom = row.geometry
+
+        # Optional contour naming
+        name = next(
+            (
+                str(row[key])
+                for key in ("id", "NAME", "SUBREGION1")
+                if key in row and row[key] not in (None, "")
+            ),
+            "unknown",
+        )
+
+        ## Polygon
+        if isinstance(geom, Polygon):
+
+            coords = np.asarray(geom.exterior.coords)
+
+            contours.append({
+                "x": coords[:, 0],
+                "y": coords[:, 1],
+                "nods": len(coords),
+                "density": 1,
+                "closed": 1,
+                "name": name,
+            })
+
+        ## Point
+        elif isinstance(geom, Point):
+
+            if not (np.isnan(geom.x) or np.isnan(geom.y)):
+
+                contours.append({
+                    "x": geom.x,
+                    "y": geom.y,
+                    "nods": 1,
+                    "density": 1,
+                    "closed": 0,
+                    "name": name,
+                })
+
+        ## LineString
+        elif isinstance(geom, LineString):
+
+            coords = np.asarray(geom.coords)
+
+            contours.append({
+                "x": coords[:, 0],
+                "y": coords[:, 1],
+                "nods": len(coords),
+                "density": 1,
+                "closed": 0,
+                "name": name,
+            })
+
+        ## MultiLineString
+        elif isinstance(geom, MultiLineString):
+
+            for line in geom.geoms:
+
+                coords = np.asarray(line.coords)
+
+                contours.append({
+                    "x": coords[:, 0],
+                    "y": coords[:, 1],
+                    "nods": len(coords),
+                    "density": 1,
+                    "closed": 0,
+                    "name": name,
+                })
+
+    exp_write(contours, exp_filename)
+
+def exp_to_shp(exp_filename, shp_filename):
+    """
+    Convert an Argus (.exp) file to a shapefile (.shp).
+
+    The function reads contours from the input exp file and converts them to geometries in a shapefile format.
+    Supported geometry types include Point, LineString, and Polygon based on the number of points and closed flag
+    in the exp contours. Each geometry in the shapefile will include attributes such as name and density from the
+    exp file. The function performs error checks on file existence and extensions before processing.
+
+    Parameters
+    ----------
+    exp_filename : str or Path
+        Input exp file.
+    shp_filename : str or Path
+        Output shapefile.
+
+    Returns
+    -------
+    None
+    """
+
+    exp_filename = Path(exp_filename)
+    shp_filename = Path(shp_filename)
+
+    # Error checks
+    if exp_filename.suffix.lower() != ".exp":
+        raise ValueError(
+            f"Exp file {exp_filename} does not have extension '.exp'"
+        )
+
+    if shp_filename.suffix.lower() != ".shp":
+        raise ValueError(
+            f"Shapefile {shp_filename} does not have extension '.shp'"
+        )
+
+    if not exp_filename.exists():
+        raise FileNotFoundError(
+            f"Exp file {exp_filename} does not exist"
+        )
+
+    # Read exp contours
+    contours = exp_read(exp_filename)
+
+    records = []
+
+    # Loop over contours and convert to shapely geometries
+    for contour in contours:
+
+        x = contour["x"]
+        y = contour["y"]
+
+        coords = list(zip(x, y))
+
+        # Determine geometry type based on number of points and closed flag
+        if len(coords) == 1:
+
+            geometry = Point(coords[0])
+
+        elif contour.get("closed", False):
+
+            geometry = Polygon(coords)
+
+        else:
+
+            geometry = LineString(coords)
+
+        # Store attributes
+        records.append({
+            "geometry": geometry,
+            "name": contour.get("name", ""),
+            "density": contour.get("density", 1),
+            "nods": contour.get("nods", len(coords)),
+            "closed": contour.get("closed", False),
+        })
+
+    # Create GeoDataFrame and write shapefile
+    gdf = gpd.GeoDataFrame(records)
+
+    gdf.to_file(shp_filename)
