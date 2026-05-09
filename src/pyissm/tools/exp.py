@@ -636,22 +636,38 @@ def gdf_to_exp(gdf, exp_filename):
             f"Exp file {exp_filename} does not have extension '.exp'"
         )
 
+    # Accept GeoSeries OR GeoDataFrame
+    if isinstance(gdf, gpd.GeoDataFrame):
+        geoms = gdf.geometry
+        attrs = gdf
+    elif isinstance(gdf, gpd.GeoSeries):
+        geoms = gdf
+        attrs = None
+    else:
+        raise TypeError("Input must be a GeoDataFrame or GeoSeries")
+
+    # Define helper function to extract name
+    def _get_name(i):
+        if attrs is None:
+            return "unknown"
+
+        row = attrs.iloc[i]
+
+        for key in ("id", "NAME", "SUBREGION1"):
+            if key in row and row[key] not in (None, ""):
+                return str(row[key])
+
+        return "unknown"
+
     contours = []
 
-    # Loop over geometries in the GeoDataFrame and convert to exp contours
-    for _, row in gdf.iterrows():
 
-        geom = row.geometry
+    # Loop over geometries in the geoms object and convert to exp contours
+    for i, geom in enumerate(geoms):
 
-        name = next(
-            (
-                str(row[key])
-                for key in ("id", "NAME", "SUBREGION1")
-                if key in row and row[key] not in (None, "")
-            ),
-            "unknown",
-        )
-
+        ## Extract name
+        name = _get_name(i)
+        
         # Polygon
         if isinstance(geom, Polygon):
 
