@@ -7,7 +7,7 @@ import collections
 import os
 from pathlib import Path
 import geopandas as gpd
-from shapely.geometry import LineString, MultiLineString, Point, Polygon
+from shapely.geometry import LineString, MultiLineString, Point, Polygon, MultiPolygon
 
 def exp_write(contours, filename):
     """
@@ -605,14 +605,133 @@ def isoline(md, field, value=0.0, output="struct", edges=None, amr=None):
     # default: "struct"
     return contours, edges_tria
 
+def gdf_to_exp(gdf, exp_filename):
+    """
+    Convert a GeoDataFrame to an Argus .exp file.
+
+    The function reads geometries from the input GeoDataFrame and converts them to contours in the exp file format.
+    Supported geometry types include Point, LineString, MultiLineString, Polygon, and MultiPolygon. Each contour in the exp file
+    will include coordinate data and optional attributes such as name and density. The function performs error checks
+    on file existence and extensions before processing.
+
+
+    Parameters
+    ----------
+    gdf : GeoDataFrame
+        Input GeoDataFrame containing geometries to convert to exp format.
+    exp_filename : str or Path
+        Output exp filename. Must have .exp extension.
+    
+    Returns
+    -------
+    None
+    """
+
+    # Convert to Path object
+    exp_filename = Path(exp_filename)
+
+    # Error checks
+    if exp_filename.suffix.lower() != ".exp":
+        raise ValueError(
+            f"Exp file {exp_filename} does not have extension '.exp'"
+        )
+
+    contours = []
+
+    # Loop over geometries in the GeoDataFrame and convert to exp contours
+    for _, row in gdf.iterrows():
+
+        geom = row.geometry
+
+        name = next(
+            (
+                str(row[key])
+                for key in ("id", "NAME", "SUBREGION1")
+                if key in row and row[key] not in (None, "")
+            ),
+            "unknown",
+        )
+
+        # Polygon
+        if isinstance(geom, Polygon):
+
+            coords = np.asarray(geom.exterior.coords)
+
+            contours.append({
+                "x": coords[:, 0],
+                "y": coords[:, 1],
+                "nods": len(coords),
+                "density": 1,
+                "closed": 1,
+                "name": name,
+            })
+
+        # Point
+        elif isinstance(geom, Point):
+
+            contours.append({
+                "x": geom.x,
+                "y": geom.y,
+                "nods": 1,
+                "density": 1,
+                "closed": 0,
+                "name": name,
+            })
+
+        # LineString
+        elif isinstance(geom, LineString):
+
+            coords = np.asarray(geom.coords)
+
+            contours.append({
+                "x": coords[:, 0],
+                "y": coords[:, 1],
+                "nods": len(coords),
+                "density": 1,
+                "closed": 0,
+                "name": name,
+            })
+
+        # MultiLineString
+        elif isinstance(geom, MultiLineString):
+
+            for line in geom.geoms:
+
+                coords = np.asarray(line.coords)
+
+                contours.append({
+                    "x": coords[:, 0],
+                    "y": coords[:, 1],
+                    "nods": len(coords),
+                    "density": 1,
+                    "closed": 0,
+                    "name": name,
+                })
+
+        # MultiPolygon
+        elif isinstance(geom, MultiPolygon):
+
+            for poly in geom.geoms:
+
+                coords = np.asarray(poly.exterior.coords)
+
+                contours.append({
+                    "x": coords[:, 0],
+                    "y": coords[:, 1],
+                    "nods": len(coords),
+                    "density": 1,
+                    "closed": 1,
+                    "name": name,
+                })
+
+    # Write contours to exp file
+    exp_write(contours, exp_filename)
+
 def shp_to_exp(shp_filename, exp_filename):
     """
     Convert a shapefile (.shp) to an Argus (.exp) file.
 
     The function reads geometries from the input shapefile and converts them to contours in the exp file format.
-    Supported geometry types include Point, LineString, MultiLineString, and Polygon. Each contour in the exp file
-    will include coordinate data and optional attributes such as name and density. The function performs error checks
-    on file existence and extensions before processing.
 
     Parameters
     ----------
@@ -649,82 +768,9 @@ def shp_to_exp(shp_filename, exp_filename):
     # Read shapefile
     gdf = gpd.read_file(shp_filename)
 
-    contours = []
+    # Convert GeoDataFrame to exp contours and write to file
+    gdf_to_exp(gdf, exp_filename)
 
-    # Loop over geometries in the shapefile and convert to exp contours
-    for _, row in gdf.iterrows():
-
-        geom = row.geometry
-
-        # Optional contour naming
-        name = next(
-            (
-                str(row[key])
-                for key in ("id", "NAME", "SUBREGION1")
-                if key in row and row[key] not in (None, "")
-            ),
-            "unknown",
-        )
-
-        ## Polygon
-        if isinstance(geom, Polygon):
-
-            coords = np.asarray(geom.exterior.coords)
-
-            contours.append({
-                "x": coords[:, 0],
-                "y": coords[:, 1],
-                "nods": len(coords),
-                "density": 1,
-                "closed": 1,
-                "name": name,
-            })
-
-        ## Point
-        elif isinstance(geom, Point):
-
-            if not (np.isnan(geom.x) or np.isnan(geom.y)):
-
-                contours.append({
-                    "x": geom.x,
-                    "y": geom.y,
-                    "nods": 1,
-                    "density": 1,
-                    "closed": 0,
-                    "name": name,
-                })
-
-        ## LineString
-        elif isinstance(geom, LineString):
-
-            coords = np.asarray(geom.coords)
-
-            contours.append({
-                "x": coords[:, 0],
-                "y": coords[:, 1],
-                "nods": len(coords),
-                "density": 1,
-                "closed": 0,
-                "name": name,
-            })
-
-        ## MultiLineString
-        elif isinstance(geom, MultiLineString):
-
-            for line in geom.geoms:
-
-                coords = np.asarray(line.coords)
-
-                contours.append({
-                    "x": coords[:, 0],
-                    "y": coords[:, 1],
-                    "nods": len(coords),
-                    "density": 1,
-                    "closed": 0,
-                    "name": name,
-                })
-
-    exp_write(contours, exp_filename)
 
 def exp_to_shp(exp_filename, shp_filename):
     """
