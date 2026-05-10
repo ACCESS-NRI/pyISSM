@@ -975,9 +975,6 @@ class Model():
         elif isinstance(md.friction, classes.friction.weertman):
             md.friction.C = mesh._project_2d(md, md.friction.C, 1)
             md.friction.m = mesh._project_2d(md, md.friction.m, 1)
-        elif isinstance(md.friction, classes.friction.weertmantemp):
-            md.friction.C = mesh._project_2d(md, md.friction.C, 1)
-            md.friction.m = mesh._project_2d(md, md.friction.m, 1)
         else:
             raise Exception('pyissm.model.Model.collapse: Friction type not supported for collapse.')
 
