@@ -29,7 +29,7 @@ pos2 = np.where(yE < 5e5)[0]
 md.basalforcings.basin_id[pos2] = 2
 md.basalforcings.num_basins = 2
 md.basalforcings.delta_t = np.array([0.1, 0.2])
-md.basalforcings.tf_depths = np.array([0., -1000., -2000.])
+md.basalforcings.tf_depths = np.array([[0., -1000., -2000.]])
 md.basalforcings.gamma_0 = 14477.
 md.basalforcings.islocal = 0
 
