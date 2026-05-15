@@ -1597,10 +1597,10 @@ class ismip6(class_registry.manage_state):
         class_utils._check_field(md, fieldname = 'basalforcings.groundedice_melting_rate', allow_nan = False, allow_inf = False, timeseries = True)
 
         # tf checks
-        class_utils._check_field(md, fieldname = 'basalforcings.tf', size = (len(md.basalforcings.tf_depths), ))
-        for i, tf_i in enumerate(md.basalforcings.tf):
-            class_utils._check_field(md, fieldname = f'basalforcings.tf[{i}]', field = tf_i, allow_nan = False, allow_inf = False, ge = 0, timeseries = True)
-
+        class_utils._check_field(md, fieldname = 'basalforcings.tf', allow_nan = False, allow_inf = False, size=(len(md.basalforcings.tf_depths), md.mesh.numberofvertices + 1, np.nan)) # Size = (ndepths, nvertices, ntimesteps)
+        for i in range(md.basalforcings.tf.shape[0]):
+            class_utils._check_field(md, field = md.basalforcings.tf[i], fieldname = f'basalforcings.tf[{i}]', ge = 0, timeseries = True)
+    
         # Conditional check for melt_anomaly
         if np.size(self.melt_anomaly) > 1:
             class_utils._check_field(md, fieldname = 'basalforcings.melt_anomaly', allow_nan = False, allow_inf = False, timeseries = True)
@@ -1651,7 +1651,8 @@ class ismip6(class_registry.manage_state):
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'islocal', format = 'Boolean')
 
         ## Write MatArray fields
-        execute._write_model_field(fid, prefix, obj = self, fieldname = 'tf', name = 'md.basalforcings.tf', format = 'MatArray', timeserieslength = md.mesh.numberofvertices + 1, yts=md.constants.yts)
+        tf_out = [self.tf[i] for i in range(self.tf.shape[0])] # Convert to list of arrays for MatArray format
+        execute._write_model_field(fid, prefix, name = 'md.basalforcings.tf', data = tf_out, format = 'MatArray', timeserieslength = md.mesh.numberofvertices + 1, yts=md.constants.yts)
 
         ## Write DoubleMat fields
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'geothermalflux', name = 'md.basalforcings.geothermalflux', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
