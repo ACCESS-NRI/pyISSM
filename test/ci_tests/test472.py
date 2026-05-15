@@ -4,8 +4,8 @@ import numpy as np
 
 # Parameterise model
 md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 90000.)
-md = pyissm.model.param.set_mask(md, '../assets/Exp/SquareShelf.exp', '')
-md = pyissm.model.param.parameterize(md, '../assets/Par/SquareSheetShelf.par')
+md = pyissm.model.param.set_mask(md, '../assets/Exp/SquareShelf.exp', None)
+md = pyissm.model.param.parameterize(md, '../assets/Par/SquareSheetShelf.py')
 
 md.initialization.vx[:] = 1.
 md.initialization.vy[:] = 1.
@@ -22,7 +22,7 @@ md = pyissm.model.param.set_flow_equation(md, SSA = 'all')
 # ISMIP6 basal forcings
 md.basalforcings = pyissm.model.classes.basalforcings.ismip6(md.basalforcings)
 md.basalforcings.basin_id = np.zeros((md.mesh.numberofelements,))
-yE = np.mean(md.mesh.y[md.mesh.elements], axis = 1)
+yE = np.mean(md.mesh.y[md.mesh.elements - 1], axis = 1)
 pos1 = np.where(yE >= 5e5)[0]
 md.basalforcings.basin_id[pos1] = 1
 pos2 = np.where(yE < 5e5)[0]
@@ -48,7 +48,8 @@ B = np.vstack([np.column_stack([temp2a, temp2b]), np.array([[0., 1.]])])
 temp3a = 3.0 * np.ones((md.mesh.numberofvertices,))
 temp3b = 3.5 * np.ones((md.mesh.numberofvertices,))
 C = np.vstack([np.column_stack([temp3a, temp3b]), np.array([[0., 1.]])])
-md.basalforcings.tf = [A, B, C]
+
+md.basalforcings.tf = np.stack([A, B, C], axis=0)
 
 # Melt anomaly
 md.basalforcings.melt_anomaly = np.ones((md.mesh.numberofvertices + 1, 2))
