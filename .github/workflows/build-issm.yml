@@ -62,7 +62,6 @@ jobs:
         run: |
           source $ISSM_DIR/etc/environment.sh
           cd $ISSM_DIR/externalpackages/triangle && ./install-linux.sh
-          cd $ISSM_DIR/externalpackages/m1qn3    && ./install-linux.sh
           cd $ISSM_DIR/externalpackages/petsc    && ./install-3.22-linux.sh
           cd $ISSM_DIR/externalpackages/semic    && ./install.sh
       # If corredponding issm cache doesn't exist, build ISSM
