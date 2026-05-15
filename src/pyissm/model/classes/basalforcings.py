@@ -1597,7 +1597,7 @@ class ismip6(class_registry.manage_state):
         class_utils._check_field(md, fieldname = 'basalforcings.groundedice_melting_rate', allow_nan = False, allow_inf = False, timeseries = True)
 
         # tf checks
-        class_utils._check_field(md, fieldname = 'basalforcings.tf', allow_nan = False, allow_inf = False, size=(len(md.basalforcings.tf_depths), md.mesh.numberofvertices + 1, np.nan)) # Size = (ndepths, nvertices, ntimesteps)
+        class_utils._check_field(md, fieldname = 'basalforcings.tf', allow_nan = False, allow_inf = False, size=(md.basalforcings.tf_depths.shape[1], md.mesh.numberofvertices + 1, np.nan)) # Size = (ndepths, nvertices, ntimesteps)
         for i in range(md.basalforcings.tf.shape[0]):
             class_utils._check_field(md, field = md.basalforcings.tf[i], fieldname = f'basalforcings.tf[{i}]', ge = 0, timeseries = True)
     
