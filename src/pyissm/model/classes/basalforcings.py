@@ -1591,7 +1591,7 @@ class ismip6(class_registry.manage_state):
         class_utils._check_field(md, fieldname = 'basalforcings.basin_id', allow_inf = False, ge = 0, le = md.basalforcings.num_basins, size = (md.mesh.numberofelements, ))
         class_utils._check_field(md, fieldname = 'basalforcings.gamma_0', scalar = True, allow_nan = False, allow_inf = False, gt = 0)
         class_utils._check_field(md, fieldname = 'basalforcings.tf_depths', allow_nan = False, allow_inf = False, le = 0, size = (1, np.nan))
-        class_utils._check_field(md, fieldname = 'basalforcings.delta_t', allow_nan = False, allow_inf = False, size = (md.basalforcings.num_basins, ))
+        class_utils._check_field(md, fieldname = 'basalforcings.delta_t', allow_nan = False, allow_inf = False, size = (1, md.basalforcings.num_basins))
         class_utils._check_field(md, fieldname = 'basalforcings.islocal', values = [0, 1], scalar = True)
         class_utils._check_field(md, fieldname = 'basalforcings.geothermalflux', allow_nan = False, allow_inf = False, ge = 0, timeseries = True)
         class_utils._check_field(md, fieldname = 'basalforcings.groundedice_melting_rate', allow_nan = False, allow_inf = False, timeseries = True)
