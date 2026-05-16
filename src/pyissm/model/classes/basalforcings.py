@@ -1478,3 +1478,183 @@ class spatiallinear(class_registry.manage_state):
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'upperwater_melting_rate', format = 'DoubleMat', scale = 1. / md.constants.yts, mattype = 1)
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'upperwater_elevation', format = 'DoubleMat', mattype = 1)
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'perturbation_melting_rate', format = 'DoubleMat',  scale = 1. / md.constants.yts, mattype = 1)
+
+## ------------------------------------------------------
+## basalforcings.ismip6
+## ------------------------------------------------------
+@class_registry.register_class
+class ismip6(class_registry.manage_state):
+    """
+    ISMIP6 basal forcings parameterization class for ISSM.
+
+    This class contains parameters for the ISMIP6 basal melt parameterization,
+    including ocean thermal forcing, basin partitioning, melt anomalies,
+    geothermal flux, and grounded ice melting rates.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from.
+        If values in ``other`` differ from default values, they will override
+        the default values.
+
+    Attributes
+    ----------
+    num_basins : :class:`int`, default=0
+        Number of basins the model domain is partitioned into.
+    basin_id : :class:`numpy.ndarray`, default=np.nan
+        Basin number assigned to each element.
+    gamma_0 : :class:`float`, default=14477.
+        Melt rate coefficient [m / yr].
+    tf : :class:`list` or :class:`numpy.ndarray`, default=np.nan
+        Thermal forcing (ocean temperature minus freezing point) [deg C].
+    tf_depths : :class:`numpy.ndarray`, default=np.nan
+        Elevation/depths of thermal forcing layers.
+    delta_t : :class:`numpy.ndarray`, default=np.nan
+        Ocean temperature correction per basin [deg C].
+    islocal : :class:`bool`, default=False
+        Whether to use the local ISMIP6 parameterization.
+    geothermalflux : :class:`numpy.ndarray`, default=np.nan
+        Geothermal heat flux [W / m^2].
+    groundedice_melting_rate : :class:`numpy.ndarray`, default=np.nan
+        Basal melting rate for grounded ice [m / yr].
+    melt_anomaly : :class:`numpy.ndarray`, default=np.nan
+        Floating ice basal melt anomaly [m / yr].
+
+    Examples
+    --------
+    .. code-block:: python
+
+        >>> md.basalforcings = pyissm.model.classes.basalforcings.ismip6()
+    """
+
+    # Initialise with default parameters
+    def __init__(self, other=None):
+
+        self.num_basins = 0
+        self.basin_id = np.nan
+        self.gamma_0 = 14477.0
+        self.tf = np.nan
+        self.tf_depths = np.nan
+        self.delta_t = np.nan
+        self.islocal = 0
+        self.geothermalflux = np.nan
+        self.groundedice_melting_rate = np.nan
+        self.melt_anomaly = np.nan
+
+        # Inherit matching fields from provided class
+        super().__init__(other)
+
+    # Define repr
+    def __repr__(self):
+
+        s = '   ISMIP6 basal melt rate parameterization\n'
+
+        s += '{}\n'.format(class_utils._field_display(self, 'num_basins', 'number of basins the model domain is partitioned into [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'basin_id', 'basin number assigned to each element [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'gamma_0', 'melt rate coefficient [m / yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'tf_depths', 'elevation of vertical layers in ocean thermal forcing dataset'))
+        s += '{}\n'.format(class_utils._field_display(self, 'tf', 'thermal forcing (ocean temperature minus freezing point) [deg C]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'delta_t', 'ocean temperature correction per basin [deg C]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'islocal', 'boolean to use the local ISMIP6 melt rate parameterization'))
+        s += '{}\n'.format(class_utils._field_display(self, 'geothermalflux', 'geothermal heat flux [W / m^2]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'groundedice_melting_rate', 'basal melting rate (positive if melting) [m / yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'melt_anomaly', 'floating ice basal melt anomaly [m / yr]'))
+        return s
+
+    # Define class string
+    def __str__(self):
+
+        return 'ISSM - basalforcings.ismip6 Class'
+
+    # Extrude to 3D mesh
+    def _extrude(self, md):
+        """
+        Extrude [basalforcings.ismip6] fields to 3D.
+        """
+
+        self.basin_id = mesh._project_3d(md, vector = self.basin_id, type = 'element', layer = 1)
+        self.tf = mesh._project_3d(md, vector = self.tf, type = 'node')
+        self.geothermalflux = mesh._project_3d(md, vector = self.geothermalflux, type = 'element', layer = 1)
+        self.groundedice_melting_rate = mesh._project_3d(md, vector = self.groundedice_melting_rate, type = 'node', layer = 1)
+        self.melt_anomaly = mesh._project_3d(md, vector = self.melt_anomaly, type = 'element', layer = 1)
+
+        return self
+
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [basalforcings.ismip6] parameters.
+        """
+
+        class_utils._check_field(md, fieldname = 'basalforcings.num_basins', scalar = True, allow_nan = False, allow_inf = False, gt = 0)
+        class_utils._check_field(md, fieldname = 'basalforcings.basin_id', allow_inf = False, ge = 0, le = md.basalforcings.num_basins, size = (md.mesh.numberofelements, ))
+        class_utils._check_field(md, fieldname = 'basalforcings.gamma_0', scalar = True, allow_nan = False, allow_inf = False, gt = 0)
+        class_utils._check_field(md, fieldname = 'basalforcings.tf_depths', allow_nan = False, allow_inf = False, le = 0, size = (1, np.nan))
+        class_utils._check_field(md, fieldname = 'basalforcings.delta_t', allow_nan = False, allow_inf = False, size = (1, md.basalforcings.num_basins))
+        class_utils._check_field(md, fieldname = 'basalforcings.islocal', values = [0, 1], scalar = True)
+        class_utils._check_field(md, fieldname = 'basalforcings.geothermalflux', allow_nan = False, allow_inf = False, ge = 0, timeseries = True)
+        class_utils._check_field(md, fieldname = 'basalforcings.groundedice_melting_rate', allow_nan = False, allow_inf = False, timeseries = True)
+
+        # tf checks
+        class_utils._check_field(md, fieldname = 'basalforcings.tf', allow_nan = False, allow_inf = False, size=(md.basalforcings.tf_depths.shape[1], md.mesh.numberofvertices + 1, np.nan)) # Size = (ndepths, nvertices, ntimesteps)
+        for i in range(md.basalforcings.tf.shape[0]):
+            class_utils._check_field(md, field = md.basalforcings.tf[i], fieldname = f'basalforcings.tf[{i}]', ge = 0, timeseries = True)
+    
+        # Conditional check for melt_anomaly
+        if np.size(self.melt_anomaly) > 1:
+            class_utils._check_field(md, fieldname = 'basalforcings.melt_anomaly', allow_nan = False, allow_inf = False, timeseries = True)
+
+        return md
+
+    # Initialise empty fields of correct dimensions
+    def initialize(self, md):
+        """
+        Initialise [basalforcings.ismip6] empty fields.
+        """
+
+        if self.gamma_0 == 0:
+            self.gamma_0 = 14477.
+            warnings.warn('pyissm.model.classes.basalforcings.ismip6: no basalforcings.gamma_0 specified -- value set to 14477 m/yr.')
+
+        if np.all(np.isnan(self.groundedice_melting_rate)):
+            self.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices, ))
+            warnings.warn('pyissm.model.classes.basalforcings.ismip6: no basalforcings.groundedice_melting_rate specified -- values set as 0.')
+
+        return self
+
+    # Marshall method for saving the basalforcings.ismip6 parameters
+    def marshall_class(self, fid, prefix, md=None):
+        """
+        Marshall [basalforcings.ismip6] parameters to a binary file.
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute._write_model_field(fid, prefix, name = 'md.basalforcings.model', data = 7, format = 'Integer')
+
+        ## Write Integer fields
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'num_basins', format = 'Integer')
+
+        ## Write IntMat fields
+        execute._write_model_field(fid, prefix, name = 'md.basalforcings.basin_id', data = self.basin_id - 1, format='IntMat', mattype = 2) # 0-indexed
+
+        ## Write Double fields
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'gamma_0', format = 'Double', scale = 1. / md.constants.yts)
+
+        ## Write DoubleMat fields
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'tf_depths', name = 'md.basalforcings.tf_depths', format = 'DoubleMat')
+
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'delta_t', name = 'md.basalforcings.delta_t', format = 'DoubleMat', timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+
+        ## Write Boolean field
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'islocal', format = 'Boolean')
+
+        ## Write MatArray fields
+        tf_out = [self.tf[i] for i in range(self.tf.shape[0])] # Convert to list of arrays for MatArray format
+        execute._write_model_field(fid, prefix, name = 'md.basalforcings.tf', data = tf_out, format = 'MatArray', timeserieslength = md.mesh.numberofvertices + 1, yts=md.constants.yts)
+
+        ## Write DoubleMat fields
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'geothermalflux', name = 'md.basalforcings.geothermalflux', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'groundedice_melting_rate', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'melt_anomaly', format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength=md.mesh.numberofvertices + 1, yts = md.constants.yts)
