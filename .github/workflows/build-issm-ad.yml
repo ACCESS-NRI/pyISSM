@@ -66,7 +66,7 @@ jobs:
           cd $ISSM_DIR/externalpackages/gsl        && ./install.sh
           cd $ISSM_DIR/externalpackages/codipack   && ./install.sh
           cd $ISSM_DIR/externalpackages/medipack   && ./install.sh
-      # If corredponding issm cache doesn't exist, build ISSM
+      # If corresponding issm cache doesn't exist, build ISSM
       - name: Build ISSM AD
         if: ${{ steps.cache-issm-ad-build.outputs.cache-hit != 'true' }}
         working-directory: issm
