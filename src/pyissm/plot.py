@@ -6,6 +6,9 @@ import matplotlib.pyplot as plt
 import matplotlib
 import numpy as np
 from pyissm import model, tools
+from pyissm.colormaps import (
+    seacolor, landcolor, ibcao, demmap, get_colormap, truncate_colormap
+)
 import warnings
 
 ## ------------------------------------------------------------------------------------
