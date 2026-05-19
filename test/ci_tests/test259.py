@@ -2,7 +2,6 @@
 import numpy as np
 from scipy.interpolate import NearestNDInterpolator
 import sys
-from xy2ll import *
 import pyissm
 
 # Parameterise model
@@ -50,7 +49,7 @@ xe=np.mean(md.mesh.x[md.mesh.elements-1],axis=1)
 ye=np.mean(md.mesh.y[md.mesh.elements-1],axis=1)
 xe2=np.mean(md2.mesh.x[md2.mesh.elements-1],axis=1)
 ye2=np.mean(md2.mesh.y[md2.mesh.elements-1],axis=1)
-[md.smb.lat_mappedforcing, md.smb.lon_mappedforcing]=xy2ll(xe2,ye2,+1)
+[md.smb.lat_mappedforcing, md.smb.lon_mappedforcing]=pyissm.tools.general.xy_to_ll(xe2,ye2,+1)
 
 mpoints=np.arange(1,md2.mesh.numberofelements+1)
 
