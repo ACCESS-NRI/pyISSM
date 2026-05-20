@@ -405,6 +405,7 @@ def plot_model_field(md,
                      show_cbar = False,
                      mesh_kwargs = {},
                      cbar_kwargs = {},
+                     colormap = None,
                      **kwargs):
 
     """
@@ -477,6 +478,10 @@ def plot_model_field(md,
     ax_defined = ax is not None
     norm = matplotlib.colors.LogNorm() if log else None
     shading = 'gouraud' # Consistent with plot_data_on = 'points'
+
+    # Accept 'colormap' as an alias for 'cmap' (consistent with other pyissm functions)
+    if colormap is not None and 'cmap' not in kwargs:
+        kwargs['cmap'] = colormap
 
     ## Process mesh
     mesh, mesh_x, mesh_y, mesh_elements, is3d = model.mesh.process_mesh(md)
@@ -553,11 +558,8 @@ def plot_model_field(md,
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
 
-    ## Return
-    if not ax_defined:
-        return fig, ax
-    else:
-        return ax
+    ## Return — always yield (fig, ax, trip) so callers can access the mappable
+    return fig, ax, trip
 
 def plot_model_bc(md,
                   type = 'stressbalance',
@@ -1193,16 +1195,24 @@ def plot_quiver(md, vx=None, vy=None, ax=None, color='k', scale=None,
     if headlength is None:
         headlength = headwidth * 1.5
 
-    c = color
-    if color == 'speed':
+    use_array_color = color == 'speed'
+    if use_array_color:
         c = np.sqrt(vx ** 2 + vy ** 2)
+    else:
+        c = color
 
     own_fig = ax is None
     if own_fig:
         fig, ax = plt.subplots(figsize=figsize, constrained_layout=constrained_layout)
 
-    ax.quiver(x, y, vx, vy, c, scale=scale, width=width,
-              headwidth=headwidth, headlength=headlength, **kwargs)
+    if use_array_color:
+        # Pass speed as the positional C array for array-based colouring
+        ax.quiver(x, y, vx, vy, c, scale=scale, width=width,
+                  headwidth=headwidth, headlength=headlength, **kwargs)
+    else:
+        # Pass colour as a keyword so matplotlib doesn't try np.isfinite on a string
+        ax.quiver(x, y, vx, vy, scale=scale, width=width, color=c,
+                  headwidth=headwidth, headlength=headlength, **kwargs)
 
     return (fig, ax) if own_fig else ax
 
