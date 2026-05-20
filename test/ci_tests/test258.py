@@ -20,6 +20,8 @@ md2 = pyissm.model.param.parameterize(md2, '../assets/Par/SquareShelf.py')
 md.smb = pyissm.model.classes.smb.gemb(md.mesh)
 md.smb.dsnowIdx = 1
 md.smb.swIdx = 1
+md.smb.teThresh = 2
+md.smb.teValue[:] = .95
 
 # load hourly surface forcing date from 1979 to 2009:
 if sys.version_info.major == 2:
@@ -45,6 +47,7 @@ xe=np.mean(md.mesh.x[md.mesh.elements-1],axis=1)
 ye=np.mean(md.mesh.y[md.mesh.elements-1],axis=1)
 xe2=np.mean(md2.mesh.x[md2.mesh.elements-1],axis=1)
 ye2=np.mean(md2.mesh.y[md2.mesh.elements-1],axis=1)
+[md.smb.lat_mappedforcing, md.smb.lon_mappedforcing]=pyissm.tools.general.xy_to_ll(xe2,ye2,+1)
 
 mpoints=np.arange(1,md2.mesh.numberofelements+1)
 
