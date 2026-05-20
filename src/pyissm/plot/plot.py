@@ -1207,11 +1207,11 @@ def plot_quiver(md, vx=None, vy=None, ax=None, color='k', scale=None,
 
     if use_array_color:
         # Pass speed as the positional C array for array-based colouring
-        ax.quiver(x, y, vx, vy, c, scale=scale, width=width,
+        ax.quiver(x, y, vx, vy, c, scale=scale, scale_units='xy', width=width,
                   headwidth=headwidth, headlength=headlength, **kwargs)
     else:
         # Pass colour as a keyword so matplotlib doesn't try np.isfinite on a string
-        ax.quiver(x, y, vx, vy, scale=scale, width=width, color=c,
+        ax.quiver(x, y, vx, vy, scale=scale, scale_units='xy', width=width, color=c,
                   headwidth=headwidth, headlength=headlength, **kwargs)
 
     return (fig, ax) if own_fig else ax
