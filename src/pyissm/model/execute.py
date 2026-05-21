@@ -1368,6 +1368,12 @@ def wait_on_lock(md):
     # Determine whether the cluster is the local machine
     is_local = (md.cluster.name.lower() == tools.config.get_hostname().lower())
 
+    # In interactive mode the queue script runs synchronously (no '&' at end of
+    # the mpiexec command), so launch_queue_job already blocked until the job
+    # finished before we get here.  There is nothing left to wait for.
+    if getattr(md.cluster, 'interactive', False):
+        return True
+
     elapsed = 0
     last_print = -60  # ensures a message is printed on the first verbose tick
 
