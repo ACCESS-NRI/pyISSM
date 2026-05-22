@@ -1478,3 +1478,390 @@ class spatiallinear(class_registry.manage_state):
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'upperwater_melting_rate', format = 'DoubleMat', scale = 1. / md.constants.yts, mattype = 1)
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'upperwater_elevation', format = 'DoubleMat', mattype = 1)
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'perturbation_melting_rate', format = 'DoubleMat',  scale = 1. / md.constants.yts, mattype = 1)
+
+## ------------------------------------------------------
+## basalforcings.ismip6
+## ------------------------------------------------------
+@class_registry.register_class
+class ismip6(class_registry.manage_state):
+    """
+    ISMIP6 basal melt rate parameterization class for ISSM.
+
+    This class contains the parameters for the ISMIP6 basal melt parameterization
+    in the ISSM framework. It defines ocean thermal forcing fields by depth layer
+    and basin, allowing depth- and basin-dependent computation of basal melt rates
+    beneath floating ice.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
+
+    Attributes
+    ----------
+    num_basins : :class:`int`, default=0
+        Number of basins the model domain is partitioned into [unitless].
+    basin_id : :class:`numpy.ndarray`, default=np.nan
+        Basin number assigned to each element [unitless].
+    gamma_0 : :class:`float`, default=14477.
+        Melt rate coefficient [m/yr].
+    tf : :class:`list` of :class:`numpy.ndarray`, default=np.nan
+        Thermal forcing (ocean temperature minus freezing point) [degrees C].
+        List of arrays of shape (numberofvertices+1, ntimes) for each depth layer.
+    tf_depths : :class:`numpy.ndarray`, default=np.nan
+        Elevation of vertical layers in ocean thermal forcing dataset [m].
+    delta_t : :class:`numpy.ndarray`, default=np.nan
+        Ocean temperature correction per basin [degrees C].
+    islocal : :class:`int`, default=0
+        Boolean (0 or 1) to use local ISMIP6 melt rate parameterization (default false).
+    geothermalflux : :class:`float`, default=np.nan
+        Geothermal heat flux [W/m^2].
+    groundedice_melting_rate : :class:`numpy.ndarray`, default=np.nan
+        Basal melting rate for grounded ice (positive if melting) [m/yr].
+    melt_anomaly : :class:`numpy.ndarray`, default=np.nan
+        Floating ice basal melt anomaly [m/yr].
+
+    Examples
+    --------
+    .. code-block:: python
+
+        >>> md.basalforcings = pyissm.model.classes.basalforcings.ismip6()
+        >>> md.basalforcings.num_basins = 2
+        >>> md.basalforcings.gamma_0 = 14477.
+    """
+
+    # Initialise with default parameters
+    def __init__(self, other=None):
+        self.num_basins = 0
+        self.basin_id = np.nan
+        self.gamma_0 = 14477.
+        self.tf = np.nan
+        self.tf_depths = np.nan
+        self.delta_t = np.nan
+        self.islocal = 0
+        self.geothermalflux = np.nan
+        self.groundedice_melting_rate = np.nan
+        self.melt_anomaly = np.nan
+
+        # Inherit matching fields from provided class
+        super().__init__(other)
+
+    # Define repr
+    def __repr__(self):
+        s = '   ISMIP6 basal melt rate parameterization:\n'
+
+        s += '{}\n'.format(class_utils._field_display(self, 'num_basins', 'number of basins the model domain is partitioned into [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'basin_id', 'basin number assigned to each element [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'gamma_0', 'melt rate coefficient [m/yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'tf_depths', 'elevation of vertical layers in ocean thermal forcing dataset [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'tf', 'thermal forcing (ocean temperature minus freezing point) [degrees C]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'delta_t', 'ocean temperature correction per basin [degrees C]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'islocal', 'boolean to use local ISMIP6 melt rate parameterization (default false)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'geothermalflux', 'geothermal heat flux [W/m^2]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'groundedice_melting_rate', 'basal melting rate (positive if melting) [m/yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'melt_anomaly', 'floating ice basal melt anomaly [m/yr]'))
+
+        return s
+
+    # Define class string
+    def __str__(self):
+        s = 'ISSM - basalforcings.ismip6 Class'
+        return s
+
+    # Extrude to 3D mesh
+    def _extrude(self, md):
+        """
+        Extrude [basalforcings.ismip6] fields to 3D
+        """
+        self.basin_id = mesh._project_3d(md, vector=self.basin_id, type='element', layer=1)
+        if isinstance(self.tf, list):
+            self.tf = [mesh._project_3d(md, vector=tf_i, type='node') for tf_i in self.tf]
+        self.geothermalflux = mesh._project_3d(md, vector=self.geothermalflux, type='element', layer=1)
+        self.groundedice_melting_rate = mesh._project_3d(md, vector=self.groundedice_melting_rate, type='node', layer=1)
+        if not np.all(np.isnan(self.melt_anomaly)):
+            self.melt_anomaly = mesh._project_3d(md, vector=self.melt_anomaly, type='element', layer=1)
+
+        return self
+
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [basalforcings.ismip6] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
+        class_utils._check_field(md, fieldname='basalforcings.num_basins', scalar=True, gt=0, allow_nan=False, allow_inf=False)
+        class_utils._check_field(md, fieldname='basalforcings.basin_id', size=(md.mesh.numberofelements,), ge=0, le=md.basalforcings.num_basins, allow_inf=False)
+        class_utils._check_field(md, fieldname='basalforcings.gamma_0', scalar=True, gt=0, allow_nan=False, allow_inf=False)
+        class_utils._check_field(md, fieldname='basalforcings.tf_depths', allow_nan=False, allow_inf=False)
+        class_utils._check_field(md, fieldname='basalforcings.delta_t', allow_nan=False, allow_inf=False)
+        class_utils._check_field(md, fieldname='basalforcings.islocal', scalar=True, values=[0, 1])
+        class_utils._check_field(md, fieldname='basalforcings.geothermalflux', timeseries=True, ge=0, allow_nan=False, allow_inf=False)
+        class_utils._check_field(md, fieldname='basalforcings.groundedice_melting_rate', timeseries=True, allow_nan=False, allow_inf=False)
+
+        return md
+
+    # Initialise empty fields of correct dimensions
+    def initialize(self, md):
+        """
+        Initialise [basalforcings.ismip6] empty fields.
+
+        If current values of required fields are np.nan, they will be set to default required shapes/values and warnings will be issued.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            >>> md.basalforcings = pyissm.model.classes.basalforcings.ismip6()
+            >>> md.basalforcings.initialize(md)
+        """
+
+        if self.gamma_0 == 0:
+            self.gamma_0 = 14477.
+            warnings.warn('pyissm.model.classes.basalforcings.ismip6: no gamma_0 specified -- value set to 14477 m/yr')
+
+        if np.all(np.isnan(self.groundedice_melting_rate)):
+            self.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices,))
+            warnings.warn('pyissm.model.classes.basalforcings.ismip6: no groundedice_melting_rate specified -- values set as zero')
+
+        return self
+
+    # Marshall method for saving the basalforcings.ismip6 parameters
+    def marshall_class(self, fid, prefix, md=None):
+        """
+        Marshall [basalforcings.ismip6] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : :class:`file object`
+            The file object to write the binary data to.
+        prefix : :class:`str`
+            Prefix string used for data identification in the binary file.
+        md : :class:`pyissm.model.Model`, optional
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        execute._write_model_field(fid, prefix, name='md.basalforcings.model', data=7, format='Integer')
+
+        ## Write Integer fields
+        execute._write_model_field(fid, prefix, obj=self, fieldname='num_basins', format='Integer')
+
+        ## Write IntMat fields
+        execute._write_model_field(fid, prefix, obj=self, fieldname='basin_id', data=self.basin_id - 1, format='IntMat', mattype=2)  # Change to 0-indexing
+
+        ## Write Double fields
+        execute._write_model_field(fid, prefix, obj=self, fieldname='gamma_0', format='Double', scale=1. / md.constants.yts)
+
+        ## Write DoubleMat fields
+        execute._write_model_field(fid, prefix, obj=self, fieldname='tf_depths', format='DoubleMat', name='md.basalforcings.tf_depths')
+        execute._write_model_field(fid, prefix, obj=self, fieldname='tf', format='MatArray', name='md.basalforcings.tf', timeserieslength=md.mesh.numberofvertices + 1, yts=md.constants.yts)
+        execute._write_model_field(fid, prefix, obj=self, fieldname='delta_t', format='DoubleMat', name='md.basalforcings.delta_t', timeserieslength=md.mesh.numberofvertices + 1, yts=md.constants.yts)
+
+        ## Write Boolean fields
+        execute._write_model_field(fid, prefix, obj=self, fieldname='islocal', format='Boolean')
+
+        ## Write remaining DoubleMat fields
+        execute._write_model_field(fid, prefix, obj=self, fieldname='geothermalflux', format='DoubleMat', mattype=1, timeserieslength=md.mesh.numberofelements + 1, yts=md.constants.yts)
+        execute._write_model_field(fid, prefix, obj=self, fieldname='groundedice_melting_rate', format='DoubleMat', mattype=1, scale=1. / md.constants.yts, timeserieslength=md.mesh.numberofvertices + 1, yts=md.constants.yts)
+        execute._write_model_field(fid, prefix, obj=self, fieldname='melt_anomaly', format='DoubleMat', mattype=1, scale=1. / md.constants.yts, timeserieslength=md.mesh.numberofvertices + 1, yts=md.constants.yts)
+
+## ------------------------------------------------------
+## basalforcings.beckmanngoosse
+## ------------------------------------------------------
+@class_registry.register_class
+class beckmanngoosse(class_registry.manage_state):
+    """
+    Beckmann-Goosse basal melt rate parameterization class for ISSM.
+
+    This class contains the parameters for the Beckmann-Goosse basal melt
+    parameterization in the ISSM framework. It computes sub-shelf melt rates
+    from ocean temperature and salinity (or thermal forcing directly).
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
+
+    Attributes
+    ----------
+    groundedice_melting_rate : :class:`numpy.ndarray`, default=np.nan
+        Basal melting rate for grounded ice (positive if melting) [m/yr].
+    geothermalflux : :class:`float`, default=np.nan
+        Geothermal heat flux [W/m^2].
+    meltrate_factor : :class:`float`, default=0.5
+        Melt rate factor [unitless].
+    ocean_temp : :class:`float`, default=0.
+        Ocean temperature [degrees C].
+    ocean_salinity : :class:`numpy.ndarray`, default=np.nan
+        Ocean salinity [psu].
+    ocean_thermalforcing : :class:`numpy.ndarray`, default=np.nan
+        Ocean thermal forcing [K].
+    isthermalforcing : :class:`int`, default=0
+        Boolean (0 or 1) indicating whether thermal forcing is provided directly.
+
+    Examples
+    --------
+    .. code-block:: python
+
+        >>> md.basalforcings = pyissm.model.classes.basalforcings.beckmanngoosse()
+        >>> md.basalforcings.ocean_temp = -1.7 * np.ones((md.mesh.numberofvertices,))
+        >>> md.basalforcings.ocean_salinity = 35.0 * np.ones((md.mesh.numberofvertices,))
+        >>> md.basalforcings.meltrate_factor = 1.
+    """
+
+    # Initialise with default parameters
+    def __init__(self, other=None):
+        self.groundedice_melting_rate = np.nan
+        self.geothermalflux = np.nan
+        self.meltrate_factor = 0.5
+        self.ocean_temp = 0.
+        self.ocean_salinity = np.nan
+        self.ocean_thermalforcing = np.nan
+        self.isthermalforcing = 0
+
+        # Inherit matching fields from provided class
+        super().__init__(other)
+
+    # Define repr
+    def __repr__(self):
+        s = '   Beckmann-Goosse basal melt rate parameterization:\n'
+
+        s += '{}\n'.format(class_utils._field_display(self, 'groundedice_melting_rate', 'basal melting rate (positive if melting) [m/yr]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'geothermalflux', 'geothermal heat flux [W/m^2]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'meltrate_factor', 'melt rate factor [unitless]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ocean_temp', 'ocean temperature [degrees C]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ocean_salinity', 'ocean salinity [psu]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ocean_thermalforcing', 'ocean thermal forcing [K]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'isthermalforcing', 'boolean to use thermal forcing directly (default false)'))
+
+        return s
+
+    # Define class string
+    def __str__(self):
+        s = 'ISSM - basalforcings.beckmanngoosse Class'
+        return s
+
+    # Extrude to 3D mesh
+    def _extrude(self, md):
+        """
+        Extrude [basalforcings.beckmanngoosse] fields to 3D
+        """
+        self.groundedice_melting_rate = mesh._project_3d(md, vector=self.groundedice_melting_rate, type='node', layer=1)
+        self.geothermalflux = mesh._project_3d(md, vector=self.geothermalflux, type='node', layer=1)
+
+        return self
+
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [basalforcings.beckmanngoosse] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
+        if self.isthermalforcing == 0:
+            if not np.all(np.isnan(self.ocean_thermalforcing)):
+                raise Exception('pyissm.model.classes.basalforcings.beckmanngoosse.check_consistency: isthermalforcing=0 but ocean_thermalforcing is set (should be unused)')
+        elif self.isthermalforcing == 1:
+            if not (np.all(self.ocean_temp == 0) and np.all(np.isnan(self.ocean_salinity))):
+                raise Exception('pyissm.model.classes.basalforcings.beckmanngoosse.check_consistency: isthermalforcing=1 but ocean_temp or ocean_salinity is set (should be unused)')
+
+        return md
+
+    # Initialise empty fields of correct dimensions
+    def initialize(self, md):
+        """
+        Initialise [basalforcings.beckmanngoosse] empty fields.
+
+        If current values of required fields are np.nan, they will be set to default required shapes/values and warnings will be issued.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            >>> md.basalforcings = pyissm.model.classes.basalforcings.beckmanngoosse()
+            >>> md.basalforcings.initialize(md)
+        """
+
+        if np.all(np.isnan(self.groundedice_melting_rate)):
+            self.groundedice_melting_rate = np.zeros((md.mesh.numberofvertices,))
+            warnings.warn('pyissm.model.classes.basalforcings.beckmanngoosse: no groundedice_melting_rate specified -- values set as zero')
+
+        if np.all(np.isnan(self.ocean_temp)):
+            self.ocean_temp = -1.7 * np.ones((md.mesh.numberofvertices,))
+            warnings.warn('pyissm.model.classes.basalforcings.beckmanngoosse: no ocean_temp specified -- values set as -1.7 degrees C')
+
+        if np.all(np.isnan(self.ocean_salinity)):
+            self.ocean_salinity = 35.0 * np.ones((md.mesh.numberofvertices,))
+            warnings.warn('pyissm.model.classes.basalforcings.beckmanngoosse: no ocean_salinity specified -- values set as 35 psu')
+
+        return self
+
+    # Marshall method for saving the basalforcings.beckmanngoosse parameters
+    def marshall_class(self, fid, prefix, md=None):
+        """
+        Marshall [basalforcings.beckmanngoosse] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : :class:`file object`
+            The file object to write the binary data to.
+        prefix : :class:`str`
+            Prefix string used for data identification in the binary file.
+        md : :class:`pyissm.model.Model`, optional
+            ISSM model object needed in some cases.
+
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        execute._write_model_field(fid, prefix, name='md.basalforcings.model', data=8, format='Integer')
+
+        ## Write DoubleMat fields
+        execute._write_model_field(fid, prefix, obj=self, fieldname='groundedice_melting_rate', format='DoubleMat', mattype=1, scale=1. / md.constants.yts, timeserieslength=md.mesh.numberofvertices + 1)
+        execute._write_model_field(fid, prefix, obj=self, fieldname='geothermalflux', format='DoubleMat', mattype=1, timeserieslength=md.mesh.numberofvertices + 1)
+        execute._write_model_field(fid, prefix, obj=self, fieldname='meltrate_factor', format='DoubleMat', mattype=1)
+
+        ## Write Boolean fields
+        execute._write_model_field(fid, prefix, obj=self, fieldname='isthermalforcing', format='Boolean')
+
+        ## Write conditionally
+        if self.isthermalforcing == 0:
+            execute._write_model_field(fid, prefix, obj=self, fieldname='ocean_temp', format='DoubleMat', mattype=1, timeserieslength=md.mesh.numberofvertices + 1)
+            execute._write_model_field(fid, prefix, obj=self, fieldname='ocean_salinity', format='DoubleMat', mattype=1, timeserieslength=md.mesh.numberofvertices + 1)
+        elif self.isthermalforcing == 1:
+            execute._write_model_field(fid, prefix, obj=self, fieldname='ocean_thermalforcing', format='DoubleMat', mattype=1, timeserieslength=md.mesh.numberofvertices + 1, yts=md.constants.yts)
