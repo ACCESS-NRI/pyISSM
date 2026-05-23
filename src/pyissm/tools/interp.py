@@ -148,3 +148,96 @@ def averaging(md, data, iterations, layer = 0):
     average = np.expand_dims(np.asarray(average_node.todense()).reshape(-1, ),axis=1)
 
     return average
+
+def vertex_to_element(md,
+                      values,
+                      method = "mean"):
+    """
+    Transfer vertex-defined values to mesh elements.
+
+    Parameters
+    ----------
+    md : :class:`pyissm.model`
+        ISSM model object containing mesh connectivity in
+        ``md.mesh.elements`` and vertex count in
+        ``md.mesh.numberofvertices``.
+
+    values : :class:`array_like`
+        Vertex-defined field of shape ``(md.mesh.numberofvertices,)``.
+
+    method : :class:`str`, optional
+        Aggregation method used to combine vertex values within each element.
+        Available options: ``"mean"``, ``"min"``, ``"max"``. Default is ``"mean"``.
+            - ``"mean"``: Compute the average of vertex values for each element.
+            - ``"min"``: Take the minimum vertex value for each element.
+            - ``"max"``: Take the maximum vertex value for each element.
+
+    Returns
+    -------
+    numpy.ndarray
+        Element-defined field of shape ``(md.mesh.numberofelements,)``.
+
+    Raises
+    ------
+    ValueError
+        If ``values`` is not vertex-defined for the mesh or if ``method`` is
+        unsupported.
+    """
+
+    # Convert input to numpy array
+    values = np.asarray(values)
+    
+    # Get element connectivity (adjusting for 0-based indexing)
+    elements = md.mesh.elements - 1
+
+    # Check that values are vertex-defined
+    if values.shape[0] != md.mesh.numberofvertices:
+        raise ValueError(f"pyissm.tools.interp.vertex_to_element: values must be vertex-defined")
+
+    # Gather vertex values for each element
+    element_values = values[elements]
+
+    # Aggregate vertex values to element values using the specified method
+    if method == "mean":
+        return np.mean(element_values, axis = 1)
+
+    elif method == "min":
+        return np.min(element_values, axis = 1)
+
+    elif method == "max":
+        return np.max(element_values, axis = 1)
+
+    # Unsupported method
+    else:
+        raise ValueError(f"pyissm.tools.interp.vertex_to_element: Unsupported method: {method}")
+    
+def element_to_vertex(md,
+                      values,
+                      layer = 0):
+    """
+    Transfer element-defined values to vertices.
+
+    Parameters
+    ----------
+    md : :class:`pyissm.model`
+        ISSM model object containing mesh connectivity in
+        ``md.mesh.elements`` and vertex count in
+        ``md.mesh.numberofvertices``.
+
+    values : :class:`numpy.ndarray`
+        Element-defined field of shape ``(md.mesh.numberofelements,)``.
+
+    layer : :class:`int`, optional
+        Layer index to extract when working with a 3-D mesh. Default is 0,
+        meaning operate on the full mesh. If non-zero, it must satisfy
+        1 <= layer <= md.mesh.numberoflayers and the function will operate on
+        the corresponding 2-D layer (using mesh.elements2d, x2d, y2d, etc.).
+
+    Returns
+    -------
+    :class:`numpy.ndarray`
+        Vertex-defined field of shape ``(md.mesh.numberofvertices,)``.
+    """
+
+    # Return the area/weighted average of element values at each vertex
+    return averaging(md, values, iterations = 0, layer = layer).flatten()
