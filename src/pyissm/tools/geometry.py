@@ -4,6 +4,7 @@ Geometry-related functions for ISSM
 This module contains functions to compute geometric properties on ISSM model meshes.
 """
 
+import warnings
 import numpy as np
 from pyissm import model
 
@@ -132,4 +133,91 @@ def nowicki_profile(x):
     b[mid:] = sea - h[mid:] / (1 + delta)
 
     return b, h, sea
+
+
+def effectivepressure(md, head=None):
+    """
+    Calculate the effective basal pressure N from md.geometry and the
+    effective pressure coupling rule in md.friction.
+
+    Parameters
+    ----------
+    md : object
+        ISSM model object.
+    head : array-like, optional
+        Hydraulic head at mesh vertices (m). Only used when
+        ``md.friction.coupling == 4``.
+
+    Returns
+    -------
+    N : ndarray
+        Effective pressure at the base (Pa).
+
+    Raises
+    ------
+    ValueError
+        If ``coupling == 4`` and ``md.hydrology`` is not a
+        ``hydrologyprescribe`` instance and no ``head`` is provided.
+    ValueError
+        If an unsupported coupling value is given.
+
+    Notes
+    -----
+    Coupling modes:
+
+    * 0 — Uniform sheet; negative water pressure permitted (default).
+    * 1 — Effective pressure equals overburden pressure.
+    * 2 — Uniform sheet; water pressure clamped to >= 0.
+    * 3 — Prescribed effective pressure from ``md.friction.effective_pressure``.
+    * 4 — Dynamically coupled to the hydrology model (``md.hydrology.head``
+          or a supplied ``head`` array).
+
+    See also
+    --------
+    basalstress
+    """
+    from pyissm.model.classes.hydrology import shreve as hydrologyprescribe  # closest prescribe analogue
+
+    if hasattr(md.friction, 'coupling'):
+        coupling = md.friction.coupling
+    else:
+        warnings.warn('md.friction.coupling not found; defaulting to coupling=0.')
+        coupling = 0
+
+    sealevel = 0.0  # sea level reference elevation (m)
+
+    p_ice   = md.constants.g * md.materials.rho_ice   * md.geometry.thickness
+    p_water = md.constants.g * md.materials.rho_water * (sealevel - md.geometry.base)
+
+    if coupling == 0:
+        N = p_ice - p_water
+    elif coupling == 1:
+        N = p_ice
+    elif coupling == 2:
+        p_water = np.maximum(p_water, 0.0)
+        N = p_ice - p_water
+    elif coupling == 3:
+        N = np.maximum(md.friction.effective_pressure, 0.0)
+    elif coupling == 4:
+        if head is not None:
+            head = np.asarray(head)
+            if head.size != md.mesh.numberofvertices:
+                raise ValueError(
+                    f'head size ({head.size}) does not match numberofvertices '
+                    f'({md.mesh.numberofvertices}).'
+                )
+            p_water = md.constants.g * md.materials.rho_freshwater * (head - md.geometry.base)
+        else:
+            if hasattr(md.hydrology, 'head'):
+                p_water = md.constants.g * md.materials.rho_freshwater * (md.hydrology.head - md.geometry.base)
+            else:
+                raise ValueError(
+                    f'coupling=4 is not supported for {type(md.hydrology).__name__}. '
+                    'Provide a head array or use a hydrology class with a head field.'
+                )
+        N = p_ice - p_water
+    else:
+        raise ValueError(f'Unsupported coupling value: {coupling}')
+
+    return N
 

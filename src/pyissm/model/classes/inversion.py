@@ -970,19 +970,6 @@ class adm1qn3(class_registry.manage_state):
         if not self.iscontrol:
             return md
 
-        # Check M1QN3 availability when possible
-        if tools.wrappers.check_wrappers_installed():
-            if not tools.wrappers.IssmConfig("_HAVE_M1QN3_")[0]:
-                md = md.check_message(
-                    "M1QN3 has not been installed. ISSM must be reconfigured "
-                    "and recompiled with M1QN3."
-                )
-        else:
-            warnings.warn(
-                "inversion.adm1qn3.check_consistency: Python wrappers not installed; "
-                "skipping M1QN3 availability check."
-            )
-
         class_utils._check_field(md, fieldname = "inversion.iscontrol", values = [0, 1])
         class_utils._check_field(md, fieldname = "inversion.maxsteps", scalar = True, ge = 0)
         class_utils._check_field(md, fieldname = "inversion.maxiter", scalar = True, ge = 0)
