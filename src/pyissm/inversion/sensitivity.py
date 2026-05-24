@@ -181,13 +181,13 @@ def assign_cost_functions(md,
 
     return md
 
-def run_parameter_sensitivity(md,
-                              parameter_grid,
-                              output_dir,
-                              run = True,
-                              load_only = False,
-                              global_mask = None,
-                              coeff_masks = None):
+def parameter_sensitivity(md,
+                          parameter_grid,
+                          output_dir,
+                          run = True,
+                          load_only = False,
+                          global_mask = None,
+                          coeff_masks = None):
     """
     Run inversion sensitivity experiments.
 
@@ -236,10 +236,10 @@ def run_parameter_sensitivity(md,
 
     # Prevent ambiguous execution mode
     if run and load_only:
-        raise ValueError("pyissm.inversion.sensitivity.run_parameter_sensitivity: Cannot set both run and load_only to True.")
+        raise ValueError("pyissm.inversion.sensitivity.parameter_sensitivity: Cannot set both run and load_only to True.")
 
     if not run and not load_only:
-        raise ValueError("pyissm.inversion.sensitivity.run_parameter_sensitivity: Either run or load_only must be True.")
+        raise ValueError("pyissm.inversion.sensitivity.parameter_sensitivity: Either run or load_only must be True.")
 
     # Create output directory for sensitivity study
     output_dir = Path(output_dir)
@@ -397,7 +397,7 @@ def compute_sensitivity_diagnostics(manifest,
     Parameters
     ----------
     manifest : :class:`pandas.DataFrame`
-        Output from :func:`pyissm.inversion.sensitivity.run_parameter_sensitivity`.
+        Output from :func:`pyissm.inversion.sensitivity.parameter_sensitivity`.
 
     Returns
     -------
