@@ -82,7 +82,9 @@ def build_parameter_grid(coefficients):
 
 
 def assign_cost_functions(md,
-                          coefficients):
+                          coefficients,
+                          global_mask = None,
+                          coeff_masks = None):
     """
     Assign inversion cost function coefficients.
 
@@ -100,6 +102,20 @@ def assign_cost_functions(md,
         103: 25,
         502: 1e-19}
 
+    global_mask : :class:`numpy.ndarray` of :class:`bool`, optional
+        Global boolean mask applied to all cost functions.
+
+        True  -> coefficient active
+        False -> coefficient set to zero
+
+    coeff_masks : :class:`dict`, optional
+        Dictionary mapping cost-function IDs to boolean masks.
+
+        Example
+        -------
+        {101: vel_mask,
+        103: grounded_mask}
+
     Returns
     -------
     md : :class:`pyissm.Model`
@@ -115,9 +131,49 @@ def assign_cost_functions(md,
     # Allocate coefficient matrix
     coeff_matrix = np.ones((nverts, len(cost_functions)), dtype=float)
 
+    # Validate global_mask
+    if global_mask is None:
+        global_mask = np.ones(nverts, dtype = bool)
+    else:
+
+        # Ensure global_mask is a boolean array of the correct shape. Enforce boolean to prevent potential unintentional partial weighting with floats
+        global_mask = np.asarray(global_mask)
+
+        if global_mask.dtype != bool:
+            raise TypeError("pyissm.inversion.sensitivity.assign_cost_functions: global_mask must be boolean.")
+
+        if global_mask.shape != (nverts,):
+            raise ValueError(f"pyissm.inversion.sensitivity.assign_cost_functions: global_mask must have shape ({nverts},)")
+    
+
+    # Validate coeff_masks
+    if coeff_masks is not None:
+
+        # Ensure coeff_masks is a dictionary mapping cost function IDs to boolean masks
+        for cf, cf_mask in coeff_masks.items():
+
+            cf_mask = np.asarray(cf_mask)
+
+            if cf_mask.dtype != bool:
+                raise TypeError(f"pyissm.inversion.sensitivity.assign_cost_functions: Mask for cost function {cf} must be boolean.")
+
+            if cf_mask.shape != (nverts,):
+                raise ValueError(f"pyissm.inversion.sensitivity.assign_cost_functions: Mask for cost function {cf} must have shape ({nverts},)")
+
+            coeff_masks[cf] = cf_mask
+
     # Populate coefficient matrix
     for i, cf in enumerate(cost_functions):
-        coeff_matrix[:, i] = coefficients[cf]
+
+        # Start from global mask
+        active = global_mask.copy()
+
+        # Apply per-cost-function mask
+        if coeff_masks is not None and cf in coeff_masks:
+            active &= coeff_masks[cf]
+
+        # Assign coefficient only where active
+        coeff_matrix[active, i] = coefficients[cf]
 
     # Assign to ISSM model
     md.inversion.cost_functions = cost_functions
@@ -129,7 +185,9 @@ def run_parameter_sensitivity(md,
                               parameter_grid,
                               output_dir,
                               run = True,
-                              load_only = False):
+                              load_only = False,
+                              global_mask = None,
+                              coeff_masks = None):
     """
     Run inversion sensitivity experiments.
 
@@ -154,6 +212,21 @@ def run_parameter_sensitivity(md,
 
     load_only : :class:`bool`, default = False
         Load completed inversion results.
+
+    global_mask : :class:`numpy.ndarray` of :class:`bool`, optional
+        Global boolean mask applied to all cost functions. Passed to :func:`assign_cost_functions`.
+
+        True  -> coefficient active
+        False -> coefficient set to zero
+
+    coeff_masks : :class:`dict`, optional
+        Dictionary mapping cost-function IDs to boolean masks. Passed to :func:`assign_cost_functions`.
+
+        Example
+        -------
+        {101: vel_mask,
+        103: grounded_mask}
+
 
     Returns
     -------
@@ -206,7 +279,7 @@ def run_parameter_sensitivity(md,
             coefficients[cf] = row[col]
 
         # Assign inversion coefficients
-        mdi = assign_cost_functions(mdi, coefficients)
+        mdi = assign_cost_functions(mdi, coefficients, global_mask = global_mask, coeff_masks = coeff_masks)
 
         # Assign unique ISSM runtime name
         mdi.miscellaneous.name = run_name
