@@ -1,4 +1,4 @@
-from . import analysis, data, plot, model, tools
+from . import analysis, data, plot, model, tools, inversion
 import importlib.metadata
 
 try:
