@@ -41,17 +41,20 @@ def weighted_mean(md,
     # If weights are not provided, use element areas
     if weights is None:
         weights = model.mesh.get_element_areas_volumes(md.mesh.elements, md.mesh.x, md.mesh.y)
+    
+    # Ensure weights is a numpy array
+    weights = np.asarray(weights)
 
-    # Mask out non-finite values
-    mask = np.isfinite(values)
+    # Mask out non-finite values and corresponding weights
+    mask = np.isfinite(values) & np.isfinite(weights)
 
     # Compute area-weighted mean
-    awm = np.sum(values[mask] * weights[mask]) / np.sum(weights[mask])
+    wm = np.sum(values[mask] * weights[mask]) / np.sum(weights[mask])
     
-    return awm 
+    return wm 
 
 def weighted_rmse(md,
-                  residuals,
+                  values,
                   weights = None):
     """
     Compute weighted RMSE.
@@ -61,8 +64,8 @@ def weighted_rmse(md,
     md : :class:`pyissm.Model`
         ISSM model.
 
-    residuals : :class:`numpy.ndarray`
-        Model-data residuals.
+    values : :class:`numpy.ndarray`
+        Values to compute weighted RMSE.
 
     weights : :class:`numpy.ndarray`, optional.
         Custom weights. Default = None, in which case element areas will be used.
@@ -73,14 +76,14 @@ def weighted_rmse(md,
         Weighted RMSE value.
     """
 
-    # Ensure residuals is a numpy array
-    residuals = np.asarray(residuals)
+    # Ensure values is a numpy array
+    values = np.asarray(values)
 
     # Compute weighted mean square error
-    mse = weighted_mean(md, residuals**2, weights = weights)
+    wmse = weighted_mean(md, values**2, weights = weights)
 
     # Return RMSE
-    return np.sqrt(mse)
+    return np.sqrt(wmse)
 
 def velocity_residuals(md,
                        obs_vel = None,
