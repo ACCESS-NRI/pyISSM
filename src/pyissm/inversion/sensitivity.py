@@ -468,3 +468,82 @@ def compute_sensitivity_diagnostics(manifest,
         convergence_history.to_csv(Path(row["run_dir"]) / f"{run_name}_convergence_history.csv", index = False)
 
     return diagnostics
+
+def normalize_diagnostics(
+        diagnostics,
+        columns = None,
+        higher_is_better = None,
+        suffix = "_norm"):
+    """
+    Normalize diagnostic columns to [0, 1].
+
+    Parameters
+    ----------
+    diagnostics : :class:`pandas.DataFrame`
+        DataFrame containing model diagnostics.
+
+    columns : :class:`list` of :class:`str`, optional
+        Columns to normalize. Defaults to all numeric columns.
+
+    higher_is_better : :class:`dict`, optional
+        Dictionary mapping column name -> bool.
+
+        True  = higher values are better
+        False = lower values are better
+
+        Example:
+        {
+            "velocity_rmse": False,
+            "thickness_rmse": False,
+            "correlation": True,
+        }
+
+        Any unspecified column defaults to False.
+
+    suffix : :class:`str`, optional
+        Suffix for normalized columns.
+
+    Returns
+    -------
+    :class:`pandas.DataFrame`
+        Copy of dataframe with normalized columns added.
+    """
+
+    # Create a copy of the diagnostics DataFrame to avoid modifying the original
+    out = diagnostics.copy()
+
+    # If columns to normalize are not specified, default to all numeric columns
+    if columns is None:
+        columns = out.select_dtypes(include=[np.number]).columns.tolist()
+
+    # If higher_is_better is not provided, default to all False (lower is better)
+    if higher_is_better is None:
+        higher_is_better = {}
+
+    # Loop through specified columns and normalize each one
+    for col in columns:
+
+        # Extract values and compute min/max for normalization
+        values = out[col].astype(float)
+
+        vmin = values.min()
+        vmax = values.max()
+
+        # Avoid divide-by-zero if all values identical
+        if np.isclose(vmin, vmax):
+            out[f"{col}{suffix}"] = 1.0
+            continue
+        
+        # Normalize based on whether higher values are better or not
+        if higher_is_better.get(col, False):
+            # Higher is better
+            norm = (values - vmin) / (vmax - vmin)
+
+        else:
+            # Lower is better
+            norm = (vmax - values) / (vmax - vmin)
+
+        # Assign normalized values to new column in output DataFrame
+        out[f"{col}{suffix}"] = norm
+
+    return out
