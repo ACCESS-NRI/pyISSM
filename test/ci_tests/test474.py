@@ -47,6 +47,7 @@ md.timestepping.final_time = 1.5
 md.timestepping.time_step = 0.5
 md.cluster.np = 3
 
+md.basalforcings.initialize(md)
 md = pyissm.model.execute.solve(md, 'Transient')
 
 field_names = ['Bed1', 'Surface1', 'Thickness1', 'Floatingice1', 'Vx1', 'Vy1', 'Pressure1', 'FloatingiceMeltingrate1',

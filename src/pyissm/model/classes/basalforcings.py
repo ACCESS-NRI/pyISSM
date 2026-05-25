@@ -234,7 +234,7 @@ class pico(class_registry.manage_state):
         self.basin_id = np.nan
         self.maxboxcount = 0
         self.overturning_coeff = np.nan
-        self.gamma_T = 0.
+        self.gamma_T = np.nan
         self.farocean_temperature = np.nan
         self.farocean_salinity = np.nan
         self.isplume = 0
@@ -307,11 +307,13 @@ class pico(class_registry.manage_state):
             class_utils._check_field(md, fieldname = "basalforcings.overturning_coeff", size = (md.mesh.numberofvertices, ), gt = 0, allow_nan = False, allow_inf = False)
 
         class_utils._check_field(md, fieldname = "basalforcings.gamma_T", scalar = True, gt = 0, allow_nan = False, allow_inf = False)
-        class_utils._check_field(md, fieldname = "basalforcings.farocean_temperature", size = (md.basalforcings.num_basins + 1, ), allow_nan = False, allow_inf = False)
-        class_utils._check_field(md, fieldname = "basalforcings.farocean_salinity", size = (md.basalforcings.num_basins + 1, ), gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "basalforcings.farocean_temperature", size = (md.basalforcings.num_basins + 1, np.nan), allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = "basalforcings.farocean_salinity", size = (md.basalforcings.num_basins + 1, np.nan), gt = 0, allow_nan = False, allow_inf = False)
         class_utils._check_field(md, fieldname = "basalforcings.isplume", scalar = True, values = [0, 1])
-        class_utils._check_field(md, fieldname = "basalforcings.geothermalflux", timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
-        class_utils._check_field(md, fieldname = "basalforcings.groundedice_melting_rate", timeseries = True, allow_nan = False, allow_inf = False)
+        if not np.all(np.isnan(np.atleast_1d(self.geothermalflux))):
+            class_utils._check_field(md, fieldname = "basalforcings.geothermalflux", timeseries = True, ge = 0, allow_nan = True, allow_inf = False)
+        if not np.all(np.isnan(np.atleast_1d(self.groundedice_melting_rate))):
+            class_utils._check_field(md, fieldname = "basalforcings.groundedice_melting_rate", timeseries = True, allow_nan = True, allow_inf = False)
     
         return md
     
