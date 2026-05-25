@@ -338,15 +338,15 @@ class pico(class_registry.manage_state):
             self.maxboxcount = 5
             warnings.warn('pyissm.parm.basalforcings.pico: no maximum number of boxes set -- value set to 5.')
 
-        if np.isnan(self.overturning_coeff):
+        if np.all(np.isnan(np.atleast_1d(self.overturning_coeff))):
             self.overturning_coeff = 1e6 * np.ones(md.mesh.numberofvertices, )
             warnings.warn('pyissm.parm.basalforcings.pico: no overturning strength set -- value set to 1e6.')
 
-        if np.isnan(self.gamma_T):
+        if np.all(np.isnan(np.atleast_1d(self.gamma_T))):
             self.gamma_T = 2e-5
             warnings.warn('pyissm.parm.basalforcings.pico: no turbulent temperature exchange velocity set -- value set to 2e-5.')
 
-        if np.isnan(self.groundedice_melting_rate):
+        if np.all(np.isnan(np.atleast_1d(self.groundedice_melting_rate))):
             self.groundedice_melting_rate = np.zeros(md.mesh.numberofvertices, )
             warnings.warn('pyissm.parm.basalforcings.pico: no basalforcings.groundedice_melting_rate specified -- values set as zero.')
 
