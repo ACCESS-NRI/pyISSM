@@ -18,7 +18,7 @@ md = md.extrude(3, 1.1)
 md = pyissm.model.param.set_flow_equation(md, HO='all')
 
 # Set Beckmann-Goosse Parameters
-md.basalforcings = pyissm.model.classes.basalforcings.beckmanngoosse()
+md.basalforcings = pyissm.model.classes.basalforcings.beckmanngoosse(md.basalforcings)
 md.basalforcings.ocean_temp = -1.7 * np.ones((md.mesh.numberofvertices,))
 md.basalforcings.ocean_salinity = 35.0 * np.ones((md.mesh.numberofvertices,))
 md.basalforcings.meltrate_factor = 1.

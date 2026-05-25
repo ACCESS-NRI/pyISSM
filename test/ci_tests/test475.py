@@ -18,7 +18,7 @@ md = md.extrude(3, 1.1)
 md = pyissm.model.param.set_flow_equation(md, HO='all')
 
 # Set PICO Parameters
-md.basalforcings = pyissm.model.classes.basalforcings.pico()
+md.basalforcings = pyissm.model.classes.basalforcings.pico(md.basalforcings)
 md.basalforcings.basin_id = np.zeros((md.mesh.numberofelements,))
 y_elem = np.mean(md.mesh.y[md.mesh.elements.astype(int) - 1], axis=1)
 md.basalforcings.basin_id[y_elem >= 5e5] = 1

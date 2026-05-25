@@ -1612,8 +1612,12 @@ class ismip6(class_registry.manage_state):
         class_utils._check_field(md, fieldname='basalforcings.tf_depths', allow_nan=False, allow_inf=False)
         class_utils._check_field(md, fieldname='basalforcings.delta_t', allow_nan=False, allow_inf=False)
         class_utils._check_field(md, fieldname='basalforcings.islocal', scalar=True, values=[0, 1])
-        class_utils._check_field(md, fieldname='basalforcings.geothermalflux', timeseries=True, ge=0, allow_nan=False, allow_inf=False)
-        class_utils._check_field(md, fieldname='basalforcings.groundedice_melting_rate', timeseries=True, allow_nan=False, allow_inf=False)
+        if not np.all(np.isnan(np.atleast_1d(self.geothermalflux))):
+            class_utils._check_field(md, fieldname='basalforcings.geothermalflux', timeseries=True, ge=0, allow_nan=True, allow_inf=False)
+        if not np.all(np.isnan(np.atleast_1d(self.groundedice_melting_rate))):
+            class_utils._check_field(md, fieldname='basalforcings.groundedice_melting_rate', timeseries=True, allow_nan=True, allow_inf=False)
+        if not np.all(np.isnan(np.atleast_1d(self.melt_anomaly))):
+            class_utils._check_field(md, fieldname='basalforcings.melt_anomaly', timeseries=True, allow_nan=True, allow_inf=False)
 
         return md
 

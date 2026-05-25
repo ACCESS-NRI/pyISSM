@@ -17,7 +17,7 @@ md.geometry.surface = md.geometry.base + md.geometry.thickness
 md = pyissm.model.param.set_flow_equation(md, SSA='all')
 
 # Set ISMIP6 melt rate parameters
-md.basalforcings = pyissm.model.classes.basalforcings.ismip6()
+md.basalforcings = pyissm.model.classes.basalforcings.ismip6(md.basalforcings)
 md.basalforcings.basin_id = np.zeros((md.mesh.numberofelements,))
 y_elem = np.mean(md.mesh.y[md.mesh.elements.astype(int) - 1], axis=1)
 md.basalforcings.basin_id[y_elem >= 5e5] = 1
