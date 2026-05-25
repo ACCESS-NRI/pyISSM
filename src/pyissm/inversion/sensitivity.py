@@ -187,7 +187,8 @@ def parameter_sensitivity(md,
                           run = True,
                           load_only = False,
                           global_mask = None,
-                          coeff_masks = None):
+                          coeff_masks = None,
+                          initial_run_id = 0):
     """
     Run inversion sensitivity experiments.
 
@@ -226,7 +227,9 @@ def parameter_sensitivity(md,
         -------
         {101: vel_mask,
         103: grounded_mask}
-
+    
+    initial_run_id : :class:`int`, default = 0
+        Starting index for run_id assignment in the manifest. Useful for tracking runs across multiple calls to this function without overwriting previous run_ids.
 
     Returns
     -------
@@ -258,7 +261,7 @@ def parameter_sensitivity(md,
     for _, row in parameter_grid.iterrows():
 
         # Extract run metadata
-        run_id = int(row["run_id"])
+        run_id = int(row["run_id"]) + initial_run_id
         run_name = row["run_name"]
 
         print(f"Running sensitivity experiment: {run_name}")
