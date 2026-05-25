@@ -5,7 +5,10 @@ import pandas as pd
 
 def plot_convergence_history(convergence_history,
                              metrics = None,
-                             log_scale = True):
+                             log_scale = True,
+                             ax = None,
+                             figsize = (6.4, 4.8),
+                             constrained_layout = True):
     """
     Plot optimization convergence metrics over iterations.
 
@@ -22,19 +25,38 @@ def plot_convergence_history(convergence_history,
     log_scale : :class:`bool`, optional
         If ``True`` (default), use a logarithmic scale for the y-axis.
 
+    ax : matplotlib.axes.Axes, optional
+        Axes object to draw on. If None, a new figure and axes are created.
+
+    figsize : tuple of float, optional
+        Size of the figure in inches (width, height). Default is (6.4, 4.8).
+
+    constrained_layout : bool, optional
+        Whether to use constrained layout in figure. Default is True.
+
     Returns
     -------
     fig : :class:`matplotlib.figure.Figure`
-        The created Matplotlib figure.
-        
+        The created Matplotlib figure. Returned only if a new figure was created.
+
     ax : :class:`matplotlib.axes.Axes`
-        The axes containing the convergence plot.
+        The axes containing the heatmap. If an axes was passed in, this is the same object; if no axes was passed, this is the newly created axes.
 
     Notes
     -----
         This function does not validate metric names. A missing metric column will
         raise a pandas ``KeyError`` during plotting.
     """
+
+    ## Is an ax passed?
+    ax_defined = ax is not None
+
+    ## If no ax is defined, create new figure
+    ## otherwise, plot on defined ax
+    if ax is None:
+        fig, ax = plt.subplots(figsize = figsize, constrained_layout = constrained_layout)
+    else:
+        fig = ax.get_figure()
 
     # If metrics is not provided, plot all metrics in convergence history (except iteration)
     if metrics is None:
@@ -43,9 +65,6 @@ def plot_convergence_history(convergence_history,
             col for col in convergence_history.columns
             if col != "iteration"
             ]
-
-    # Create plot
-    fig, ax = plt.subplots(figsize=(10, 6))
     
     # Loop over metrics and plot each one
     for metric in metrics:
@@ -61,13 +80,18 @@ def plot_convergence_history(convergence_history,
     ax.set_xlabel("Iteration")
     ax.set_ylabel("Metric Value")
     ax.legend(title = "Metric")
-    return fig, ax
+    
+    if not ax_defined:
+        return fig, ax
+    else:
+        return ax
 
 def plot_sensitivity_heatmap(diagnostics,
                              x,
                              y,
                              value,
                              cmap = "viridis",
+                             ax = None,
                              figsize = (6.4, 4.8),
                              constrained_layout = True,
                              **kwargs):
@@ -92,6 +116,9 @@ def plot_sensitivity_heatmap(diagnostics,
     cmap : :class:`str` or :class:`matplotlib.colors.Colormap`, optional
         Colormap used to render the heatmap. Defaults to ``"viridis"``.
 
+    ax : matplotlib.axes.Axes, optional
+        Axes object to draw on. If None, a new figure and axes are created.
+
     figsize : :class:`tuple` of :class:`float`, optional
         Figure size in inches as ``(width, height)``. Defaults to
         ``(6.4, 4.8)``.
@@ -105,10 +132,10 @@ def plot_sensitivity_heatmap(diagnostics,
     Returns
     -------
     fig : :class:`matplotlib.figure.Figure`
-        The created Matplotlib figure.
+        The created Matplotlib figure. Returned only if a new figure was created.
 
     ax : :class:`matplotlib.axes.Axes`
-        The axes containing the heatmap.
+        The axes containing the heatmap. If an axes was passed in, this is the same object; if no axes was passed, this is the newly created axes.
 
     Notes
     -----
@@ -116,11 +143,18 @@ def plot_sensitivity_heatmap(diagnostics,
         ``y`` as the index, ``x`` as the columns, and ``value`` as cell values.
     """
 
+    ## Is an ax passed?
+    ax_defined = ax is not None
+
+    ## If no ax is defined, create new figure
+    ## otherwise, plot on defined ax
+    if ax is None:
+        fig, ax = plt.subplots(figsize = figsize, constrained_layout = constrained_layout)
+    else:
+        fig = ax.get_figure()
+
     # Pivot table
     heatmap = diagnostics.pivot_table(index = y, columns = x, values = value)
-
-    # Create figure
-    fig, ax = plt.subplots(figsize = figsize, constrained_layout = constrained_layout)
 
     # Populate heatmap plot
     im = ax.imshow(
@@ -144,7 +178,9 @@ def plot_sensitivity_heatmap(diagnostics,
     ax.set_title(value)
 
     # Add colorbar
-    plt.colorbar(im, ax=ax, label=value)
+    plt.colorbar(im, ax = ax, label=value)
 
-    return fig, ax
-
+    if not ax_defined:
+        return fig, ax
+    else:
+        return ax
