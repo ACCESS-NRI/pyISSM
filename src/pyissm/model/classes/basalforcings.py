@@ -1862,7 +1862,10 @@ class beckmanngoosse(class_registry.manage_state):
         execute._write_model_field(fid, prefix, name='md.basalforcings.model', data=8, format='Integer')
 
         ## Write DoubleMat fields
-        execute._write_model_field(fid, prefix, obj=self, fieldname='groundedice_melting_rate', format='DoubleMat', mattype=1, scale=1. / md.constants.yts, timeserieslength=md.mesh.numberofvertices + 1)
+        # Use the same hardcoded yts as MATLAB's basalforcingsbeckmanngoosse.marshall (365.2422*24*3600)
+        # rather than md.constants.yts (365*24*3600) to match the reference archive exactly.
+        _yts = 365.2422 * 24.0 * 3600.0
+        execute._write_model_field(fid, prefix, obj=self, fieldname='groundedice_melting_rate', format='DoubleMat', mattype=1, scale=1. / _yts, timeserieslength=md.mesh.numberofvertices + 1)
         execute._write_model_field(fid, prefix, obj=self, fieldname='geothermalflux', format='DoubleMat', mattype=1, timeserieslength=md.mesh.numberofvertices + 1)
         execute._write_model_field(fid, prefix, obj=self, fieldname='meltrate_factor', format='DoubleMat', mattype=1)
 
