@@ -1678,9 +1678,13 @@ class ismip6(class_registry.manage_state):
         execute._write_model_field(fid, prefix, obj=self, fieldname='gamma_0', format='Double', scale=1. / md.constants.yts)
 
         ## Write DoubleMat fields
-        execute._write_model_field(fid, prefix, obj=self, fieldname='tf_depths', format='DoubleMat', name='md.basalforcings.tf_depths')
+        # tf_depths and delta_t must be written as row vectors (1×K) because ISSM C++ asserts M==1 for tf_depths
+        # and reads N (num columns) as the element count for delta_t. MATLAB stores these as row vectors by default.
+        tf_depths_data = np.asarray(self.tf_depths, dtype=np.float64).reshape(1, -1)
+        execute._write_model_field(fid, prefix, data=tf_depths_data, name='md.basalforcings.tf_depths', format='DoubleMat')
         execute._write_model_field(fid, prefix, obj=self, fieldname='tf', format='MatArray', name='md.basalforcings.tf', timeserieslength=md.mesh.numberofvertices + 1, yts=md.constants.yts)
-        execute._write_model_field(fid, prefix, obj=self, fieldname='delta_t', format='DoubleMat', name='md.basalforcings.delta_t', timeserieslength=md.mesh.numberofvertices + 1, yts=md.constants.yts)
+        delta_t_data = np.asarray(self.delta_t, dtype=np.float64).reshape(1, -1)
+        execute._write_model_field(fid, prefix, data=delta_t_data, name='md.basalforcings.delta_t', format='DoubleMat')
 
         ## Write Boolean fields
         execute._write_model_field(fid, prefix, obj=self, fieldname='islocal', format='Boolean')
