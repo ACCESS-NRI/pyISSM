@@ -463,3 +463,180 @@ def plot_run_summary(md,
         # Save page 2 to PDF
         pdf.savefig(fig)
         plt.close(fig)
+
+def plot_lcurve(diagnostics,
+                alpha_col = None,
+                misfit_cols = None,
+                regularization_col = None,
+                ax = None,
+                annotate = True,
+                sort_alpha = True,
+                marker = "s",
+                figsize = (7, 6),
+                **plot_kwargs):
+    """
+    Plot inversion L-curve.
+
+    Parameters
+    ----------
+    diagnostics : :class:`pandas.DataFrame`
+        Diagnostics table generated from sensitivity analysis.
+
+    alpha_col : :class:`str`, optional
+        Column containing regularization coefficient values.
+
+        If None, automatically inferred from regularization term:
+            cost_502 -> cf502
+            cost_503 -> cf503
+
+    misfit_cols : list of :class:`str`, optional
+        Cost-function columns contributing to model-data misfit.
+
+        If None, automatically inferred as all cost-function columns except total cost and regularization term.
+
+    regularization_col : :class:`str`, optional
+        Regularization cost-function column.
+
+        If None:
+            - uses cost_502 if present
+            - uses cost_503 if present
+            - raises error if both exist
+            - raises error if neither exist
+
+    ax : :class:`matplotlib.axes.Axes`, optional
+        Existing axis.
+
+    annotate : :class:`bool`, default = True
+        Label points with alpha values.
+
+    sort_alpha : :class:`bool`, default = True
+        Sort curve by alpha before plotting.
+
+    marker : :class:`str`, default = "s"
+        Marker style.
+
+    figsize : :class:`tuple`, default = (7, 6)
+
+    **plot_kwargs
+        Passed to matplotlib plotting function.
+
+    Returns
+    -------
+    fig : :class:`matplotlib.figure.Figure`
+        The created Matplotlib figure. Returned only if a new figure was created.
+
+    ax : :class:`matplotlib.axes.Axes`
+        The axes containing the plot. If an axes was passed in, this is the same object; if no axes was passed, this is the newly created axes.
+    """
+
+    # Infer regularization term
+    if regularization_col is None:
+
+        candidates = []
+
+        if "cost_502" in diagnostics.columns:
+            candidates.append("cost_502")
+
+        if "cost_503" in diagnostics.columns:
+            candidates.append("cost_503")
+
+        if len(candidates) == 0:
+            raise ValueError(
+                "No regularization cost function found "
+                "(expected cost_502 or cost_503)."
+            )
+
+        elif len(candidates) > 1:
+            raise ValueError(
+                "Multiple regularization terms found: "
+                f"{candidates}. "
+                "Please specify regularization_col."
+            )
+
+        regularization_col = candidates[0]
+
+        print(f'Using regularization_col: {regularization_col}')
+
+    # Infer alpha column
+    if alpha_col is None:
+
+        cf = regularization_col.replace("cost_", "")
+
+        alpha_col = f"cf{cf}"
+
+        if alpha_col not in diagnostics.columns:
+            raise ValueError(
+                f"Could not infer alpha column '{alpha_col}'."
+            )
+
+        print(f'Using alpha_col: {alpha_col}')
+
+    # Default misfit terms
+    if misfit_cols is None:
+
+        misfit_cols = []
+
+        for col in diagnostics.columns:
+
+            if not col.startswith("cost_"):
+                continue
+
+            if col in ["cost_total", regularization_col]:
+                continue
+
+            misfit_cols.append(col)
+
+        if len(misfit_cols) == 0:
+            raise ValueError(
+                "No misfit cost-function columns found."
+            )
+        print(f'Using misfit_cols: {misfit_cols}')
+
+    # Compute plotting terms
+    df = diagnostics.copy()
+
+    # Total misfit
+    df["misfit"] = df[misfit_cols].sum(axis = 1)
+
+    # Regularization term
+    df["regularization"] = (df[regularization_col] / df[alpha_col])
+
+    # Sort by alpha
+    if sort_alpha:
+        df = df.sort_values(alpha_col)
+
+    # Setup figure
+    if ax is None:
+        fig, ax = plt.subplots(figsize = figsize)
+    else:
+        fig = ax.figure
+
+    # Plot
+    ax.loglog(
+        df["misfit"],
+        df["regularization"],
+        f"-{marker}",
+        **plot_kwargs
+    )
+
+    ax.set_xlabel(r'$\log(\mathrm{Data\ Misfit})$')
+    ax.set_ylabel(r'$\log(\mathrm{Regularization})$')
+
+    ax.grid(True, which = "both")
+
+    # Annotate alpha values
+    if annotate:
+
+        for _, row in df.iterrows():
+
+            ax.text(
+                row["misfit"] * 1.02,
+                row["regularization"] * 1.02,
+                f"{row[alpha_col]:.0e}",
+                fontsize = 9,
+            )
+
+    if ax is None:
+        return fig, ax
+    else:
+        return ax
