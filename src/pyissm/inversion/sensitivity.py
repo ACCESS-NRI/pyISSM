@@ -128,8 +128,8 @@ def assign_cost_functions(md,
     # Determine number of vertices
     nverts = md.mesh.numberofvertices
 
-    # Allocate coefficient matrix
-    coeff_matrix = np.ones((nverts, len(cost_functions)), dtype=float)
+    # Allocate coefficient matrix (default = 0 [inactive])
+    coeff_matrix = np.zeros((nverts, len(cost_functions)), dtype=float)
 
     # Validate global_mask
     if global_mask is None:
