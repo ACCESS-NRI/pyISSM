@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import textwrap
 from . import metrics
 from .. import tools, plot
 from matplotlib.backends.backend_pdf import PdfPages
@@ -70,9 +71,16 @@ def plot_convergence_history(convergence_history,
     
     # Loop over metrics and plot each one
     for metric in metrics:
+        
+        # Use dashed linestyle for total cost, solid for individual cost components
+        linestyle = "--" if metric == "cost_total" else "-"
+
+        # Plot metric vs iteration
         ax.plot(convergence_history["iteration"],
                 convergence_history[metric],
-                label = metric)
+                label = metric,
+                linestyle = linestyle
+                )
     
     # Set log scale if requested
     if log_scale:
@@ -422,16 +430,26 @@ def plot_run_summary(md,
 
         ## Format diagnostics into lines of text for display
         lines = []
+
         for key, value in diagnostics.items():
 
             if isinstance(value, (np.integer, int)):
-                lines.append(f"{key}: {value}")
+                text = f"{key}: {value}"
 
             elif isinstance(value, (np.floating, float)):
-                lines.append(f"{key}: {value:.3g}")
+                text = f"{key}: {value:.3g}"
 
             else:
-                lines.append(f"{key}: {value}")
+                text = f"{key}: {value}"
+
+            # Wrap long lines
+            wrapped = textwrap.wrap(text,
+                                    width = 80,
+                                    subsequent_indent = "       "
+                                    )
+
+            # Add wrapped lines
+            lines.extend(wrapped)
         
         ## Display diagnostics as text in the axis
         ax4.text(
