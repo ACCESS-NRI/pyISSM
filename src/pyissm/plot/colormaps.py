@@ -296,6 +296,45 @@ def demmap(ncolors, minZ, maxZ, colorscheme='dem'):
     return ListedColormap(colors)
 
 
+def blueyellowred(n=256):
+    """Blue-Yellow-Red colormap.
+
+    Ported from MATLAB blueyellowred.m. Runs from white through blue-purple,
+    yellow, and into deep red.
+
+    Parameters
+    ----------
+    n : int
+        Number of color levels. Default 256.
+
+    Returns
+    -------
+    np.ndarray, shape (3, n)
+        RGB color array.
+    """
+    n1, n2 = 32, 112
+    c1 = np.column_stack([
+        np.linspace(1,      0.12,   n1),
+        np.linspace(1,      0.10,   n1),
+        np.linspace(1,      0.50,   n1),
+    ])
+    c2 = np.column_stack([
+        np.linspace(0.12,   0.9375, n2),
+        np.linspace(0.10,   0.8984, n2),
+        np.linspace(0.50,   0.5469, n2),
+    ])
+    c3 = np.column_stack([
+        np.linspace(0.9375, 0.5430, n2),
+        np.linspace(0.8984, 0,      n2),
+        np.linspace(0.5469, 0,      n2),
+    ])
+    J = np.vstack([c1, c2, c3])
+    length = len(J)
+    a = np.linspace(1, length, n)
+    b = np.arange(1, length + 1)
+    return np.array([np.interp(a, b, J[:, i]) for i in range(3)])
+
+
 def get_colormap(name, alpha=1):
     """Get a matplotlib colormap by name, including ISSM custom maps.
 
