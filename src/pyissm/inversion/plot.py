@@ -473,6 +473,7 @@ def plot_lcurve(diagnostics,
                 sort_alpha = True,
                 marker = "s",
                 figsize = (7, 6),
+                constrained_layout = True,
                 **plot_kwargs):
     """
     Plot inversion L-curve.
@@ -516,6 +517,10 @@ def plot_lcurve(diagnostics,
         Marker style.
 
     figsize : :class:`tuple`, default = (7, 6)
+        Figure size when creating a new figure.
+
+    constrained_layout : :class:`bool`, default = True
+            Whether to use constrained layout when creating a new figure.
 
     **plot_kwargs
         Passed to matplotlib plotting function.
@@ -528,6 +533,16 @@ def plot_lcurve(diagnostics,
     ax : :class:`matplotlib.axes.Axes`
         The axes containing the plot. If an axes was passed in, this is the same object; if no axes was passed, this is the newly created axes.
     """
+
+    ## Is an ax passed?
+    ax_defined = ax is not None
+
+    ## If no ax is defined, create new figure
+    ## otherwise, plot on defined ax
+    if ax is None:
+        fig, ax = plt.subplots(figsize = figsize, constrained_layout = constrained_layout)
+    else:
+        fig = ax.get_figure()
 
     # Infer regularization term
     if regularization_col is None:
@@ -605,12 +620,6 @@ def plot_lcurve(diagnostics,
     if sort_alpha:
         df = df.sort_values(alpha_col)
 
-    # Setup figure
-    if ax is None:
-        fig, ax = plt.subplots(figsize = figsize)
-    else:
-        fig = ax.figure
-
     # Plot
     ax.loglog(
         df["misfit"],
@@ -636,7 +645,7 @@ def plot_lcurve(diagnostics,
                 fontsize = 9,
             )
 
-    if ax is None:
+    if not ax_defined:
         return fig, ax
     else:
         return ax
