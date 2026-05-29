@@ -10,7 +10,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from .. import model, tools
-from . import metrics
+from . import metrics, plot
 
 
 def build_parameter_grid(coefficients):
@@ -393,7 +393,8 @@ def load_parameter_sensitivity_run(manifest_row):
     return md
 
 def compute_sensitivity_diagnostics(manifest,
-                                    output_dir = None):
+                                    output_dir = None,
+                                    plot_run_summaries = True):
     """
     Compute diagnostics for parameter sensitivity runs.
 
@@ -466,6 +467,14 @@ def compute_sensitivity_diagnostics(manifest,
 
         # Save convergence history to CSV in the run directory
         convergence_history.to_csv(Path(row["run_dir"]) / f"{run_name}_convergence_history.csv", index = False)
+
+        # -----------------------------------------
+        # Generate summary PDF for this run
+        # -----------------------------------------
+        if plot_run_summaries:
+            plot.plot_run_summary(mdi,
+                                  output_pdf = Path(row["run_dir"]) / f"{run_name}_summary.pdf",
+                                  diagnostics = diagnostics.loc[idx])
 
     return diagnostics
 

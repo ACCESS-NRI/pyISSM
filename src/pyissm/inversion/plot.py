@@ -1,7 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-
+from . import metrics
+from .. import tools, plot
+from matplotlib.backends.backend_pdf import PdfPages
 
 def plot_convergence_history(convergence_history,
                              metrics = None,
@@ -184,3 +186,262 @@ def plot_sensitivity_heatmap(diagnostics,
         return fig, ax
     else:
         return ax
+
+def plot_run_summary(md,
+                     output_pdf,
+                     diagnostics = None,
+                     plot_kwargs = None):
+    """
+    Generate PDF summary report for inversion run.
+
+    Saves a multi-page PDF report to the specified path, containing visualizations and diagnostics of the inversion run.
+    The first page includes spatial plots of observed velocity, modelled velocity, velocity residuals, and the inverted
+    control parameter field. The second page includes a convergence history plot, histograms of velocity residuals and
+    inverted field slopes, and a text summary of key diagnostics. Plot appearance can be customized via the `plot_kwargs` parameter.
+
+    Parameters
+    ----------
+    md : :class:`pyissm.Model`
+        ISSM model object containing inversion results.
+    output_pdf : :class:`str`
+        Path to output PDF file.
+    diagnostics : :class:`dict`, optional
+        Diagnostics configuration. Default is None.
+    plot_kwargs : :class:`dict`, optional
+        Plot keyword arguments. Default is None.
+
+    Returns
+    -------
+    None
+    """
+
+    # Compute velocity residuals for diagnostics and plotting
+    residuals = tools.diagnostics.velocity_residuals(md)
+    
+    # Determine if velocity residuals exceed colorbar limits, and set colorbar extension accordingly
+    extend_min = False
+    extend_max = False
+    if np.max(residuals) > 50:
+        extend_max = True
+        extend = 'max'
+    if np.min(residuals) < -50:
+        extend_min = True
+        extend = 'min'
+    if extend_max and extend_min:
+        extend = 'both'
+    else:
+        extend = 'neither'
+
+    # Extract control parameter field and name for plotting
+    inversion_field, inversion_field_name = metrics._find_control_parameter_field(md)
+
+    # Define default plot kwargs for each plot type, which can be overridden by user-provided plot_kwargs
+    default_plot_kwargs = {
+
+        # PAGE 1 - SPATIAL FIELDS
+        ## Observed velocity
+        "observed": {
+            "show_cbar": True,
+            "xlabel": "",
+            "cbar_kwargs": {
+                "label": "Observed velocity (m/yr)",
+            },
+        },
+        ## Modelled velocity
+        "modelled": {
+            "show_cbar": True,
+            "xlabel": "",
+            "ylabel": "",
+            "cbar_kwargs": {
+                "label": "Modelled velocity (m/yr)",
+            },
+        },
+        ## Velocity residuals
+        "residuals": {
+            "cmap": "RdBu_r",
+            "show_cbar": True,
+            "vmin": -50,
+            "vmax": 50,
+            "cbar_kwargs": {
+                "label": "Velocity residual (m/yr)",
+                "extend": extend,
+            },
+        },
+        ## Inversion field
+        "inversion": {
+            "show_cbar": True,
+            "ylabel": "",
+            "cbar_kwargs": {
+                "label": f"Inverted {inversion_field_name}",
+            },
+        },
+
+        # PAGE 2 - CONVERGENCE, DISTRIBUTIONS & TEXT SUMMARY
+        ## Convergence history
+        "convergence": {
+            "log_scale": True,
+        },
+        ## Residual histogram
+        "residual_hist": {
+            "bins": 100,
+        },
+        ## Inversion field slope histogram
+        "slope_hist": {
+            "bins": 100,
+        },
+
+        # FIGURE SETTINGS (PER PAGE)
+        ## Page 1 - spatial fields
+        "page1_figure": {
+            "figsize": (15, 10),
+            "sharex": True,
+            "sharey": True,
+            "constrained_layout": True,
+        },
+        ## Page 2 - convergence, distributions & text summary
+        "page2_figure": {
+            "figsize": (15, 10),
+            "constrained_layout": True,
+        }
+    }
+
+    # Merge user-provided plot kwargs with defaults
+    plot_kwargs = {} if plot_kwargs is None else plot_kwargs
+    
+    merged_plot_kwargs = {}
+
+    for key, defaults in default_plot_kwargs.items():
+        merged_plot_kwargs[key] = {
+            **defaults,
+            **plot_kwargs.get(key, {}),
+        }
+
+    # Generate PDF report with two pages: (1) spatial fields and (2) convergence, distributions, and text summary
+    with PdfPages(output_pdf) as pdf:
+
+        # --------------------------------------------------
+        # PAGE 1 — SPATIAL FIELDS
+        # --------------------------------------------------
+
+        # Set up 2x2 figure for spatial plots
+        fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, **merged_plot_kwargs["page1_figure"])
+
+        # Observed velocity
+        plot.plot_model_field(
+            md,
+            md.inversion.vel_obs,
+            ax = ax1,
+            **merged_plot_kwargs["observed"]
+        )
+        ax1.set_title("Observed velocity")
+
+        # Modelled velocity
+        plot.plot_model_field(
+            md,
+            md.results.StressbalanceSolution.Vel,
+            ax = ax2,
+            **merged_plot_kwargs["modelled"]
+        )
+        ax2.set_title("Modelled velocity")
+
+        # Residuals
+        plot.plot_model_field(
+            md,
+            residuals,
+            ax = ax3,
+            **merged_plot_kwargs["residuals"]
+        )
+        ax3.set_title("Velocity residual (mod - obs)")
+
+        # Inversion field
+        plot.plot_model_field(
+            md,
+            inversion_field,
+            ax = ax4,
+            **merged_plot_kwargs["inversion"]
+        )
+        ax4.set_title(f"Inverted {inversion_field_name}")
+
+        # Save page 1 to PDF
+        pdf.savefig(fig)
+        plt.close(fig)
+
+        # --------------------------------------------------
+        # PAGE 2 — CONVERGENCE, DISTRIBUTIONS & TEXT SUMMARY
+        # --------------------------------------------------
+        fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, **merged_plot_kwargs["page2_figure"])
+
+        # Convergence history
+        convergence_history = metrics.extract_convergence_history(md)
+
+        plot_convergence_history(convergence_history,
+                                 ax = ax1,
+                                 **merged_plot_kwargs["convergence"]
+                                 )
+        ax1.set_title("Cost function convergence history")
+        ax1.grid()
+
+        # Residual histogram
+        finite = residuals[np.isfinite(residuals)]
+
+        ax2.hist(finite,
+                 **merged_plot_kwargs["residual_hist"]
+                 )
+
+        ax2.set_title("Velocity residual distribution")
+        ax2.set_xlabel("Velocity residual (m/yr)")
+        ax2.set_ylabel("Count")
+
+        # Slope histogram
+        _, _, slope = tools.geometry.slope(md, inversion_field)
+
+        finite = slope[np.isfinite(slope)]
+
+        ax3.hist(finite,
+                 **merged_plot_kwargs["slope_hist"]
+                 )
+
+        ax3.set_title(f"Inverted {inversion_field_name} distribution")
+        ax3.set_xlabel(f"{inversion_field_name} slope")
+        ax3.set_ylabel("Count")
+
+        # Text Summary
+        ## If diagnostics are not provided, compute a default set of diagnostics to display
+        if diagnostics is None:
+            diagnostics = {
+                "vel_rmse": tools.diagnostics.velocity_rmse(md),
+
+                # Expand dictionaries into flat metrics
+                **metrics.cost_function_values(md),
+                **metrics.cost_function_ratios(md),
+                **metrics.velocity_residual_area_metrics(md),
+                **metrics.field_smoothness_metrics(md)
+            }
+        ## Turn off axis
+        ax4.axis("off")
+
+        ## Format diagnostics into lines of text for display
+        lines = []
+        for key, value in diagnostics.items():
+
+            if isinstance(value, (np.integer, int)):
+                lines.append(f"{key}: {value}")
+
+            elif isinstance(value, (np.floating, float)):
+                lines.append(f"{key}: {value:.3g}")
+
+            else:
+                lines.append(f"{key}: {value}")
+        
+        ## Display diagnostics as text in the axis
+        ax4.text(
+            0.01,
+            0.99,
+            "\n".join(lines),
+            va = "top",
+            family = "monospace",
+        )
+
+        # Save page 2 to PDF
+        pdf.savefig(fig)
+        plt.close(fig)

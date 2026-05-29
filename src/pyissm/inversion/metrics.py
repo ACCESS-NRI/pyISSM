@@ -177,6 +177,30 @@ def velocity_residual_area_metrics(md):
         "negative_residual_fraction": negative_fraction,
     }
 
+def _find_control_parameter_field(md):
+    """
+    Helper function to extract control parameter field from model results.
+
+    Parameters
+    ----------
+    md : :class:`pyissm.Model`
+        ISSM model object containing inversion results.
+
+    Returns
+    -------
+    :class:`numpy.ndarray`
+        Control parameter field values defined on vertices.
+    """
+
+    if md.inversion.control_parameters == ['MaterialsRheologyBbar']:
+        return md.results.StressbalanceSolution.MaterialsRheologyBbar, "MaterialsRheologyBbar"
+    elif md.inversion.control_parameters == ['FrictionCoefficient']:
+        return md.results.StressbalanceSolution.FrictionCoefficient, "FrictionCoefficient"
+    elif md.inversion.control_parameters == ['FrictionC']:
+        return md.results.StressbalanceSolution.FrictionC, "FrictionC"
+    else:
+        raise ValueError("pyissm.inversion.metrics._find_control_parameter_field: Unsupported control parameter for smoothness metrics")
+
 def field_smoothness_metrics(md,
                             field = None):
         """
@@ -197,15 +221,8 @@ def field_smoothness_metrics(md,
 
         # Extract field from model if not provided
         if field is None:
-            if md.inversion.control_parameters == ['MaterialsRheologyBbar']:
-                field = md.results.StressbalanceSolution.MaterialsRheologyBbar
-            elif md.inversion.control_parameters == ['FrictionCoefficient']:
-                field = md.results.StressbalanceSolution.FrictionCoefficient
-            elif md.inversion.control_parameters == ['FrictionC']:
-                field = md.results.StressbalanceSolution.FrictionC
-            else:
-                raise ValueError("pyissm.inversion.metrics.field_smoothness_metrics: Unsupported control parameter for smoothness metrics")
-        
+            field, _ = _find_control_parameter_field(md)
+
         # Compute slope (magnitude of gradient)
         _, _, slope = tools.geometry.slope(md, field)
 
