@@ -296,7 +296,7 @@ def set_marine_ice_sheet_bc(md,
     ## Define balancethickness BCs
     if np.all(np.isnan(md.balancethickness.thickening_rate)):
         md.balancethickness.thickening_rate = np.zeros((md.mesh.numberofvertices))
-        warnings.warn('pyissm.model.bc.set_ice_shelf_bc: no balancethickness.thickening_rate specified -- values set as 0.')
+        warnings.warn('pyissm.model.bc.set_marine_ice_sheet_bc: no balancethickness.thickening_rate specified -- values set as 0.')
     md.masstransport.spcthickness = np.nan * np.ones((md.mesh.numberofvertices))
     md.balancethickness.spcthickness = np.nan * np.ones((md.mesh.numberofvertices))
     md.damage.spcdamage = np.nan * np.ones((md.mesh.numberofvertices))
