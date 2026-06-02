@@ -1739,7 +1739,7 @@ def load_results_from_disk(md, filename):
             warnings.warn('load_results_from_disk: error during solution. Check your errlog and outlog model fields.')
 
         # If only one solution, extract it from list for user friendliness
-        if len(results) == 1 and results[0].SolutionType != 'TransientSolution':
+        if len(results.steps) == 1 and results[0].SolutionType != 'TransientSolution':
             setattr(md.results, results[0].SolutionType, results[0])
 
     else:
