@@ -487,6 +487,7 @@ def plot_lcurve(diagnostics,
         Column containing regularization coefficient values.
 
         If None, automatically inferred from regularization term:
+            cost_501 -> cf501
             cost_502 -> cf502
             cost_503 -> cf503
 
@@ -499,6 +500,7 @@ def plot_lcurve(diagnostics,
         Regularization cost-function column.
 
         If None:
+            - uses cost_501 if present
             - uses cost_502 if present
             - uses cost_503 if present
             - raises error if both exist
@@ -549,6 +551,9 @@ def plot_lcurve(diagnostics,
 
         candidates = []
 
+        if "cost_501" in diagnostics.columns:
+            candidates.append("cost_501")
+
         if "cost_502" in diagnostics.columns:
             candidates.append("cost_502")
 
@@ -558,7 +563,7 @@ def plot_lcurve(diagnostics,
         if len(candidates) == 0:
             raise ValueError(
                 "No regularization cost function found "
-                "(expected cost_502 or cost_503)."
+                "(expected cost_501, cost_502 or cost_503)."
             )
 
         elif len(candidates) > 1:
