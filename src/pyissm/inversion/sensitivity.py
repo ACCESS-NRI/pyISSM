@@ -451,30 +451,30 @@ def compute_sensitivity_diagnostics(manifest,
                 # Save intermediate diagnostics to CSV after each run in case of long-running computations and to preserve results even if some runs fail
                 diagnostics.to_csv(Path(output_dir) / "diagnostics.csv", index = False)
 
+            # -----------------------------------------
+            # Extract & save convergence history
+            # -----------------------------------------
+            
+            # Extract convergence history DataFrame from model results
+            convergence_history = metrics.extract_convergence_history(mdi)
+    
+            # Save convergence history to CSV in the run directory
+            convergence_history.to_csv(Path(row["run_dir"]) / f"{run_name}_convergence_history.csv", index = False)
+    
+            # -----------------------------------------
+            # Generate summary PDF for this run
+            # -----------------------------------------
+            if plot_run_summaries:
+                plot.plot_run_summary(mdi,
+                                      output_pdf = Path(row["run_dir"]) / f"{run_name}_summary.pdf",
+                                      diagnostics = diagnostics.loc[idx])
+
         # If exceptions occur during loading or diagnostics computation, catch them and record failure in the diagnostics table
         except Exception as exc:
 
             # Record failure in diagnostics table & print error message
             diagnostics.at[idx, "diagnostics_status"] = "failed"
             print(f"Error processing run {run_name}: {exc}")
-
-        # -----------------------------------------
-        # Extract & save convergence history
-        # -----------------------------------------
-        
-        # Extract convergence history DataFrame from model results
-        convergence_history = metrics.extract_convergence_history(mdi)
-
-        # Save convergence history to CSV in the run directory
-        convergence_history.to_csv(Path(row["run_dir"]) / f"{run_name}_convergence_history.csv", index = False)
-
-        # -----------------------------------------
-        # Generate summary PDF for this run
-        # -----------------------------------------
-        if plot_run_summaries:
-            plot.plot_run_summary(mdi,
-                                  output_pdf = Path(row["run_dir"]) / f"{run_name}_summary.pdf",
-                                  diagnostics = diagnostics.loc[idx])
 
     return diagnostics
 
