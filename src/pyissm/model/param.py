@@ -788,6 +788,16 @@ def remove_isolated_ice(md, mode = "floating", min_size = None):
     """
     Remove isolated ice patches.
 
+    This function identifies and removes isolated patches of ice from the model's ice_levelset field.
+    Depending on the specified mode, it can target floating ice (icebergs), grounded ice, or any disconnected
+    ice patches regardless of grounding. The function uses a connectivity-based approach to determine which
+    ice vertices are considered isolated and should be removed by setting their ice_levelset values to +1 (non-ice).
+
+    The default mode if "floating" (with no min_size specified). This is equivalent to the `kill_icebergs` function. The "grounded" mode can be
+    used to remove grounded ice patches that are not connected to floating ice, which may be useful for certain applications.
+    The "any" mode is more general and removes any disconnected ice patches regardless of grounding, which can help clean
+    up the model in cases where there are small isolated ice regions.
+
     Parameters
     ----------
     md : :class:`pyissm.model.Model`
