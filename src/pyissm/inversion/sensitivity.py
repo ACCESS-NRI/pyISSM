@@ -500,12 +500,11 @@ def normalize_diagnostics(diagnostics,
         True  = higher values are better
         False = lower values are better
 
-        Example:
-        {
-            "velocity_rmse": False,
-            "thickness_rmse": False,
-            "correlation": True,
-        }
+        Example
+        -------
+        {"velocity_rmse": False,
+        "thickness_rmse": False,
+        "correlation": True}
 
         Any unspecified column defaults to False.
 
