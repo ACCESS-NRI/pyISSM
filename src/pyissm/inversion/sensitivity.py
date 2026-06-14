@@ -12,8 +12,7 @@ import pandas as pd
 from .. import model, tools
 from . import metrics, plot
 
-
-def build_parameter_grid(coefficients):
+def build_parameter_grid(coefficients, initial_run_id = 1):
     """
     Build parameter sensitivity combinations.
 
@@ -27,6 +26,10 @@ def build_parameter_grid(coefficients):
         {101: [0.1, 1, 10],
         103: [1, 10],
         502: [1e-19]}
+
+    initial_run_id : :class:`int`, default = 1
+        Starting index for run_id assignment. Subsequent runs will have IDs incremented by 1 from this value.
+        Useful for tracking runs across multiple calls to this function without overwriting previous run_ids.
 
     Returns
     -------
@@ -55,7 +58,7 @@ def build_parameter_grid(coefficients):
     records = []
 
     # Loop through all parameter combinations
-    for run_id, combo in enumerate(combinations):
+    for run_id, combo in enumerate(combinations, start = initial_run_id):
 
         # Initialize record with run_id
         record = {
@@ -72,7 +75,7 @@ def build_parameter_grid(coefficients):
         )
 
         # Assign run_name to record
-        record["run_name"] = f"run_{run_id:04d}_{pair_string}"
+        record["run_name"] = f"run_{run_id:03d}_{pair_string}"
 
         # Append record to list
         records.append(record)
@@ -110,6 +113,7 @@ def assign_cost_functions(md,
 
     coeff_masks : :class:`dict`, optional
         Dictionary mapping cost-function IDs to boolean masks.
+        Masks are applied in the same way as the global_mask, but only affect their respective cost functions.
 
         Example
         -------
@@ -154,6 +158,7 @@ def assign_cost_functions(md,
 
             cf_mask = np.asarray(cf_mask)
 
+            # Ensure cf_mask is a boolean array of the correct shape. Enforce boolean to prevent potential unintentional partial weighting with floats
             if cf_mask.dtype != bool:
                 raise TypeError(f"pyissm.inversion.sensitivity.assign_cost_functions: Mask for cost function {cf} must be boolean.")
 
@@ -187,8 +192,7 @@ def parameter_sensitivity(md,
                           run = True,
                           load_only = False,
                           global_mask = None,
-                          coeff_masks = None,
-                          initial_run_id = 0):
+                          coeff_masks = None):
     """
     Run inversion sensitivity experiments.
 
@@ -228,9 +232,6 @@ def parameter_sensitivity(md,
         {101: vel_mask,
         103: grounded_mask}
     
-    initial_run_id : :class:`int`, default = 0
-        Starting index for run_id assignment in the manifest. Useful for tracking runs across multiple calls to this function without overwriting previous run_ids.
-
     Returns
     -------
     :class:`pandas.DataFrame`
@@ -261,7 +262,7 @@ def parameter_sensitivity(md,
     for _, row in parameter_grid.iterrows():
 
         # Extract run metadata
-        run_id = int(row["run_id"]) + initial_run_id
+        run_id = int(row["run_id"])
         run_name = row["run_name"]
 
         print(f"Running sensitivity experiment: {run_name}")
@@ -385,7 +386,7 @@ def load_parameter_sensitivity_run(manifest_row):
 
     # Check if model file exists
     if not model_path.exists():
-        raise FileNotFoundError(f"Model file not found: {model_path}")
+        raise FileNotFoundError(f"pyissm.inversion.sensitivity.load_parameter_sensitivity_run: Model file not found: {model_path}")
 
     # Load model
     md = model.io.load_model(model_path)
@@ -478,11 +479,10 @@ def compute_sensitivity_diagnostics(manifest,
 
     return diagnostics
 
-def normalize_diagnostics(
-        diagnostics,
-        columns = None,
-        higher_is_better = None,
-        suffix = "_norm"):
+def normalize_diagnostics(diagnostics,
+                          columns = None,
+                          higher_is_better = None,
+                          suffix = "_norm"):
     """
     Normalize diagnostic columns to [0, 1].
 

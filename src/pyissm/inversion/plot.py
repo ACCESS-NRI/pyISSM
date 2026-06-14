@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import pandas as pd
 import textwrap
 from . import metrics
 from .. import tools, plot
@@ -8,7 +7,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 def plot_convergence_history(convergence_history,
                              metrics = None,
-                             log_scale = True,
+                             log = True,
                              ax = None,
                              figsize = (6.4, 4.8),
                              constrained_layout = True):
@@ -25,7 +24,7 @@ def plot_convergence_history(convergence_history,
         Metric column names to plot. If ``None`` (default), all columns except
         ``"iteration"`` are plotted.
 
-    log_scale : :class:`bool`, optional
+    log : :class:`bool`, optional
         If ``True`` (default), use a logarithmic scale for the y-axis.
 
     ax : matplotlib.axes.Axes, optional
@@ -83,7 +82,7 @@ def plot_convergence_history(convergence_history,
                 )
     
     # Set log scale if requested
-    if log_scale:
+    if log:
         ax.set_yscale('log')
     
     # Set labels and legend
@@ -287,7 +286,7 @@ def plot_run_summary(md,
         # PAGE 2 - CONVERGENCE, DISTRIBUTIONS & TEXT SUMMARY
         ## Convergence history
         "convergence": {
-            "log_scale": True,
+            "log": True,
         },
         ## Residual histogram
         "residual_hist": {
@@ -474,7 +473,7 @@ def plot_lcurve(diagnostics,
                 marker = "s",
                 figsize = (7, 6),
                 constrained_layout = True,
-                **plot_kwargs):
+                **kwargs):
     """
     Plot inversion L-curve.
 
@@ -524,7 +523,7 @@ def plot_lcurve(diagnostics,
     constrained_layout : :class:`bool`, default = True
             Whether to use constrained layout when creating a new figure.
 
-    **plot_kwargs
+    **kwargs
         Passed to matplotlib plotting function.
 
     Returns
@@ -562,13 +561,11 @@ def plot_lcurve(diagnostics,
 
         if len(candidates) == 0:
             raise ValueError(
-                "No regularization cost function found "
-                "(expected cost_501, cost_502 or cost_503)."
-            )
+                "pyissm.inversion.plot.plot_lcurve: No regularization cost function found (expected cost_501, cost_502 or cost_503).")
 
         elif len(candidates) > 1:
             raise ValueError(
-                "Multiple regularization terms found: "
+                "pyissm.inversion.plot.plot_lcurve: Multiple regularization terms found: "
                 f"{candidates}. "
                 "Please specify regularization_col."
             )
@@ -585,9 +582,7 @@ def plot_lcurve(diagnostics,
         alpha_col = f"cf{cf}"
 
         if alpha_col not in diagnostics.columns:
-            raise ValueError(
-                f"Could not infer alpha column '{alpha_col}'."
-            )
+            raise ValueError(f"pyissm.inversion.plot.plot_lcurve: Could not infer alpha column '{alpha_col}'.")
 
         print(f'Using alpha_col: {alpha_col}')
 
@@ -607,9 +602,7 @@ def plot_lcurve(diagnostics,
             misfit_cols.append(col)
 
         if len(misfit_cols) == 0:
-            raise ValueError(
-                "No misfit cost-function columns found."
-            )
+            raise ValueError("pyissm.inversion.plot.plot_lcurve: No misfit cost-function columns found.")
         print(f'Using misfit_cols: {misfit_cols}')
 
     # Compute plotting terms
@@ -630,7 +623,7 @@ def plot_lcurve(diagnostics,
         df["misfit"],
         df["regularization"],
         f"-{marker}",
-        **plot_kwargs
+        **kwargs
     )
 
     ax.set_xlabel(r'$\log(\mathrm{Data\ Misfit})$')

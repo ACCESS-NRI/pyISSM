@@ -632,9 +632,7 @@ def gdf_to_exp(gdf, exp_filename):
 
     # Error checks
     if exp_filename.suffix.lower() != ".exp":
-        raise ValueError(
-            f"Exp file {exp_filename} does not have extension '.exp'"
-        )
+        raise ValueError(f"pyissm.tools.exp.gdf_to_exp: Exp file {exp_filename} does not have extension '.exp'")
 
     # Accept GeoSeries OR GeoDataFrame
     if isinstance(gdf, gpd.GeoDataFrame):
@@ -644,7 +642,7 @@ def gdf_to_exp(gdf, exp_filename):
         geoms = gdf
         attrs = None
     else:
-        raise TypeError("Input must be a GeoDataFrame or GeoSeries")
+        raise TypeError(f"pyissm.tools.exp.gdf_to_exp: Input must be a GeoDataFrame or GeoSeries")
 
     # Define helper function to extract name
     def _get_name(i):
@@ -767,19 +765,13 @@ def shp_to_exp(shp_filename, exp_filename):
 
     # Error checks
     if shp_filename.suffix.lower() != ".shp":
-        raise ValueError(
-            f"Shapefile {shp_filename} does not have extension '.shp'"
-        )
+        raise ValueError(f"pyissm.tools.exp.shp_to_exp: Shapefile {shp_filename} does not have extension '.shp'")
 
     if exp_filename.suffix.lower() != ".exp":
-        raise ValueError(
-            f"Exp file {exp_filename} does not have extension '.exp'"
-        )
+        raise ValueError(f"pyissm.tools.exp.shp_to_exp: Exp file {exp_filename} does not have extension '.exp'")
 
     if not shp_filename.exists():
-        raise FileNotFoundError(
-            f"Shapefile {shp_filename} does not exist"
-        )
+        raise FileNotFoundError(f"pyissm.tools.exp.shp_to_exp: Shapefile {shp_filename} does not exist")
 
     # Read shapefile
     gdf = gpd.read_file(shp_filename)
@@ -808,25 +800,20 @@ def exp_to_shp(exp_filename, shp_filename):
     -------
     None
     """
-
+    
+    # Convert to Path objects
     exp_filename = Path(exp_filename)
     shp_filename = Path(shp_filename)
 
     # Error checks
     if exp_filename.suffix.lower() != ".exp":
-        raise ValueError(
-            f"Exp file {exp_filename} does not have extension '.exp'"
-        )
+        raise ValueError(f"pyissm.tools.exp.exp_to_shp: Exp file {exp_filename} does not have extension '.exp'")
 
     if shp_filename.suffix.lower() != ".shp":
-        raise ValueError(
-            f"Shapefile {shp_filename} does not have extension '.shp'"
-        )
+        raise ValueError(f"pyissm.tools.exp.exp_to_shp: Shapefile {shp_filename} does not have extension '.shp'")
 
     if not exp_filename.exists():
-        raise FileNotFoundError(
-            f"Exp file {exp_filename} does not exist"
-        )
+        raise FileNotFoundError(f"pyissm.tools.exp.exp_to_shp: Exp file {exp_filename} does not exist")
 
     # Read exp contours
     contours = exp_read(exp_filename)
@@ -866,4 +853,5 @@ def exp_to_shp(exp_filename, shp_filename):
     # Create GeoDataFrame and write shapefile
     gdf = gpd.GeoDataFrame(records)
 
+    # Save to shapefile
     gdf.to_file(shp_filename)
