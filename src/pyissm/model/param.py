@@ -3,6 +3,7 @@ Functions for parameterising ISSM models.
 """
 
 import numpy as np
+from collections import deque
 import os
 from pathlib import Path
 from datetime import datetime
@@ -782,3 +783,326 @@ def reinitialize_levelset(md, levelset):
         levelsetnew[pos] = -levelsetnew[pos]
 
     return levelsetnew
+
+def remove_isolated_ice(md, mode = "floating", min_size = None):
+    """
+    Remove isolated ice patches.
+
+    This function identifies and removes isolated patches of ice from the model's ice_levelset field.
+    Depending on the specified mode, it can target floating ice (icebergs), grounded ice, or any disconnected
+    ice patches regardless of grounding. The function uses a connectivity-based approach to determine which
+    ice vertices are considered isolated and should be removed by setting their ice_levelset values to +1 (non-ice).
+
+    The default mode if "floating" (with no min_size specified). This is equivalent to the `kill_icebergs` function. The "grounded" mode can be
+    used to remove grounded ice patches that are not connected to floating ice, which may be useful for certain applications.
+    The "any" mode is more general and removes any disconnected ice patches regardless of grounding, which can help clean
+    up the model in cases where there are small isolated ice regions.
+
+    Parameters
+    ----------
+    md : :class:`pyissm.model.Model`
+        ISSM model object.
+
+    mode : :class:`str`, default="floating"
+        Type of isolated ice to remove.
+
+        - "floating": remove floating ice not connected to grounded ice.
+        - "grounded": remove grounded ice not connected to floating ice.
+        - "any": remove disconnected ice patches regardless of grounding.
+
+    min_size : :class:`int` or None, default=None
+        Minimum number of vertices a disconnected patch must contain to
+        be retained.
+
+        - None: remove all isolated patches.
+        - N: remove only isolated patches containing fewer than N vertices.
+
+    Returns
+    -------
+    :class:`numpy.ndarray`
+        Modified ice_levelset array.
+    """
+
+    # Check mode validity
+    if mode not in {"floating", "grounded", "any"}:
+        raise ValueError( f"Invalid mode '{mode}'. Expected 'floating', 'grounded', or 'any'.")
+
+    # Get mesh and mask information
+    elements = md.mesh.elements - 1
+    ice_ls = md.mask.ice_levelset
+    ocean_ls = md.mask.ocean_levelset
+
+    nverts = md.mesh.numberofvertices
+    nelems = md.mesh.numberofelements
+
+    # ------------------------------------------------------------------
+    # MODE = "ANY"
+    # ------------------------------------------------------------------
+
+    # In this mode, we look for any disconnected ice patches regardless of grounding.
+    # We identify connected components of ice vertices and remove those that are not the
+    # largest (main ice body) or that are smaller than min_size if specified.
+    if mode == "any":
+
+        print("Looking for isolated ice patches")
+
+        # Identify ice vertices
+        ice_vertices = np.where(ice_ls < 0)[0]
+
+        if ice_vertices.size == 0:
+            print("No ice found!")
+            return ice_ls.copy()
+
+        # Build adjacency graph
+        adjacency = [set() for _ in range(nverts)]
+
+        # For each element, add edges between its vertices in the adjacency graph
+        for tri in elements:
+            i, j, k = tri
+
+            adjacency[i].update((j, k))
+            adjacency[j].update((i, k))
+            adjacency[k].update((i, j))
+
+        # Restrict adjacency to ice vertices only for efficiency
+        ice_set = set(ice_vertices)
+
+        visited = np.zeros(nverts, dtype=bool)
+        components = []
+
+        # Find connected ice components
+        for start in ice_vertices:
+
+            if visited[start]:
+                continue
+
+            component = []
+            queue = deque([start])
+            visited[start] = True
+
+            while queue:
+
+                v = queue.popleft()
+                component.append(v)
+
+                for nbr in adjacency[v]:
+
+                    if (
+                        nbr in ice_set
+                        and not visited[nbr]
+                    ):
+                        visited[nbr] = True
+                        queue.append(nbr)
+
+            components.append(component)
+
+        if len(components) == 1:
+            print("No isolated ice patches found!")
+            return ice_ls.copy()
+
+        # Largest component = main ice body
+        largest = max(len(c) for c in components)
+
+        remove_vertices = []
+
+        # Remove components that are not the largest or smaller than min_size if specified
+        for component in components:
+
+            if len(component) == largest:
+                continue
+
+            if min_size is None:
+                remove_vertices.extend(component)
+            elif len(component) < min_size:
+                remove_vertices.extend(component)
+
+        remove_vertices = np.asarray(remove_vertices, dtype=int)
+
+        if remove_vertices.size == 0:
+            print(
+                f"No isolated ice patches smaller than "
+                f"{min_size} vertices found!"
+            )
+            return ice_ls.copy()
+
+        print(
+            f"REMOVING {remove_vertices.size} "
+            f"vertex{'es' if remove_vertices.size != 1 else ''} "
+            f"from isolated ice patches"
+        )
+
+        # Set removed ice vertices to +1 (non-ice)
+        new_ice_ls = ice_ls.copy()
+        new_ice_ls[remove_vertices] = 1
+
+        return new_ice_ls
+
+    # ------------------------------------------------------------------
+    # MODES = "FLOATING" OR "GROUNDED"
+    # ------------------------------------------------------------------
+
+    # In these modes, we look for isolated patches of either floating or grounded ice.
+    # We use a flood-fill algorithm starting from the "seed" elements
+    # (grounded for floating mode, floating for grounded mode) to mark connected ice.
+    # Any ice vertices that remain unmarked after the flood-fill are considered isolated and removed.
+    # If min_size is specified, we further check the size of each isolated patch before removing it.
+
+    # Initialize mask and element flags
+    mask = np.zeros(nverts, dtype=np.int8)
+    element_flag = np.zeros(nelems, dtype=np.int8)
+
+    isice = np.min(ice_ls[elements], axis=1) < 0
+    isgrounded = np.sum(ocean_ls[elements] > 0, axis=1) > 2
+    isfloating = isice & ~isgrounded
+
+    element_flag[~isice] = 1
+
+    if mode == "floating":
+
+        print("Looking for isolated floating ice patches (icebergs)")
+
+        seed_idx = np.where(isgrounded)[0]
+
+        label = "iceberg"
+
+        candidate_mask = (
+            (mask == 0)
+            & (ice_ls < 0)
+            & (ocean_ls <= 0)
+        )
+
+    else:
+
+        print("Looking for isolated grounded ice patches")
+
+        seed_idx = np.where(isfloating)[0]
+
+        label = "grounded ice island"
+
+        candidate_mask = (
+            (mask == 0)
+            & (ice_ls < 0)
+            & (ocean_ls > 0)
+        )
+
+    if seed_idx.size:
+        mask[elements[seed_idx].ravel()] = 1
+
+    mask[ice_ls >= 0] = 0
+
+    iteration = 1
+    more = True
+
+    while more:
+
+        print(f"   -- iteration {iteration}")
+
+        more = False
+
+        for elem in np.where(element_flag == 0)[0]:
+
+            verts = elements[elem]
+
+            if np.sum(mask[verts]) > 1:
+                element_flag[elem] = 1
+                mask[verts] = 1
+                more = True
+
+        iteration += 1
+
+    if mode == "floating":
+        candidates = (
+            (mask == 0)
+            & (ice_ls < 0)
+            & (ocean_ls <= 0)
+        )
+    else:
+        candidates = (
+            (mask == 0)
+            & (ice_ls < 0)
+            & (ocean_ls > 0)
+        )
+
+    candidate_vertices = np.where(candidates)[0]
+
+    if candidate_vertices.size == 0:
+        print(f"No isolated {label} found!")
+        return ice_ls.copy()
+
+    if min_size is None:
+
+        new_ice_ls = ice_ls.copy()
+        new_ice_ls[candidate_vertices] = 1
+
+        print(
+            f"REMOVING {candidate_vertices.size} "
+            f"vertex{'es' if candidate_vertices.size != 1 else ''} "
+            f"on {label}s"
+        )
+
+        return new_ice_ls
+
+    # Build adjacency graph
+    adjacency = [set() for _ in range(nverts)]
+
+    for tri in elements:
+        i, j, k = tri
+
+        adjacency[i].update((j, k))
+        adjacency[j].update((i, k))
+        adjacency[k].update((i, j))
+
+    candidate_set = set(candidate_vertices)
+
+    visited = np.zeros(nverts, dtype=bool)
+    remove_vertices = []
+
+    for start in candidate_vertices:
+
+        if visited[start]:
+            continue
+
+        component = []
+        queue = deque([start])
+        visited[start] = True
+
+        while queue:
+
+            v = queue.popleft()
+            component.append(v)
+
+            for nbr in adjacency[v]:
+
+                if (
+                    nbr in candidate_set
+                    and not visited[nbr]
+                ):
+                    visited[nbr] = True
+                    queue.append(nbr)
+
+        if len(component) < min_size:
+            remove_vertices.extend(component)
+
+    remove_vertices = np.asarray(remove_vertices, dtype=int)
+
+    if remove_vertices.size == 0:
+
+        print(
+            f"No isolated {label} smaller than "
+            f"{min_size} vertices found!"
+        )
+
+        return ice_ls.copy()
+
+    print(
+        f"REMOVING {remove_vertices.size} "
+        f"vertex{'es' if remove_vertices.size != 1 else ''} "
+        f"from isolated {label} patches "
+        f"smaller than {min_size} vertices"
+    )
+
+    # Set removed ice vertices to +1 (non-ice)
+    new_ice_ls = ice_ls.copy()
+    new_ice_ls[remove_vertices] = 1
+
+    return new_ice_ls

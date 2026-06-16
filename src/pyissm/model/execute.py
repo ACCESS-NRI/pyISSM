@@ -1505,8 +1505,11 @@ def load_results_from_cluster(md,
     if hostname.lower() == md.cluster.name.lower():
         
         ## Remove bin and toolkits files
-        os.remove(md.miscellaneous.name + '.bin')
-        os.remove(md.miscellaneous.name + '.toolkits')
+        try:
+            os.remove(md.miscellaneous.name + '.bin')
+            os.remove(md.miscellaneous.name + '.toolkits')
+        except FileNotFoundError:
+            pass
         
         ## If using dakota, remove dakota input file
         if md.qmu.isdakota and os.path.exists('qmu.in'):

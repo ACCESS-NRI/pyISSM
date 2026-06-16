@@ -65,6 +65,19 @@ Utilities and helper functions for interacting with the ISSM ``Model()`` object.
 
    pyissm.tools
 
+.. _inversion:
+
+Inversion
+-------------------
+Tools for performing inversions, including sensitivity analyses, on the ISSM ``Model()`` object.
+
+.. autosummary::
+   :toctree: api
+   :recursive:
+
+   pyissm.inversion
+
+
 .. _data:
 
 Data
