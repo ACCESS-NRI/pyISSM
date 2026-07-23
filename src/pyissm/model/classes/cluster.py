@@ -5,10 +5,33 @@ Cluster classes for ISSM.
 import os
 import yaml
 import subprocess
+import tarfile
 import numpy as np
 import warnings
 from pyissm.model.classes import class_utils, class_registry
 from pyissm import model, tools
+
+
+def _create_input_archive(dir_name, file_list):
+    """Archive staged input files while storing only their basenames."""
+
+    if not file_list:
+        raise ValueError('Cannot create a queue archive without input files.')
+
+    file_list = [os.path.abspath(path) for path in file_list]
+    run_directory = os.path.dirname(file_list[0])
+    for path in file_list:
+        if not os.path.isfile(path):
+            raise FileNotFoundError(f'Queue input file not found: {path}')
+        if os.path.dirname(path) != run_directory:
+            raise ValueError('All queue input files must share one staging directory.')
+
+    archive_path = os.path.join(os.path.dirname(run_directory), f'{dir_name}.tar.gz')
+    with tarfile.open(archive_path, 'w:gz') as archive:
+        for path in file_list:
+            archive.add(path, arcname = os.path.basename(path))
+
+    return archive_path
 
 ## ------------------------------------------------------
 ## cluster.generic
@@ -174,7 +197,8 @@ class generic(class_registry.manage_state):
                            is_gprof,
                            is_dakota,
                            is_ocean_coupling,
-                           executable = 'issm.exe'):
+                           executable = 'issm.exe',
+                           file_prefix = None):
         """
         Build a queue script for executing ISSM models on the cluster.
         
@@ -203,6 +227,9 @@ class generic(class_registry.manage_state):
             Flag to use ocean coupling executable.
         executable : :class:`str`, optional
             Name of the executable file to run. Default is 'issm.exe'.
+        file_prefix : :class:`str`, optional
+            Path prefix for the generated queue script and interactive log
+            files. Defaults to ``model_name`` for backwards compatibility.
 
         Raises
         ------
@@ -225,6 +252,9 @@ class generic(class_registry.manage_state):
         if not tools.wrappers.check_wrappers_installed():
             raise IOError('pyissm.model.classes.cluster.generic.build_queue_script: Python wrappers not installed. Unable to build queue script.')
 
+        if file_prefix is None:
+            file_prefix = model_name
+
         # DAKOTA EXECUTABLE
         if is_dakota:
             ## Check that ISSM has DAKOTA support and get version #
@@ -243,7 +273,7 @@ class generic(class_registry.manage_state):
         # BUILD SCRIPT
         ## Linux/Mac
         if not tools.config.is_pc():
-            fid = open(model_name + '.queue', 'w')
+            fid = open(file_prefix + '.queue', 'w')
             fid.write('#!/bin/bash\n')
 
             if not is_valgrind:
@@ -276,7 +306,7 @@ class generic(class_registry.manage_state):
         
         ## Windows
         else:
-            fid = open(model_name + '.bat', 'w')
+            fid = open(file_prefix + '.bat', 'w')
             fid.write('@echo off\n')
             if self.interactive:
                 fid.write('"{}/{}" {} "{}/{}" {} '.format(self.codepath, executable, solution, self.executionpath, dir_name, model_name))
@@ -286,9 +316,9 @@ class generic(class_registry.manage_state):
 
         ## In interactive mode, create a run file, and errlog and outlog file
         if self.interactive:
-            fid = open(model_name + '.errlog', 'w')
+            fid = open(file_prefix + '.errlog', 'w')
             fid.close()
-            fid = open(model_name + '.outlog', 'w')
+            fid = open(file_prefix + '.outlog', 'w')
             fid.close()
 
     def build_kriging_queue_script(self,
@@ -412,17 +442,17 @@ class generic(class_registry.manage_state):
         model.io.issm_scp_out : Function used for transferring files to cluster
         """
 
-        ## Compress files into one zip
-        compress_string = 'tar -zcf {}.tar.gz '.format(dir_name)
-
-        for file in file_list:
-            compress_string += ' {} '.format(file)
+        archive_files = list(file_list)
         if self.interactive:
-            compress_string += ' {}.errlog {}.outlog'.format(model_name, model_name)
-        subprocess.call(compress_string, shell = True)
+            run_directory = os.path.dirname(os.path.abspath(file_list[0]))
+            archive_files.extend([
+                os.path.join(run_directory, model_name + '.errlog'),
+                os.path.join(run_directory, model_name + '.outlog'),
+            ])
+        archive_path = _create_input_archive(dir_name, archive_files)
 
         ## Transfer to cluster
-        model.io.issm_scp_out(self.name, self.executionpath, self.login, self.port, [dir_name + '.tar.gz'])
+        model.io.issm_scp_out(self.name, self.executionpath, self.login, self.port, [archive_path])
         
     def launch_queue_job(self,
                          model_name,
@@ -477,10 +507,19 @@ class generic(class_registry.manage_state):
             >>> cluster.launch_queue_job('simulation_01', 'run_dir', batch=True)
         """
 
-        # Build launch command        
+        is_local = self.name.lower() == tools.config.get_hostname().lower()
+
+        # A local run is already staged in executionpath and does not need an
+        # archive/extract round-trip.
+        if is_local and restart is None:
+            if batch:
+                return
+            launch_command = 'cd {0}/{1} && chmod 755 {2}.queue && ./{2}.queue'.format(
+                self.executionpath, dir_name, model_name)
+
         ## If not restarting, move to execution path and execute model
-        if restart is not None:
-            launch_command = 'cd {} && cd {} chmod 755 {}.queue && ./{}.queue'.format(self.executionpath, dir_name, model_name, model_name)
+        elif restart is not None:
+            launch_command = 'cd {} && cd {} && chmod 755 {}.queue && ./{}.queue'.format(self.executionpath, dir_name, model_name, model_name)
 
         ## If not restarting, remove existing directory, recreate it, move tar.gz file and uncompress
         else:
@@ -733,7 +772,8 @@ class gadi(class_registry.manage_state):
                            is_gprof,
                            is_dakota,
                            is_ocean_coupling,
-                           executable = 'issm.exe'):
+                           executable = 'issm.exe',
+                           file_prefix = None):
         """
         Generate a PBS queue submission script for running ISSM models
         on the Gadi cluster. The script includes resource specifications, module
@@ -775,6 +815,9 @@ class gadi(class_registry.manage_state):
             Writes a queue script file named '{model_name}.queue' to the current directory.
         """
         
+        if file_prefix is None:
+            file_prefix = model_name
+
         # Require wrappers when executing a model
         if not tools.wrappers.check_wrappers_installed():
             raise IOError('pyissm.model.classes.cluster.gadi.build_queue_script: Python wrappers not installed. Unable to build queue script.')
@@ -793,7 +836,7 @@ class gadi(class_registry.manage_state):
             raise NotImplementedError('pyissm.model.classes.cluster.gadi.build_queue_script: gprof support not implemented for gadi cluster yet.')
         
         # Write queue script
-        fid = open(model_name + '.queue', 'w')
+        fid = open(file_prefix + '.queue', 'w')
         fid.write('#!/bin/bash\n')
         fid.write(f'#PBS -P {self.project}\n')
         fid.write(f'#PBS -q {self.queue}\n')
@@ -847,14 +890,9 @@ class gadi(class_registry.manage_state):
         and port).
         """
 
-        # Compress inputs into a tarball
-        compressstring = f'tar -zcf {dir_name}.tar.gz'
-        for f in file_list:
-            compressstring += f' {f}'
-
-        subprocess.call(compressstring, shell = True)
+        archive_path = _create_input_archive(dir_name, file_list)
         directory = self.executionpath
-        model.io.issm_scp_out(self.name, directory, self.login, self.port, [dir_name + '.tar.gz'])
+        model.io.issm_scp_out(self.name, directory, self.login, self.port, [archive_path])
 
     # Launch job on cluster
     def launch_queue_job(self,
