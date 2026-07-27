@@ -52,8 +52,8 @@ def xr_to_mesh(data,
         If True, use ISSM wrapper functions for interpolation. If False, use scipy.
         Default is True.
     crop_to_mesh: bool, optional
-        If True, the xarraxy Dataset is cropped to the extent of the mesh prior to
-        interpolation. Default is True.
+        If True, the xarray Dataset is cropped to the extent of the mesh prior to
+        interpolation. Only applied when the dataset has 1D coordinates. Default is True.
     crop_buffer: float or int, optional
         Buffer distance (m) applied to mesh bounding box to prevent edge effects.
         Default is 5000 m
@@ -89,7 +89,10 @@ def xr_to_mesh(data,
         raise TypeError("pyissm.data.interp.xr_to_mesh: data must be a file path or an xarray Dataset")
 
     # Crop data to mesh extent
-    if crop_to_mesh:
+    # NOTE: label-based cropping requires 1D dimension coordinates. Datasets
+    # carrying 2D (broadcast) coordinates are left uncropped and are reduced to
+    # 1D further below.
+    if crop_to_mesh and data[x_var].ndim == 1 and data[y_var].ndim == 1:
 
         ## Compute mesh bounding box, including buffer distance
         x_min = np.min(mesh_x) - crop_buffer
