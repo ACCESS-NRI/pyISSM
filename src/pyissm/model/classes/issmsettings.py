@@ -1,5 +1,8 @@
+import os
+
 from pyissm.model.classes import class_utils, class_registry
 from pyissm.model import execute
+from pyissm.tools import config
 
 @class_registry.register_class
 class issmsettings(class_registry.manage_state):
@@ -34,6 +37,10 @@ class issmsettings(class_registry.manage_state):
         Maximum number of minutes to wait for batch results, or return 0 (default is 2^31-1).
     solver_residue_threshold : :class:`float`, default=1e-6
         Throw an error if solver residue exceeds this value (NaN to deactivate).
+    stagingpath : :class:`str`
+        Local directory where run inputs are staged before local execution or
+        upload to a remote cluster. Defaults to ``$ISSM_DIR/execution`` when
+        ``ISSM_DIR`` is configured.
 
     Examples
     --------
@@ -55,6 +62,8 @@ class issmsettings(class_registry.manage_state):
         self.checkpoint_frequency = 0
         self.waitonlock = pow(2, 31) - 1
         self.solver_residue_threshold = 1e-6
+        issm_dir = config.get_issm_dir()
+        self.stagingpath = os.path.join(issm_dir, 'execution') if issm_dir else ''
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -70,6 +79,7 @@ class issmsettings(class_registry.manage_state):
         s += '{}\n'.format(class_utils._field_display(self, 'sb_coupling_frequency', 'frequency at which StressBalance solver is coupled (default 1)'))
         s += '{}\n'.format(class_utils._field_display(self, 'checkpoint_frequency', 'frequency at which the runs are being recorded, allowing for a restart'))
         s += '{}\n'.format(class_utils._field_display(self, 'waitonlock', 'maximum number of minutes to wait for batch results, or return 0'))
+        s += '{}\n'.format(class_utils._field_display(self, 'stagingpath', 'local directory where run input files are staged'))
         s += '{}\n'.format(class_utils._field_display(self, 'solver_residue_threshold', 'throw an error if solver residue exceeds this value (NaN to deactivate)'))
         return s
 
@@ -106,6 +116,11 @@ class issmsettings(class_registry.manage_state):
         class_utils._check_field(md, fieldname = 'settings.checkpoint_frequency', scalar = True, ge = 0)
         class_utils._check_field(md, fieldname = 'settings.waitonlock', scalar = True)
         class_utils._check_field(md, fieldname = 'settings.solver_residue_threshold', scalar = True, gt = 0)
+
+        if not isinstance(self.stagingpath, str):
+            md.check_message('settings.stagingpath must be a string')
+        elif not self.stagingpath or not os.path.isdir(self.stagingpath):
+            md.check_message('settings.stagingpath does not exist')
 
         return md
 

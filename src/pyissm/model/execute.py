@@ -10,11 +10,12 @@ import time
 import subprocess
 import warnings
 import collections
+import shutil
 
 from pyissm import model, tools
 
 
-def marshall(md):
+def marshall(md, filename = None):
     """
     Marshall the model data for execution.
 
@@ -23,6 +24,9 @@ def marshall(md):
     md : object
         The model data object to be marshalled. Must contain miscellaneous.name
         attribute and model classes with marshall_class methods.
+    filename : str or path-like, optional
+        Destination binary filename. Defaults to
+        ``<md.miscellaneous.name>.bin`` in the current directory.
 
     Returns
     -------
@@ -44,15 +48,18 @@ def marshall(md):
     end of the file to ensure data integrity.
     """
 
+    if filename is None:
+        filename = md.miscellaneous.name + '.bin'
+
     # If verbose solution is enabled, print the name of the model being marshalled
     if md.verbose.solution:
-        print(f'Marshalling for {md.miscellaneous.name}.bin')
+        print(f'Marshalling for {filename}')
 
     # Open file for binary writing
     try:
-        fid = open(md.miscellaneous.name + '.bin', 'wb')
+        fid = open(filename, 'wb')
     except IOError as e:
-        raise IOError(f"Could not open file {md.miscellaneous.name}.bin for writing: {e}")
+        raise IOError(f"Could not open file {filename} for writing: {e}")
         
     # Iterate over all model classes and marshall them
     for model_class in md.model_class_names():
@@ -90,7 +97,38 @@ def marshall(md):
         fid.close()
 
     except IOError as e:
-        print(f'marshall error message: could not close \'{md.miscellaneous.name}.bin\' file for binary writing due to: {e}')
+        print(f'marshall error message: could not close \'{filename}\' file for binary writing due to: {e}')
+
+
+def _prepare_staging_directory(md):
+    """Create and return the local directory used to stage a model run.
+
+    Local runs are staged directly in ``md.cluster.executionpath``. Remote
+    runs use ``md.settings.stagingpath`` before their inputs are uploaded to
+    the cluster. This matches the execution layout introduced in ISSM 2026.3.
+    """
+
+    is_local = md.cluster.name.lower() == tools.config.get_hostname().lower()
+    staging_path = md.cluster.executionpath if is_local else md.settings.stagingpath
+
+    if not staging_path or not os.path.isdir(staging_path):
+        raise RuntimeError(f'Could not find staging directory {staging_path!r}')
+
+    if len(os.listdir(staging_path)) > 200:
+        warnings.warn(
+            f'{staging_path} has more than 200 entries. '
+            'Consider cleaning up the execution directory.',
+            stacklevel = 2,
+        )
+
+    run_directory = os.path.join(staging_path, md.private.runtimename)
+    if os.path.isdir(run_directory):
+        shutil.rmtree(run_directory)
+    elif os.path.exists(run_directory):
+        os.remove(run_directory)
+    os.mkdir(run_directory)
+
+    return run_directory
 
 
 def _write_model_field(fid, 
@@ -1020,7 +1058,7 @@ def solve(md,
         md.private.runtimename = restart
 
     ## If runtime_name is true, generate a unique runtime name
-    if runtime_name:
+    elif runtime_name:
         now = datetime.datetime.now()
         md.private.runtimename = (
             f"{md.miscellaneous.name}-{now.month:02d}-{now.day:02d}-"
@@ -1036,59 +1074,64 @@ def solve(md,
     if md.settings.io_gather == 0:
         raise NotImplementedError('pyissm.execute.solve: Reading model results when using md.settings.io_gather = 0 is not yet supported.')
 
-    ## If running QMU analysis, some preprocessing of Dakota files is needed
-    if md.qmu.isdakota:
-        if md.verbose.solution:
-            print('Preprocessing dakota files...')
-        preprocess_qmu(md)
-
     ## If load_only is true, skip the actual solve
     if load_only:
         if md.verbose.solution:
             print('Loading results from cluster...')
         md = load_results_from_cluster(md, no_log = no_log)
         return md
-    
-    # Write all input files (.bin, .toolkits, build queue script)
-    ## Extract model_name
+
+    # Extract model_name
     model_name = md.miscellaneous.name
 
-    ## Marshall model (write .bin file)
-    marshall(md)
-
-    ## Write toolkits file
-    md.toolkits.write_toolkits_file(model_name + '.toolkits')
-
-    ## Build queue script (and associated logs, if necessary)
-    md.cluster.build_queue_script(
-        dir_name = md.private.runtimename,
-        model_name = model_name,
-        solution = md.private.solution,
-        io_gather = md.settings.io_gather,
-        is_valgrind = md.debug.valgrind,
-        is_gprof = md.debug.gprof,
-        is_dakota = md.qmu.isdakota,
-        is_ocean_coupling = md.transient.isoceancoupling
-    )
-    
-    # Upload all required files (if no restart is provided)
+    # A restart reuses files in an existing execution directory. Fresh runs
+    # stage all inputs in a run-specific local directory before upload.
     if restart is None:
+        run_directory = _prepare_staging_directory(md)
+        input_basename = os.path.join(run_directory, model_name)
+
+        ## If running QMU analysis, some preprocessing of Dakota files is needed
+        if md.qmu.isdakota:
+            if md.verbose.solution:
+                print('Preprocessing dakota files...')
+            preprocess_qmu(md)
+
+        ## Marshall model (write .bin file)
+        marshall(md, input_basename + '.bin')
+
+        ## Write toolkits file
+        md.toolkits.write_toolkits_file(input_basename + '.toolkits')
+
+        ## Build queue script (and associated logs, if necessary)
+        md.cluster.build_queue_script(
+            dir_name = md.private.runtimename,
+            model_name = model_name,
+            solution = md.private.solution,
+            io_gather = md.settings.io_gather,
+            is_valgrind = md.debug.valgrind,
+            is_gprof = md.debug.gprof,
+            is_dakota = md.qmu.isdakota,
+            is_ocean_coupling = md.transient.isoceancoupling,
+            file_prefix = input_basename,
+        )
+
         ## Create list of files to upload
-        file_list = [model_name + ext for ext in ['.bin', '.toolkits']]
+        file_list = [input_basename + ext for ext in ['.bin', '.toolkits']]
     
         ## Append appropriate queue script to file_list
         if tools.config.is_pc():
-            file_list.append(model_name + '.bat')
+            file_list.append(input_basename + '.bat')
         else:
-            file_list.append(model_name + '.queue')
+            file_list.append(input_basename + '.queue')
 
         ## If using dakota, append dakota input file to file_list
         if md.qmu.isdakota:
-            file_list.append('qmu.in')
+            file_list.append(os.path.join(run_directory, 'qmu.in'))
 
-        ## Upload all files to cluster
-        print(f'Transferring {md.private.runtimename}.tar.gz to cluster {md.cluster.name}...')
-        md.cluster.upload_queue_job(model_name, md.private.runtimename, file_list)
+        ## Upload all files only when the execution host is remote.
+        if md.cluster.name.lower() != tools.config.get_hostname().lower():
+            print(f'Transferring {md.private.runtimename}.tar.gz to cluster {md.cluster.name}...')
+            md.cluster.upload_queue_job(model_name, md.private.runtimename, file_list)
 
     # Launch job
     print(f'Launching job {model_name} on cluster {md.cluster.name}...')
