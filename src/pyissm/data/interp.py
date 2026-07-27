@@ -43,7 +43,9 @@ def xr_to_mesh(data,
     y_var : str, optional
         Name of the y-coordinate variable in the dataset. Default is 'y'.
     default_value : float, optional
-        Value to assign to points outside the grid domain. Default is np.nan.
+        Value to assign to points outside the grid domain. When ``fill_nan`` is True this
+        acts as a last resort, applied only to nodes the fill pass could not reach.
+        Default is np.nan.
     interpolation_type : str, optional
         Type of interpolation method. For ISSM wrapper: 'bilinear', 'nearest', etc.
         For scipy: 'linear', 'nearest', 'slinear', 'cubic', 'quintic', 'pchip'.
@@ -58,10 +60,12 @@ def xr_to_mesh(data,
         Buffer distance (m) applied to mesh bounding box to prevent edge effects.
         Default is 5000 m
     fill_nan: bool, optional
-        If True, any remaining NaN values (after the initial interpolation) are filled
-        using the ``fill_nan_interpolation_type`` interpolation method. Default is False.
+        If True, mesh nodes left unresolved by the initial interpolation are filled using the
+        ``fill_nan_interpolation_type`` interpolation method. A node is unresolved if it falls
+        outside the source domain, or if the source data is NaN there. ``default_value`` is then
+        applied only to nodes the fill pass could not reach. Default is False.
     fill_nan_interpolation_type: str, optional
-        Interpolation type used to fill NaN vaules when ``fill_nan`` is True. Default
+        Interpolation type used to fill unresolved nodes when ``fill_nan`` is True. Default
         is 'nearest'.
     
     Returns
@@ -174,6 +178,13 @@ def xr_to_mesh(data,
         y = y[::-1]
         var_data = var_data[::-1, :]
 
+    # When a fallback fill is requested, the primary interpolation must leave
+    # unresolved nodes as NaN so that they can be identified afterwards. Filling
+    # them with default_value up front would make them indistinguishable from
+    # genuinely interpolated values. default_value is applied at the end instead,
+    # to whatever the fallback pass could not reach.
+    primary_default_value = np.nan if fill_nan else default_value
+
     # If use_wrapper is True, use ISSM wrappers for interpolation
     if issm_wrapper:
         
@@ -188,7 +199,7 @@ def xr_to_mesh(data,
             var_data,
             mesh_x,
             mesh_y,
-            default_value,
+            primary_default_value,
             interpolation_type
         )
     
@@ -204,7 +215,7 @@ def xr_to_mesh(data,
                 var_data,
                 method = interpolation_type,
                 bounds_error = False,
-                fill_value = default_value,
+                fill_value = primary_default_value,
             )
 
         # scipy expects points as (y, x)
@@ -213,24 +224,35 @@ def xr_to_mesh(data,
         # Extract variable on mesh
         var_on_mesh = interp(mesh_points)
 
-    # If fill_nan is True, fill NaN values
+    # If fill_nan is True, fill unresolved nodes from their nearest resolved
+    # neighbour rather than leaving them at a constant. Nodes are unresolved
+    # either because they fall outside the source domain, or because the source
+    # data is NaN there (e.g. a product that is undefined over open ocean).
     if fill_nan:
 
-        # Identiy points that are non-nan
+        # Identify points that are non-nan
         valid_mask = np.isfinite(var_on_mesh)
 
-        # Fill nan values using fill_nan_interpolation_type interpolation
-        filled_points = points_to_mesh(
-            data_x = mesh_x[valid_mask],
-            data_y = mesh_y[valid_mask],
-            data_values = var_on_mesh[valid_mask],
-            mesh_x = mesh_x,
-            mesh_y = mesh_y,
-            interpolation_type = fill_nan_interpolation_type
-        )
+        # Nothing to do if every node was resolved by the primary interpolation
+        if not np.all(valid_mask):
 
-        # Replace nan values
-        var_on_mesh[~valid_mask] = filled_points[~valid_mask]
+            # Fill nan values using fill_nan_interpolation_type interpolation
+            filled_points = points_to_mesh(
+                data_x = mesh_x[valid_mask],
+                data_y = mesh_y[valid_mask],
+                data_values = var_on_mesh[valid_mask],
+                mesh_x = mesh_x,
+                mesh_y = mesh_y,
+                interpolation_type = fill_nan_interpolation_type
+            )
+
+            # Replace nan values
+            var_on_mesh[~valid_mask] = filled_points[~valid_mask]
+
+            # Apply default_value to any node the fallback pass could not reach
+            unfilled_mask = ~np.isfinite(var_on_mesh)
+            if np.any(unfilled_mask):
+                var_on_mesh[unfilled_mask] = default_value
 
     return var_on_mesh
 
@@ -240,7 +262,9 @@ def points_to_mesh(data_x,
                    mesh_x,
                    mesh_y,
                    default_value = np.nan,
-                   interpolation_type = 'linear'):
+                   interpolation_type = 'linear',
+                   fill_nan = False,
+                   fill_nan_interpolation_type = 'nearest'):
     """
     Interpolate scattered points onto mesh node coordinates using scipy.
 
@@ -261,12 +285,19 @@ def points_to_mesh(data_x,
     interpolation_type : str, optional
         Interpolation method passed to `scipy.interpolate.griddata`. Supported options: 'linear', 'nearest', 'cubic'.
         Default is 'linear'.
+    fill_nan : bool, optional
+        If True, mesh nodes left unresolved by the initial interpolation (i.e. those outside the convex hull of the
+        input data) are filled from the input data using the ``fill_nan_interpolation_type`` method, instead of being
+        assigned ``default_value``. ``default_value`` is then applied only to nodes that remain unresolved.
+        Default is False.
+    fill_nan_interpolation_type : str, optional
+        Interpolation type used to fill unresolved nodes when ``fill_nan`` is True. Default is 'nearest'.
 
     Returns
     -------
     ndarray
         1D array of interpolated values at the mesh nodes (shape equals `mesh_x`/`mesh_y`).
-        Points outside the convex hull of the input data are assigned `default_value`.
+        Points outside the convex hull of the input data are assigned `default_value`, unless `fill_nan` is True.
 
     Raises
     ------
@@ -280,6 +311,9 @@ def points_to_mesh(data_x,
     if interpolation_type not in scipy_method_list:
         raise ValueError(f"pyissm.data.interp.points_to_mesh: interpolation_type '{interpolation_type}' is not supported by scipy. Choose from {scipy_method_list}.")
     
+    if fill_nan and fill_nan_interpolation_type not in scipy_method_list:
+        raise ValueError(f"pyissm.data.interp.points_to_mesh: fill_nan_interpolation_type '{fill_nan_interpolation_type}' is not supported by scipy. Choose from {scipy_method_list}.")
+
     # Validate input shapes
     if data_x.shape != data_y.shape or data_x.shape != data_values.shape:
         raise ValueError("pyissm.data.interp.points_to_mesh: data_x, data_y, and data_values must have the same shape.")
@@ -308,12 +342,36 @@ def points_to_mesh(data_x,
     data_points = np.column_stack((data_y, data_x))
     interp_points = np.column_stack((mesh_y, mesh_x))
     
+    # As above, unresolved nodes must stay NaN when a fallback fill is requested
+    # so they remain distinguishable from interpolated values.
+    primary_default_value = np.nan if fill_nan else default_value
+
     # Perform interpolation    
     data_on_mesh = griddata(data_points,
                             data_values,
                             interp_points,
                             method = interpolation_type,
-                            fill_value = default_value)
+                            fill_value = primary_default_value)
+
+    # Fill nodes left unresolved by the initial interpolation (those outside the
+    # convex hull of the input data) from the input data itself, rather than
+    # assigning them a constant.
+    if fill_nan:
+
+        valid_mask = np.isfinite(data_on_mesh)
+
+        # Nothing to do if every node was resolved by the initial interpolation
+        if not np.all(valid_mask):
+
+            # Only the unresolved nodes need re-interpolating
+            data_on_mesh[~valid_mask] = griddata(data_points,
+                                                 data_values,
+                                                 interp_points[~valid_mask],
+                                                 method = fill_nan_interpolation_type)
+
+            # Apply default_value to any node the fallback pass could not reach
+            unfilled_mask = ~np.isfinite(data_on_mesh)
+            if np.any(unfilled_mask):
+                data_on_mesh[unfilled_mask] = default_value
 
     return data_on_mesh
-    
