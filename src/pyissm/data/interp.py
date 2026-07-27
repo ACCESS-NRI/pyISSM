@@ -375,3 +375,176 @@ def points_to_mesh(data_x,
                 data_on_mesh[unfilled_mask] = default_value
 
     return data_on_mesh
+
+def mesh_to_xr(md,
+               model_field,
+               spacing = None,
+               x = None,
+               y = None,
+               interpolation_type = 'linear',
+               domain_mask = None,
+               fill_value = np.nan,
+               time = None,
+               crs = None,
+               name = None,
+               attrs = None):
+    """
+    Interpolate a model field from the mesh onto a regular grid, as an xarray DataArray.
+
+    This is the counterpart to :func:`xr_to_mesh`. The interpolation itself is performed by
+    :func:`pyissm.model.mesh.grid_model_field`, which masks the result to the model domain rather
+    than to the convex hull of the mesh nodes. This function adds the grid construction and the
+    coordinate, time and CRS metadata needed to use the result as data (e.g. to write to netCDF,
+    or to compare against gridded observations).
+
+    Parameters
+    ----------
+    md : :class:`pyissm.model.Model`
+        Model object providing the mesh that ``model_field`` is defined on.
+    model_field : ndarray
+        Field to interpolate. Either ``(npoints,)`` for a static field or ``(nt, npoints)`` for a
+        time-varying one, where ``npoints`` matches the number of mesh vertices or elements.
+    spacing : float, optional
+        Grid spacing, in mesh coordinate units. The grid extent is taken from the mesh bounding box.
+        Ignored if both ``x`` and ``y`` are given; one of ``spacing`` or ``x``/``y`` is required.
+    x : ndarray, optional
+        1D array of x-coordinates defining the output grid. Must be given together with ``y``.
+    y : ndarray, optional
+        1D array of y-coordinates defining the output grid. Must be given together with ``x``.
+    interpolation_type : str, optional
+        Interpolation method passed to `scipy.interpolate.griddata`. Supported options: 'linear',
+        'nearest', 'cubic'. Default is 'linear'.
+    domain_mask : ndarray of bool, optional
+        Mask of valid grid cells, shaped ``(len(y), len(x))``. If not given, a mask is generated
+        from the model mesh. Cells where the mask is False are set to ``fill_value``.
+    fill_value : float, optional
+        Value assigned to grid cells outside the model domain. Default is np.nan.
+    time : array_like, optional
+        Values for the time coordinate of a time-varying field. Defaults to a simple integer index.
+        Ignored for static fields.
+    crs : int or str or pyproj.CRS, optional
+        Coordinate reference system of the mesh (e.g. 3031 for Antarctic Polar Stereographic, or
+        'EPSG:3413' for Greenland). If given, it is attached as a CF-style ``spatial_ref`` scalar
+        coordinate. The mesh itself carries no projection information, so no CRS is assumed when
+        this is not given.
+    name : str, optional
+        Name of the returned DataArray.
+    attrs : dict, optional
+        Additional attributes (e.g. ``units``, ``long_name``) to attach to the returned DataArray.
+
+    Returns
+    -------
+    xr.DataArray
+        Gridded field with dimensions ``(y, x)`` for a static field, or ``(time, y, x)`` for a
+        time-varying one.
+
+    Raises
+    ------
+    ValueError
+        If neither ``spacing`` nor both ``x`` and ``y`` are given, if ``x``/``y`` are not 1D, or if
+        ``model_field`` is not defined on mesh vertices or elements.
+
+    Examples
+    --------
+    .. code-block:: python
+
+        >>> # Static field on a 5 km grid, tagged as Antarctic Polar Stereographic
+        >>> thickness = pyissm.data.interp.mesh_to_xr(md, md.geometry.thickness,
+        ...                                           spacing = 5000, crs = 3031,
+        ...                                           name = 'thickness',
+        ...                                           attrs = {'units': 'm'})
+        >>> thickness.to_netcdf('thickness.nc')
+
+        >>> # Time-varying field, onto a grid the caller defines
+        >>> vel = pyissm.data.interp.mesh_to_xr(md, vel_over_time,
+        ...                                     x = np.arange(-3e6, 3e6, 10000),
+        ...                                     y = np.arange(-3e6, 3e6, 10000),
+        ...                                     time = solution_times)
+
+    See Also
+    --------
+    xr_to_mesh : Interpolate gridded data onto mesh nodes (the reverse operation).
+    pyissm.model.mesh.grid_model_field : Underlying mesh-to-grid interpolation.
+    """
+
+    # Imported here rather than at module level: pyissm.data is initialised before pyissm.model,
+    # so a module-level import of pyissm.model would be circular.
+    from pyissm.model import mesh as model_mesh
+
+    model_field = np.asarray(model_field)
+
+    ## Build the output grid
+    ## -------------------------------------
+    if x is not None and y is not None:
+        x = np.asarray(x, dtype = np.float64)
+        y = np.asarray(y, dtype = np.float64)
+
+        if x.ndim != 1 or y.ndim != 1:
+            raise ValueError('pyissm.data.interp.mesh_to_xr: x and y must be 1D arrays')
+
+    elif spacing is not None:
+        # Derive the grid extent from the mesh bounding box. np.arange can stop just short of the
+        # maximum, so the stop is nudged by half a cell to keep the far edge of the mesh covered.
+        x = np.arange(np.min(md.mesh.x), np.max(md.mesh.x) + spacing / 2, spacing)
+        y = np.arange(np.min(md.mesh.y), np.max(md.mesh.y) + spacing / 2, spacing)
+
+    else:
+        raise ValueError('pyissm.data.interp.mesh_to_xr: either spacing, or both x and y, must be provided')
+
+    grid_x, grid_y = np.meshgrid(x, y)
+
+    ## Interpolate mesh -> grid
+    ## -------------------------------------
+    gridded_field = model_mesh.grid_model_field(md,
+                                                model_field,
+                                                grid_x,
+                                                grid_y,
+                                                method = interpolation_type,
+                                                domain_mask = domain_mask,
+                                                fill_value = fill_value)
+
+    ## Assemble the DataArray
+    ## -------------------------------------
+    # grid_model_field squeezes its output, which would also drop a length-1 spatial axis, so the
+    # expected shape is restored explicitly here.
+    is_static = (model_field.ndim == 1)
+
+    if is_static:
+        gridded_field = np.reshape(gridded_field, (y.size, x.size))
+        dims = ('y', 'x')
+        coords = {'y': y, 'x': x}
+    else:
+        nt = model_field.shape[0]
+        gridded_field = np.reshape(gridded_field, (nt, y.size, x.size))
+        dims = ('time', 'y', 'x')
+        coords = {'time': np.arange(nt) if time is None else np.asarray(time),
+                  'y': y,
+                  'x': x}
+
+    data_array = xr.DataArray(gridded_field,
+                              dims = dims,
+                              coords = coords,
+                              name = name,
+                              attrs = dict(attrs) if attrs else {})
+
+    ## Attach the CRS, if one was given
+    ## -------------------------------------
+    # Follows the CF grid mapping convention: a scalar coordinate holding the CRS definition, which
+    # the data variable points at via a 'grid_mapping' attribute. This is what rioxarray, GDAL and
+    # QGIS look for.
+    if crs is not None:
+        try:
+            from pyproj import CRS
+
+            crs_attrs = CRS.from_user_input(crs).to_cf()
+
+        except ImportError:
+            # pyproj is not a hard dependency of pyissm, so fall back to recording the CRS verbatim
+            crs_attrs = {'crs_wkt': str(crs)}
+
+        data_array = data_array.assign_coords(spatial_ref = 0)
+        data_array.coords['spatial_ref'].attrs = crs_attrs
+        data_array.attrs['grid_mapping'] = 'spatial_ref'
+
+    return data_array
+
