@@ -35,6 +35,9 @@ class default(class_registry.manage_state):
         Optional perturbation in basal melting rate under floating ice (positive if melting) [m/yr].
     geothermalflux : :class:`float`, default=np.nan
         Geothermal heat flux [W/m^2].
+    requested_outputs : :class:`list`, default=['default']
+        Additional outputs requested. 'default' expands to the grounded and floating ice melting
+        rates, which are collected by the transient class and passed to the solver.
 
     Examples
     --------
@@ -52,6 +55,8 @@ class default(class_registry.manage_state):
         self.perturbation_melting_rate = np.nan
         self.geothermalflux = np.nan
 
+        self.requested_outputs = ['default']
+
         # Inherit matching fields from provided class
         super().__init__(other)
 
@@ -63,6 +68,7 @@ class default(class_registry.manage_state):
         s += '{}\n'.format(class_utils._field_display(self, 'floatingice_melting_rate', 'basal melting rate (positive if melting) [m/yr]'))
         s += '{}\n'.format(class_utils._field_display(self, 'perturbation_melting_rate', '(optional) perturbation in basal melting rate under floating ice [m/yr]'))
         s += '{}\n'.format(class_utils._field_display(self, 'geothermalflux', 'geothermal heat flux [W/m^2]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -117,6 +123,7 @@ class default(class_registry.manage_state):
             class_utils._check_field(md, fieldname = "basalforcings.floatingice_melting_rate", timeseries = True, allow_nan = False, allow_inf = False)
             class_utils._check_field(md, fieldname = "basalforcings.geothermalflux", timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
             
+        class_utils._check_field(md, fieldname = 'basalforcings.requested_outputs', string_list = True)
         return md
     
     # Initialise empty fields of correct dimensions
@@ -145,6 +152,53 @@ class default(class_registry.manage_state):
             warnings.warn('pyissm.model.classes.basalforcings.default: no floatingice_melting_rate specified -- values set as 0')
 
         return self
+
+    # Process requested outputs
+    def _process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Unlike the surface mass balance classes, these outputs are not marshalled to a
+        `md.basalforcings.requested_outputs` field: ISSM has no basal forcings analysis to consume
+        one. They are collected by :meth:`pyissm.model.classes.transient._process_outputs` instead,
+        and reach the solver through `md.transient.requested_outputs`.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['BasalforcingsFloatingiceMeltingRate', 'BasalforcingsGroundediceMeltingRate']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
 
     # Marshall method for saving the basalforcings.default parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -217,6 +271,9 @@ class pico(class_registry.manage_state):
         Geothermal heat flux [W/m^2].
     groundedice_melting_rate : :class:`numpy.ndarray`, default=np.nan
         Basal melting rate for grounded ice (positive if melting) [m/yr].
+    requested_outputs : :class:`list`, default=['default']
+        Additional outputs requested. 'default' expands to the grounded and floating ice melting
+        rates, which are collected by the transient class and passed to the solver.
 
     Examples
     --------
@@ -241,6 +298,8 @@ class pico(class_registry.manage_state):
         self.geothermalflux = np.nan
         self.groundedice_melting_rate = np.nan
 
+        self.requested_outputs = ['default']
+
         # Inherit matching fields from provided class
         super().__init__(other)
 
@@ -259,6 +318,7 @@ class pico(class_registry.manage_state):
         s += '{}\n'.format(class_utils._field_display(self,'geothermalflux','geothermal heat flux [W/m^2]'))
         s += '{}\n'.format(class_utils._field_display(self,'groundedice_melting_rate','basal melting rate (positive if melting) [m/yr]'))
 
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -315,6 +375,7 @@ class pico(class_registry.manage_state):
         if not np.all(np.isnan(np.atleast_1d(self.groundedice_melting_rate))):
             class_utils._check_field(md, fieldname = "basalforcings.groundedice_melting_rate", timeseries = True, allow_nan = True, allow_inf = False)
     
+        class_utils._check_field(md, fieldname = 'basalforcings.requested_outputs', string_list = True)
         return md
     
     # Initialise empty fields of correct dimensions
@@ -351,6 +412,53 @@ class pico(class_registry.manage_state):
             warnings.warn('pyissm.parm.basalforcings.pico: no basalforcings.groundedice_melting_rate specified -- values set as zero.')
 
         return self
+
+    # Process requested outputs
+    def _process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Unlike the surface mass balance classes, these outputs are not marshalled to a
+        `md.basalforcings.requested_outputs` field: ISSM has no basal forcings analysis to consume
+        one. They are collected by :meth:`pyissm.model.classes.transient._process_outputs` instead,
+        and reach the solver through `md.transient.requested_outputs`.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['BasalforcingsFloatingiceMeltingRate', 'BasalforcingsGroundediceMeltingRate']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
 
     # Marshall method for saving the basalforcings.pico parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -429,6 +537,9 @@ class linear(class_registry.manage_state):
         Perturbation applied to computed melting rate (positive if melting) [m/yr].
     geothermalflux : :class:`float`, default=np.nan
         Geothermal heat flux [W/m^2].
+    requested_outputs : :class:`list`, default=['default']
+        Additional outputs requested. 'default' expands to the grounded and floating ice melting
+        rates, which are collected by the transient class and passed to the solver.
 
     Examples
     --------
@@ -451,6 +562,8 @@ class linear(class_registry.manage_state):
         self.perturbation_melting_rate = np.nan
         self.geothermalflux = np.nan
 
+        self.requested_outputs = ['default']
+
         # Inherit matching fields from provided class
         super().__init__(other)
 
@@ -465,6 +578,7 @@ class linear(class_registry.manage_state):
         s += '{}\n'.format(class_utils._field_display(self, "groundedice_melting_rate", "basal melting rate (positive if melting) [m/yr]"))
         s += '{}\n'.format(class_utils._field_display(self, "perturbation_melting_rate", "perturbation applied to computed melting rate (positive if melting) [m/yr]"))
         s += '{}\n'.format(class_utils._field_display(self, "geothermalflux", "geothermal heat flux [W/m^2]"))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -525,6 +639,7 @@ class linear(class_registry.manage_state):
             class_utils._check_field(md, fieldname = "basalforcings.upperwater_elevation", singletimeseries = True, le = 0)
             class_utils._check_field(md, fieldname = "basalforcings.geothermalflux", timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
 
+        class_utils._check_field(md, fieldname = 'basalforcings.requested_outputs', string_list = True)
         return md
 
     # Initialise empty fields of correct dimensions
@@ -550,6 +665,53 @@ class linear(class_registry.manage_state):
 
         return self
     
+    # Process requested outputs
+    def _process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Unlike the surface mass balance classes, these outputs are not marshalled to a
+        `md.basalforcings.requested_outputs` field: ISSM has no basal forcings analysis to consume
+        one. They are collected by :meth:`pyissm.model.classes.transient._process_outputs` instead,
+        and reach the solver through `md.transient.requested_outputs`.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['BasalforcingsFloatingiceMeltingRate', 'BasalforcingsGroundediceMeltingRate']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+
     # Marshall method for saving the basalforcings.linear parameters
     def marshall_class(self, fid, prefix, md = None):
         """
@@ -634,6 +796,9 @@ class lineararma(class_registry.manage_state):
         Basin-specific elevation of ocean upperwater [m].
     geothermalflux : :class:`numpy.ndarray`, default=np.nan
         Node-specific geothermal heat flux [W/m^2].
+    requested_outputs : :class:`list`, default=['default']
+        Additional outputs requested. 'default' expands to the grounded and floating ice melting
+        rates, which are collected by the transient class and passed to the solver.
 
     Examples
     --------
@@ -661,6 +826,8 @@ class lineararma(class_registry.manage_state):
         self.upperwater_elevation = np.nan
         self.geothermalflux = np.nan
 
+        self.requested_outputs = ['default']
+
         # Inherit matching fields from provided class
         super().__init__(other)
 
@@ -685,6 +852,7 @@ class lineararma(class_registry.manage_state):
         s += '{}\n'.format(class_utils._field_display(self, 'upperwater_elevation', 'basin-specific elevation of ocean upperwater [m]'))
         s += '{}\n'.format(class_utils._field_display(self, 'groundedice_melting_rate','node-specific basal melting rate (positive if melting) [m/yr]'))
         s += '{}\n'.format(class_utils._field_display(self, 'geothermalflux','node-specific geothermal heat flux [W/m^2]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -769,6 +937,7 @@ class lineararma(class_registry.manage_state):
         if 'ThermalAnalysis' in analyses and solution != 'TransientSolution' and not md.transient.isthermal:
             raise Exception("pyissm.basalforcings.lineararma.check_consistency:: ThermalAnalysis not implemented yet!")
 
+        class_utils._check_field(md, fieldname = 'basalforcings.requested_outputs', string_list = True)
         return md
     
     # Initialise empty fields of correct dimensions
@@ -814,6 +983,53 @@ class lineararma(class_registry.manage_state):
             warnings.warn('pyissm.model.classes.basalforcings.lineararma: no basalforcings.malag_coefs specified -- order of moving-average model set to 0.')
 
         return self
+
+    # Process requested outputs
+    def _process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Unlike the surface mass balance classes, these outputs are not marshalled to a
+        `md.basalforcings.requested_outputs` field: ISSM has no basal forcings analysis to consume
+        one. They are collected by :meth:`pyissm.model.classes.transient._process_outputs` instead,
+        and reach the solver through `md.transient.requested_outputs`.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['BasalforcingsFloatingiceMeltingRate', 'BasalforcingsGroundediceMeltingRate']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
 
     # Marshall method for saving the basalforcings.lineararma parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -928,6 +1144,9 @@ class mismip(class_registry.manage_state):
         Depth above which melt rate is zero [m].
     geothermalflux : :class:`float`, default=np.nan
         Geothermal heat flux [W/m^2].
+    requested_outputs : :class:`list`, default=['default']
+        Additional outputs requested. 'default' expands to the grounded and floating ice melting
+        rates, which are collected by the transient class and passed to the solver.
 
     Examples
     --------
@@ -948,6 +1167,8 @@ class mismip(class_registry.manage_state):
         self.upperdepth_melt = -100.
         self.geothermalflux = np.nan
 
+        self.requested_outputs = ['default']
+
         # Inherit matching fields from provided class
         super().__init__(other)
 
@@ -960,6 +1181,7 @@ class mismip(class_registry.manage_state):
         s += '{}\n'.format(class_utils._field_display(self, "threshold_thickness", "Threshold thickness for saturation of basal melting [m]"))
         s += '{}\n'.format(class_utils._field_display(self, "upperdepth_melt", "Depth above which melt rate is zero [m]"))
         s += '{}\n'.format(class_utils._field_display(self, "geothermalflux", "Geothermal heat flux [W / m^2]"))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -1016,6 +1238,7 @@ class mismip(class_registry.manage_state):
             class_utils._check_field(md, fieldname = "basalforcings.upperdepth_melt", scalar = True, le = 0)
             class_utils._check_field(md, fieldname = "basalforcings.geothermalflux", timeseries = True, allow_nan = False, allow_inf = False, ge = 0)
 
+        class_utils._check_field(md, fieldname = 'basalforcings.requested_outputs', string_list = True)
         return md
     
     # Initialise empty fields of correct dimensions
@@ -1044,6 +1267,53 @@ class mismip(class_registry.manage_state):
             warnings.warn('pyissm.model.classes.basalforcings.mismip: no basalforcings.geothermalflux specified -- values set as 0.')
 
         return self
+
+    # Process requested outputs
+    def _process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Unlike the surface mass balance classes, these outputs are not marshalled to a
+        `md.basalforcings.requested_outputs` field: ISSM has no basal forcings analysis to consume
+        one. They are collected by :meth:`pyissm.model.classes.transient._process_outputs` instead,
+        and reach the solver through `md.transient.requested_outputs`.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['BasalforcingsFloatingiceMeltingRate', 'BasalforcingsGroundediceMeltingRate']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
 
     # Marshall method for saving the basalforcings.mismip parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -1129,6 +1399,9 @@ class plume(class_registry.manage_state):
         Volumic heat of the upper crust [W/m^3].
     lowercrustheat : :class:`float`, default=0.4e-6
         Volumic heat of the lower crust [W/m^3].
+    requested_outputs : :class:`list`, default=['default']
+        Additional outputs requested. 'default' expands to the grounded and floating ice melting
+        rates, which are collected by the transient class and passed to the solver.
 
     Examples
     --------
@@ -1156,6 +1429,8 @@ class plume(class_registry.manage_state):
         self.uppercrustheat = 1.7 * pow(10, -6)
         self.lowercrustheat = 0.4 * pow(10, -6)
 
+        self.requested_outputs = ['default']
+
         # Inherit matching fields from provided class
         super().__init__(other)
 
@@ -1177,6 +1452,7 @@ class plume(class_registry.manage_state):
         s += '{}\n'.format(class_utils._field_display(self, 'uppercrustthickness', 'thickness of the upper crust [m]'))
         s += '{}\n'.format(class_utils._field_display(self, 'uppercrustheat', 'volumic heat of the upper crust [w/m^3]'))
         s += '{}\n'.format(class_utils._field_display(self, 'lowercrustheat', 'volumic heat of the lowercrust [w/m^3]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -1266,6 +1542,53 @@ class plume(class_registry.manage_state):
 
         return self
 
+    # Process requested outputs
+    def _process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Unlike the surface mass balance classes, these outputs are not marshalled to a
+        `md.basalforcings.requested_outputs` field: ISSM has no basal forcings analysis to consume
+        one. They are collected by :meth:`pyissm.model.classes.transient._process_outputs` instead,
+        and reach the solver through `md.transient.requested_outputs`.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['BasalforcingsFloatingiceMeltingRate', 'BasalforcingsGroundediceMeltingRate']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+
     # Marshall method for saving the basalforcings.plume parameters
     def marshall_class(self, fid, prefix, md = None):
         """
@@ -1334,6 +1657,9 @@ class spatiallinear(class_registry.manage_state):
         Geothermal heat flux [W/m^2].
     perturbation_melting_rate : :class:`numpy.ndarray`, default=np.nan
         Basal melting rate perturbation added to computed melting rate (positive if melting) [m/yr].
+    requested_outputs : :class:`list`, default=['default']
+        Additional outputs requested. 'default' expands to the grounded and floating ice melting
+        rates, which are collected by the transient class and passed to the solver.
 
     Examples
     --------
@@ -1352,6 +1678,8 @@ class spatiallinear(class_registry.manage_state):
         self.geothermalflux = np.nan
         self.perturbation_melting_rate = np.nan
 
+        self.requested_outputs = ['default']
+
         # Inherit matching fields from provided class
         super().__init__(other)
 
@@ -1366,6 +1694,7 @@ class spatiallinear(class_registry.manage_state):
         s += '{}\n'.format(class_utils._field_display(self, 'upperwater_elevation', 'elevation of ocean upperwater [m]'))
         s += '{}\n'.format(class_utils._field_display(self, 'perturbation_melting_rate', 'basal melting rate perturbation added to computed melting rate (positive if melting) [m/yr]'))
         s += '{}\n'.format(class_utils._field_display(self, 'geothermalflux', 'geothermal heat flux [W/m^2]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -1424,6 +1753,7 @@ class spatiallinear(class_registry.manage_state):
         if 'ThermalAnalysis' in analyses and not solution == 'TransientSolution' and not md.transient.isthermal:
             raise Exception("pyissm.model.classes.basalforcings.spatiallinear.check_consistency:: ThermalAnalysis not implemented yet!")
 
+        class_utils._check_field(md, fieldname = 'basalforcings.requested_outputs', string_list = True)
         return md
         
     # Initialise empty fields of correct dimensions
@@ -1448,6 +1778,53 @@ class spatiallinear(class_registry.manage_state):
             warnings.warn('pyissm.model.classes.basalforcings.spatiallinear: no groundedice_melting_rate specified -- values set as 0')
 
         return self
+
+    # Process requested outputs
+    def _process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Unlike the surface mass balance classes, these outputs are not marshalled to a
+        `md.basalforcings.requested_outputs` field: ISSM has no basal forcings analysis to consume
+        one. They are collected by :meth:`pyissm.model.classes.transient._process_outputs` instead,
+        and reach the solver through `md.transient.requested_outputs`.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['BasalforcingsFloatingiceMeltingRate', 'BasalforcingsGroundediceMeltingRate']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
 
     # Marshall method for saving the basalforcings.spatiallinear parameters
     def marshall_class(self, fid, prefix, md = None):
@@ -1523,6 +1900,9 @@ class ismip6(class_registry.manage_state):
         Basal melting rate for grounded ice (positive if melting) [m/yr].
     melt_anomaly : :class:`numpy.ndarray`, default=np.nan
         Floating ice basal melt anomaly [m/yr].
+    requested_outputs : :class:`list`, default=['default']
+        Additional outputs requested. 'default' expands to the grounded and floating ice melting
+        rates, which are collected by the transient class and passed to the solver.
 
     Examples
     --------
@@ -1546,6 +1926,8 @@ class ismip6(class_registry.manage_state):
         self.groundedice_melting_rate = np.nan
         self.melt_anomaly = np.nan
 
+        self.requested_outputs = ['default']
+
         # Inherit matching fields from provided class
         super().__init__(other)
 
@@ -1564,6 +1946,7 @@ class ismip6(class_registry.manage_state):
         s += '{}\n'.format(class_utils._field_display(self, 'groundedice_melting_rate', 'basal melting rate (positive if melting) [m/yr]'))
         s += '{}\n'.format(class_utils._field_display(self, 'melt_anomaly', 'floating ice basal melt anomaly [m/yr]'))
 
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -1619,6 +2002,7 @@ class ismip6(class_registry.manage_state):
         if not np.all(np.isnan(np.atleast_1d(self.melt_anomaly))):
             class_utils._check_field(md, fieldname='basalforcings.melt_anomaly', timeseries=True, allow_nan=True, allow_inf=False)
 
+        class_utils._check_field(md, fieldname = 'basalforcings.requested_outputs', string_list = True)
         return md
 
     # Initialise empty fields of correct dimensions
@@ -1645,6 +2029,53 @@ class ismip6(class_registry.manage_state):
             warnings.warn('pyissm.model.classes.basalforcings.ismip6: no groundedice_melting_rate specified -- values set as zero')
 
         return self
+
+    # Process requested outputs
+    def _process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Unlike the surface mass balance classes, these outputs are not marshalled to a
+        `md.basalforcings.requested_outputs` field: ISSM has no basal forcings analysis to consume
+        one. They are collected by :meth:`pyissm.model.classes.transient._process_outputs` instead,
+        and reach the solver through `md.transient.requested_outputs`.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['BasalforcingsFloatingiceMeltingRate', 'BasalforcingsGroundediceMeltingRate']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
 
     # Marshall method for saving the basalforcings.ismip6 parameters
     def marshall_class(self, fid, prefix, md=None):
@@ -1728,6 +2159,9 @@ class beckmanngoosse(class_registry.manage_state):
         Ocean thermal forcing [K].
     isthermalforcing : :class:`int`, default=0
         Boolean (0 or 1) indicating whether thermal forcing is provided directly.
+    requested_outputs : :class:`list`, default=['default']
+        Additional outputs requested. 'default' expands to the grounded and floating ice melting
+        rates, which are collected by the transient class and passed to the solver.
 
     Examples
     --------
@@ -1749,6 +2183,8 @@ class beckmanngoosse(class_registry.manage_state):
         self.ocean_thermalforcing = np.nan
         self.isthermalforcing = 0
 
+        self.requested_outputs = ['default']
+
         # Inherit matching fields from provided class
         super().__init__(other)
 
@@ -1764,6 +2200,7 @@ class beckmanngoosse(class_registry.manage_state):
         s += '{}\n'.format(class_utils._field_display(self, 'ocean_thermalforcing', 'ocean thermal forcing [K]'))
         s += '{}\n'.format(class_utils._field_display(self, 'isthermalforcing', 'boolean to use thermal forcing directly (default false)'))
 
+        s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
     # Define class string
@@ -1808,6 +2245,7 @@ class beckmanngoosse(class_registry.manage_state):
             if not (np.all(self.ocean_temp == 0) and np.all(np.isnan(self.ocean_salinity))):
                 raise Exception('pyissm.model.classes.basalforcings.beckmanngoosse.check_consistency: isthermalforcing=1 but ocean_temp or ocean_salinity is set (should be unused)')
 
+        class_utils._check_field(md, fieldname = 'basalforcings.requested_outputs', string_list = True)
         return md
 
     # Initialise empty fields of correct dimensions
@@ -1838,6 +2276,53 @@ class beckmanngoosse(class_registry.manage_state):
             warnings.warn('pyissm.model.classes.basalforcings.beckmanngoosse: no ocean_salinity specified -- values set as 35 psu')
 
         return self
+
+    # Process requested outputs
+    def _process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs, expanding 'default' to appropriate outputs.
+
+        Unlike the surface mass balance classes, these outputs are not marshalled to a
+        `md.basalforcings.requested_outputs` field: ISSM has no basal forcings analysis to consume
+        one. They are collected by :meth:`pyissm.model.classes.transient._process_outputs` instead,
+        and reach the solver through `md.transient.requested_outputs`.
+
+        Parameters
+        ----------
+        md : ISSM model object, optional
+            Model object containing mesh information.
+        return_default_outputs : bool, default=False
+            Whether to also return the list of default outputs.
+
+        Returns
+        -------
+        outputs : list
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : list, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['BasalforcingsFloatingiceMeltingRate', 'BasalforcingsGroundediceMeltingRate']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
 
     # Marshall method for saving the basalforcings.beckmanngoosse parameters
     def marshall_class(self, fid, prefix, md=None):

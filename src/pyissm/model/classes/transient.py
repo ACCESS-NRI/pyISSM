@@ -186,13 +186,21 @@ class transient(class_registry.manage_state):
         """
         Process requested outputs, expanding 'default' to appropriate outputs.
 
+        The default outputs include those declared by the basal forcings class. ISSM has no basal
+        forcings analysis to read a `md.basalforcings.requested_outputs` field, so - unlike the
+        surface mass balance, whose outputs travel via `md.smb.requested_outputs` and are picked up
+        by SmbAnalysis - the basal melting rates only reach the solver if they are requested here.
+        Without this, the melting rates actually applied during a transient cannot be recovered
+        from the results.
+
         Parameters
         ----------
         md : ISSM model object, optional
-            Model object containing mesh information.
+            Model object containing mesh information. Required to collect the basal forcings
+            outputs; if omitted, only this class's own requested outputs are returned.
         return_default_outputs : bool, default=False
             Whether to also return the list of default outputs.
-            
+
         Returns
         -------
         outputs : list
@@ -206,9 +214,15 @@ class transient(class_registry.manage_state):
         ## Set default_outputs
         default_outputs = []
 
+        ## Collect the outputs requested by the basal forcings class. Its own processed list is used
+        ## (rather than just its defaults) so that outputs added to md.basalforcings.requested_outputs
+        ## propagate through to the solver as well.
+        if md is not None and hasattr(md, 'basalforcings') and hasattr(md.basalforcings, '_process_outputs'):
+            default_outputs.extend(md.basalforcings._process_outputs(md))
+
         ## Loop through all requested outputs
         for item in self.requested_outputs:
-            
+
             ## Process default outputs
             if item == 'default':
                     outputs.extend(default_outputs)
@@ -216,6 +230,9 @@ class transient(class_registry.manage_state):
             ## Append other requested outputs (not defaults)
             else:
                 outputs.append(item)
+
+        ## Remove duplicates, preserving the order outputs were requested in
+        outputs = list(dict.fromkeys(outputs))
 
         if return_default_outputs:
             return outputs, default_outputs

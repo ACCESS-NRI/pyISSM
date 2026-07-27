@@ -378,3 +378,114 @@ class TestStressbalanceProcessOutputs:
         obj.requested_outputs = ['default']
         result = obj._process_outputs(md=_make_md_2d(), return_default_outputs=True)
         assert isinstance(result, tuple)
+
+
+# ============== BASAL FORCINGS CLASSES ==============
+
+# ISSM has no basal forcings analysis to read a md.basalforcings.requested_outputs field, so these
+# outputs are not marshalled per-class. They are collected by transient._process_outputs and reach
+# the solver through md.transient.requested_outputs -- see TestTransientCollectsBasalforcings below.
+
+import pyissm.model.classes.basalforcings as basalforcings
+
+BASALFORCINGS_CLASSES = [
+    basalforcings.default,
+    basalforcings.pico,
+    basalforcings.linear,
+    basalforcings.lineararma,
+    basalforcings.mismip,
+    basalforcings.plume,
+    basalforcings.spatiallinear,
+    basalforcings.ismip6,
+    basalforcings.beckmanngoosse,
+]
+
+
+class TestBasalforcingsProcessOutputs:
+
+    @pytest.mark.parametrize('cls', BASALFORCINGS_CLASSES)
+    def test_every_class_processes_outputs(self, cls):
+        _test_class_process_outputs(cls, 'BasalforcingsFloatingiceMeltingRate')
+
+    @pytest.mark.parametrize('cls', BASALFORCINGS_CLASSES)
+    def test_requested_outputs_defaults_to_default(self, cls):
+        assert cls().requested_outputs == ['default']
+
+    @pytest.mark.parametrize('cls', BASALFORCINGS_CLASSES)
+    def test_both_melting_rates_are_default_outputs(self, cls):
+        _, defaults = cls()._process_outputs(return_default_outputs=True)
+        assert 'BasalforcingsFloatingiceMeltingRate' in defaults
+        assert 'BasalforcingsGroundediceMeltingRate' in defaults
+
+
+def _make_md_with_basalforcings(basalforcings_class=None):
+    """Mock md carrying a basal forcings class, for transient aggregation tests."""
+    md = _make_md_2d()
+    md.basalforcings = (basalforcings_class or basalforcings.default)()
+    return md
+
+
+class TestTransientCollectsBasalforcings:
+    """
+    transient._process_outputs must pass the basal forcings outputs through, otherwise the melting
+    rates actually applied during a transient cannot be recovered from the results (pyISSM #21).
+    """
+
+    def test_default_expands_to_the_basal_melting_rates(self):
+        obj = transient()
+        obj.requested_outputs = ['default']
+        result = obj._process_outputs(md=_make_md_with_basalforcings())
+
+        assert 'BasalforcingsFloatingiceMeltingRate' in result
+        assert 'BasalforcingsGroundediceMeltingRate' in result
+
+    @pytest.mark.parametrize('cls', BASALFORCINGS_CLASSES)
+    def test_works_for_every_basalforcings_class(self, cls):
+        obj = transient()
+        obj.requested_outputs = ['default']
+        result = obj._process_outputs(md=_make_md_with_basalforcings(cls))
+
+        assert 'BasalforcingsFloatingiceMeltingRate' in result
+
+    def test_explicit_outputs_are_kept_alongside_defaults(self):
+        obj = transient()
+        obj.requested_outputs = ['default', 'IceVolume']
+        result = obj._process_outputs(md=_make_md_with_basalforcings())
+
+        assert 'IceVolume' in result
+        assert 'BasalforcingsFloatingiceMeltingRate' in result
+
+    def test_outputs_added_to_basalforcings_propagate(self):
+        obj = transient()
+        obj.requested_outputs = ['default']
+        md = _make_md_with_basalforcings()
+        md.basalforcings.requested_outputs = ['default', 'BasalforcingsDeepwaterMeltingRate']
+
+        result = obj._process_outputs(md=md)
+        assert 'BasalforcingsDeepwaterMeltingRate' in result
+
+    def test_nothing_is_added_without_default(self):
+        """A user who lists outputs explicitly gets exactly what they asked for."""
+        obj = transient()
+        obj.requested_outputs = ['IceVolume']
+        result = obj._process_outputs(md=_make_md_with_basalforcings())
+
+        assert result == ['IceVolume']
+
+    def test_outputs_are_deduplicated(self):
+        obj = transient()
+        obj.requested_outputs = ['default', 'BasalforcingsFloatingiceMeltingRate']
+        result = obj._process_outputs(md=_make_md_with_basalforcings())
+
+        assert result.count('BasalforcingsFloatingiceMeltingRate') == 1
+
+    def test_md_is_optional(self):
+        """Calling without a model must keep working, as before."""
+        obj = transient()
+        obj.requested_outputs = ['default']
+        assert obj._process_outputs() == []
+
+    def test_model_without_basalforcings_is_tolerated(self):
+        obj = transient()
+        obj.requested_outputs = ['default']
+        assert obj._process_outputs(md=_make_md_2d()) == []
