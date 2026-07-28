@@ -169,8 +169,10 @@ class toolkits(class_registry.manage_state):
             # Write options
             for optionname, optionvalue in list(options.items()):
                 
-                ## If the option has no value, write the option name only
-                if not optionvalue:
+                ## If the option has no value, write the option name only.
+                ## Only None/'' count as "no value" -- 0 and False are legitimate
+                ## PETSc values, and a bare flag is parsed by PETSc as true.
+                if optionvalue is None or optionvalue == '':
                     fid.write('-{}\n'.format(optionname))
                 ## If the option has a name and a value, write both
                 else:

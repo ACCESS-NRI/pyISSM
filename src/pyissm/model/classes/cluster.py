@@ -620,8 +620,11 @@ class gadi(class_registry.manage_state):
     port : :class:`int`
         SSH port number for cluster connection. Default is 0.
     queue : :class:`str`
-        PBS queue name. Options include 'normal', 'express', 'hugemem'. 
-        Default is 'normal'.
+        PBS queue name. Options include 'normal', 'express', 'hugemem',
+        'gpuvolta', 'dgxa100'. Default is 'normal'.
+    ngpus : :class:`int`
+        Number of GPUs to request. Only valid on a GPU queue, where it defaults
+        to ``np`` so that each MPI rank drives one GPU. Default is 0.
     time : :class:`int`
         Walltime limit for job execution in minutes. Default is 60.
     codepath : :class:`str`
@@ -646,10 +649,15 @@ class gadi(class_registry.manage_state):
     and launching jobs. The moduleload and moduleuse lists must have equal length.
 
     Queue specifications:
-    
+
         - normal: 48 hours on up to 3072 cores
         - express: 2 hours on up to 960 cores
         - hugemem: 48 hours on up to 3072 cores
+        - gpuvolta: 48 hours on up to 80 GPUs, 12 cores per V100 (sm_70)
+        - dgxa100: 48 hours on up to 16 GPUs, 16 cores per A100 (sm_80)
+
+    On the GPU queues ``np`` is the number of MPI ranks and each rank drives one
+    GPU, so the requested ``ncpus`` becomes ``ngpus`` times the queue's cores-per-GPU.
 
     Examples
     --------
@@ -658,7 +666,16 @@ class gadi(class_registry.manage_state):
         >>> cluster = gadi(config_file='gadi_config.yaml')
         >>> cluster.np = 32
         >>> cluster.queue = 'express'
+
+        >>> # GPU run: 4 MPI ranks on 4 A100s, requesting 64 cores
+        >>> cluster = gadi(config_file='gadi_config.yaml')
+        >>> cluster.queue = 'dgxa100'
+        >>> cluster.np = 4
     """
+
+    # Cores per GPU on each of Gadi's GPU queues -- PBS rejects any request
+    # whose ncpus:ngpus ratio does not match the node layout.
+    GPU_QUEUES = {'gpuvolta': 12, 'dgxa100': 16}
 
     # Initialise with default parameters
     def __init__(self, config_file = None, other = None):
@@ -675,7 +692,8 @@ class gadi(class_registry.manage_state):
         self.memory = 40
         self.port = 0
         self.queue = 'normal'
-        self.time = 60 
+        self.ngpus = 0
+        self.time = 60
         self.codepath = ''
         self.executionpath = ''
         self.project = ''
@@ -707,6 +725,7 @@ class gadi(class_registry.manage_state):
         s += '{}\n'.format(class_utils._field_display(self, 'memory', 'memory per node (in GB)'))
         s += '{}\n'.format(class_utils._field_display(self, 'port', 'port number'))
         s += '{}\n'.format(class_utils._field_display(self, 'queue', 'queue name'))
+        s += '{}\n'.format(class_utils._field_display(self, 'ngpus', 'number of GPUs (GPU queues only, 0 to derive from np)'))
         s += '{}\n'.format(class_utils._field_display(self, 'time', 'walltime (in minutes)'))
         s += '{}\n'.format(class_utils._field_display(self, 'codepath', 'path to the ISSM executable (e.g. $ISSM_DIR/bin)'))
         s += '{}\n'.format(class_utils._field_display(self, 'executionpath', 'path to the execution directory'))
@@ -742,15 +761,25 @@ class gadi(class_registry.manage_state):
             The model object with any consistency errors noted.
         """
 
-        # Define queue specifications for validation
+        # Define queue specifications for validation.
+        # On the GPU queues the limit is expressed in MPI ranks (= GPUs), since
+        # each rank drives one GPU.
         queue_dict = {
             'normal': [48*60, 3072], # 48h on 3072 cores
             'express': [2*60, 960], # 2h on 960 cores
             'hugemem': [48*60, 3072], # 48h on 3072 cores
+            'gpuvolta': [48*60, 80], # 48h on 80 V100s
+            'dgxa100': [48*60, 16], # 48h on 16 A100s
         }
 
         # Check that queue is valid and that np and time are within queue limits
         class_utils.cluster_queue_requirements(queue_dict, self.queue, self.np, self.time)
+
+        if self.queue in self.GPU_QUEUES:
+            if self.ngpus and self.ngpus != self.np:
+                md.check_message(f'pyissm.model.classes.cluster.gadi: ngpus ({self.ngpus}) must equal np ({self.np}) on queue {self.queue}, as each MPI rank drives one GPU')
+        elif self.ngpus:
+            md.check_message(f'pyissm.model.classes.cluster.gadi: ngpus is set but queue {self.queue} has no GPUs. Use one of {list(self.GPU_QUEUES)}')
 
         if not self.login:
             md.check_message('pyissm.model.classes.cluster.gadi: login name must be provided for gadi cluster')
@@ -850,12 +879,19 @@ class gadi(class_registry.manage_state):
         if is_gprof:
             raise NotImplementedError('pyissm.model.classes.cluster.gadi.build_queue_script: gprof support not implemented for gadi cluster yet.')
         
+        # On a GPU queue each MPI rank drives one GPU, and PBS requires the
+        # matching whole-GPU share of the node's cores.
+        ngpus = (self.ngpus or self.np) if self.queue in self.GPU_QUEUES else 0
+        ncpus = ngpus * self.GPU_QUEUES[self.queue] if ngpus else self.np
+
         # Write queue script
         fid = open(file_prefix + '.queue', 'w')
         fid.write('#!/bin/bash\n')
         fid.write(f'#PBS -P {self.project}\n')
         fid.write(f'#PBS -q {self.queue}\n')
-        fid.write(f'#PBS -l ncpus={self.np}\n')
+        fid.write(f'#PBS -l ncpus={ncpus}\n')
+        if ngpus:
+            fid.write(f'#PBS -l ngpus={ngpus}\n')
         fid.write(f'#PBS -l mem={self.memory}GB\n')
         fid.write(f'#PBS -l walltime={self.time*60}\n') # Walltime is in seconds
         fid.write('#PBS -l wd\n')  
