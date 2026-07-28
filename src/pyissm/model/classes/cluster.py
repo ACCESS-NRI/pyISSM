@@ -411,6 +411,21 @@ class generic(class_registry.manage_state):
             fid = open(model_name + '.outlog', 'w')
             fid.close()
 
+    def requires_staged_upload(self):
+        """
+        Whether run inputs must be uploaded before the job is launched.
+
+        ``launch_queue_job`` skips the archive/extract round-trip when the execution
+        host is this machine, so in that case the inputs are already staged in
+        ``executionpath`` and no upload is needed.
+
+        Returns
+        -------
+        :class:`bool`
+            True when the inputs must be uploaded before launching.
+        """
+        return self.name.lower() != tools.config.get_hostname().lower()
+
     def upload_queue_job(self, model_name, dir_name, file_list):
         """
         Upload job files to the cluster queue system.
@@ -864,6 +879,22 @@ class gadi(class_registry.manage_state):
         # Close file
         fid.close()
 
+    def requires_staged_upload(self):
+        """
+        Whether run inputs must be uploaded before the job is launched.
+
+        False when the execution host is this machine: ``_prepare_staging_directory``
+        has already written the run inputs straight into ``executionpath``, and
+        ``launch_queue_job`` submits them in place. Attempting an upload in that case
+        makes ``issm_scp_out`` symlink the archive onto itself.
+
+        Returns
+        -------
+        :class:`bool`
+            True when the inputs must be uploaded before launching.
+        """
+        return self.name.lower() != tools.config.get_hostname().lower()
+
     # Upload job to cluster
     def upload_queue_job(self, model_name, dir_name, file_list):
         """
@@ -947,8 +978,20 @@ class gadi(class_registry.manage_state):
             >>> cluster.launch_queue_job('simulation_01', 'run_dir', restart=True)
         """
         
+        is_local = self.name.lower() == tools.config.get_hostname().lower()
+
         if restart is not None:
             # Just qsub in existing directory
+            launch_command = (
+                f'cd {self.executionpath}/{dir_name} && qsub {model_name}.queue')
+        elif is_local:
+            # A local run is already staged in executionpath by
+            # execute._prepare_staging_directory, so there is no archive to move or
+            # extract -- submit it in place. Without this branch the launch command
+            # looks for a <dir_name>.tar.gz that was never uploaded, tar exits
+            # non-zero and the chained qsub is never reached, so the job silently
+            # never starts. This is the normal path when a launcher script submits
+            # from inside a PBS job on the cluster itself.
             launch_command = (
                 f'cd {self.executionpath}/{dir_name} && qsub {model_name}.queue')
         else:
