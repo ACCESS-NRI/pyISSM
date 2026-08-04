@@ -4,6 +4,9 @@ Unit tests for pyissm.model.classes.basalforcings module.
 Tests cover basalforcings classes: default, pico, linear, mismip, lineararma.
 """
 
+from types import SimpleNamespace
+
+import numpy as np
 import pytest
 
 try:
@@ -117,6 +120,42 @@ class TestBasalforcingsLineararma:
         b = basalforcings.lineararma()
         s = repr(b)
         assert isinstance(s, str)
+
+
+class TestBasalforcingsIsmip6:
+    """Tests for ISMIP6 basal forcing fields."""
+
+    def test_extrude_projects_melt_anomaly_as_nodal_timeseries(self):
+        mesh3d = SimpleNamespace(
+            numberofvertices2d=3,
+            numberofelements2d=1,
+            numberoflayers=3,
+            numberofvertices=9,
+            numberofelements=2,
+            domain_type=lambda: '3D',
+        )
+        md = SimpleNamespace(mesh=mesh3d)
+        forcing = basalforcings.ismip6()
+        forcing.basin_id = np.array([0])
+        forcing.geothermalflux = np.array([1.])
+        forcing.groundedice_melting_rate = np.ones(3)
+        forcing.melt_anomaly = np.array([
+            [1., 2.],
+            [3., 4.],
+            [5., 6.],
+            [0., 1.],
+        ])
+
+        forcing._extrude(md)
+
+        expected = np.zeros((mesh3d.numberofvertices + 1, 2))
+        expected[:mesh3d.numberofvertices2d, :] = np.array([
+            [1., 2.],
+            [3., 4.],
+            [5., 6.],
+        ])
+        expected[-1, :] = [0., 1.]
+        np.testing.assert_array_equal(forcing.melt_anomaly, expected)
 
 
 class TestBasalforcingsInheritance:
