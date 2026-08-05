@@ -42,6 +42,15 @@ def build_parameter_grid(coefficients, initial_run_id = 1):
         - run_id
         - cfXXX columns for each cost function
         - run_name
+
+    Example
+    -------
+    : code-block:: python
+
+        >>> coefficients = {101: [1, 10, 100, 1000],
+        ...                 103: [1, 10, 100, 1000]}
+        >>> param_grid = pyissm.inversion.sensitivity.build_parameter_grid(coefficients)
+        >>> param_grid = pyissm.inversion.sensitivity.build_parameter_grid(coefficients, initial_run_id = 101)
     """
 
     # Sort cost functions for consistent ordering
@@ -107,9 +116,8 @@ def assign_cost_functions(md,
 
     global_mask : :class:`numpy.ndarray` of :class:`bool`, optional
         Global boolean mask applied to all cost functions.
-
-        True  -> coefficient active
-        False -> coefficient set to zero
+            - True  -> coefficient active
+            - False -> coefficient set to zero
 
     coeff_masks : :class:`dict`, optional
         Dictionary mapping cost-function IDs to boolean masks.
@@ -124,6 +132,20 @@ def assign_cost_functions(md,
     -------
     md : :class:`pyissm.Model`
         Updated ISSM model.
+
+    Example
+    -------
+    : code-block:: python
+
+        >>> coefficients = {101: 1000,
+        ...                 103: 25,
+        ...                 502: 1e-19}
+        >>> global_mask = md.inversion.vel_obs > 0
+        >>> md = pyissm.inversion.sensitivity.assign_cost_functions(md, coefficients, global_mask = global_mask)
+
+        >>> coeff_masks = {101: md.inversion.vel_obs > 0,
+        ...                103: md.mask.ice_levelset > 0}
+        >>> md = pyissm.inversion.sensitivity.assign_cost_functions(md, coefficients, coeff_masks = coeff_masks)
     """
 
     # Sort cost functions for consistent ordering
@@ -209,8 +231,8 @@ def parameter_sensitivity(md,
         
         **NOTE:**
         This is intentionally separate from: md.cluster.executionpath:
-            - md.cluster.executionpath controls where ISSM stages runtime files for execution.
-            - output_dir controls where pyISSM stores organized experiment outputs.
+            - `md.cluster.executionpath` controls where ISSM stages runtime files for execution.
+            - `output_dir` controls where pyISSM stores organized experiment outputs.
 
     run : :class:`bool`, default = True
         Submit inversion runs.
@@ -220,9 +242,8 @@ def parameter_sensitivity(md,
 
     global_mask : :class:`numpy.ndarray` of :class:`bool`, optional
         Global boolean mask applied to all cost functions. Passed to :func:`assign_cost_functions`.
-
-        True  -> coefficient active
-        False -> coefficient set to zero
+            - True  -> coefficient active
+            - False -> coefficient set to zero
 
     coeff_masks : :class:`dict`, optional
         Dictionary mapping cost-function IDs to boolean masks. Passed to :func:`assign_cost_functions`.
@@ -236,6 +257,15 @@ def parameter_sensitivity(md,
     -------
     :class:`pandas.DataFrame`
         Experiment manifest.
+
+    Example
+    -------
+    : code-block:: python
+
+        >>> coefficients = {101: [1, 10, 100, 1000],
+        ...                 103: [1, 10, 100, 1000]}
+        >>> parameter_grid = pyissm.inversion.sensitivity.build_parameter_grid(coefficients)
+        >>> manifest = pyissm.inversion.sensitivity.parameter_sensitivity(md, parameter_grid, output_dir = './sensitivity_runs', run = True, load_only = False)
     """
 
     # Prevent ambiguous execution mode
@@ -365,7 +395,7 @@ def parameter_sensitivity(md,
 
 def load_parameter_sensitivity_run(manifest_row):
     """
-    Load a parameter sensitivity run.
+    Load a parameter sensitivity run from a manifest row.
 
     Parameters
     ----------
@@ -375,6 +405,13 @@ def load_parameter_sensitivity_run(manifest_row):
     -------
     md : :class:`pyissm.Model`
         Loaded ISSM model for the specified run.
+
+    Example
+    -------
+    : code-block:: python
+
+        >>> manifest = pd.read_csv('./sensitivity_runs/manifest.csv')
+        >>> md = pyissm.inversion.sensitivity.load_parameter_sensitivity_run(manifest.iloc[0])
     """
 
     # Extract run directory and name from manifest row
@@ -397,17 +434,31 @@ def compute_sensitivity_diagnostics(manifest,
                                     output_dir = None,
                                     plot_run_summaries = True):
     """
-    Compute diagnostics for parameter sensitivity runs.
+    Compute diagnostics for parameter sensitivity runs from a manifest.
 
     Parameters
     ----------
     manifest : :class:`pandas.DataFrame`
         Output from :func:`pyissm.inversion.sensitivity.parameter_sensitivity`.
 
+    output_dir : :class:`str` or :class:`pathlib.Path`, optional
+        Directory used to store computed diagnostics. If None, diagnostics are not saved to disk.
+
+    plot_run_summaries : :class:`bool`, default = True
+        Whether to generate summary PDF reports for each run, including diagnostic plots and convergence history. If True, summary PDFs are saved in each run's directory.
+
     Returns
     -------
     :class:`pandas.DataFrame`
         Diagnostics table.
+
+    Example
+    -------
+    : code-block:: python
+
+        >>> manifest = pd.read_csv('./sensitivity_runs/manifest.csv')
+        >>> diagnostics = pyissm.inversion.sensitivity.compute_sensitivity_diagnostics(manifest, output_dir = './sensitivity_runs/diagnostics')
+    
     """
 
     # Copy manifest so coefficient metadata is preserved
@@ -496,9 +547,8 @@ def normalize_diagnostics(diagnostics,
 
     higher_is_better : :class:`dict`, optional
         Dictionary mapping column name -> bool.
-
-        True  = higher values are better
-        False = lower values are better
+        - True  = higher values are better
+        - False = lower values are better
 
         Example
         -------
@@ -515,6 +565,14 @@ def normalize_diagnostics(diagnostics,
     -------
     :class:`pandas.DataFrame`
         Copy of dataframe with normalized columns added.
+
+    Example
+    -------
+    : code-block:: python
+    
+        >>> manifest = pd.read_csv('./sensitivity_runs/manifest.csv')
+        >>> diagnostics = pyissm.inversion.sensitivity.compute_sensitivity_diagnostics(manifest, output_dir = './sensitivity_runs/diagnostics')
+        >>> diagnostics_norm = pyissm.inversion.sensitivity.normalize_diagnostics(diagnostics, columns = ['vel_rmse', 'thickness_rmse'])
     """
 
     # Create a copy of the diagnostics DataFrame to avoid modifying the original

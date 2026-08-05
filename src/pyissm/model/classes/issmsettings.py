@@ -117,9 +117,23 @@ class issmsettings(class_registry.manage_state):
         class_utils._check_field(md, fieldname = 'settings.waitonlock', scalar = True)
         class_utils._check_field(md, fieldname = 'settings.solver_residue_threshold', scalar = True, gt = 0)
 
+        # stagingpath is only read when inputs are staged locally before being copied to a
+        # remote execution host (see execute._prepare_staging_directory). When the run
+        # executes on this machine the model is staged directly in cluster.executionpath,
+        # so an absent stagingpath is harmless. Its default lives under $ISSM_DIR, which
+        # for a shared read-only install (e.g. Spack) does not exist and cannot be created,
+        # so validating it unconditionally rejects runs that never use it.
+        try:
+            if hasattr(md.cluster, 'requires_staged_upload'):
+                staging_used = md.cluster.requires_staged_upload()
+            else:
+                staging_used = md.cluster.name.lower() != config.get_hostname().lower()
+        except AttributeError:
+            staging_used = True
+
         if not isinstance(self.stagingpath, str):
             md.check_message('settings.stagingpath must be a string')
-        elif not self.stagingpath or not os.path.isdir(self.stagingpath):
+        elif staging_used and (not self.stagingpath or not os.path.isdir(self.stagingpath)):
             md.check_message('settings.stagingpath does not exist')
 
         return md

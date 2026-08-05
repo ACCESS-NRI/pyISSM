@@ -14,6 +14,8 @@ def cost_function_values(md):
     """
     Extract final inversion cost-function values.
 
+    Extracts the final cost-function values for each cost function and the total cost from the model results.
+
     Parameters
     ----------
     md : :class: `pyissm.Model`
@@ -23,6 +25,12 @@ def cost_function_values(md):
     -------
     :class:`dict`
         Dictionary containing final cost-function values for each cost function and total cost.
+
+    Example
+    -------
+    : code-block:: python
+
+        >>> final_costs = pyissm.inversion.metrics.cost_function_values(md)
     """
 
     # Get cost function history from model results
@@ -48,6 +56,9 @@ def cost_function_ratios(md):
     """
     Compute ratios between all inversion cost functions.
 
+    These ratios can provide insight into the relative contributions of different cost functions
+    to the total cost and help identify which cost functions are dominating the inversion results.
+
     Parameters
     ----------
     md : :class:`pyissm.Model`
@@ -57,6 +68,12 @@ def cost_function_ratios(md):
     -------
     :class:`dict`
         Dictionary of pairwise cost-function ratios.
+
+    Example
+    -------
+    : code-block:: python
+        
+        >>> cost_ratios = pyissm.inversion.metrics.cost_function_ratios(md)
     """
 
     # Get individual cost values
@@ -97,6 +114,9 @@ def extract_convergence_history(md):
     """
     Extract convergence history of cost functions.
 
+    Extracts the history of cost-function values across iterations from the modelresults and
+    organizes it into a pandas DataFrame for easier analysis and visualization of convergence behavior.
+
     Parameters
     ----------
     md : :class:`pyissm.Model`
@@ -105,6 +125,12 @@ def extract_convergence_history(md):
     -------
     :class:`pandas.DataFrame`
         DataFrame containing cost function history.
+
+    Example
+    -------
+    : code-block:: python
+        
+        >>> convergence_history = pyissm.inversion.metrics.extract_convergence_history(md)
     """
 
     # Get cost function history from model results
@@ -134,6 +160,10 @@ def velocity_residual_area_metrics(md):
     """
     Compute positive/negative residual area metrics.
 
+    Calculates the total area of elements with positive and negative velocity residuals,
+    as well as their fractions relative to the total area. This provides insight into the
+    spatial distribution of model-data misfit in terms of velocity residuals.
+
     Parameters
     ----------
     md : :class:`pyissm.Model`
@@ -143,6 +173,12 @@ def velocity_residual_area_metrics(md):
     -------
     :class:`dict`
         Dictionary containing the computed metrics.
+
+    Example
+    -------
+    : code-block:: python
+
+        >>> area_metrics = pyissm.inversion.metrics.velocity_residual_area_metrics(md)
     """
 
     # Compute velocity residuals at vertices
@@ -205,11 +241,16 @@ def field_smoothness_metrics(md,
                             field = None):
         """
         Compute field smoothness metrics.
+
+        Calculates the area-weighted mean and RMSE of the gradient magnitude (slope) of a specified field.
+        This provides insight into the spatial variability and smoothness of the control parameter field,
+        which can be important for understanding inversion results and regularization effects.
     
         Parameters
         ----------
         md : :class:`pyissm.Model`
             ISSM model object containing mesh and (optionally) solution data.
+
         field : :class:`numpy.ndarray`
             Field values, defined on vertices. If None, will attempt to extract from model results based on control parameter.
     
@@ -217,6 +258,12 @@ def field_smoothness_metrics(md,
         -------
         :class:`dict`
             Dictionary containing smoothness metrics.
+
+        Example
+        -------
+        : code-block:: python
+
+            >>> smoothness_metrics = pyissm.inversion.metrics.field_smoothness_metrics(md)
         """
 
         # Extract field from model if not provided

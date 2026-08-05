@@ -126,6 +126,109 @@ def iluasm_options(**kwargs):
 
     return iluasm
 
+def hypre_boomeramg_gpu_options(**kwargs):
+    """
+    Set GPU-accelerated Hypre BoomerAMG options for PETSc linear solver configuration.
+
+    This function configures a GMRES solve preconditioned by Hypre's BoomerAMG
+    algebraic multigrid, with matrices and vectors resident on the GPU. Requires
+    ISSM to be built with both CUDA and Hypre support (``+cuda +hypre``).
+
+    Parameters
+    ----------
+    **kwargs : dict
+        Additional PETSc options to override or supplement the defaults.
+
+    Returns
+    -------
+    collections.OrderedDict
+        Dictionary containing the GPU BoomerAMG configuration options with
+        defaults updated with any user-provided options.
+
+    Notes
+    -----
+    The ``hypre`` matrix type keeps the operator in Hypre's own device format,
+    which avoids a PETSc-to-Hypre conversion on every solve. ``mat_block_size 2``
+    reflects the two velocity components of the SSA/HO stress balance.
+
+    Examples
+    --------
+    >>> md.toolkits.DefaultAnalysis = hypre_boomeramg_gpu_options()
+    >>> opts = hypre_boomeramg_gpu_options(pc_hypre_boomeramg_strong_threshold=0.5)
+    """
+
+    ## Define defaults
+    defaults = {'toolkit': 'petsc',
+                'ksp_type': 'gmres',
+                'ksp_gmres_restart': 100,
+                'ksp_rtol': 1e-12,
+                'ksp_max_it': 5000,
+                'pc_type': 'hypre',
+                'pc_hypre_type': 'boomeramg',
+                'pc_hypre_boomeramg_strong_threshold': 0.25,
+                'mat_block_size': 2,
+                'vec_type': 'cuda',
+                'mat_type': 'hypre'}
+
+    ## Update with user options
+    hypre = collections.OrderedDict(defaults)
+    hypre.update(kwargs)
+
+    return hypre
+
+def gamg_gpu_options(**kwargs):
+    """
+    Set GPU-accelerated PETSc GAMG options for linear solver configuration.
+
+    This function configures a BiCGStab solve preconditioned by PETSc's native
+    GAMG algebraic multigrid, using cuSPARSE matrices and CUDA vectors. Requires
+    ISSM to be built with CUDA support (``+cuda``).
+
+    Parameters
+    ----------
+    **kwargs : dict
+        Additional PETSc options to override or supplement the defaults.
+
+    Returns
+    -------
+    collections.OrderedDict
+        Dictionary containing the GPU GAMG configuration options with defaults
+        updated with any user-provided options.
+
+    Notes
+    -----
+    The ``*_backend_cpu false`` flags force the Galerkin triple products used to
+    build the multigrid hierarchy onto the device; without them PETSc falls back
+    to host assembly and the setup phase dominates the runtime.
+
+    Examples
+    --------
+    >>> md.toolkits.DefaultAnalysis = gamg_gpu_options()
+    >>> opts = gamg_gpu_options(pc_gamg_threshold=0.05)
+    """
+
+    ## Define defaults
+    defaults = {'toolkit': 'petsc',
+                'vec_type': 'cuda',
+                'mat_type': 'aijcusparse',
+                'ksp_type': 'bcgs',
+                'pc_type': 'gamg',
+                'mat_block_size': 2,
+                'matptap_backend_cpu': 'false',
+                'matmatmult_backend_cpu': 'false',
+                'mat_product_algorithm_backend_cpu': 'false',
+                'pc_gamg_coarse_eq_limit': 2000,
+                'pc_gamg_threshold': 0.08,
+                'pc_gamg_agg_nsmooths': 0,
+                'ksp_rtol': 1e-12,
+                'ksp_max_it': 5000}
+
+    ## Update with user options
+    gamg = collections.OrderedDict(defaults)
+    gamg.update(kwargs)
+
+    return gamg
+
 def issm_mumps_solver(**kwargs):
     """
     Set the ISSM MUMPS solver options.

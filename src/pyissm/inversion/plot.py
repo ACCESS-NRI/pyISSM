@@ -1,3 +1,9 @@
+"""
+Inversion plotting tools for pyISSM.
+
+This module contains various functions for plotting inversion diagnostics for ISSM models.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 import textwrap
@@ -48,6 +54,14 @@ def plot_convergence_history(convergence_history,
     -----
         This function does not validate metric names. A missing metric column will
         raise a pandas ``KeyError`` during plotting.
+
+    Example
+    -------
+    : code-block:: python
+        
+        >>> convergence_history = pyissm.inversion.metrics.extract_convergence_history(md)
+        >>> fig, ax = plot_convergence_history(convergence_history)
+
     """
 
     ## Is an ax passed?
@@ -150,6 +164,14 @@ def plot_sensitivity_heatmap(diagnostics,
     -----
         The heatmap is generated via :meth:`pandas.DataFrame.pivot_table` using
         ``y`` as the index, ``x`` as the columns, and ``value`` as cell values.
+
+    Example
+    -------
+    : code-block:: python
+        
+        >>> manifest = pd.read_csv('./sensitivity_runs/manifest.csv')
+        >>> diagnostics = pyissm.inversion.sensitivity.compute_sensitivity_diagnostics(manifest, output_dir = './sensitivity_runs')
+        >>> fig, ax = pyissm.inversion.plot.plot_sensitivity_heatmap(diagnostics, x = 'cf101', y = 'cf103', value = 'vel_rmse')
     """
 
     ## Is an ax passed?
@@ -210,16 +232,25 @@ def plot_run_summary(md,
     ----------
     md : :class:`pyissm.Model`
         ISSM model object containing inversion results.
+
     output_pdf : :class:`str`
         Path to output PDF file.
+
     diagnostics : :class:`dict`, optional
-        Diagnostics configuration. Default is None.
+        Model diagnostics. Default is None. Computed internally if not provided.
+
     plot_kwargs : :class:`dict`, optional
         Plot keyword arguments. Default is None.
 
     Returns
     -------
-    None
+        None. Saves the generated report to the specified PDF file.
+
+    Example
+    -------
+    : code-block:: python
+
+            >>> plot.plot_run_summary(md, output_pdf = f'./sensitivity_runs/run_001_1_1/run_001_1_summary.pdf')
     """
 
     # Compute velocity residuals for diagnostics and plotting
@@ -486,9 +517,9 @@ def plot_lcurve(diagnostics,
         Column containing regularization coefficient values.
 
         If None, automatically inferred from regularization term:
-            cost_501 -> cf501
-            cost_502 -> cf502
-            cost_503 -> cf503
+            - cost_501 -> cf501
+            - cost_502 -> cf502
+            - cost_503 -> cf503
 
     misfit_cols : list of :class:`str`, optional
         Cost-function columns contributing to model-data misfit.
@@ -533,6 +564,14 @@ def plot_lcurve(diagnostics,
 
     ax : :class:`matplotlib.axes.Axes`
         The axes containing the plot. If an axes was passed in, this is the same object; if no axes was passed, this is the newly created axes.
+
+    Example
+    -------
+    : code-block:: python
+        
+        >>> manifest = pd.read_csv('./sensitivity_runs/manifest.csv')
+        >>> diagnostics = pyissm.inversion.sensitivity.compute_sensitivity_diagnostics(manifest, output_dir = './sensitivity_runs')
+        >>> fig, ax = plot_lcurve(diagnostics)
     """
 
     ## Is an ax passed?

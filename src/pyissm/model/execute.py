@@ -1128,8 +1128,20 @@ def solve(md,
         if md.qmu.isdakota:
             file_list.append(os.path.join(run_directory, 'qmu.in'))
 
-        ## Upload all files only when the execution host is remote.
-        if md.cluster.name.lower() != tools.config.get_hostname().lower():
+        ## Upload the staged inputs when the cluster needs them staged.
+        # The decision belongs to the cluster class, not to a hostname comparison: some
+        # classes (e.g. gadi) always extract an archive before calling qsub, so they need
+        # the upload even when the submitting process runs on the cluster itself, as it
+        # does for a launcher script inside a PBS job. Comparing hostnames here silently
+        # skipped the upload in that case, leaving no archive for launch_queue_job to
+        # extract; the launch command then failed and qsub was never reached.
+        if hasattr(md.cluster, 'requires_staged_upload'):
+            needs_upload = md.cluster.requires_staged_upload()
+        else:
+            # Fallback for cluster classes that predate requires_staged_upload().
+            needs_upload = md.cluster.name.lower() != tools.config.get_hostname().lower()
+
+        if needs_upload:
             print(f'Transferring {md.private.runtimename}.tar.gz to cluster {md.cluster.name}...')
             md.cluster.upload_queue_job(model_name, md.private.runtimename, file_list)
 
