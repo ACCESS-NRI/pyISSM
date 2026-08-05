@@ -1582,7 +1582,8 @@ class ismip6(class_registry.manage_state):
         self.geothermalflux = mesh._project_3d(md, vector=self.geothermalflux, type='element', layer=1)
         self.groundedice_melting_rate = mesh._project_3d(md, vector=self.groundedice_melting_rate, type='node', layer=1)
         if not np.all(np.isnan(self.melt_anomaly)):
-            self.melt_anomaly = mesh._project_3d(md, vector=self.melt_anomaly, type='element', layer=1)
+            # Marshalled as a nodal time series (mattype=1).
+            self.melt_anomaly = mesh._project_3d(md, vector=self.melt_anomaly, type='node', layer=1)
 
         return self
 
