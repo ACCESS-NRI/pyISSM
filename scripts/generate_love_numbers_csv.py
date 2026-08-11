@@ -3,9 +3,9 @@ ISSM Love-number table.
 
 Run once, commit the resulting CSV. Not part of the pyissm package.
 
-Safety (see vault review finding R1):
+Safety:
 - Fetches from a pinned commit SHA, never a mutable branch, so the content
-  can't change under us between review and execution.
+  cannot change between review and execution.
 - Verifies the fetched file's SHA-256 against a recorded-at-review-time
   value before parsing anything.
 - Extracts only the numeric array literal and parses it with

@@ -49,3 +49,6 @@ dev = [
 Homepage = "https://github.com/ACCESS-NRI/pyISSM"
 Repository = "https://github.com/ACCESS-NRI/pyISSM"
 Issues = "https://github.com/ACCESS-NRI/pyISSM/issues"
+
+[tool.setuptools.package-data]
+pyissm = ["assets/*.csv"]
