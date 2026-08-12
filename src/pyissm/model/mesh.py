@@ -7,6 +7,7 @@ import contextlib
 import numpy as np
 import os
 import collections
+import uuid
 import matplotlib.tri as tri
 from scipy.interpolate import griddata
 import warnings
@@ -1434,14 +1435,26 @@ def _gmsh_session():
     """
     Context manager wrapping a Gmsh API session.
 
-    Runs `gmsh.initialize()` on entry and guarantees `gmsh.finalize()` on
-    exit (including on error), since the Gmsh API is a global session/state
-    machine that does not clean up on garbage collection.
+    If no Gmsh session is currently active, initializes one and
+    guarantees `gmsh.finalize()` on exit (including on error), since the
+    Gmsh API is a global session/state machine that does not clean up on
+    garbage collection. If a session is already active - e.g. a caller
+    that itself already called `gmsh.initialize()` before invoking a
+    function that uses this context manager - reuses it as-is and leaves
+    it running on exit: `gmsh.initialize()` is a no-op (not a reset) on an
+    already-active session, so finalizing here would silently invalidate
+    the caller's own models, views, and options. Only a session this
+    context manager itself created is finalized.
 
     Yields
     ------
     gmsh : module
-        The initialized `gmsh` module.
+        The gmsh module, with an active session.
+    owns_session : bool
+        True if this call initialized the session (and will finalize it
+        on exit); False if it reused an already-active session, in which
+        case the caller is responsible for removing any models/views it
+        creates before the `with` block ends.
 
     Raises
     ------
@@ -1454,11 +1467,38 @@ def _gmsh_session():
         raise RuntimeError("pyissm.model.mesh._gmsh_session: the 'gmsh' package is required "
                             "(pip install gmsh / conda install -c conda-forge gmsh)")
 
-    gmsh.initialize()
+    owns_session = not gmsh.isInitialized()
+    if owns_session:
+        gmsh.initialize()
     try:
-        yield gmsh
+        yield gmsh, owns_session
     finally:
-        gmsh.finalize()
+        if owns_session:
+            gmsh.finalize()
+
+def _unique_gmsh_model_name(gmsh, prefix):
+    """
+    Generate a model name guaranteed not to collide with any model already
+    present in the current Gmsh session - a fixed name (e.g. 'planet')
+    could otherwise collide with a model a caller-owned session already has.
+
+    Parameters
+    ----------
+    gmsh : module
+        The `gmsh` module, with an active session.
+    prefix : str
+        Human-readable prefix for the generated name.
+
+    Returns
+    -------
+    str
+        A model name not currently present in `gmsh.model.list()`.
+    """
+    existing = set(gmsh.model.list())
+    name = f'{prefix}_{uuid.uuid4().hex}'
+    while name in existing:
+        name = f'{prefix}_{uuid.uuid4().hex}'
+    return name
 
 def _gmsh_attach_refine_field(gmsh, node_tags, node_coords, tri_tags, tri_node_tags, metric,
                                source_model_name = 'refine_source'):
@@ -1499,6 +1539,10 @@ def _gmsh_attach_refine_field(gmsh, node_tags, node_coords, tri_tags, tri_node_t
         setting it as the active model's background mesh
         (`gmsh.model.mesh.field.setAsBackgroundMesh(field_tag)`); this
         function does not switch the active model itself.
+    view_tag : int
+        The underlying View tag, so the caller can remove it
+        (`gmsh.view.remove(view_tag)`) if it needs to clean up after
+        itself (e.g. when reusing a caller-owned Gmsh session).
     """
     metric = np.asarray(metric, dtype = float)
     if metric.shape[0] != len(node_tags):
@@ -1521,7 +1565,7 @@ def _gmsh_attach_refine_field(gmsh, node_tags, node_coords, tri_tags, tri_node_t
 
     field_tag = gmsh.model.mesh.field.add('PostView')
     gmsh.model.mesh.field.setNumber(field_tag, 'ViewTag', view_tag)
-    return field_tag
+    return field_tag, view_tag
 
 def gmshplanet(md, radius, resolution, refine = None, refinemetric = None):
     """
@@ -1578,53 +1622,109 @@ def gmshplanet(md, radius, resolution, refine = None, refinemetric = None):
         raise RuntimeError('md.mesh is not empty. Use md.mesh = pyissm.model.classes.mesh.mesh3dsurface() to reset the mesh.')
     if (refine is None) != (refinemetric is None):
         raise ValueError('pyissm.model.mesh.gmshplanet: refine and refinemetric must be given together')
-    if refine is not None and len(refinemetric) != refine.numberofvertices:
-        raise ValueError('pyissm.model.mesh.gmshplanet: '
-                          f'refinemetric length {len(refinemetric)} != refine.numberofvertices {refine.numberofvertices}')
+    if refine is not None:
+        refinemetric = np.asarray(refinemetric, dtype = float)
+        if refinemetric.ndim != 1 or refinemetric.shape[0] != refine.numberofvertices:
+            raise ValueError('pyissm.model.mesh.gmshplanet: refinemetric must be a 1-D array of length '
+                              f'refine.numberofvertices ({refine.numberofvertices}), got shape {refinemetric.shape}')
+        if not np.all(np.isfinite(refinemetric)) or np.any(refinemetric <= 0):
+            raise ValueError('pyissm.model.mesh.gmshplanet: refinemetric must be finite and strictly positive')
 
     radius_m = radius * 1.e3
     resolution_m = resolution * 1.e3
 
-    with _gmsh_session() as gmsh:
-        gmsh.option.setNumber('General.Terminal', 0)
-        # The default 2D algorithm (Frontal-Delaunay) produces zero elements
-        # on a full closed sphere surface (no boundary curve to seed from);
-        # MeshAdapt handles the periodic/degenerate-pole geometry correctly.
-        gmsh.option.setNumber('Mesh.Algorithm', 1)
-        gmsh.model.add('planet')
-        gmsh.model.occ.addSphere(0, 0, 0, radius_m)
-        gmsh.model.occ.synchronize()
+    with _gmsh_session() as (gmsh, owns_session):
+        # If this call is reusing a session it doesn't own, it must come
+        # out exactly as it went in: remember what was current and snapshot
+        # every session-global option this function may change, so both can
+        # be restored; use collision-free temporary model names rather than
+        # fixed ones, since a caller-owned session may already have models
+        # by those names; and clean up (models/view/options) in a finally
+        # block so a failure partway through does not leave the caller's
+        # session contaminated.
+        previous_model = None
+        previous_options = None
+        if not owns_session:
+            try:
+                previous_model = gmsh.model.getCurrent()
+            except Exception:
+                previous_model = None
+            option_names = ['General.Terminal', 'Mesh.Algorithm', 'Mesh.MeshSizeFactor', 'Mesh.MeshSizeMin',
+                             'Mesh.MeshSizeMax', 'Mesh.MeshSizeExtendFromBoundary', 'Mesh.MeshSizeFromPoints',
+                             'Mesh.MeshSizeFromCurvature']
+            previous_options = {name: gmsh.option.getNumber(name) for name in option_names}
 
-        if refine is not None:
-            prior_node_tags = np.arange(1, refine.numberofvertices + 1)
-            prior_node_coords = np.column_stack([refine.x, refine.y, refine.z]).ravel()
-            prior_tri_tags = np.arange(1, refine.numberofelements + 1)
-            prior_tri_node_tags = np.asarray(refine.elements, dtype = int).ravel()
+        planet_model = _unique_gmsh_model_name(gmsh, 'planet')
+        refine_model = None
+        view_tag = None
+        try:
+            gmsh.option.setNumber('General.Terminal', 0)
+            # The default 2D algorithm (Frontal-Delaunay) produces zero elements
+            # on a full closed sphere surface (no boundary curve to seed from);
+            # MeshAdapt handles the periodic/degenerate-pole geometry correctly.
+            gmsh.option.setNumber('Mesh.Algorithm', 1)
+            # Gmsh applies this global factor to every element size after
+            # Mesh.MeshSizeMin/Max - a non-default value inherited from a
+            # caller-owned session would silently scale every size computed
+            # below (uniform resolution_m or the refine background field).
+            gmsh.option.setNumber('Mesh.MeshSizeFactor', 1.0)
+            gmsh.model.add(planet_model)
+            gmsh.model.occ.addSphere(0, 0, 0, radius_m)
+            gmsh.model.occ.synchronize()
 
-            field_tag = _gmsh_attach_refine_field(gmsh, prior_node_tags, prior_node_coords,
-                                                   prior_tri_tags, prior_tri_node_tags, refinemetric)
-            gmsh.model.mesh.field.setAsBackgroundMesh(field_tag)
+            if refine is not None:
+                refine_model = _unique_gmsh_model_name(gmsh, 'refine_source')
+                prior_node_tags = np.arange(1, refine.numberofvertices + 1)
+                prior_node_coords = np.column_stack([refine.x, refine.y, refine.z]).ravel()
+                prior_tri_tags = np.arange(1, refine.numberofelements + 1)
+                prior_tri_node_tags = np.asarray(refine.elements, dtype = int).ravel()
 
-            # Session-global size options must be widened, and every other
-            # size source disabled, so the background field is the sole
-            # size driver (otherwise a narrower Mesh.MeshSizeMin/Max left
-            # over from a prior pass silently clamps the field).
-            gmsh.option.setNumber('Mesh.MeshSizeExtendFromBoundary', 0)
-            gmsh.option.setNumber('Mesh.MeshSizeFromPoints', 0)
-            gmsh.option.setNumber('Mesh.MeshSizeFromCurvature', 0)
-            gmsh.option.setNumber('Mesh.MeshSizeMin', 1)
-            gmsh.option.setNumber('Mesh.MeshSizeMax', 1.e6)
-        else:
-            gmsh.option.setNumber('Mesh.MeshSizeMin', resolution_m)
-            gmsh.option.setNumber('Mesh.MeshSizeMax', resolution_m)
+                field_tag, view_tag = _gmsh_attach_refine_field(gmsh, prior_node_tags, prior_node_coords,
+                                                                  prior_tri_tags, prior_tri_node_tags, refinemetric,
+                                                                  source_model_name = refine_model)
+                gmsh.model.mesh.field.setAsBackgroundMesh(field_tag)
 
-        gmsh.model.mesh.generate(2)
+                # Disable every other size source so the background field is
+                # the sole size driver (each defaults to enabled in a fresh
+                # Gmsh session).
+                gmsh.option.setNumber('Mesh.MeshSizeExtendFromBoundary', 0)
+                gmsh.option.setNumber('Mesh.MeshSizeFromPoints', 0)
+                gmsh.option.setNumber('Mesh.MeshSizeFromCurvature', 0)
+                gmsh.option.setNumber('Mesh.MeshSizeMin', 1)
+                # Derived from refinemetric itself (with headroom for the
+                # background field's linear interpolation between vertices),
+                # rather than left at a fixed constant or an assumed-unbounded
+                # session default - either of those could silently clamp the
+                # metric if a Mesh.MeshSizeMax from elsewhere in the process is
+                # already set when this Gmsh session starts.
+                gmsh.option.setNumber('Mesh.MeshSizeMax', float(refinemetric.max()) * 1.5)
+            else:
+                gmsh.option.setNumber('Mesh.MeshSizeMin', resolution_m)
+                gmsh.option.setNumber('Mesh.MeshSizeMax', resolution_m)
 
-        node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
-        coords = node_coords.reshape(-1, 3)
-        elem_types, elem_tags, elem_node_tags = gmsh.model.mesh.getElements(dim = 2)
-        tri_type_idx = list(elem_types).index(2)
-        tris = np.asarray(elem_node_tags[tri_type_idx]).reshape(-1, 3)
+            gmsh.model.mesh.generate(2)
+
+            node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
+            node_tags = node_tags.copy()
+            coords = node_coords.reshape(-1, 3).copy()
+            elem_types, elem_tags, elem_node_tags = gmsh.model.mesh.getElements(dim = 2)
+            tri_type_idx = list(elem_types).index(2)
+            tris = np.asarray(elem_node_tags[tri_type_idx]).reshape(-1, 3).copy()
+        finally:
+            if not owns_session:
+                if view_tag is not None:
+                    gmsh.view.remove(view_tag)
+                existing_models = set(gmsh.model.list())
+                if refine_model is not None and refine_model in existing_models:
+                    gmsh.model.setCurrent(refine_model)
+                    gmsh.model.remove()
+                if planet_model in existing_models:
+                    gmsh.model.setCurrent(planet_model)
+                    gmsh.model.remove()
+                if previous_model is not None and previous_model in gmsh.model.list():
+                    gmsh.model.setCurrent(previous_model)
+                for option_name, option_value in previous_options.items():
+                    gmsh.option.setNumber(option_name, option_value)
 
     # Gmsh node tags are not guaranteed to be a dense 1..N sequence - map to
     # a dense 0-based index, then to pyISSM's 1-based elements convention.
