@@ -1,7 +1,84 @@
+import functools
+from importlib.resources import files
+
 import numpy as np
+import pandas as pd
+
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
 from pyissm.model import execute
+
+_LOVE_NUMBER_TYPES = [
+    'loadingverticaldisplacement',
+    'loadinggravitationalpotential',
+    'loadinghorizontaldisplacement',
+    'tidalverticaldisplacement',
+    'tidalgravitationalpotential',
+    'tidalhorizontaldisplacement',
+]
+
+# CF-frame degree-1 overrides (Blewitt 2003, JGR). Only the three
+# non-tidal displacement/potential types have a defined CF correction.
+_CF_DEGREE_1_OVERRIDE = {
+    'loadingverticaldisplacement': -0.269,
+    'loadinggravitationalpotential': 0.021,
+    'loadinghorizontaldisplacement': 0.134,
+}
+
+
+@functools.lru_cache(maxsize=1)
+def _load_love_table():
+    """
+    Load the packaged PREM Love-number table (degrees 0..10000, columns
+    h, k, l, th, tk, tl) as a (10001, 6) ndarray. Cached after first load.
+    """
+    path = files('pyissm').joinpath('assets/love_numbers.csv')
+    with path.open('r') as fh:
+        return pd.read_csv(fh).to_numpy()
+
+
+def get_love_numbers(love_type, referenceframe='CM', maxdeg=1000):
+    """
+    Look up a Love-number series from the packaged PREM table.
+
+    Parameters
+    ----------
+    love_type : str
+        One of 'loadingverticaldisplacement', 'loadinggravitationalpotential',
+        'loadinghorizontaldisplacement', 'tidalverticaldisplacement',
+        'tidalgravitationalpotential', 'tidalhorizontaldisplacement'.
+    referenceframe : str, default='CM'
+        'CM' (center of mass) or 'CF' (center of figure). CF applies a
+        degree-1 override (Blewitt 2003) for the three types that have one.
+    maxdeg : int, default=1000
+        Maximum spherical-harmonic degree to return; must be <= 10000.
+
+    Returns
+    -------
+    numpy.ndarray
+        1-D array of length maxdeg + 1 (degrees 0..maxdeg).
+    """
+    if maxdeg > 10000:
+        raise ValueError('pyissm.model.classes.lovenumbers.get_love_numbers: '
+                          'PREM Love numbers are only tabulated up to degree 10000')
+    if maxdeg < 0:
+        raise ValueError('pyissm.model.classes.lovenumbers.get_love_numbers: '
+                          'maxdeg must be >= 0')
+    if love_type not in _LOVE_NUMBER_TYPES:
+        raise ValueError('pyissm.model.classes.lovenumbers.get_love_numbers: '
+                          f'love_type must be one of {_LOVE_NUMBER_TYPES}')
+    if referenceframe not in ('CM', 'CF'):
+        raise ValueError("pyissm.model.classes.lovenumbers.get_love_numbers: "
+                          "referenceframe must be 'CM' or 'CF'")
+
+    col = _LOVE_NUMBER_TYPES.index(love_type)
+    series = _load_love_table()[:maxdeg + 1, col].copy()
+
+    if referenceframe == 'CF' and love_type in _CF_DEGREE_1_OVERRIDE and maxdeg >= 1:
+        series[1] = _CF_DEGREE_1_OVERRIDE[love_type]
+
+    return series
+
 
 @class_registry.register_class
 class lovenumbers(class_registry.manage_state):
@@ -16,6 +93,10 @@ class lovenumbers(class_registry.manage_state):
     ----------
     other : any, optional
         Any other class object that contains common fields to inherit from. If values in `other` differ from default values, they will override the default values.
+    maxdeg : int, optional
+        If given, populates all Love-number fields (elastic, single-epoch) from the packaged PREM table up to this spherical-harmonic degree (<= 10000). Takes precedence over `other`.
+    referenceframe : str, default='CM'
+        'CM' (center of mass) or 'CF' (center of figure). Only used when `maxdeg` is given.
 
     Attributes
     ----------
@@ -44,8 +125,8 @@ class lovenumbers(class_registry.manage_state):
 
     Methods
     -------
-    __init__(self, other=None)
-        Initializes the lovenumbers parameters, optionally inheriting from another instance.
+    __init__(self, other=None, maxdeg=None, referenceframe='CM')
+        Initializes the lovenumbers parameters, optionally inheriting from another instance and/or populating from the packaged PREM table.
     __repr__(self)
         Returns a detailed string representation of the lovenumbers parameters.
     __str__(self)
@@ -53,12 +134,10 @@ class lovenumbers(class_registry.manage_state):
     marshall_class(self, fid, prefix, md=None)
         Marshall parameters to a binary file
 
-    Notes
-    -----
-    This functionality is not yet fully implemented in the current version.
-
     Examples
     --------
+    md.lovenumbers = pyissm.model.classes.lovenumbers(maxdeg=10000)
+
     md.lovenumbers = pyissm.model.classes.lovenumbers()
     md.lovenumbers.h = h_love_numbers
     md.lovenumbers.k = k_love_numbers
@@ -66,7 +145,7 @@ class lovenumbers(class_registry.manage_state):
     """
 
     # Initialise with default parameters
-    def __init__(self, other = None):
+    def __init__(self, other = None, maxdeg = None, referenceframe = 'CM'):
         # Loading love numbers
         self.h = np.nan # Provided by PREM model
         self.k = np.nan # idem
@@ -87,12 +166,40 @@ class lovenumbers(class_registry.manage_state):
         # Inherit matching fields from provided class
         super().__init__(other)
 
+        # Populate from the packaged PREM table, taking precedence over `other`
+        if maxdeg is not None:
+            self._set_default_parameters(maxdeg, referenceframe)
+
+    def _set_default_parameters(self, maxdeg, referenceframe):
+        """
+        Populate all Love-number fields from the packaged PREM table up to
+        `maxdeg`, for the elastic (single-epoch) case.
+
+        Parameters
+        ----------
+        maxdeg : int
+            Maximum spherical-harmonic degree, <= 10000.
+        referenceframe : str
+            'CM' or 'CF'.
+        """
+        self.h = get_love_numbers('loadingverticaldisplacement', referenceframe, maxdeg).reshape(-1, 1)
+        self.k = get_love_numbers('loadinggravitationalpotential', referenceframe, maxdeg).reshape(-1, 1)
+        self.l = get_love_numbers('loadinghorizontaldisplacement', referenceframe, maxdeg).reshape(-1, 1)
+        self.th = get_love_numbers('tidalverticaldisplacement', referenceframe, maxdeg).reshape(-1, 1)
+        self.tk = get_love_numbers('tidalgravitationalpotential', referenceframe, maxdeg).reshape(-1, 1)
+        self.tl = get_love_numbers('tidalhorizontaldisplacement', referenceframe, maxdeg).reshape(-1, 1)
+        self.tk2secular = 0.942
+        self.pmtf_colinear = np.array([[0.0]])
+        self.pmtf_ortho = np.array([[0.0]])
+        if maxdeg >= 2:
+            self.pmtf_colinear = ((1.0 + self.k[2, :]) /
+                                   (1.0 - self.tk[2, :] / self.tk2secular)).reshape(-1, 1)
+        self.istime = 1
+        self.timefreq = np.zeros(1)
+
     # Define repr
     def __repr__(self):
-        s = '---------------------------------------\n'
-        s += '****      NOT YET IMPLEMENTED      ****\n'
-        s += '---------------------------------------\n\n'
-        s += '   lovenumbers parameters:\n'
+        s = '   lovenumbers parameters:\n'
         s += '{}\n'.format(class_utils._field_display(self, 'h', 'load Love number for radial displacement'))
         s += '{}\n'.format(class_utils._field_display(self, 'k', 'load Love number for gravitational potential perturbation'))
         s += '{}\n'.format(class_utils._field_display(self, 'l', 'load Love number for horizontal displacements'))
@@ -104,8 +211,6 @@ class lovenumbers(class_registry.manage_state):
         s += '{}\n'.format(class_utils._field_display(self, 'pmtf_ortho', 'Orthogonal component of the Polar Motion Transfer Function (couples x and y components, only used for Chandler Wobble)'))
         s += '{}\n'.format(class_utils._field_display(self, 'istime', 'time (default: 1) or frequency love numbers (0)'))
         s += '{}\n'.format(class_utils._field_display(self, 'timefreq', 'time/frequency vector (yr or 1/yr)'))
-        s += '{}\n'.format(class_utils._field_display(self, 'pmtf_colinear', 'Colinear component of the Polar Motion Transfer Function (e.g. x-motion due to x-component perturbation of the inertia tensor)'))
-        s += '{}\n'.format(class_utils._field_display(self, 'pmtf_ortho', 'Orthogonal component of the Polar Motion Transfer Function (couples x and y components, only used for Chandler Wobble)'))
         return s
 
     # Define class string
