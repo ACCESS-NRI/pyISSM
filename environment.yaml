@@ -26,6 +26,9 @@ dependencies:
   - attrs
   - pyyaml
 
+  # --- GRACE-Tutorial (ISSM-SESAW): global spherical mesh generation ---
+  - gmsh
+
   # --- Jupyter support (keep light, kernel-only) ---
   - ipykernel
 

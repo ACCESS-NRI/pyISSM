@@ -3,6 +3,7 @@
 Functions for building and interacting with an ISSM model mesh.
 
 """
+import contextlib
 import numpy as np
 import os
 import collections
@@ -1425,6 +1426,238 @@ def round_mesh(md,
     # Remove temporary exp file if not required
     if not keep_exp:
         os.remove(exp_output_name)
+
+    return md
+
+@contextlib.contextmanager
+def _gmsh_session():
+    """
+    Context manager wrapping a Gmsh API session.
+
+    Runs `gmsh.initialize()` on entry and guarantees `gmsh.finalize()` on
+    exit (including on error), since the Gmsh API is a global session/state
+    machine that does not clean up on garbage collection.
+
+    Yields
+    ------
+    gmsh : module
+        The initialized `gmsh` module.
+
+    Raises
+    ------
+    RuntimeError
+        If the optional `gmsh` package is not installed.
+    """
+    try:
+        import gmsh
+    except ImportError:
+        raise RuntimeError("pyissm.model.mesh._gmsh_session: the 'gmsh' package is required "
+                            "(pip install gmsh / conda install -c conda-forge gmsh)")
+
+    gmsh.initialize()
+    try:
+        yield gmsh
+    finally:
+        gmsh.finalize()
+
+def _gmsh_attach_refine_field(gmsh, node_tags, node_coords, tri_tags, tri_node_tags, metric,
+                               source_model_name = 'refine_source'):
+    """
+    Load a prior mesh's triangulation and per-vertex metric into a throwaway
+    discrete Gmsh model and return a 'PostView' field tag ready to be set as
+    the background mesh on a different, currently-active model.
+
+    Gmsh Views are session-global rather than tied to whichever model is
+    "current" when later used as a background field, so the prior mesh's
+    nodes/triangles are loaded as a real mesh into their own throwaway
+    discrete model, the View's NodeData is attached there, and the caller
+    references the View by tag alone - no shared node tags between the prior
+    and new mesh are required.
+
+    Parameters
+    ----------
+    gmsh : module
+        The initialized `gmsh` module (session must already be `gmsh.initialize()`d).
+    node_tags : ndarray, shape (nv,)
+        Prior mesh's node tags.
+    node_coords : ndarray, shape (3*nv,)
+        Prior mesh's flat node coordinates, in `node_tags` order.
+    tri_tags : ndarray, shape (nt,)
+        Prior mesh's triangle element tags.
+    tri_node_tags : ndarray, shape (3*nt,)
+        Prior mesh's flat triangle node-tag connectivity.
+    metric : ndarray, shape (nv,)
+        Desired local element size at each prior-mesh vertex, in `node_tags` order.
+    source_model_name : str, default='refine_source'
+        Name for the throwaway model that hosts the transferred mesh; must
+        not collide with an existing model name in the session.
+
+    Returns
+    -------
+    field_tag : int
+        A 'PostView' mesh-size field tag. The caller is responsible for
+        setting it as the active model's background mesh
+        (`gmsh.model.mesh.field.setAsBackgroundMesh(field_tag)`); this
+        function does not switch the active model itself.
+    """
+    metric = np.asarray(metric, dtype = float)
+    if metric.shape[0] != len(node_tags):
+        raise ValueError('pyissm.model.mesh._gmsh_attach_refine_field: '
+                          f'metric length {metric.shape[0]} != node_tags length {len(node_tags)}')
+
+    calling_model = gmsh.model.getCurrent()
+
+    gmsh.model.add(source_model_name)
+    gmsh.model.setCurrent(source_model_name)
+    surf_tag = gmsh.model.addDiscreteEntity(2)
+    gmsh.model.mesh.addNodes(2, surf_tag, node_tags, node_coords)
+    gmsh.model.mesh.addElements(2, surf_tag, [2], [tri_tags], [tri_node_tags])
+
+    view_tag = gmsh.view.add('refinemetric')
+    gmsh.view.addModelData(view_tag, 0, source_model_name, 'NodeData',
+                            node_tags, metric.reshape(-1, 1))
+
+    gmsh.model.setCurrent(calling_model)
+
+    field_tag = gmsh.model.mesh.field.add('PostView')
+    gmsh.model.mesh.field.setNumber(field_tag, 'ViewTag', view_tag)
+    return field_tag
+
+def gmshplanet(md, radius, resolution, refine = None, refinemetric = None):
+    """
+    Generate a triangular surface mesh on a sphere (planet) using Gmsh.
+
+    Builds the sphere directly via the Gmsh OCC kernel
+    (`gmsh.model.occ.addSphere`) and drives the Gmsh Python API end to end -
+    no CLI subprocess, no `.geo`/`.msh`/`.pos` temp files. Reprojects mesh
+    nodes exactly onto the sphere and populates `md.mesh` as a `mesh3dsurface`.
+
+    Parameters
+    ----------
+    md : pyissm.model.Model
+        Model object whose `.mesh` will be populated. Must have an empty mesh.
+    radius : float
+        Planet radius [km].
+    resolution : float
+        Target element size [km]. Ignored when `refine`/`refinemetric` are
+        given - the background-field metric is the sole size driver in that case.
+    refine : pyissm.model.classes.mesh.mesh3dsurface, optional
+        A prior mesh to refine (adaptive remesh). Requires `refinemetric`.
+    refinemetric : ndarray, optional
+        Per-vertex desired local element size [m], same length and vertex
+        order as `refine.numberofvertices`. Requires `refine`.
+
+    Returns
+    -------
+    md : pyissm.model.Model
+        The model with `.mesh` set to a populated `mesh3dsurface`.
+
+    Raises
+    ------
+    RuntimeError
+        If the optional `gmsh` package is not installed, or `md.mesh` is not empty.
+    ValueError
+        If exactly one of `refine`/`refinemetric` is given, or `refinemetric`'s
+        length does not match `refine.numberofvertices`.
+
+    Examples
+    --------
+    >>> import pyissm
+    >>> md = pyissm.Model()
+    >>> md = pyissm.model.mesh.gmshplanet(md, radius=6371.0, resolution=500.0)
+
+    >>> # Adaptive refinement using a metric computed on the initial mesh
+    >>> prior_mesh = md.mesh
+    >>> md.mesh = pyissm.model.classes.mesh.mesh3dsurface()
+    >>> md = pyissm.model.mesh.gmshplanet(md, radius=6371.0, resolution=500.0,
+    ...                                   refine=prior_mesh, refinemetric=metric)
+    """
+
+    # Error checks
+    if md.mesh.numberofelements:
+        raise RuntimeError('md.mesh is not empty. Use md.mesh = pyissm.model.classes.mesh.mesh3dsurface() to reset the mesh.')
+    if (refine is None) != (refinemetric is None):
+        raise ValueError('pyissm.model.mesh.gmshplanet: refine and refinemetric must be given together')
+    if refine is not None and len(refinemetric) != refine.numberofvertices:
+        raise ValueError('pyissm.model.mesh.gmshplanet: '
+                          f'refinemetric length {len(refinemetric)} != refine.numberofvertices {refine.numberofvertices}')
+
+    radius_m = radius * 1.e3
+    resolution_m = resolution * 1.e3
+
+    with _gmsh_session() as gmsh:
+        gmsh.option.setNumber('General.Terminal', 0)
+        # The default 2D algorithm (Frontal-Delaunay) produces zero elements
+        # on a full closed sphere surface (no boundary curve to seed from);
+        # MeshAdapt handles the periodic/degenerate-pole geometry correctly.
+        gmsh.option.setNumber('Mesh.Algorithm', 1)
+        gmsh.model.add('planet')
+        gmsh.model.occ.addSphere(0, 0, 0, radius_m)
+        gmsh.model.occ.synchronize()
+
+        if refine is not None:
+            prior_node_tags = np.arange(1, refine.numberofvertices + 1)
+            prior_node_coords = np.column_stack([refine.x, refine.y, refine.z]).ravel()
+            prior_tri_tags = np.arange(1, refine.numberofelements + 1)
+            prior_tri_node_tags = np.asarray(refine.elements, dtype = int).ravel()
+
+            field_tag = _gmsh_attach_refine_field(gmsh, prior_node_tags, prior_node_coords,
+                                                   prior_tri_tags, prior_tri_node_tags, refinemetric)
+            gmsh.model.mesh.field.setAsBackgroundMesh(field_tag)
+
+            # Session-global size options must be widened, and every other
+            # size source disabled, so the background field is the sole
+            # size driver (otherwise a narrower Mesh.MeshSizeMin/Max left
+            # over from a prior pass silently clamps the field).
+            gmsh.option.setNumber('Mesh.MeshSizeExtendFromBoundary', 0)
+            gmsh.option.setNumber('Mesh.MeshSizeFromPoints', 0)
+            gmsh.option.setNumber('Mesh.MeshSizeFromCurvature', 0)
+            gmsh.option.setNumber('Mesh.MeshSizeMin', 1)
+            gmsh.option.setNumber('Mesh.MeshSizeMax', 1.e6)
+        else:
+            gmsh.option.setNumber('Mesh.MeshSizeMin', resolution_m)
+            gmsh.option.setNumber('Mesh.MeshSizeMax', resolution_m)
+
+        gmsh.model.mesh.generate(2)
+
+        node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
+        coords = node_coords.reshape(-1, 3)
+        elem_types, elem_tags, elem_node_tags = gmsh.model.mesh.getElements(dim = 2)
+        tri_type_idx = list(elem_types).index(2)
+        tris = np.asarray(elem_node_tags[tri_type_idx]).reshape(-1, 3)
+
+    # Gmsh node tags are not guaranteed to be a dense 1..N sequence - map to
+    # a dense 0-based index, then to pyISSM's 1-based elements convention.
+    tag_to_index = {tag: i for i, tag in enumerate(node_tags)}
+    elements = np.vectorize(tag_to_index.get)(tris) + 1
+
+    x, y, z = coords[:, 0], coords[:, 1], coords[:, 2]
+    r = np.sqrt(x**2 + y**2 + z**2)
+    lat = np.degrees(np.arcsin(z / r))
+    lon = np.degrees(np.arctan2(y, x))
+
+    # Nudge exact poles off ±90 degrees so lon stays well-defined, then
+    # re-derive x/y/z/r from (lat, lon, radius) to snap exactly onto the sphere.
+    at_pole = np.abs(lat) == 90.
+    lat[at_pole] -= np.sign(lat[at_pole]) * 0.01
+
+    lat_rad = np.radians(lat)
+    lon_rad = np.radians(lon)
+    x = radius_m * np.cos(lat_rad) * np.cos(lon_rad)
+    y = radius_m * np.cos(lat_rad) * np.sin(lon_rad)
+    z = radius_m * np.sin(lat_rad)
+    r = np.full_like(x, radius_m)
+
+    md.mesh = model.classes.mesh.mesh3dsurface()
+    md.mesh.x = x
+    md.mesh.y = y
+    md.mesh.z = z
+    md.mesh.lat = lat
+    md.mesh.long = lon
+    md.mesh.r = r
+    md.mesh.elements = elements.astype(int)
+    md.mesh.numberofvertices = len(node_tags)
+    md.mesh.numberofelements = len(elements)
 
     return md
 

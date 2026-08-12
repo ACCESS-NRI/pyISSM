@@ -855,6 +855,7 @@ class mesh3dsurface(class_registry.manage_state):
         self.vertexconnectivity = np.nan
         self.elementconnectivity = np.nan
         self.average_vertex_connectivity = 25
+        self.scale_factor = np.nan
 
         self.extractedvertices = np.nan
         self.extractedelements = np.nan
