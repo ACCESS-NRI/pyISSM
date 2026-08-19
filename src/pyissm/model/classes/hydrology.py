@@ -1734,3 +1734,168 @@ class tws(class_registry.manage_state):
         ## Write fields
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'spcwatercolumn', format = 'DoubleMat', mattype = 1, timeserieslength =  md.mesh.numberofvertices + 1, yts = md.constants.yts)
         execute._write_model_field(fid, prefix, name = 'md.hydrology.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
+
+## ------------------------------------------------------
+## hydrology.prescribe
+## ------------------------------------------------------
+@class_registry.register_class
+class prescribe(class_registry.manage_state):
+    """
+    Prescribed hydrology class for ISSM.
+
+    This class contains the default parameters for the prescribed hydrology model in the ISSM framework.
+
+    Parameters
+    ----------
+    other : any, optional
+        Any other class object that contains common fields to inherit from. If values in ``other`` differ from default
+        values, they will override the default values.
+
+    Attributes
+    ----------
+    head : :class:`numpy.ndarray`
+        subglacial hydrology water head [m].
+    requested_outputs : :class:`list`, default=['default']
+        Additional outputs requested.
+
+    Examples
+    --------
+    .. code-block:: python
+
+        >>> md.hydrology = pyissm.model.classes.hydrology.prescribe()
+    """
+
+    # Initialise with default parameters
+    def __init__(self, other = None):
+        self.head = np.nan
+        self.requested_outputs = ['default']
+
+        # Inherit matching fields from provided class
+        super().__init__(other)
+
+    # Define repr
+    def __repr__(self):
+        s  = '   hydrologyprescribe solution parameters:'
+        s += '   This module is to simulate effective pressure Neff using hydraulic head from external subglacial hydrology model.'
+        s += '   Neff = rho_i g H - Pw'
+        s += '   Pw = rho_w g (head - z_b))'
+        s += '   H: ice thickness [m] / head: hydraulic head [m] / z_b: bedrock elevation'
+
+        s += '{}\n'.format(class_utils._field_display(self, 'head', 'subglacial hydrology water head (m)'))
+        return s
+
+    # Define class string
+    def __str__(self):
+        s = 'ISSM - hydrology.prescribe Class'
+        return s
+
+    # Extrude to 3D mesh
+    def _extrude(self, md):
+        """
+        Extrude [hydrology.prescribe] fields to 3D
+        """
+        self.head = mesh._project_3d(md, vector = self.head, type = 'node', layer = 1)
+
+        return self
+
+    # Check model consistency
+    def check_consistency(self, md, solution, analyses):
+        """
+        Check consistency of the [hydrology.prescribe] parameters.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`
+            The model object to check.
+        solution : :class:`str`
+            The solution name to check.
+        analyses : list of :class:`str`
+            List of analyses to check consistency for.
+
+        Returns 
+        -------
+        md : :class:`pyissm.model.Model`
+            The model object with any consistency errors noted.
+        """
+
+        # Early return if required analysis not present
+        if 'HydrologyPrescribe' not in analyses:
+            return md
+
+        if ~np.isempty(md.initialization.hydraulic_potential):
+            warnings.warn('WARN: md.initialization.hydraulic_potential is defined. However, this is not used for "hydrologyprescribe" model.')
+
+        class_utils._check_field(md, fieldname = 'hydrology.head', size = (md.mesh.numberofvertices, ), allow_nan = False, allow_inf = False)
+
+        return md
+
+    # Process requested outputs, expanding 'default' to appropriate outputs
+    def _process_outputs(self,
+                        md = None,
+                        return_default_outputs = False):
+        """
+        Process requested outputs for [hydrology.prescribe] parameters, expanding 'default' to appropriate outputs.
+
+        Parameters
+        ----------
+        md : :class:`pyissm.model.Model`, optional
+            Model object containing mesh information.
+        return_default_outputs : :class:`bool`, default=False
+            Whether to also return the list of default outputs.
+            
+        Returns
+        -------
+        outputs : :class:`list`
+            List of output strings with 'default' expanded to actual output names.
+        default_outputs : :class:`list`, optional
+            Returned only if `return_default_outputs=True`.
+        """
+
+        outputs = []
+
+        ## Set default_outputs
+        default_outputs = ['HydrologyHead','EffectivePressure']
+
+        ## Loop through all requested outputs
+        for item in self.requested_outputs:
+            
+            ## Process default outputs
+            if item == 'default':
+                    outputs.extend(default_outputs)
+
+            ## Append other requested outputs (not defaults)
+            else:
+                outputs.append(item)
+
+        if return_default_outputs:
+            return outputs, default_outputs
+        return outputs
+
+    # Marshall method for saving the hydrology.shakti parameters
+    def marshall_class(self, fid, prefix, md = None):
+        """
+        Marshall [hydrology.shakti] parameters to a binary file.
+
+        Parameters
+        ----------
+        fid : :class:`file object`
+            The file object to write the binary data to.
+        prefix : :class:`str`
+            Prefix string used for data identification in the binary file.
+        md : :class:`pyissm.model.Model`, optional
+            ISSM model object needed in some cases.
+            
+        Returns
+        -------
+        None
+        """
+
+        ## Write header field
+        # NOTE: data types must match the expected types in the ISSM code.
+        execute._write_model_field(fid, prefix, name = 'md.hydrology.model', data = 10, format = 'Integer')
+
+        ## Write DoubleMat fields
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'head', format = 'DoubleMat', mattype = 1)
+
+        ## Write other fields
+        execute._write_model_field(fid, prefix, name = 'md.hydrology.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
