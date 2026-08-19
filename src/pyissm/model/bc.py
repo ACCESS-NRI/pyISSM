@@ -44,6 +44,27 @@ def _set_neumann_bc(md, node_on_ice_front):
     # Mark ice front position in the level set
     md.mask.ice_levelset[ice_front_nodes] = 0
 
+
+def _get_boundary_face_nodes(md):
+    """Return one-based node indices for each lateral boundary face."""
+
+    element_type = md.mesh.element_type()
+    if element_type == 'Tria':
+        return np.asarray(md.mesh.segments, dtype=int)[:, :2]
+
+    if element_type == 'Penta':
+        edge_nodes = np.asarray(md.mesh.segments2d, dtype=int)[:, :2]
+        layer_offsets = (
+            np.arange(md.mesh.numberoflayers - 1, dtype=int)
+            * md.mesh.numberofvertices2d
+        )
+        lower_nodes = edge_nodes[None, :, :] + layer_offsets[:, None, None]
+        upper_nodes = lower_nodes + md.mesh.numberofvertices2d
+        return np.concatenate((lower_nodes, upper_nodes), axis=2).reshape(-1, 4)
+
+    raise NameError(f"set_dirichlet_bc: Unsupported mesh type '{element_type}'.")
+
+
 def _set_sb_dirichlet_bc(md):
     """Set Dirichlet boundary conditions on boundary (excluding ice front)."""
 
@@ -54,30 +75,17 @@ def _set_sb_dirichlet_bc(md):
     md.stressbalance.referential = np.nan * np.ones((md.mesh.numberofvertices, 6))
     md.stressbalance.loadingforce = 0 * np.ones((md.mesh.numberofvertices, 3))
 
-    # Identify mesh type and number of nodes on ice front segments
-    if md.mesh.element_type() == 'Penta':
-        num_nodes_on_front = 4
-    elif md.mesh.element_type() == 'Tria':
-        num_nodes_on_front = 2
-    else:
-        raise NameError(f"set_dirichlet_bc: Unsupported mesh type '{md.mesh.element_type()}'.")
-    
-    # Find segnments not completely on the ice front
-    if np.any(md.mask.ice_levelset <= 0):
-        ## Get ice_levelset values for each boundary segment (exclude last column)
-        ice_levelset_values = md.mask.ice_levelset[md.mesh.segments[:, :-1] - 1]
-        
-        ## Convert to binary
-        ice_front_segments = 1 - ice_levelset_values
-        
-        ## Identify segments not completely on the ice front -- A segment is not on the ice front if the sum of its ice_front_segments values is not equal to num_nodes_on_front
-        segments_not_on_front = np.nonzero(np.sum(ice_front_segments, axis=1) != num_nodes_on_front)[0]
-
-        ## Get all nodes not on ice-front
-        boundary_node_indices = md.mesh.segments[segments_not_on_front, :-1] - 1
-    else:
-        ## If no nodes are ice, select all boundary nodes
-        boundary_node_indices = np.nonzero(md.mesh.vertexonboundary)[0]
+    # A 2D mesh stores boundary edges in ``segments``. An extruded prism mesh
+    # retains those edges in ``segments2d``; expand them through every layer to
+    # recover the four-node lateral faces used to distinguish the ice front.
+    boundary_faces = _get_boundary_face_nodes(md)
+    face_is_ice_front = np.all(
+        md.mask.ice_levelset[boundary_faces - 1] == 0,
+        axis=1,
+    )
+    boundary_node_indices = np.unique(
+        boundary_faces[~face_is_ice_front].ravel() - 1
+    )
     
     # Apply Dirichlet conditions
     ## If observed velocities are available, use them as Dirichlet values
