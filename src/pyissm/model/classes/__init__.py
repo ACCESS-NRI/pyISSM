@@ -21,7 +21,7 @@ from pyissm.model.classes.friction import default, coulomb, coulomb2, hydro, jos
 from pyissm.model.classes.frontalforcings import default, rignot, rignotarma
 from pyissm.model.classes.geometry import geometry
 from pyissm.model.classes.groundingline import groundingline
-from pyissm.model.classes.hydrology import armapw, dc, glads, pism, shakti, shreve, tws
+from pyissm.model.classes.hydrology import armapw, dc, glads, pism, shakti, shreve, tws, prescribe
 from pyissm.model.classes.independent import independent
 from pyissm.model.classes.initialization import initialization
 from pyissm.model.classes.inversion import default, m1qn3, tao, adm1qn3

@@ -1241,6 +1241,7 @@ def _get_analysis_for_solution(solution_type):
                                         'HydrologyTwsAnalysis',
                                         'HydrologyDCInefficientAnalysis',
                                         'HydrologyDCEfficientAnalysis',
+                                        'HydrologyPrescribeAnalysis',
                                         'SealevelchangeAnalysis',
                                         'AgeAnalysis',
                                         'HydrologyArmapwAnalysis',
@@ -1253,7 +1254,8 @@ def _get_analysis_for_solution(solution_type):
                                             'HydrologyGladsAnalysis',
                                             'HydrologyShaktiAnalysis',
                                             'HydrologyTwsAnalysis',
-                                            'HydrologyArmapwAnalysis'],
+                                            'HydrologyArmapwAnalysis',
+                                            'HydrologyPrescribeAnalysis'],
                         'DamageEvolutionSolution': ['DamageEvolutionAnalysis'],
                         'SamplingSolution': ['SamplingAnalysis']
                         }
