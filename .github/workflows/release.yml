@@ -33,18 +33,68 @@ jobs:
       contents: write
 
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v5
-        with:
-          name: ${{ needs.publish_python_package.outputs.artifact-name }}
-          path: dist
+# Job 3: Create GitHub Release
+create-github-release:
+  name: Create GitHub Release
+  runs-on: ubuntu-latest
+  needs: publish_python_package
+  permissions:
+    contents: write
 
-      - name: Create Release
-        uses: softprops/action-gh-release@6cbd405e2c4e67a21c47fa9e383d020e4e28b836 #v2.3.3
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: pyISSM ${{ github.ref_name }}
-          generate_release_notes: true
-          fail_on_unmatched_files: true
-          files: |
-            dist/*
+  steps:
+    - name: Download Python artifact
+      uses: actions/download-artifact@v8
+      with:
+        name: ${{ needs.publish_python_package.outputs.python-artifact-name }}
+        path: dist
+
+    - name: Download Conda artifact
+      uses: actions/download-artifact@v8
+      with:
+        name: ${{ needs.publish_python_package.outputs.conda-artifact-name }}
+        path: dist
+
+    - name: Show release files
+      run: find dist -maxdepth 2 -type f -print
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v3
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: pyISSM ${{ github.ref_name }}
+        generate_release_notes: true
+        fail_on_unmatched_files: true
+        files: |
+          dist/*# Job 3: Create GitHub Release
+create-github-release:
+  name: Create GitHub Release
+  runs-on: ubuntu-latest
+  needs: publish_python_package
+  permissions:
+    contents: write
+
+  steps:
+    - name: Download Python artifact
+      uses: actions/download-artifact@v8
+      with:
+        name: ${{ needs.publish_python_package.outputs.python-artifact-name }}
+        path: dist
+
+    - name: Download Conda artifact
+      uses: actions/download-artifact@v8
+      with:
+        name: ${{ needs.publish_python_package.outputs.conda-artifact-name }}
+        path: dist
+
+    - name: Show release files
+      run: find dist -maxdepth 2 -type f -print
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v3
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: pyISSM ${{ github.ref_name }}
+        generate_release_notes: true
+        fail_on_unmatched_files: true
+        files: |
+          dist/*
