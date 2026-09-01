@@ -8,6 +8,8 @@ import numpy as np
 import pytest
 from types import SimpleNamespace
 
+from .conftest import requires_issm
+
 try:
     from pyissm.model.classes.constants import constants
     from pyissm.model.classes.debug import debug
@@ -791,6 +793,7 @@ class TestRegionaloutput:
         assert 'regional' in str(r).lower()
 
 
+@requires_issm
 class TestToolkits:
     """Tests for toolkits class."""
 

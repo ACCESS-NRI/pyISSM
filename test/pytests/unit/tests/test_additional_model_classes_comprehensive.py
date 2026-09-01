@@ -14,6 +14,8 @@ Tests to increase code coverage to 50%.
 import pytest
 import numpy as np
 
+from .conftest import requires_issm
+
 
 # ============== THERMAL TESTS ==============
 
@@ -1149,6 +1151,7 @@ class TestOfflinesolidearthsolutionComprehensive:
 
 # ============== TOOLKITS TESTS ==============
 
+@requires_issm
 class TestToolkitsComprehensive:
     """Comprehensive tests for toolkits class."""
 
