@@ -127,6 +127,9 @@ class default(class_registry.manage_state):
 
         if self.coupling == 3:
             class_utils._check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
+        elif self.coupling == 4:
+            if not md.transient.ishydrology:
+                class_utils._check_field(md,message='md.friction.coupling = 4 but md.transient.ishydrology = 0!')
 
         return md
 
@@ -1331,6 +1334,9 @@ class schoof(class_registry.manage_state):
         
         if self.coupling == 3:
             class_utils._check_field(md, fieldname = 'friction.effective_pressure', timeseries = True, allow_nan = False, allow_inf = False)
+        elif self.coupling == 4:
+            if not md.transient.ishydrology:
+                class_utils._check_field(md,message='md.friction.coupling = 4 but md.transient.ishydrology = 0!')
 
         return md
     
