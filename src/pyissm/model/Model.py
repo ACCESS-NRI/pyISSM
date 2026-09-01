@@ -957,6 +957,7 @@ class Model():
             md.friction.coefficient = mesh._project_2d(md, md.friction.coefficient, 1)
             md.friction.p = mesh._project_2d(md, md.friction.p, 1)
             md.friction.q = mesh._project_2d(md, md.friction.q, 1)
+            md.friction.effective_pressure = mesh._project_2d(md, md.friction.effective_pressure, 1)
         elif isinstance(md.friction, classes.friction.coulomb):
             md.friction.coefficient = mesh._project_2d(md, md.friction.coefficient, 1)
             md.friction.coefficientcoulomb = mesh._project_2d(md, md.friction.coefficientcoulomb, 1)
@@ -975,6 +976,11 @@ class Model():
         elif isinstance(md.friction, classes.friction.weertman):
             md.friction.C = mesh._project_2d(md, md.friction.C, 1)
             md.friction.m = mesh._project_2d(md, md.friction.m, 1)
+        elif isinstance(md.friction, classes.friction.schoof):
+            md.friction.C = mesh._project_2d(md, md.friction.C, 1)
+            md.friction.Cmax = mesh._project_2d(md, md.friction.Cmax, 1)
+            md.friction.m = mesh._project_2d(md, md.friction.m, 1)
+            md.friction.effective_pressure = mesh._project_2d(md, md.friction.effective_pressure, 1)
         else:
             raise Exception('pyissm.model.Model.collapse: Friction type not supported for collapse.')
 
