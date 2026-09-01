@@ -146,6 +146,19 @@ class TestSelectEpochIndices:
             grace_module._select_epoch_indices(self.decimal_year, 2010.8, 2010.0)
 
 
+class TestFillMaskedCells:
+
+    def test_replaces_nan_with_fill_value(self):
+        da = xr.DataArray([1.0, np.nan, 3.0])
+        filled = grace_module._fill_masked_cells(da)
+        assert np.array_equal(filled.values, [1.0, 0.0, 3.0])
+
+    def test_custom_fill_value(self):
+        da = xr.DataArray([1.0, np.nan, 3.0])
+        filled = grace_module._fill_masked_cells(da, fill_value = -1.0)
+        assert np.array_equal(filled.values, [1.0, -1.0, 3.0])
+
+
 class TestPadLongitudeSeam:
 
     def test_padded_shape_and_monotonic(self, grace_nc_path):
@@ -230,6 +243,24 @@ class TestGrace:
             lat = np.array([LAT[NAN_LAT_INDEX]]), long = np.array([LON[NAN_LON_INDEX]]), elements = np.array([[1, 1, 1]])))
         water_load = grace_module.grace(md, dy, dy, grace_nc_path, onvertex = True)
         assert water_load[0, 0] == 0.0
+
+    def test_interpolation_between_valid_and_masked_cell_is_not_zero(self, grace_nc_path):
+        # Regression test (Codex adversarial review, 2026-09-02): a query
+        # point straddling a valid cell and the deliberately-missing/masked
+        # cell must NOT come out as NaN-then-zeroed — the masked cell is
+        # filled to 0 before interpolation, so this should recover a
+        # well-defined linear blend between 0 and the valid cell's value,
+        # not an artefactual zero from NaN contamination.
+        dy = grace_module._to_decimal_year(MONTHS.values)[NAN_TIME_INDEX]
+        valid_lon_idx = NAN_LON_INDEX + 1
+        midpoint_long = (LON[NAN_LON_INDEX] + LON[valid_lon_idx]) / 2.0
+        md = SimpleNamespace(mesh = SimpleNamespace(
+            lat = np.array([LAT[NAN_LAT_INDEX]]), long = np.array([midpoint_long]), elements = np.array([[1, 1, 1]])))
+        water_load = grace_module.grace(md, dy, dy, grace_nc_path, onvertex = True)
+        valid_cm = 100 * NAN_TIME_INDEX + 10 * NAN_LAT_INDEX + valid_lon_idx
+        expected = ((0.0 + valid_cm) / 2.0) / 100.0
+        assert water_load[0, 0] == pytest.approx(expected, abs = 1e-6)
+        assert water_load[0, 0] != 0.0
 
 
 class TestGraceRealFile:

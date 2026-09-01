@@ -137,6 +137,42 @@ def _select_epoch_indices(decimal_year, tmin, tmax):
     return np.arange(idx_min, idx_max + 1)
 
 # ---------------------------------------------------------------------------
+# Masked-cell handling
+# ---------------------------------------------------------------------------
+
+def _fill_masked_cells(lwe_thickness, fill_value = 0.0):
+
+    """
+    Replace masked (NaN) grid cells with `fill_value` before interpolation.
+
+    `xr_to_mesh`'s linear interpolation (`scipy.interpolate.RegularGridInterpolator`)
+    returns NaN for a query point whenever *any* corner of its bracketing
+    grid cell is NaN — not only for points genuinely outside the dataset's
+    coverage. This product masks out ocean cells entirely ("LAND ONLY
+    PIXELS"), so leaving them as NaN silently zeroes out perfectly valid
+    land queries near the coast whenever their interpolation stencil
+    touches an adjacent ocean cell — exactly where `gmtmask`-driven coastal
+    mesh refinement concentrates vertices. Filling masked cells with
+    `fill_value` (no assumed land-water loading over ocean, by default)
+    keeps interpolation physically meaningful right up to the coastline,
+    instead of contaminating it with NaN.
+
+    Parameters
+    ----------
+    lwe_thickness : xr.DataArray
+        The `lwe_thickness` variable (or any subset of it).
+    fill_value : float, optional
+        Value substituted for masked cells. Default `0.0`.
+
+    Returns
+    -------
+    xr.DataArray
+        `lwe_thickness` with NaNs replaced by `fill_value`.
+    """
+
+    return lwe_thickness.fillna(fill_value)
+
+# ---------------------------------------------------------------------------
 # Longitude-seam handling
 # ---------------------------------------------------------------------------
 
@@ -324,14 +360,18 @@ def grace(md, tmin, tmax, filename, onvertex = True):
     -------
     ndarray, shape (nv or ne, n_months)
         Water load in METRES of water equivalent, one column per selected
-        month. NaNs (points outside GRACE's land-only coverage, or genuinely
-        missing data) are replaced with 0.
+        month. Ocean/masked source cells are treated as zero load *before*
+        interpolation (see `_fill_masked_cells`), so land queries near the
+        coast are not contaminated by adjacent NaN cells; any output still
+        NaN afterwards (a query genuinely outside the grid's coverage) is
+        also replaced with 0.
     """
 
     ds = _open_grace_dataset(filename)
     try:
         decimal_year = _to_decimal_year(ds['time'].values)
         time_indices = _select_epoch_indices(decimal_year, tmin, tmax)
+        ds[LWE_THICKNESS_VAR] = _fill_masked_cells(ds[LWE_THICKNESS_VAR])
         ds_padded = _pad_longitude_seam(ds)
 
         if onvertex:
