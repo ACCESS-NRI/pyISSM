@@ -12,20 +12,10 @@ They will be skipped if the backend cannot be loaded.
 
 import pytest
 
-try:
-    from pyissm.model import Model
-    # Test if Model can actually be instantiated (catches lazy loading failures)
-    _test_model = Model()
-    del _test_model
-    ISSM_AVAILABLE = True
-except (ImportError, RuntimeError, OSError) as e:
-    ISSM_AVAILABLE = False
-    Model = None
+from pyissm.model import Model
+from .conftest import requires_issm
 
-pytestmark = pytest.mark.skipif(
-    not ISSM_AVAILABLE,
-    reason="ISSM backend not available (wrapper failed to load)"
-)
+pytestmark = requires_issm
 
 
 class TestModelInitialization:

@@ -7,17 +7,11 @@ Tests cover Model initialization, repr, str, and various methods.
 import pytest
 import copy
 
-try:
-    from pyissm.model import Model
-    from pyissm.model.classes import class_registry
-    MODEL_AVAILABLE = True
-except ImportError:
-    MODEL_AVAILABLE = False
+from pyissm.model import Model
+from pyissm.model.classes import class_registry
+from .conftest import requires_issm
 
-pytestmark = pytest.mark.skipif(
-    not MODEL_AVAILABLE,
-    reason="Model not available"
-)
+pytestmark = requires_issm
 
 
 class TestModelInitializationComprehensive:

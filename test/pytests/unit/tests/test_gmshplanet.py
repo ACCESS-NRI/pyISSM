@@ -13,13 +13,18 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 
+from .conftest import requires_issm
+
 try:
     import gmsh
     GMSH_AVAILABLE = True
 except ImportError:
     GMSH_AVAILABLE = False
 
-pytestmark = pytest.mark.skipif(not GMSH_AVAILABLE, reason="gmsh not available")
+pytestmark = [
+    pytest.mark.skipif(not GMSH_AVAILABLE, reason="gmsh not available"),
+    requires_issm,
+]
 
 if GMSH_AVAILABLE:
     mesh_module = import_module('pyissm.model.mesh')

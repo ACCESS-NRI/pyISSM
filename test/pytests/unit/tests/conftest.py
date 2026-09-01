@@ -2,22 +2,26 @@
 Shared pytest fixtures for pyISSM unit tests.
 """
 
+import subprocess
+import sys
+
 import numpy as np
 import pytest
 from types import SimpleNamespace
 
 
-# Check if ISSM backend is available by attempting to create a Model
-# This catches lazy loading failures from the C++ wrappers
+# Check if ISSM backend is available by attempting to create a Model.
+# Run out-of-process: a Python/ABI mismatch between this interpreter and a
+# locally-compiled ISSM's native wrapper crashes with a segfault, not a
+# catchable Python exception, which would otherwise take the whole pytest
+# session down with it.
 def _check_issm_available():
-    """Check if ISSM backend can be loaded."""
-    try:
-        from pyissm.model import Model
-        _test = Model()
-        del _test
-        return True
-    except (ImportError, RuntimeError, OSError):
-        return False
+    """Check if ISSM backend can be loaded, without risking a segfault here."""
+    result = subprocess.run(
+        [sys.executable, '-c', 'from pyissm.model import Model; Model()'],
+        capture_output=True,
+    )
+    return result.returncode == 0
 
 ISSM_AVAILABLE = _check_issm_available()
 
