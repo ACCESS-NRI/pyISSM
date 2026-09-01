@@ -6,7 +6,7 @@ channels:
 
 dependencies:
   # --- match analysis3 core pins that matter for the ISSM/pyISSM stack ---
-  - python==3.11.*
+  - python==3.12.*
   - numpy==1.26.*
   - scipy==1.16.*
   - pandas==2.3.*
@@ -26,8 +26,9 @@ dependencies:
   - attrs
   - pyyaml
 
-  # --- GRACE-Tutorial (ISSM-SESAW): global spherical mesh generation ---
+  # --- ISSM-SESAW: sea-level fingerprint modelling (mesh generation, ocean/land masking) ---
   - gmsh
+  - cartopy
 
   # --- Jupyter support (keep light, kernel-only) ---
   - ipykernel

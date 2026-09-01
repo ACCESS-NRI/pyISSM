@@ -31,7 +31,8 @@ dependencies = [
     "attrs",
     "PyYAML",
     "geopandas",
-    "gmsh"
+    "gmsh",
+    "cartopy"
 ]
 
 [project.optional-dependencies]
