@@ -6,7 +6,7 @@ from pyissm.model.classes import rotational
 from pyissm.model.classes import lovenumbers
 from pyissm.model.classes import mesh
 from pyissm import tools
-from pyissm.model import execute, mesh
+from pyissm.model import execute
 
 ## ------------------------------------------------------
 ## solidearth.earth
@@ -153,9 +153,9 @@ class earth(class_registry.manage_state):
 
         class_utils._check_field(md, fieldname = 'solidearth.requested_outputs', string_list = True)
 
-        settings.check_consistency(md, solution, analyses)
-        lovenumbers.check_consistency(md, solution, analyses)
-        rotational.check_consistency(md, solution, analyses)
+        self.settings.check_consistency(md, solution, analyses)
+        self.lovenumbers.check_consistency(md, solution, analyses)
+        self.rotational.check_consistency(md, solution, analyses)
         if self.external:
             if not isinstance(self.external, solution):
                 raise Exception('pyissm.model.classes.solidearth.earth.check_consistency: external field should be a pyissm.model.classes.solidearth.solution')
@@ -411,9 +411,9 @@ class europa(class_registry.manage_state):
 
         class_utils._check_field(md, fieldname = 'solidearth.requested_outputs', string_list = True)
 
-        settings.check_consistency(md, solution, analyses)
-        lovenumbers.check_consistency(md, solution, analyses)
-        rotational.check_consistency(md, solution, analyses)
+        self.settings.check_consistency(md, solution, analyses)
+        self.lovenumbers.check_consistency(md, solution, analyses)
+        self.rotational.check_consistency(md, solution, analyses)
         if self.external:
             if not isinstance(self.external, solution):
                 raise Exception('pyissm.model.classes.solidearth.europa.check_consistency: external field should be a pyissm.model.classes.solidearth.solution')
@@ -569,15 +569,15 @@ class settings(class_registry.manage_state):
         Compute GRD patterns (0 or 1). Default 0: not computed.
     compute_bp_grd : int, default=0
         Compute GRD patterns for bottom pressure loads (0 or 1). Default 0: not computed.
-    degacc : float, default=0
-        Accuracy for numerical discretization of Green's functions [degrees]. Default: 0.01 deg.
-    timeacc : float, default=0
-        Time accuracy for numerical discretization of Green's functions [years]. Default: 1 year.
+    degacc : float, default=0.01
+        Accuracy for numerical discretization of Green's functions [degrees].
+    timeacc : float, default=1
+        Time accuracy for numerical discretization of Green's functions [years].
     horiz : int, default=0
         Horizontal displacement calculation flag.
     grdmodel : int, default=0
         Type of deformation model. 0: no GRD, 1: spherical GRD (SESAW), 2: half-space planar GRD (Ivins).
-    cross_section_shape : int, default=0
+    cross_section_shape : int, default=1
         Cross-section shape for loading. 1: square-edged (default), 2: elliptical.
 
     Methods
@@ -627,11 +627,11 @@ class settings(class_registry.manage_state):
         self.sealevelloading = 1
         self.isgrd = 0
         self.compute_bp_grd = 0
-        self.degacc = 0
-        self.timeacc = 0
+        self.degacc = 0.01
+        self.timeacc = 1
         self.horiz = 0
         self.grdmodel = 0
-        self.cross_section_shape = 0
+        self.cross_section_shape = 1
 
         # Inherit matching fields from provided class
         super().__init__(other)
