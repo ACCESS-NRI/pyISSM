@@ -10,6 +10,7 @@ import collections
 import uuid
 import matplotlib.tri as tri
 from scipy.interpolate import griddata
+from scipy.spatial import cKDTree
 import warnings
 from pyissm import model, tools
 
@@ -1760,6 +1761,87 @@ def gmshplanet(md, radius, resolution, refine = None, refinemetric = None):
     md.mesh.numberofelements = len(elements)
 
     return md
+
+def coastal_distance_metric(lat, long, ocean, mindist_coast, mindist_land, maxdist, radius = 6371.012e3):
+
+    """
+    Build a per-vertex mesh-refinement target size from distance to the coast.
+
+    Produces a `gmshplanet`-compatible `refinemetric`: finest near the coast,
+    coarsest far from it. Since only a per-vertex ocean/land classification is
+    available (e.g. from `pyissm.data.ocean_mask.gmtmask`), not explicit
+    coastline geometry, "distance to the coast" is approximated as each
+    vertex's distance to the nearest vertex of the *opposite* classification -
+    a vectorised `scipy.spatial.cKDTree` nearest-neighbour query on 3-D unit
+    vectors, not the classic nested-loop distance-to-every-other-point
+    approach. At typical mesh resolutions this is a reasonable proxy for
+    distance to the true coastline, and is exactly the coastal band that
+    refinement is meant to resolve. The result is clamped to a floor/ceiling
+    target element size, with separate floors for ocean and land vertices.
+
+    Parameters
+    ----------
+    lat : ndarray
+        Vertex latitude, decimal degrees.
+    long : ndarray
+        Vertex longitude, decimal degrees.
+    ocean : ndarray
+        Per-vertex ocean/land classification (1 = ocean, 0 = land), e.g. from
+        `pyissm.data.ocean_mask.gmtmask`.
+    mindist_coast : float
+        Minimum (finest) target element size for ocean vertices, metres.
+    mindist_land : float
+        Minimum (finest) target element size for land vertices, metres.
+    maxdist : float
+        Maximum (coarsest) target element size far from the coast, metres.
+    radius : float, optional
+        Sphere radius, metres. Defaults to the mean Earth radius.
+
+    Returns
+    -------
+    ndarray
+        Per-vertex refinement target size, metres, suitable for
+        `gmshplanet`'s `refinemetric` argument.
+
+    Examples
+    --------
+    >>> import pyissm
+    >>> ocean = pyissm.data.ocean_mask.gmtmask(md.mesh.lat, md.mesh.long)
+    >>> metric = pyissm.model.mesh.coastal_distance_metric(md.mesh.lat, md.mesh.long, ocean,
+    ...                                                    mindist_coast=150e3, mindist_land=300e3, maxdist=600e3)
+    >>> prior_mesh = md.mesh
+    >>> md.mesh = pyissm.model.classes.mesh.mesh3dsurface()
+    >>> md = pyissm.model.mesh.gmshplanet(md, radius=6371.012, resolution=150,
+    ...                                   refine=prior_mesh, refinemetric=metric)
+    """
+
+    # Convert every vertex's lat/long to a 3-D unit vector, so "nearest
+    # vertex" can be answered with an ordinary Euclidean-distance KD-tree
+    # instead of a slower, purpose-built great-circle search.
+    lat_r = np.radians(np.ravel(lat))
+    long_r = np.radians(np.ravel(long))
+    xyz = np.column_stack([np.cos(lat_r) * np.cos(long_r),
+                           np.cos(lat_r) * np.sin(long_r),
+                           np.sin(lat_r)])
+
+    is_ocean = np.ravel(ocean).astype(bool)
+
+    # For every ocean vertex, find its nearest land vertex, and vice versa -
+    # two KD-tree queries (one per class) cover every vertex exactly once.
+    chord = np.empty(xyz.shape[0])
+    chord[is_ocean], _ = cKDTree(xyz[~is_ocean]).query(xyz[is_ocean])
+    chord[~is_ocean], _ = cKDTree(xyz[is_ocean]).query(xyz[~is_ocean])
+
+    # Convert the 3-D straight-line ("chord") distance on the unit sphere
+    # back to a great-circle distance in metres.
+    dist = 2.0 * np.arcsin(np.clip(chord / 2.0, 0.0, 1.0)) * radius
+
+    # Clamp to a floor/ceiling target element size, with a finer floor on
+    # the ocean side than the land side.
+    metric = np.where(is_ocean,
+                      np.clip(dist, mindist_coast, maxdist),
+                      np.clip(dist, mindist_land, maxdist))
+    return metric
 
 def _bamg_geom(**kwargs):
     """
