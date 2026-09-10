@@ -41,6 +41,6 @@ dependencies:
   # If you often use JupyterLab in this env, uncomment:
   - jupyterlab==4.5.0
 
-  # --- install pyISSM from your local checkout ---
-  - pip:
-      - .
+  # # --- install pyISSM from your local checkout ---
+  # - pip:
+  #     - .
