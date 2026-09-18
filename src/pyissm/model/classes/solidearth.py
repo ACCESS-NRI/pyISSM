@@ -153,9 +153,9 @@ class earth(class_registry.manage_state):
 
         class_utils._check_field(md, fieldname = 'solidearth.requested_outputs', string_list = True)
 
-        settings.check_consistency(md, solution, analyses)
-        lovenumbers.check_consistency(md, solution, analyses)
-        rotational.check_consistency(md, solution, analyses)
+        self.settings.check_consistency(md, solution, analyses)
+        self.lovenumbers.check_consistency(md, solution, analyses)
+        self.rotational.check_consistency(md, solution, analyses)
         if self.external:
             if not isinstance(self.external, solution):
                 raise Exception('pyissm.model.classes.solidearth.earth.check_consistency: external field should be a pyissm.model.classes.solidearth.solution')
@@ -411,9 +411,9 @@ class europa(class_registry.manage_state):
 
         class_utils._check_field(md, fieldname = 'solidearth.requested_outputs', string_list = True)
 
-        settings.check_consistency(md, solution, analyses)
-        lovenumbers.check_consistency(md, solution, analyses)
-        rotational.check_consistency(md, solution, analyses)
+        self.settings.check_consistency(md, solution, analyses)
+        self.lovenumbers.check_consistency(md, solution, analyses)
+        self.rotational.check_consistency(md, solution, analyses)
         if self.external:
             if not isinstance(self.external, solution):
                 raise Exception('pyissm.model.classes.solidearth.europa.check_consistency: external field should be a pyissm.model.classes.solidearth.solution')
