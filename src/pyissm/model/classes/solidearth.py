@@ -6,7 +6,7 @@ from pyissm.model.classes import rotational
 from pyissm.model.classes import lovenumbers
 from pyissm.model.classes import mesh
 from pyissm import tools
-from pyissm.model import execute, mesh
+from pyissm.model import execute
 
 ## ------------------------------------------------------
 ## solidearth.earth
