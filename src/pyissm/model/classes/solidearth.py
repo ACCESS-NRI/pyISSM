@@ -252,9 +252,9 @@ class earth(class_registry.manage_state):
         execute._write_model_field(fid, prefix, name = 'md.solidearth.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
         ## Marshall sub-objects
-        self.settings.marshall_class(fid, prefix, md)
-        self.lovenumbers.marshall_class(fid, prefix, md)
-        self.rotational.marshall_class(fid, prefix, md)
+        self.settings.marshall_class(fid, prefix + '.settings', md)
+        self.lovenumbers.marshall_class(fid, prefix + '.lovenumbers', md)
+        self.rotational.marshall_class(fid, prefix + '.rotational', md)
 
         ## Write conditional fields
         if self.external:
@@ -510,9 +510,9 @@ class europa(class_registry.manage_state):
         execute._write_model_field(fid, prefix, name = 'md.solidearth.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
         ## Marshall sub-objects
-        self.settings.marshall_class(fid, prefix, md)
-        self.lovenumbers.marshall_class(fid, prefix, md)
-        self.rotational.marshall_class(fid, prefix, md)
+        self.settings.marshall_class(fid, prefix + '.settings', md)
+        self.lovenumbers.marshall_class(fid, prefix + '.lovenumbers', md)
+        self.rotational.marshall_class(fid, prefix + '.rotational', md)
 
         ## Write conditional fields
         if self.external:
