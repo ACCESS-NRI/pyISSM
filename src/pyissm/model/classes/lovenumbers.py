@@ -181,7 +181,7 @@ class lovenumbers(class_registry.manage_state):
         ## Write DoubleMat fields
         fieldname = ['h', 'k', 'l', 'th', 'tk', 'tl', 'pmtf_colinear', 'pmtf_ortho']
         for field in fieldname:
-            execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
+            execute._write_model_field(fid, prefix, obj = self, fieldname = field, name = 'md.solidearth.lovenumber.' + field, format = 'DoubleMat', mattype = 1)
 
         ## Write conditional fields
         if (self.istime):
@@ -189,8 +189,8 @@ class lovenumbers(class_registry.manage_state):
         else:
             scale = 1.0 / md.constants.yts
 
-        execute._write_model_field(fid, prefix, obj = self, fieldname = 'timefreq', format = 'DoubleMat', mattype = 1, scale = scale)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'timefreq', name = 'md.solidearth.lovenumber.timefreq', format = 'DoubleMat', mattype = 1, scale = scale)
 
         ## Write other fields
-        execute._write_model_field(fid, prefix, obj = self, fieldname = 'tk2secular', format = 'Double')
-        execute._write_model_field(fid, prefix, obj = self, fieldname = 'istime', format = 'Boolean')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'tk2secular', name = 'md.solidearth.lovenumber.tk2secular', format = 'Double')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'istime', name = 'md.solidearth.lovenumber.istime', format = 'Boolean')
