@@ -236,3 +236,80 @@ def nye(temperature, ice_type):
     rigidity = A ** (-1.0 / n) * 1.0e6   # s^(1/n) Pa
 
     return rigidity
+
+def arrhenius(temperature, pressure, n=3):
+    """
+    ARRHENIUS - calculate the rigidity of ice for a given temperature (not accounting for waterfraction for now).
+    
+    rigidity (in s^(1/n)Pa) is the flow law parameter in the flow law sigma=B*e(1/n) (Paterson, p97).
+    
+    Parameters
+    ----------
+    temperature : array_like
+        Temperature value(s) in Kelvin. Must be non-negative. Scalar or array-like
+        inputs are accepted and will be converted to a NumPy array.
+
+    Returns
+    -------
+    rigidity : ndarray
+        Array of computed rigidity values with the same shape as ``temperature``.
+        The return dtype is float. Values that are computed as negative are
+        replaced by a floor value of 1e6.
+
+    Raises
+    ------
+    RuntimeError
+        If any element of ``temperature`` is negative (temperatures must be given
+        in Kelvin).
+
+    """
+
+    # constants
+    T0 = 273.15
+    beta0 = 9.8e-8  # K Pa^-1, Clausius-Clapeyron constant for realistic conditions for air-saturated ice (suggested in Gb page 54)
+    beta = 7e-8     # K Pa^-1, to account for the effect of hydrostatic pressure on melting poit depression (see p.65 Cuffey&Paterson)
+    R = 8.314       # J mol^-1 K^-1, universal gas constant
+    yts = 31536000.0
+
+    if np.any(temperature<0):
+        raise Exception('Input temperature should be in Kelvin (positive)')
+
+    tpmp = T0 - beta0 * pressure 
+    if np.any(temperature>tpmp):
+        print(sum(temperature>tpmp))
+        raise Exception('Input temperature is above pressure melting point.')
+
+    if n not in [3,4]:
+        raise Exception('Currently the only supperted values for n are 3 or 4.')
+    
+    # values for Activation energy Q and pre-exponential constants from table 1, Lillen et al 2026
+    T_star = {3: 263.15, 
+              4: 262}
+    
+    # prefactor coefficients, values for n=3 are almost in agreement with old func
+    A0p = {3: 6.05e10/yts, # 1.916e3,
+           4: 1.89e12/yts}
+    A0m = {3: 1.26e-5/yts,  # 3.985e-13,    # * (10**(6*(-3))) 
+           4: 1.26e-11/yts} 
+
+    # activation energy [J/mol] - from Lillet 2026, n=3 same in Greve Blatter 2009 p.54 table 4.1
+    Qp = {3: 1.39e5, 
+          4: 1.76753e5       #1.81e5  - value from the paper
+        }
+    Qm = {3: 6e4, 
+          4: 6e4}
+
+    th = temperature - beta * pressure # temperature adjusted to hydrostatic melting point depression
+
+    Q = Qm[n]* np.ones((temperature).shape)
+    A0 = A0m[n]* np.ones((temperature).shape)
+
+    pos = th > T_star[n] 
+    Q[pos] = Qp[n]
+    A0[pos] = A0p[n]
+
+    A =  A0 * np.exp(-Q/(R*th))  # potentially adjustment for water content can be added here
+    # A in Pa^-n s^-1
+    B = 1/A**(1/n)
+
+    return B
