@@ -245,12 +245,12 @@ def arrhenius(temperature, pressure, waterfraction = np.nan, n=3):
     
     Parameters
     ----------
-    temperature : array_like
+    temperature : ndarray
         Temperature value(s) in Kelvin. Must be non-negative. Scalar or array-like
         inputs are accepted and will be converted to a NumPy array.
-    pressure : array_like
+    pressure : ndarray
         Pressure values in Pa, used to adjust temperature to hydrostatic melting point depression.
-    waterfraction : array_like
+    waterfraction : ndarray (optional)
         Waterfraction in %. Must be non negative, maximum accepted value is 1 (100%), will be limited to 1%.
     n : int
         Glen's flow law exponent, currently accepted values: 3, 4.
@@ -288,21 +288,23 @@ def arrhenius(temperature, pressure, waterfraction = np.nan, n=3):
         raise RuntimeError('Currently the only supperted values for n are 3 or 4.')
 
     if np.isnan(waterfraction):
+        # Set default value.
         waterfraction = np.zeros(temperature.shape)
+    else:
+        # Some check consistency
+        if any(waterfraction<0):
+            raise RuntimeError('waterfraction is negative')
+    
+        if any(waterfraction>1):
+            raise RuntimeError('waterfraction exceeds 100%')
+    
+        # limit waterfraction to 1%
+        pos = np.where(waterfraction > 0.01)
+        waterfraction[pos] = 0.01
 
-    if any(waterfraction<0):
-        raise RuntimeError('waterfraction is negative')
-
-    if any(waterfraction>1):
-        raise RuntimeError('waterfraction exceeds 100%')
-
-    # limit waterfraction to 1%
-    pos = np.where(waterfraction > 0.01)
-    waterfraction[pos] = 0.01
-
-    # prevent cold wet ice 
-    if any((temperature < tpmp) & (waterfraction>0)):  
-        raise RuntimeError('cold ice (below PMP) with positive waterfraction detected.')
+        # prevent cold wet ice 
+        if any((temperature < tpmp) & (waterfraction>0)):  
+            raise RuntimeError('cold ice (below PMP) with positive waterfraction detected.')
     
     # values for Activation energy Q and pre-exponential constants from table 1, Lillen et al 2026
     T_star = {3: 263.15, 
