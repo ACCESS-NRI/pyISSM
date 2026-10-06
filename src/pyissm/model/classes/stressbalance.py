@@ -50,6 +50,8 @@ class stressbalance(class_registry.manage_state):
         Maximum number of nonlinear iterations.
     shelf_dampening : float, default=0
         Shelf dampening parameter.
+    theta : float, default=0
+        SSA thickness/velocity stabilization parameter (0: off, 1: full scheme).
     vertex_pairing : float, default=nan
         Vertex pairing parameter.
     penalty_factor : float, default=3
@@ -104,6 +106,7 @@ class stressbalance(class_registry.manage_state):
         #self.icefront = np.nan -- no longer in use
         self.maxiter = 100
         self.shelf_dampening = 0
+        self.theta = 0
         self.vertex_pairing = np.nan
         self.penalty_factor = 3
         self.rift_penalty_lock = 10
@@ -150,6 +153,7 @@ class stressbalance(class_registry.manage_state):
         s += '\n'
         s += '      Other:\n'
         s += '{}\n'.format(class_utils._field_display(self, 'shelf_dampening', 'use dampening for floating ice ? Only for FS model'))
+        s += '{}\n'.format(class_utils._field_display(self, 'theta', 'SSA thickness/velocity stabilization parameter: 0 no stabilization, 1 full stabilization'))
         s += '{}\n'.format(class_utils._field_display(self, 'FSreconditioning', 'multiplier for incompressibility equation. Only for FS model'))
         s += '{}\n'.format(class_utils._field_display(self, 'referential', 'local referential'))
         s += '{}\n'.format(class_utils._field_display(self, 'loadingforce', 'loading force applied on each point [N/m^3]'))
@@ -262,6 +266,7 @@ class stressbalance(class_registry.manage_state):
         class_utils._check_field(md, fieldname = 'stressbalance.isnewton', scalar = True, values = [0, 1, 2])
         class_utils._check_field(md, fieldname = 'stressbalance.FSreconditioning', scalar = True, allow_nan = False, allow_inf = False)
         class_utils._check_field(md, fieldname = 'stressbalance.maxiter', scalar = True, ge = 1)
+        class_utils._check_field(md, fieldname = 'stressbalance.theta', scalar = True, ge = 0, le = 1)
         class_utils._check_field(md, fieldname = 'stressbalance.referential', size = (md.mesh.numberofvertices, 6))
         class_utils._check_field(md, fieldname = 'stressbalance.loadingforce', size = (md.mesh.numberofvertices, 3))
         class_utils._check_field(md, fieldname = 'stressbalance.requested_outputs', string_list = True)
@@ -317,7 +322,7 @@ class stressbalance(class_registry.manage_state):
             execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1, scale = 1. / md.constants.yts, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
 
         ## Write Double fields
-        fieldnames = ['restol', 'reltol', 'FSreconditioning', 'penalty_factor']
+        fieldnames = ['restol', 'reltol', 'FSreconditioning', 'penalty_factor', 'theta']
         for field in fieldnames:
             execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double')
 

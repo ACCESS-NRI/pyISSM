@@ -1242,6 +1242,8 @@ class schoof(class_registry.manage_state):
         m exponent (generally taken as m = 1/n = 1/3).
     coupling : :class:`int`, default=0
         Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet).
+    linearize : :class:`int`, default=0
+        0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0).
     effective_pressure : :class:`numpy.ndarray`, default=np.nan
         Effective Pressure for the forcing if not coupled [Pa].
     effective_pressure_limit : :class:`float`, default=0
@@ -1260,6 +1262,7 @@ class schoof(class_registry.manage_state):
         self.Cmax = np.nan
         self.m = np.nan
         self.coupling = 0
+        self.linearize = 0
         self.effective_pressure = np.nan
         self.effective_pressure_limit = 0
 
@@ -1280,6 +1283,7 @@ class schoof(class_registry.manage_state):
         s += "{}\n".format(class_utils._field_display(self, 'Cmax', 'Iken\'s bound (typically between 0.17 and 0.84) [SI]'))
         s += "{}\n".format(class_utils._field_display(self, 'm', 'm exponent (generally taken as m = 1/n = 1/3)'))
         s += '{}\n'.format(class_utils._field_display(self, 'coupling', 'Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'linearize', '0: not linearized, 1: interpolated linearly, 2: constant per element (default is 0)'))
         s += '{}\n'.format(class_utils._field_display(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
         s += "{}\n".format(class_utils._field_display(self, 'effective_pressure_limit', 'fNeff do not allow to fall below a certain limit: effective_pressure_limit*rho_ice*g*thickness (default 0)'))
         return s
@@ -1331,7 +1335,8 @@ class schoof(class_registry.manage_state):
         class_utils._check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, ), gt = 0., allow_nan = False, allow_inf = False)
         class_utils._check_field(md, fieldname = 'friction.effective_pressure_limit', scalar = True, ge = 0.)
         class_utils._check_field(md, fieldname = 'friction.coupling', scalar = True, values = [0, 1, 2, 3, 4])
-        
+        class_utils._check_field(md, fieldname = "friction.linearize", scalar = True, values = [0, 1, 2])
+
         if self.coupling == 3:
             class_utils._check_field(md, fieldname = 'friction.effective_pressure', timeseries = True, allow_nan = False, allow_inf = False)
         elif self.coupling == 4:
@@ -1368,6 +1373,7 @@ class schoof(class_registry.manage_state):
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'Cmax', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'm', format = 'DoubleMat', mattype = 2)
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'coupling', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'linearize', format = 'Integer')
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'effective_pressure_limit', format = 'Double')
 
         ## Write conditional effective pressure

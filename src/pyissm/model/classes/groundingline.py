@@ -27,6 +27,8 @@ class groundingline(class_registry.manage_state):
         Type of melt interpolation on partially floating elements: 'SubelementMelt1', 'SubelementMelt2', 'IntrusionMelt', 'NoMeltOnPartiallyFloating', 'FullMeltOnPartiallyFloating'.
     intrusion_distance : :class:`float`, default=0
         Distance of seawater intrusion from grounding line [m].
+    nomelt_under_lakes : :class:`bool`, default=0
+        Remove (1) or allow (0) melt under lakes disconnected from the ocean.
     requested_outputs : :class:`list`, default=['default']
         Additional outputs requested for grounding line analysis.
 
@@ -46,6 +48,7 @@ class groundingline(class_registry.manage_state):
         self.friction_interpolation = 'SubelementFriction1'
         self.melt_interpolation = 'NoMeltOnPartiallyFloating'
         self.intrusion_distance = 0
+        self.nomelt_under_lakes = 0
         self.requested_outputs = ['default']
 
         # Inherit matching fields from provided class
@@ -59,6 +62,7 @@ class groundingline(class_registry.manage_state):
         s += '{}\n'.format(class_utils._field_display(self, 'friction_interpolation', 'type of friction interpolation on partially floating elements: ''SubelementFriction1'', ''SubelementFriction2'', ''NoFrictionOnPartiallyFloating'''))
         s += '{}\n'.format(class_utils._field_display(self, 'melt_interpolation', 'type of melt interpolation on partially floating elements: \'SubelementMelt1\', \'SubelementMelt2\', \'IntrusionMelt\', \'NoMeltOnPartiallyFloating\', \'FullMeltOnPartiallyFloating\''))
         s += '{}\n'.format(class_utils._field_display(self, 'intrusion_distance', 'distance of seawater intrusion from grounding line [m]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'nomelt_under_lakes', 'remove (1) or allow (0) melt under lakes disconnected from the ocean'))
         s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         return s
 
@@ -91,6 +95,7 @@ class groundingline(class_registry.manage_state):
         class_utils._check_field(md, fieldname = 'groundingline.friction_interpolation', values = ['SubelementFriction1', 'SubelementFriction2', 'NoFrictionOnPartiallyFloating'])
         class_utils._check_field(md, fieldname = 'groundingline.melt_interpolation', values = ['NoMeltOnPartiallyFloating', 'FullMeltOnPartiallyFloating', 'SubelementMelt1', 'SubelementMelt2', 'IntrusionMelt'])
         class_utils._check_field(md, fieldname = 'groundingline.intrusion_distance', ge = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'groundingline.nomelt_under_lakes', values = [0, 1])
         class_utils._check_field(md, fieldname = 'groundingline.requested_outputs', string_list = True)
 
         if(not self.migration == 'None' and md.transient.isgroundingline and solution == 'TransientSolution'):
@@ -169,7 +174,10 @@ class groundingline(class_registry.manage_state):
         fieldnames = ['migration', 'friction_interpolation', 'melt_interpolation']
         for fieldname in fieldnames:
             execute._write_model_field(fid, prefix, name = 'md.groundingline.' + fieldname, data = getattr(self, fieldname), format = 'String')
+
+        execute._write_model_field(fid, prefix, obj=self, fieldname = 'nomelt_under_lakes', format = 'Boolean')
         
         ## Write other fields
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'intrusion_distance', format = 'DoubleMat', mattype = 1)
         execute._write_model_field(fid, prefix, name = 'md.groundingline.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
+        
