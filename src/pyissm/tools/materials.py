@@ -287,7 +287,7 @@ def arrhenius(temperature, pressure, waterfraction = np.nan, n=3):
     if n not in [3,4]:
         raise RuntimeError('Currently the only supperted values for n are 3 or 4.')
 
-    if np.isnan(waterfraction):
+    if np.any(np.isnan(waterfraction)):
         # Set default value.
         waterfraction = np.zeros(temperature.shape)
     else:
