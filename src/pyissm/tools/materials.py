@@ -236,3 +236,108 @@ def nye(temperature, ice_type):
     rigidity = A ** (-1.0 / n) * 1.0e6   # s^(1/n) Pa
 
     return rigidity
+
+def arrhenius(temperature, pressure, waterfraction = np.nan, n=3):
+    """
+    ARRHENIUS - calculate the rigidity of ice for a given temperature, pressure and waterfraction.
+    
+    rigidity (in s^(1/n)Pa) is the flow law parameter in the flow law sigma=B*e(1/n) (Paterson, p97).
+    
+    Parameters
+    ----------
+    temperature : ndarray
+        Temperature value(s) in Kelvin. Must be non-negative. Scalar or array-like
+        inputs are accepted and will be converted to a NumPy array.
+    pressure : ndarray
+        Pressure values in Pa, used to adjust temperature to hydrostatic melting point depression.
+    waterfraction : ndarray (optional)
+        Waterfraction in %. Must be non negative, maximum accepted value is 1 (100%), will be limited to 1%.
+    n : int
+        Glen's flow law exponent, currently accepted values: 3, 4.
+
+    Returns
+    -------
+    rigidity : ndarray
+        Array of computed rigidity values with the same shape as ``temperature``.
+        The return dtype is float.
+
+    Raises
+    ------
+    RuntimeError
+        If any element of ``temperature`` is negative (temperatures must be given
+        in Kelvin).
+
+    """
+
+    # constants
+    T0 = 273.15
+    beta0 = 9.8e-8  # K Pa^-1, Clausius-Clapeyron constant for realistic conditions for air-saturated ice (suggested in Gb page 54)
+    beta = 7e-8     # K Pa^-1, to account for the effect of hydrostatic pressure on melting poit depression (see p.65 Cuffey&Paterson)
+    R = 8.314       # J mol^-1 K^-1, universal gas constant
+    yts = 31536000.0
+
+    if np.any(temperature<0):
+        raise RuntimeError('Input temperature should be in Kelvin (positive)')
+
+    tpmp = T0 - beta0 * pressure 
+    if np.any(temperature>tpmp):
+        print(sum(temperature>tpmp))
+        raise RuntimeError('Input temperature is above pressure melting point.')
+
+    if n not in [3,4]:
+        raise RuntimeError('Currently the only supperted values for n are 3 or 4.')
+
+    if np.any(np.isnan(waterfraction)):
+        # Set default value.
+        waterfraction = np.zeros(temperature.shape)
+    else:
+        # Some check consistency
+        if any(waterfraction<0):
+            raise RuntimeError('waterfraction is negative')
+    
+        if any(waterfraction>1):
+            raise RuntimeError('waterfraction exceeds 100%')
+    
+        # limit waterfraction to 1%
+        pos = np.where(waterfraction > 0.01)
+        waterfraction[pos] = 0.01
+
+        # prevent cold wet ice 
+        if any((temperature < tpmp) & (waterfraction>0)):  
+            raise RuntimeError('cold ice (below PMP) with positive waterfraction detected.')
+    
+    # values for Activation energy Q and pre-exponential constants from table 1, Lillen et al 2026
+    T_star = {3: 263.15, 
+              4: 262}
+    
+    # prefactor coefficients, values for n=3 are almost in agreement with old func
+    A0p = {3: 6.05e10/yts, # 1.916e3,
+           4: 1.89e12/yts}
+    A0m = {3: 1.26e-5/yts,  # 3.985e-13,    # * (10**(6*(-3))) 
+           4: 1.26e-11/yts} 
+
+    # activation energy [J/mol] - from Lillet 2026, n=3 same in Greve Blatter 2009 p.54 table 4.1
+    Qp = {3: 1.39e5, 
+          4: 1.76753e5       #1.81e5  - value from the paper
+        }
+    Qm = {3: 6e4, 
+          4: 6e4}
+
+    # temperature adjusted to hydrostatic melting point depression
+    th = temperature - beta * pressure
+
+    Q = Qm[n]* np.ones((temperature).shape)
+    A0 = A0m[n]* np.ones((temperature).shape)
+
+    pos = th > T_star[n] 
+    Q[pos] = Qp[n]
+    A0[pos] = A0p[n]
+
+    # NOTE: i don't know if adjustment for water content should be the same for n = 4
+    # value from Duval 1977, A = (3.2 + 5.8W) * 10^-24 [Pa^-3 s^-1]
+    # 5.8/3.2 * 100 = 181.25
+    A =  A0 * np.exp(-Q/(R*th))  * (1 + 181.25 * waterfraction)
+    # A in Pa^-n s^-1
+    B = 1/A**(1/n)
+
+    return B
