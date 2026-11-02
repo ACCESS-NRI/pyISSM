@@ -760,14 +760,22 @@ class glads(class_registry.manage_state):
         Moulin input (Q_s) [m^3/s].
     neumannflux : :class:`float` or :class:`numpy.ndarray`, default=np.nan
         Water flux applied along the model boundary [m^2/s].
-    englacial_void_ratio : :class:`float`, default=1.e-5
-        Englacial void ratio (e_v).
+    englacial_void_ratio : :class:`float` or :class:`numpy.ndarray`, default=1.e-5
+        Englacial void ratio (e_v), scalar or per vertex.
     requested_outputs : :class:`list`, default=['default']
         Additional outputs requested.
     melt_flag : :class:`int`, default=0
         User specified basal melt? 0: no (default), 1: use md.basalforcings.groundedice_melting_rate.
     istransition : :class:`int`, default=0
         Use standard [0, default] or transition model [1].
+    maxiter : :class:`int`, default=100
+        Maximum number of nonlinear iterations.
+    restol : :class:`float`, default=1.e-4
+        Hydraulic potential equilibrium residual convergence criterion.
+    reltol : :class:`float`, default=0.01
+        Hydraulic potential relative convergence criterion, NaN: not applied.
+    abstol : :class:`float`, default=np.nan
+        Hydraulic potential absolute convergence criterion [Pa], NaN: not applied.
 
     Examples
     --------
@@ -807,6 +815,12 @@ class glads(class_registry.manage_state):
         self.melt_flag = 0
         self.istransition = 0
 
+        # Nonlinear solver
+        self.maxiter = 100
+        self.restol = 1.e-4
+        self.reltol = 0.01
+        self.abstol = np.nan  # not applied by default
+
         # Inherit matching fields from provided class
         super().__init__(other)
 
@@ -839,6 +853,11 @@ class glads(class_registry.manage_state):
         s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
         s += '{}\n'.format(class_utils._field_display(self, 'melt_flag', 'User specified basal melt? 0: no (default), 1: use md.basalforcings.groundedice_melting_rate'))
         s += '{}\n'.format(class_utils._field_display(self, 'istransition', 'do we use standard [0, default] or transition model [1]'))
+        s += '\t--SOLVER\n'
+        s += '{}\n'.format(class_utils._field_display(self, 'maxiter', 'maximum number of nonlinear iterations'))
+        s += '{}\n'.format(class_utils._field_display(self, 'restol', 'hydraulic potential equilibrium residual convergence criterion'))
+        s += '{}\n'.format(class_utils._field_display(self, 'reltol', 'hydraulic potential relative convergence criterion, NaN: not applied'))
+        s += '{}\n'.format(class_utils._field_display(self, 'abstol', 'hydraulic potential absolute convergence criterion [Pa], NaN: not applied'))
         return s
 
     # Define class string
@@ -906,12 +925,21 @@ class glads(class_registry.manage_state):
 
         # Other
         class_utils._check_field(md, fieldname = 'hydrology.spcphi', timeseries = True, allow_inf = False)
-        class_utils._check_field(md, fieldname = 'hydrology.englacial_void_ratio', scalar = True, ge = 0)
+        if np.ndim(self.englacial_void_ratio) == 0:
+            class_utils._check_field(md, fieldname = 'hydrology.englacial_void_ratio', scalar = True, ge = 0)
+        else:
+            class_utils._check_field(md, fieldname = 'hydrology.englacial_void_ratio', size = (md.mesh.numberofvertices, ), ge = 0)
         class_utils._check_field(md, fieldname = 'hydrology.moulin_input', timeseries = True, ge = 0, allow_nan = False, allow_inf = False)
         class_utils._check_field(md, fieldname = 'hydrology.neumannflux', timeseries = True, allow_nan = False, allow_inf = False)
         class_utils._check_field(md, fieldname = 'hydrology.requested_outputs', string_list = True)
         class_utils._check_field(md, fieldname = 'hydrology.melt_flag', scalar = True, values = [0, 1])
         class_utils._check_field(md, fieldname = 'hydrology.istransition', scalar = True, values = [0, 1])
+
+        # Solver
+        class_utils._check_field(md, fieldname = 'hydrology.maxiter', scalar = True, ge = 1)
+        class_utils._check_field(md, fieldname = 'hydrology.restol', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.reltol', scalar = True)
+        class_utils._check_field(md, fieldname = 'hydrology.abstol', scalar = True)
         if self.melt_flag == 1 or self.melt_flag == 2:
             class_utils._check_field(md, fieldname = 'basalforcings.groundedice_melting_rate', timeseries = True, allow_nan = False, allow_inf = False)
         
@@ -983,7 +1011,7 @@ class glads(class_registry.manage_state):
 
         ## Write Double fields
         fieldnames = ['pressure_melt_coefficient', 'cavity_spacing', 'omega', 'sheet_alpha', 'sheet_beta',
-                      'channel_sheet_width', 'channel_alpha', 'channel_beta', 'englacial_void_ratio']
+                      'channel_sheet_width', 'channel_alpha', 'channel_beta', 'restol', 'reltol', 'abstol']
         for field in fieldnames:
             execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double')
 
@@ -992,6 +1020,12 @@ class glads(class_registry.manage_state):
         for field in fieldnames:
             execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
 
+        # Scalar englacial_void_ratio is written as Double: ISSM releases up to 2026.05.18 read it as a constant,
+        # newer ones accept either a constant or a per-vertex field
+        if np.ndim(self.englacial_void_ratio) == 0:
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'englacial_void_ratio', format = 'Double')
+        else:
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'englacial_void_ratio', format = 'DoubleMat', mattype = 1)
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'spcphi', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'neumannflux', format = 'DoubleMat', mattype = 2, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'moulin_input', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
@@ -1002,6 +1036,7 @@ class glads(class_registry.manage_state):
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'creep_open_flag', format = 'Boolean')
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'istransition', format = 'Boolean')
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'melt_flag', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'maxiter', format = 'Integer')
         execute._write_model_field(fid, prefix, name = 'md.hydrology.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
 
 ## ------------------------------------------------------
@@ -1215,6 +1250,14 @@ class shakti(class_registry.manage_state):
         Englacial storage coefficient (void ratio).
     requested_outputs : :class:`list`, default=['default']
         Additional outputs requested.
+    maxiter : :class:`int`, default=100
+        Maximum number of nonlinear iterations.
+    restol : :class:`float`, default=1.e-4
+        Hydraulic head equilibrium residual convergence criterion.
+    reltol : :class:`float`, default=0.01
+        Hydraulic head relative convergence criterion, NaN: not applied.
+    abstol : :class:`float`, default=np.nan
+        Hydraulic head absolute convergence criterion [m], NaN: not applied.
 
     Examples
     --------
@@ -1240,6 +1283,10 @@ class shakti(class_registry.manage_state):
         self.storage = 0
         self.melt_flag = 0
         self.requested_outputs = ['default']
+        self.maxiter = 100
+        self.restol = 1.e-4
+        self.reltol = 0.01
+        self.abstol = np.nan  # not applied by default
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -1263,6 +1310,10 @@ class shakti(class_registry.manage_state):
         s += '{}\n'.format(class_utils._field_display(self, 'storage', 'englacial storage coefficient (void ratio)'))
         s += '{}\n'.format(class_utils._field_display(self, 'melt_flag', 'User specified basal melt? 0: no (default), 1: use md.basalforcings.groundedice_melting_rate'))
         s += '{}\n'.format(class_utils._field_display(self, 'requested_outputs', 'additional outputs requested'))
+        s += '{}\n'.format(class_utils._field_display(self, 'maxiter', 'maximum number of nonlinear iterations'))
+        s += '{}\n'.format(class_utils._field_display(self, 'restol', 'hydraulic head equilibrium residual convergence criterion'))
+        s += '{}\n'.format(class_utils._field_display(self, 'reltol', 'hydraulic head relative convergence criterion, NaN: not applied'))
+        s += '{}\n'.format(class_utils._field_display(self, 'abstol', 'hydraulic head absolute convergence criterion [m], NaN: not applied'))
         return s
 
     # Define class string
@@ -1318,6 +1369,10 @@ class shakti(class_registry.manage_state):
         class_utils._check_field(md, fieldname = 'hydrology.storage', size = 'universal', ge = 0, allow_nan = False, allow_inf = False)
         class_utils._check_field(md, fieldname = 'hydrology.melt_flag', scalar = True, values = [0, 1])
         class_utils._check_field(md, fieldname = 'hydrology.requested_outputs', string_list = 1)
+        class_utils._check_field(md, fieldname = 'hydrology.maxiter', scalar = True, ge = 1)
+        class_utils._check_field(md, fieldname = 'hydrology.restol', scalar = True, gt = 0, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'hydrology.reltol', scalar = True)
+        class_utils._check_field(md, fieldname = 'hydrology.abstol', scalar = True)
 
         return md
     
@@ -1398,7 +1453,7 @@ class shakti(class_registry.manage_state):
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'neumannflux', format = 'DoubleMat', mattype = 2, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
         
         ## Write Double fields
-        fieldnames = ['gap_height_min', 'gap_height_max', 'relaxation']
+        fieldnames = ['gap_height_min', 'gap_height_max', 'relaxation', 'restol', 'reltol', 'abstol']
         for field in fieldnames:
             execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double')
 
@@ -1414,6 +1469,7 @@ class shakti(class_registry.manage_state):
         ) else (2, md.mesh.numberofelements + 1)
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'storage', format = 'DoubleMat', mattype = mattype, timeserieslength = tsl, yts = md.constants.yts)
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'melt_flag', format = 'Integer')
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'maxiter', format = 'Integer')
 
         ## Write other fields
         execute._write_model_field(fid, prefix, name = 'md.hydrology.requested_outputs', data = self._process_outputs(md), format = 'StringArray')
