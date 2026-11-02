@@ -1016,10 +1016,16 @@ class glads(class_registry.manage_state):
             execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'Double')
 
         ## Write DoubleMat fields
-        fieldnames = ['sheet_conductivity', 'bump_height', 'rheology_B_base', 'channel_conductivity', 'englacial_void_ratio']
+        fieldnames = ['sheet_conductivity', 'bump_height', 'rheology_B_base', 'channel_conductivity']
         for field in fieldnames:
             execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'DoubleMat', mattype = 1)
 
+        # Scalar englacial_void_ratio is written as Double: ISSM releases up to 2026.05.18 read it as a constant,
+        # newer ones accept either a constant or a per-vertex field
+        if np.ndim(self.englacial_void_ratio) == 0:
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'englacial_void_ratio', format = 'Double')
+        else:
+            execute._write_model_field(fid, prefix, obj = self, fieldname = 'englacial_void_ratio', format = 'DoubleMat', mattype = 1)
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'spcphi', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'neumannflux', format = 'DoubleMat', mattype = 2, timeserieslength = md.mesh.numberofelements + 1, yts = md.constants.yts)
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'moulin_input', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
