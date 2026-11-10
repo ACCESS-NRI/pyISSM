@@ -35,6 +35,9 @@ If downloading these notebooks to execute locally, you must also
    * - Example 2 – Pine Island Glacier
      - :doc:`View <tutorials/ex2_PineIslandGlacier>` | 
        :download:`Download <tutorials/ex2_PineIslandGlacier.ipynb>`
+   * - Example 5 – Pine Island Glacier: Inversion sensitivity analysis
+     - :doc:`View <tutorials/ex5_PineIslandGlacier_InversionSensitivity>` |
+       :download:`Download <tutorials/ex5_PineIslandGlacier_InversionSensitivity.ipynb>`
 
 
 Download Tutorial Resources
