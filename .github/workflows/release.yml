@@ -11,7 +11,7 @@ jobs:
 
   # Job 1: Check all CI tests 
   check_ci:
-    uses: access-nri/pyISSM/.github/workflows/CI.yml@main
+    uses: ./.github/workflows/CI.yml
 
   # Job 2: Publish Python package to PyPI and Conda
   publish_python_package:
