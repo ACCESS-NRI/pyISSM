@@ -70,15 +70,16 @@ jobs:
       # Load from existing corredponding cache)
       # NOTE: Caches are ISSM release and python version specific
       - name: Restore ISSM Cache
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v4
         with:
           path: ${{ env.ISSM_DIR }}
           key: ${{ inputs.build-type }}-${{ env.ISSM_RELEASE }}-python${{ matrix.python-version }}-${{ runner.os }}
+          fail-on-cache-miss: true
       
       # Check that wrappers were installed correctly
       - name: Check wrappers
         run: |
-          python3 -c "import pyissm; print('Wrappers installed:', pyissm.tools.wrappers.check_wrappers_installed())"
+          python3 -c "import sys, pyissm; ok = pyissm.tools.wrappers.check_wrappers_installed(); print('Wrappers installed:', ok); sys.exit(0 if ok else 1)"
       
       # Run CI tests
       - name: Run tests
