@@ -17,7 +17,7 @@ env:
 jobs:
   test:
     name: Run ISSM-pyISSM Tests [conda environment]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # pinned: ISSM external packages (PETSc 3.22) fail to build on ubuntu-latest (26.04); cached ISSM builds must match this image
     timeout-minutes: 90
 
     steps:
