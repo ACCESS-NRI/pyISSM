@@ -2062,7 +2062,8 @@ def _convert_units(field_name, field, md):
         "SmbEvaporation", "SmbRefreeze", "SmbEC", "SmbAccumulation", "SmbMelt",
         "SmbMAdd", "SmbWAdd", "CalvingCalvingrate", "Calvingratex", "Calvingratey",
         "CalvingMeltingrate", "BasalforcingsGroundediceMeltingRate", "BasalforcingsFloatingiceMeltingRate",
-        "BasalforcingsSpatialDeepwaterMeltingRate", "BasalforcingsSpatialUpperwaterMeltingRate"
+        "BasalforcingsSpatialDeepwaterMeltingRate", "BasalforcingsSpatialUpperwaterMeltingRate",
+        "BasalforcingsPerturbationMeltingRate"
     }
 
     # Cumulative / Total Fields (Gt yr^{-1})
@@ -2072,6 +2073,7 @@ def _convert_units(field_name, field, md):
         "TotalSmb", "TotalSmbScaled",
         "TotalSmbMelt", "TotalSmbRefreeze",
         "GroundinglineMassFlux", "IcefrontMassFlux", "IcefrontMassFluxLevelset",
+        "TotalHydrologyGroundinglineDischarge",
     }
 
     if field_name in scale_fields:
