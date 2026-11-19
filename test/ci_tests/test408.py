@@ -1,15 +1,11 @@
 #Test Name: SquareSheetShelfTranSSA3d
 import pyissm
-import copy
 import numpy as np
 
 # Parameterise model
 md = pyissm.model.mesh.triangle(pyissm.model.Model(), '../assets/Exp/Square.exp', 150000.)
 md = pyissm.model.param.set_mask(md, '../assets/Exp/SquareShelf.exp', None)
 md = pyissm.model.param.parameterize(md, '../assets/Par/SquareSheetShelf.py')
-md.geometry.bed = copy.deepcopy(md.geometry.base)
-pos = np.nonzero(md.mask.ocean_levelset < 0.)
-md.geometry.bed[pos] = md.geometry.bed[pos] - 10
 md.friction = pyissm.model.classes.friction.coulomb()
 md.friction.coefficient = 20 * np.ones(md.mesh.numberofvertices)
 md.friction.p = 1 * np.ones(md.mesh.numberofelements)

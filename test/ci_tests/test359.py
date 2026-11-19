@@ -8,7 +8,6 @@ md.mesh.x = md.mesh.x / 100
 md.mesh.y = md.mesh.y / 100
 md = pyissm.model.param.set_mask(md, None, None)
 md = pyissm.model.param.set_flow_equation(md, SSA = 'all')
-md.stressbalance.maxiter = 10
 md.cluster.np = 2
 
 # Some constants
@@ -55,12 +54,13 @@ md.timestepping.final_time = 0.4 / 365
 
 # Change hydrology class to Glads model
 md.hydrology = pyissm.model.classes.hydrology.glads()
+md.hydrology.maxiter = 10
 md.hydrology.ischannels = 1
 md.hydrology.istransition = 1
 md.hydrology.omega = 1/2000.
 md.hydrology.sheet_alpha = 3./2.
 md.hydrology.sheet_beta = 3./2.
-md.hydrology.englacial_void_ratio = 1.e-5
+md.hydrology.englacial_void_ratio = 1.e-5 * np.ones((md.mesh.numberofvertices))
 md.hydrology.moulin_input = np.zeros((md.mesh.numberofvertices))
 md.hydrology.neumannflux = np.zeros((md.mesh.numberofelements))
 md.hydrology.bump_height = 1.e-1 * np.ones((md.mesh.numberofvertices))
