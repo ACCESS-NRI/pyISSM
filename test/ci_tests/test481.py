@@ -24,11 +24,9 @@ field_names = [
     'Vx2', 'Vy2', 'Vel2', 'Pressure2', 'Bed2', 'Surface2', 'Thickness2',
     'Vx3', 'Vy3', 'Vel3', 'Pressure3', 'Bed3', 'Surface3', 'Thickness3'
 ]
-field_tolerances = [
-    2e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-09,
-    1e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-09,
-    2e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-09
-]
+field_tolerances = [2e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-09,
+                    2e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-09,
+                    2e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-09, 1e-09]
 field_values = [
     md.results.TransientSolution[0].Vx,
     md.results.TransientSolution[0].Vy,

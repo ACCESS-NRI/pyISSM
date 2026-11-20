@@ -9,7 +9,7 @@ md = pyissm.model.param.set_flow_equation(md, SSA = 'all')
 md.cluster.np = 3
 md.timestepping = pyissm.model.classes.timestepping.adaptive(md.timestepping)
 md.timestepping.time_step_max = 10000.
-md.timestepping.final_time = 1120.
+md.timestepping.final_time = 1170.
 
 # Execute model
 md = pyissm.model.execute.solve(md, 'Transient')

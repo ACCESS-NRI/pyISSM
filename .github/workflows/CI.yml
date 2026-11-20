@@ -31,9 +31,7 @@ jobs:
     uses: ./.github/workflows/issm-tests.yml
     with:
       build-type: "issm"
-      # 473-476 (HO melt-rate tests) drift ~1e-4 from their archives with ISSM 2026.11.13;
-      # excluded until the archives/core are reconciled upstream: https://github.com/ACCESS-NRI/ISSM/issues/46
-      test-args: "--range 1:999 --exclude 473,474,475,476"
+      test-args: "--range 1:999"
 
   # Job 5: Run ISSM AD tests
   issm_ad_tests:
@@ -49,9 +47,7 @@ jobs:
     uses: ./.github/workflows/conda-issm-tests.yml
     with:
       build-type: "issm"
-      # 473-476 (HO melt-rate tests) drift ~1e-4 from their archives with ISSM 2026.11.13;
-      # excluded until the archives/core are reconciled upstream: https://github.com/ACCESS-NRI/ISSM/issues/46
-      test-args: "--range 1:999 --exclude 473,474,475,476"
+      test-args: "--range 1:999"
 
   # Job 7: Run pytest unit tests
   pytest_unit:

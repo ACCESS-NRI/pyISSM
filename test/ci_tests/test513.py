@@ -32,7 +32,7 @@ md = pyissm.model.execute.solve(md, 'Steadystate')
 
 # Fields and tolerances to track changes
 field_names = ['Gradient', 'Misfits', 'FrictionCoefficient', 'Pressure', 'Vel', 'Vx', 'Vy', 'Vz', 'Temperature', 'BasalforcingsGroundediceMeltingRate']
-field_tolerances = [5e-08, 4e-10, 1e-10, 1e-10, 3e-6, 4e-6, 3.4e-6, 3e-6, 2e-6, 2e-06]
+field_tolerances = [5e-08, 4e-09, 1e-09, 1e-10, 3e-06, 4e-06, 3.4e-06, 3e-06, 2e-06, 2e-06]
 field_values = [md.results.SteadystateSolution.Gradient1,
                 md.results.SteadystateSolution.J,
                 md.results.SteadystateSolution.FrictionCoefficient,

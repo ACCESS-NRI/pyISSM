@@ -29,7 +29,7 @@ md.initialization.pressure = np.zeros((md.mesh.numberofvertices))
 
 # Materials
 md.initialization.temperature = (273.0 - 20.0) * np.ones((md.mesh.numberofvertices))
-md.materials.rheology_B = pyissm.tools.materials.paterson(md.initialization.temperature)
+md.materials.rheology_B = pyissm.tools.materials.cuffey(md.initialization.temperature)
 md.materials.rheology_n = 3.0 * np.ones((md.mesh.numberofelements))
 
 # Calving

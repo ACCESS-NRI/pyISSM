@@ -25,7 +25,7 @@ md.mask.ocean_levelset[np.where(md.mesh.x < 0)] = 0.5
 
 # materials
 md.initialization.temperature = (273. - 20.) * np.ones((md.mesh.numberofvertices, ))
-md.materials.rheology_B = pyissm.tools.materials.paterson(md.initialization.temperature)
+md.materials.rheology_B = pyissm.tools.materials.cuffey(md.initialization.temperature)
 md.materials.rheology_n = 3 * np.ones((md.mesh.numberofelements, ))
 
 # damage
