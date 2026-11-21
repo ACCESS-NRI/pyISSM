@@ -20,7 +20,7 @@ env:
 jobs:
   benchmark_main:
     name: Benchmark main
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # pinned: ISSM external packages (PETSc 3.22) fail to build on ubuntu-latest (26.04); cached ISSM builds must match this image
     timeout-minutes: 180
     env:
       ISSM_DIR: ${{ github.workspace }}/issm
@@ -76,7 +76,8 @@ jobs:
         id: cache-issm-build
         with:
           path: ${{ env.ISSM_DIR }}
-          key: issm-${{ env.ISSM_RELEASE }}-python${{ env.PYTHON_VERSION }}-${{ runner.os }}
+          # Own prefix: this job builds ISSM with different settings and must not fill the CI build cache
+          key: issm-benchmark-${{ env.ISSM_RELEASE }}-python${{ env.PYTHON_VERSION }}-${{ runner.os }}
 
       - name: Install external packages
         if: steps.cache-issm-build.outputs.cache-hit != 'true'
@@ -156,7 +157,7 @@ jobs:
 
   benchmark_pr:
     name: Benchmark PR
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # pinned: ISSM external packages (PETSc 3.22) fail to build on ubuntu-latest (26.04); cached ISSM builds must match this image
     timeout-minutes: 180
     env:
       ISSM_DIR: ${{ github.workspace }}/issm
@@ -212,7 +213,8 @@ jobs:
         id: cache-issm-build
         with:
           path: ${{ env.ISSM_DIR }}
-          key: issm-${{ env.ISSM_RELEASE }}-python${{ env.PYTHON_VERSION }}-${{ runner.os }}
+          # Own prefix: this job builds ISSM with different settings and must not fill the CI build cache
+          key: issm-benchmark-${{ env.ISSM_RELEASE }}-python${{ env.PYTHON_VERSION }}-${{ runner.os }}
 
       - name: Install external packages
         if: steps.cache-issm-build.outputs.cache-hit != 'true'

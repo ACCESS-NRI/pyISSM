@@ -20,12 +20,12 @@ env:
 jobs:
   test:
     name: Run ISSM-pyISSM Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # pinned: ISSM external packages (PETSc 3.22) fail to build on ubuntu-latest (26.04); cached ISSM builds must match this image
     strategy:
       fail-fast: false
       matrix:
         # Run tests for multiple versions of python
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12"]
 
     steps:
       # Checkout the pyISSM repo
@@ -70,15 +70,16 @@ jobs:
       # Load from existing corredponding cache)
       # NOTE: Caches are ISSM release and python version specific
       - name: Restore ISSM Cache
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v4
         with:
           path: ${{ env.ISSM_DIR }}
           key: ${{ inputs.build-type }}-${{ env.ISSM_RELEASE }}-python${{ matrix.python-version }}-${{ runner.os }}
+          fail-on-cache-miss: true
       
       # Check that wrappers were installed correctly
       - name: Check wrappers
         run: |
-          python3 -c "import pyissm; print('Wrappers installed:', pyissm.tools.wrappers.check_wrappers_installed())"
+          python3 -c "import sys, pyissm; ok = pyissm.tools.wrappers.check_wrappers_installed(); print('Wrappers installed:', ok); sys.exit(0 if ok else 1)"
       
       # Run CI tests
       - name: Run tests

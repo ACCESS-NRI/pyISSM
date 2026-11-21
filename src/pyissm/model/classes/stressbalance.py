@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import sys
 from pyissm.model.classes import class_utils
@@ -68,6 +69,14 @@ class stressbalance(class_registry.manage_state):
         Loading force parameter.
     requested_outputs : list, default=['default']
         Additional outputs requested.
+    isemulator : int, default=0
+        Stress balance solver: 0 finite element, 1 GNN emulator, 2 hybrid (not implemented).
+    module_dir : str, default=''
+        Directory of the emulator module (used when isemulator > 0).
+    pt_name : str, default=''
+        Name of the checkpoint file for the pre-trained ML model (used when isemulator > 0).
+    py_name : str, default=''
+        Name of the python file that defines the ML architecture (used when isemulator > 0).
 
     Methods
     -------
@@ -117,6 +126,10 @@ class stressbalance(class_registry.manage_state):
         self.referential = np.nan
         self.loadingforce = np.nan
         self.requested_outputs = ['default']
+        self.isemulator = 0
+        self.module_dir = ''
+        self.pt_name = ''
+        self.py_name = ''
 
         # Inherit matching fields from provided class
         super().__init__(other)
@@ -125,6 +138,12 @@ class stressbalance(class_registry.manage_state):
     def __repr__(self):
         s = '   StressBalance solution parameters:\n'
 
+        s += '      Emulator parameters:\n'
+        s += '{}\n'.format(class_utils._field_display(self, 'isemulator', '0: finite element (default), 1: gnn emulator, 2: hybrid (not implemented)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'module_dir', 'directory of the emulator module'))
+        s += '{}\n'.format(class_utils._field_display(self, 'pt_name', 'name of the checkpoint file for pre-trained ML model'))
+        s += '{}\n'.format(class_utils._field_display(self, 'py_name', 'name of the python file that defines ML architecture'))
+        s += '\n'
         s += '      Convergence criteria:\n'
         s += '{}\n'.format(class_utils._field_display(self, 'restol', 'mechanical equilibrium residual convergence criterion'))
         s += '{}\n'.format(class_utils._field_display(self, 'reltol', 'velocity relative convergence criterion, NaN: not applied'))
@@ -253,6 +272,15 @@ class stressbalance(class_registry.manage_state):
         md : :class:`pyissm.model.Model`
             The model object with any consistency errors noted.
         """
+        # Emulator settings (checked for every solution, as upstream does)
+        class_utils._check_field(md, fieldname = 'stressbalance.isemulator', scalar = True, values = [0, 1, 2])
+        if self.isemulator:
+            if not isinstance(self.module_dir, str) or not os.path.isdir(self.module_dir):
+                md.check_message('stressbalance.module_dir should be an existing directory when stressbalance.isemulator > 0')
+            for field in ['py_name', 'pt_name']:
+                if not isinstance(getattr(self, field), str) or not getattr(self, field):
+                    md.check_message(f'stressbalance.{field} should be a non-empty string when stressbalance.isemulator > 0')
+
         # Early return if required analysis/solutions are not present
         if 'StressbalanceAnalysis' not in analyses:
             return md
@@ -320,6 +348,12 @@ class stressbalance(class_registry.manage_state):
         -------
         None
         """
+
+        ## Emulator settings (ISSM >= 2026.11.20 always reads md.stressbalance.isemulator)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'isemulator', format = 'Integer')
+        if self.isemulator:
+            for field in ['module_dir', 'pt_name', 'py_name']:
+                execute._write_model_field(fid, prefix, obj = self, fieldname = field, format = 'String')
 
         ## Write DoubleMat fields (all consistent formats)
         fieldnames = ['spcvx', 'spcvy', 'spcvz']

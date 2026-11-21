@@ -38,7 +38,7 @@ md.initialization.pressure = np.zeros((md.mesh.numberofvertices))
 md.initialization.temperature = (273.15 - 5.) * np.ones((md.mesh.numberofvertices))
 md.initialization.waterfraction = np.zeros((md.mesh.numberofvertices))
 md.initialization.watercolumn = np.zeros((md.mesh.numberofvertices))
-md.materials.rheology_B = pyissm.tools.materials.paterson(md.initialization.temperature)
+md.materials.rheology_B = pyissm.tools.materials.cuffey(md.initialization.temperature)
 md.materials.rheology_n = 3. * np.ones((md.mesh.numberofelements))
 
 # Thermal

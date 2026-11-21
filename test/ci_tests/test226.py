@@ -8,7 +8,7 @@ md = pyissm.model.param.parameterize(md, '../assets/Par/SquareShelf.py')
 md = pyissm.model.param.set_flow_equation(md, SSA = 'all')
 md.cluster.np = 3
 md.timestepping = pyissm.model.classes.timestepping.adaptive(md.timestepping)
-md.timestepping.final_time = 15.
+md.timestepping.final_time = 30.
 
 # Execute model
 md = pyissm.model.execute.solve(md, 'Transient')

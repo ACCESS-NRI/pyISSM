@@ -17,7 +17,7 @@ env:
 jobs:
   test:
     name: Run ISSM-pyISSM Tests [conda environment]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # pinned: ISSM external packages (PETSc 3.22) fail to build on ubuntu-latest (26.04); cached ISSM builds must match this image
     timeout-minutes: 90
 
     steps:
@@ -40,10 +40,12 @@ jobs:
           path: issm
 
       - name: Restore ISSM cache
-        uses: actions/cache@v4
+        id: issm-cache
+        uses: actions/cache/restore@v4
         with:
           path: ${{ env.ISSM_DIR }}
           key: ${{ inputs.build-type }}-${{ env.ISSM_RELEASE }}-python3.11-${{ runner.os }}
+          fail-on-cache-miss: true
 
       - name: Show cache result
         run: echo "cache-hit=${{ steps.issm-cache.outputs.cache-hit }}"
@@ -76,7 +78,7 @@ jobs:
           source "$ISSM_DIR/etc/environment.sh"
           export PYTHONPATH="$ISSM_DIR/src/wrappers:$PYTHONPATH"
           export LD_LIBRARY_PATH="$CONDA_PREFIX/lib:${LD_LIBRARY_PATH:-}"
-          python -c "import pyissm; print('Wrappers installed:', pyissm.tools.wrappers.check_wrappers_installed())"
+          python -c "import sys, pyissm; ok = pyissm.tools.wrappers.check_wrappers_installed(); print('Wrappers installed:', ok); sys.exit(0 if ok else 1)"
 
       - name: Run tests
         shell: bash -l {0}

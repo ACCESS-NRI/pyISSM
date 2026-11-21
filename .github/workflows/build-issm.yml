@@ -11,12 +11,12 @@ env:
 jobs:
   build:
     name: Build ISSM
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # pinned: ISSM external packages (PETSc 3.22) fail to build on ubuntu-latest (26.04); cached ISSM builds must match this image
     strategy:
       fail-fast: false
       matrix:
         # Build ISSM for multiple versions of python
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12"]
 
     steps:
 

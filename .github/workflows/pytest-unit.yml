@@ -20,7 +20,7 @@ env:
 jobs:
   pytest:
     name: pytest unit tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # pinned: ISSM external packages (PETSc 3.22) fail to build on ubuntu-latest (26.04); cached ISSM builds must match this image
     timeout-minutes: 30
 
     steps:
@@ -44,10 +44,11 @@ jobs:
 
       - name: Restore ISSM cache
         id: issm-cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: ${{ env.ISSM_DIR }}
           key: ${{ inputs.build-type }}-${{ env.ISSM_RELEASE }}-python${{ inputs.python-version }}-${{ runner.os }}
+          fail-on-cache-miss: true
 
       - name: Set up micromamba environment
         uses: mamba-org/setup-micromamba@v2

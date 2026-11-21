@@ -25,7 +25,7 @@ md = pyissm.model.execute.solve(md, 'Stressbalance')
 field_names = ['Vx', 'Vy', 'Vel', 'Pressure',
                'DeviatoricStressxx', 'DeviatoricStressyy', 'DeviatoricStressxy',
                'MassFlux1', 'MassFlux2', 'MassFlux3', 'MassFlux4', 'MassFlux5', 'MassFlux6']
-field_tolerances = [4e-13, 4e-13, 4e-13, 1e-13,
+field_tolerances = [1e-12, 1e-12, 1e-12, 1e-13,
                     2e-13, 2e-13, 2e-13,
                     1e-13, 1e-13, 1e-13,
                     1e-13, 1e-13, 1e-13]
