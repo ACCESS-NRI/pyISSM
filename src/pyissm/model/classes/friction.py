@@ -352,8 +352,11 @@ class coulomb2(class_registry.manage_state):
     """
     Coulomb2 friction class for ISSM.
 
-    This class contains the parameters for the Coulomb2 friction law in the ISSM framework.
-    It defines the main friction-related parameters specific to the Coulomb2 law.
+    This class contains the parameters for the Coulomb-limited sliding law (ISSM friction law 13):
+
+    .. math::
+
+        \\tau_b = - \\frac{C^2 |u_b|^{m-1} (0.5 N)}{(C^{2/m} |u_b| + (0.5 N)^{1/m})^m} u_b
 
     Parameters
     ----------
@@ -363,34 +366,33 @@ class coulomb2(class_registry.manage_state):
 
     Attributes
     ----------
-    coefficient : :class:`numpy.ndarray`, default=np.nan
-        Power law (Weertman) friction coefficient [SI].
-    coefficientcoulomb : :class:`numpy.ndarray`, default=np.nan
-        Coulomb friction coefficient [SI].
-    p : :class:`numpy.ndarray`, default=np.nan
-        p exponent.
-    q : :class:`numpy.ndarray`, default=np.nan
-        q exponent.
+    C : :class:`numpy.ndarray`, default=np.nan
+        Friction coefficient [SI].
+    m : :class:`numpy.ndarray`, default=np.nan
+        m exponent (Weertman would be 1/3).
     coupling : :class:`int`, default=0
-        Coupling flag: 0 for default, 1 for forcing (provide md.friction.effective_pressure), 2 for coupled (not implemented yet).
+        Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: use coupled model (not implemented yet).
     effective_pressure : :class:`numpy.ndarray`, default=np.nan
         Effective Pressure for the forcing if not coupled [Pa].
-    effective_pressure_limit : :class:`numpy.ndarray`, default=0
+    effective_pressure_limit : :class:`float`, default=0
         Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0).
+
+    Notes
+    -----
+    The coupling flag follows the ISSM core (``Friction::EffectivePressure``), as for :class:`schoof`:
+    ``effective_pressure`` is read for coupling 3 and 4 only.
 
     Examples
     --------
     .. code-block:: python
-    
+
         >>> md.friction = pyissm.model.classes.friction.coulomb2()
     """
 
     # Initialise with default parameters
     def __init__(self, other = None):
-        self.coefficient = np.nan
-        self.coefficientcoulomb = np.nan
-        self.p = np.nan
-        self.q = np.nan
+        self.C = np.nan
+        self.m = np.nan
         self.coupling = 0
         self.effective_pressure = np.nan
         self.effective_pressure_limit = 0
@@ -400,14 +402,15 @@ class coulomb2(class_registry.manage_state):
 
     # Define repr
     def __repr__(self):
-        s = 'Basal shear stress parameters: Sigma_b = min(coefficient^2 * Neff ^r * |u_b|^(s - 1) * u_b,\n'
-        s += 'coefficientcoulomb^2 * Neff), (effective stress Neff = rho_ice * g * thickness + rho_water * g * bed, r = q / p and s = 1 / p).\n'
-
-        s += '{}\n'.format(class_utils._field_display(self, 'coefficient', 'power law (Weertman) friction coefficient [SI]'))
-        s += '{}\n'.format(class_utils._field_display(self, 'coefficientcoulomb', 'Coulomb friction coefficient [SI]'))
-        s += '{}\n'.format(class_utils._field_display(self, 'p', 'p exponent'))
-        s += '{}\n'.format(class_utils._field_display(self, 'q', 'q exponent'))
-        s += '{}\n'.format(class_utils._field_display(self, 'coupling', 'Coupling flag: 0 for default, 1 for forcing(provide md.friction.effective_pressure)  and 2 for coupled(not implemented yet)'))
+        s = 'Coulomb limited sliding law parameters:\n'
+        s += '\n'
+        s += '                     C^2 |u_b|^(m-1) * (.5*N)           \n'
+        s += '      tau_b = - _________________________________   u_b \n'
+        s += '                (C^(2/m) |u_b| + (0.5*N)^(1/m) )^m      \n'
+        s += '\n'
+        s += '{}\n'.format(class_utils._field_display(self, 'C', 'friction coefficient [SI]'))
+        s += '{}\n'.format(class_utils._field_display(self, 'm', 'm exponent (Weertman would be 1/3)'))
+        s += '{}\n'.format(class_utils._field_display(self, 'coupling', 'Coupling flag 0: uniform sheet (negative pressure ok, default), 1: ice pressure only, 2: water pressure assuming uniform sheet (no negative pressure), 3: use provided effective_pressure, 4: used coupled model (not implemented yet)'))
         s += '{}\n'.format(class_utils._field_display(self, 'effective_pressure', 'Effective Pressure for the forcing if not coupled [Pa]'))
         s += '{}\n'.format(class_utils._field_display(self, 'effective_pressure_limit', 'Neff do not allow to fall below a certain limit: effective_pressure_limit * rho_ice * g * thickness (default 0)'))
         return s
@@ -422,17 +425,13 @@ class coulomb2(class_registry.manage_state):
         """
         Extrude [friction.coulomb2] fields to 3D
         """
-        self.coefficient = mesh._project_3d(md, vector = self.coefficient, type = 'node',  layer = 1)
-        self.coefficientcoulomb = mesh._project_3d(md, vector = self.coefficientcoulomb, type = 'node', layer = 1)
-        self.p = mesh._project_3d(md, vector = self.p, type = 'element')
-        self.q = mesh._project_3d(md, vector = self.q, type = 'element')
-        if self.coupling == 1:
+        self.C = mesh._project_3d(md, vector = self.C, type = 'node', layer = 1)
+        self.m = mesh._project_3d(md, vector = self.m, type = 'element')
+        if self.coupling in [3, 4]:
             self.effective_pressure = mesh._project_3d(md, vector = self.effective_pressure, type = 'node', layer = 1)
-        elif self.coupling >= 2:
-            raise ValueError('pyissm.model.classes.friction.coulomb2._extrude: md.friction.coupling >= 2 not implemented yet.')
-            
+
         return self
-    
+
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
@@ -456,20 +455,17 @@ class coulomb2(class_registry.manage_state):
         # Early return if necessary analyses or solutions not specified
         if 'StressbalanceAnalysis' not in analyses and 'ThermalAnalysis' not in analyses:
             return md
-        
-        class_utils._check_field(md, fieldname = "friction.coefficient", timeseries = True, allow_nan = False, allow_inf = False)
-        class_utils._check_field(md, fieldname = "friction.coefficientcoulomb", timeseries = True, allow_nan = False, allow_inf = False)
-        class_utils._check_field(md, fieldname = "friction.p", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils._check_field(md, fieldname = "friction.q", size = (md.mesh.numberofelements, ), allow_nan = False, allow_inf = False)
-        class_utils._check_field(md, fieldname = "friction.coupling", scalar = True, values = [0, 1, 2])
-        class_utils._check_field(md, fieldname = "friction.effective_pressure_limit", scalar = True, ge = 0)
 
-        if self.coupling == 1:
-            class_utils._check_field(md, fieldname = "friction.effective_pressure", timeseries = True, allow_nan = False, allow_inf = False)
-        elif self.coupling == 2:
-            raise ValueError('pyissm.model.classes.friction.coulomb.check_consistency: md.friction.coupling = 2 (coupled) is not implemented yet')
-        elif self.coupling > 2:
-            raise ValueError(f'pyissm.model.classes.friction.coulomb.check_consistency: md.friction.coupling = {self.coupling} is not implemented yet')
+        class_utils._check_field(md, fieldname = 'friction.C', timeseries = True, allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.m', size = (md.mesh.numberofelements, ), gt = 0., allow_nan = False, allow_inf = False)
+        class_utils._check_field(md, fieldname = 'friction.coupling', scalar = True, values = [0, 1, 2, 3, 4])
+        class_utils._check_field(md, fieldname = 'friction.effective_pressure_limit', scalar = True, ge = 0.)
+
+        if self.coupling == 3:
+            class_utils._check_field(md, fieldname = 'friction.effective_pressure', timeseries = True, allow_nan = False, allow_inf = False)
+        elif self.coupling == 4:
+            if not md.transient.ishydrology:
+                class_utils._check_field(md, message = 'md.friction.coupling = 4 but md.transient.ishydrology = 0!')
 
         return md
 
@@ -494,20 +490,18 @@ class coulomb2(class_registry.manage_state):
 
         ## Write headers to file
         # NOTE: data types must match the expected types in the ISSM code.
-        execute._write_model_field(fid, prefix, name = 'md.friction.law', data = 7, format = 'Integer')
+        execute._write_model_field(fid, prefix, name = 'md.friction.law', data = 13, format = 'Integer')
 
         ## Write fields
-        execute._write_model_field(fid, prefix, obj = self, fieldname = 'coefficient', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        execute._write_model_field(fid, prefix, obj = self, fieldname = 'coefficientcoulomb', format = 'DoubleMat', mattype = 1)
-        execute._write_model_field(fid, prefix, obj = self, fieldname = 'p', format = 'DoubleMat', mattype = 2)
-        execute._write_model_field(fid, prefix, obj = self, fieldname = 'q', format = 'DoubleMat', mattype = 2)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'C', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
+        execute._write_model_field(fid, prefix, obj = self, fieldname = 'm', format = 'DoubleMat', mattype = 2)
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'coupling', format = 'Integer')
         execute._write_model_field(fid, prefix, obj = self, fieldname = 'effective_pressure_limit', format = 'Double')
 
         ## Write conditional effective pressure
-        if self.coupling == 1:
+        if self.coupling in [3, 4]:
             execute._write_model_field(fid, prefix, obj = self, fieldname = 'effective_pressure', format = 'DoubleMat', mattype = 1, timeserieslength = md.mesh.numberofvertices + 1, yts = md.constants.yts)
-        elif self.coupling > 1:
+        elif self.coupling > 4:
             raise ValueError(f'md.friction.coupling = {self.coupling} is not implemented yet')
 
 ## ------------------------------------------------------

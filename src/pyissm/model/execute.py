@@ -1541,7 +1541,7 @@ def load_results_from_cluster(md,
     
     # Download all files from cluster
     print(f'Retrieving results from cluster {md.cluster.name}...')
-    md.cluster.download(md.private.runtimename, file_list)
+    md.cluster.download(runtime_name, file_list)
 
     # Load results from downloaded files
     md = load_results_from_disk(md, md.miscellaneous.name + '.outbin')
@@ -1554,8 +1554,8 @@ def load_results_from_cluster(md,
             warnings.warn(f'pyissm.execute.load_results_from_cluster: File {file_list[i]} not found.')
     
     # Remove initial tar.gz file
-    if not tools.config.is_pc() and os.path.exists(md.private.runtimename + '.tar.gz'):
-        os.remove(md.private.runtimename + '.tar.gz')
+    if not tools.config.is_pc() and os.path.exists(runtime_name + '.tar.gz'):
+        os.remove(runtime_name + '.tar.gz')
     
     # Erase all input files if run was carried out on same platform
     hostname = tools.config.get_hostname()
@@ -1570,7 +1570,7 @@ def load_results_from_cluster(md,
         
         ## If using dakota, remove dakota input file
         if md.qmu.isdakota and os.path.exists('qmu.in'):
-            os.remove('.qmu.in')
+            os.remove('qmu.in')
 
         ## Remove queue script
         if not tools.config.is_pc():
@@ -1760,7 +1760,7 @@ def load_results_from_disk(md, filename):
             err_msg += '   Please check for error messages above or in the outlog                \n'
             err_msg += '=========================================================================\n'
             print(err_msg)
-            return
+            return md
         
         # Initialize md.results if it is not a structure yet
         if not isinstance(md.results, model.classes.results.default):
