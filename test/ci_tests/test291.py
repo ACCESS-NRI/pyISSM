@@ -15,7 +15,8 @@ md = pyissm.model.execute.solve(md, 'Stressbalance')
 
 # Fields and tolerances to track changes
 field_names = ['Vx', 'Vy', 'Vz', 'Vel', 'Pressure']
-field_tolerances = [5e-05, 5e-05, 0.0001, 0.0001, 1e-07]
+# Vz/Vel loosened from upstream's 1e-4: this full-Stokes solve varies by ~1.0-1.3e-4 across GitHub runner hardware
+field_tolerances = [5e-05, 5e-05, 2e-04, 2e-04, 1e-07]
 field_values = [md.results.StressbalanceSolution.Vx,
                 md.results.StressbalanceSolution.Vy,
                 md.results.StressbalanceSolution.Vz,
