@@ -1,10 +1,24 @@
 """
 Primary ISSM model class and associated methods.
 """
+import math
 import numpy as np
 import copy
 from pyissm.model import classes, mesh, param
 from pyissm.tools import wrappers
+
+
+def _pow_elementwise(values, exponent):
+    """
+    Raise each value to ``exponent`` with the C library ``pow`` (``math.pow``).
+
+    NumPy's vectorised ``**`` picks a CPU-specific kernel at runtime (e.g. AVX-512/SVML on
+    Intel), which can differ from ``pow`` in the last bit for non-integer exponents
+    (``0.5 ** 1.1`` is one ulp lower on AVX-512 machines). Extrusion layer positions must
+    not depend on the machine, so compute them one value at a time.
+    """
+    return np.array([math.pow(float(v), exponent) for v in np.ravel(values)], dtype=float)
+
 
 class Model():
     """
@@ -729,7 +743,7 @@ class Model():
             if extrusion_exponent <= 0:
                 raise TypeError('pyissm.model.Model.extrude: extrusion_exponent must be >= 0')
             numlayers = num_layers
-            extrusionlist = (np.arange(0., float(numlayers - 1) + 1., 1.) / float(numlayers - 1))**extrusion_exponent
+            extrusionlist = _pow_elementwise(np.arange(0., float(numlayers - 1) + 1., 1.) / float(numlayers - 1), extrusion_exponent)
 
         elif lower_exponent is not None or upper_exponent is not None: # two polynomial laws
             numlayers = num_layers
@@ -739,8 +753,8 @@ class Model():
             if lower_exponent <= 0 or upper_exponent <= 0:
                 raise TypeError('pyissm.model.Model.extrude:: lower_exponent and upper_exponent must be >= 0')
 
-            lowerextrusionlist = (np.arange(0., 1. + 2. / float(numlayers - 1), 2. / float(numlayers - 1)))**lowerexp / 2.
-            upperextrusionlist = (np.arange(0., 1. + 2. / float(numlayers - 1), 2. / float(numlayers - 1)))**upperexp / 2.
+            lowerextrusionlist = _pow_elementwise(np.arange(0., 1. + 2. / float(numlayers - 1), 2. / float(numlayers - 1)), lowerexp) / 2.
+            upperextrusionlist = _pow_elementwise(np.arange(0., 1. + 2. / float(numlayers - 1), 2. / float(numlayers - 1)), upperexp) / 2.
             extrusionlist = np.unique(np.concatenate((lowerextrusionlist, 1. - upperextrusionlist)))
 
         if numlayers < 2:
