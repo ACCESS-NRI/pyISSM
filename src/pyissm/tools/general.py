@@ -809,6 +809,23 @@ def compare_bin_files(
 def summarize_solution(solution):
     """
     Print a summary of field names, types, and sizes for an ISSM solution object.
+
+    Private attributes (names starting with ``_``) are skipped.
+
+    Parameters
+    ----------
+    solution : object
+        ISSM solution object, e.g. ``md.results.StressbalanceSolution`` or a single
+        step of a transient solution.
+
+    Returns
+    -------
+    None
+        The summary is printed to stdout.
+
+    Examples
+    --------
+    >>> summarize_solution(md.results.StressbalanceSolution)
     """
     print(f"{'Field':<35} {'Type':<20} {'Shape / Length'}")
     print("-" * 75)

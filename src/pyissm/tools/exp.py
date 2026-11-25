@@ -276,20 +276,56 @@ def exp_read(filename):
 
 def isoline(md, field, value=0.0, output="struct", edges=None, amr=None):
     """
-    ISOLINE - construct isovalue lines based on field provided
+    Construct isovalue lines (contours) of a vertex field on a 2D triangular mesh.
 
-    Usage:
-        contours, edges_tria = isoline(md, field, value=0.0, output="struct", edges=None)
+    Equivalent to ISSM's MATLAB ``isoline``. For 3D (extruded) meshes, the 2D
+    base mesh is used and ``field`` must be defined on the 2D vertices.
 
-    Supported options (MATLAB parity):
-        value  : isoline value (default 0)
-        output : "struct" (default), "matrix", "longest", or "filename.exp"
-        edges  : if provided, reuse precomputed edges_tria (2D mapping)
-        amr    : optional object overriding x/y/elements: amr.MeshX, amr.MeshY, amr.MeshElements
+    Parameters
+    ----------
+    md : Model
+        ISSM model object containing the mesh.
+    field : array_like
+        Vertex field to contour. Must have length ``md.mesh.numberofvertices``
+        (2D) or ``md.mesh.numberofvertices2d`` (3D).
+    value : float, optional
+        Isovalue to extract (default: 0.0).
+    output : str, optional
+        Output format (default: ``"struct"``):
 
-    Returns:
-        contours   : list of dicts (exp-struct-like) OR an (N,2) array if output="matrix"
-        edges_tria : (nE,3) int array mapping each triangle to its unique-edge ids
+        - ``"struct"`` : list of exp-struct-like dicts, one per contour, with keys
+          ``x``, ``y``, ``z``, ``name``, ``nods``, ``density``, ``closed``.
+        - ``"matrix"`` : (N, 2) array of x/y coordinates, with contours separated
+          by NaN rows.
+        - ``"longest"`` : only the contour with the most nodes (a single dict).
+        - ``"<filename>.exp"`` : write contours to an Argus .exp file and return
+          them as for ``"struct"``.
+    edges : ndarray, optional
+        Precomputed (numberofelements, 3) array mapping each triangle to its unique
+        edge ids, as returned by a previous call. Reuse it to avoid recomputing
+        when contouring several fields on the same mesh.
+    amr : object, optional
+        Object overriding the mesh geometry, with attributes ``MeshX``, ``MeshY``
+        and ``MeshElements``.
+
+    Returns
+    -------
+    contours : list of dict, dict, or ndarray
+        Extracted contours, in the format given by ``output``. An empty list is
+        returned if the isovalue does not intersect the mesh.
+    edges_tria : ndarray
+        (numberofelements, 3) int array mapping each triangle to its unique edge ids.
+
+    Raises
+    ------
+    RuntimeError
+        If ``field`` is empty or has the wrong size, or if ``edges`` / the mesh
+        elements have the wrong shape.
+
+    Examples
+    --------
+    >>> contours, edges = isoline(md, md.mask.ice_levelset, value=0.0)
+    >>> grounding_line, _ = isoline(md, md.mask.ocean_levelset, output="longest", edges=edges)
     """
 
     # -----------------------------
