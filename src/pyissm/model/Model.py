@@ -977,6 +977,10 @@ class Model():
             md.friction.coefficientcoulomb = mesh._project_2d(md, md.friction.coefficientcoulomb, 1)
             md.friction.p = mesh._project_2d(md, md.friction.p, 1)
             md.friction.q = mesh._project_2d(md, md.friction.q, 1)
+        elif isinstance(md.friction, classes.friction.coulomb2):
+            md.friction.C = mesh._project_2d(md, md.friction.C, 1)
+            md.friction.m = mesh._project_2d(md, md.friction.m, 1)
+            md.friction.effective_pressure = mesh._project_2d(md, md.friction.effective_pressure, 1)
         elif isinstance(md.friction, classes.friction.hydro):
             md.friction.q = mesh._project_2d(md, md.friction.q, 1)
             md.friction.C = mesh._project_2d(md, md.friction.C, 1)
@@ -1093,9 +1097,11 @@ class Model():
                 if isvector:
                     md.hydrology.__dict__[field] = mesh._project_2d(md, md.hydrology.__dict__[field], 1)
 
-        # materials
+        # materials (estar has no rheology_n; enhancement factors are taken from the base, as upstream does for rheology_E)
         md.materials.rheology_B = mesh.depth_average(md, md.materials.rheology_B)
-        md.materials.rheology_n = mesh._project_2d(md, md.materials.rheology_n, 1)
+        for field in ['rheology_n', 'rheology_E', 'rheology_Ec', 'rheology_Es']:
+            if hasattr(md.materials, field):
+                setattr(md.materials, field, mesh._project_2d(md, getattr(md.materials, field), 1))
 
         # dsl
         if np.size(md.dsl.sea_surface_height_above_geoid) > 1:
@@ -1173,7 +1179,7 @@ class Model():
             mesh2d.lat = mesh._project_2d(md, md.mesh.lat, 1)
         if np.size(md.mesh.long) == md.mesh.numberofvertices:
             mesh2d.long = mesh._project_2d(md, md.mesh.long, 1)
-        mesh.epsg = md.mesh.epsg
+        mesh2d.epsg = md.mesh.epsg
         if np.size(md.mesh.scale_factor) == md.mesh.numberofvertices:
             mesh2d.scale_factor = mesh._project_2d(md, md.mesh.scale_factor, 1)
         if hasattr(md.mesh, 'vertexonboundary') and not np.isnan(md.mesh.vertexonboundary).all():

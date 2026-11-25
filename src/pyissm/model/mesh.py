@@ -2769,7 +2769,11 @@ def _project_2d(md, value, layer):
     if layer < 1 or layer > md.mesh.numberoflayers:
         raise ValueError(f"pyissm.model.mesh._project_2d: Layer must be between 1 and {md.mesh.numberoflayers}")
 
-    # coerce to array in case float is passed
+    # A scalar (e.g. an unset NaN default) is the same on every layer, as in MATLAB's project2d
+    if np.size(value) == 1:
+        return value
+
+    # coerce to array in case a list is passed
     if type(value) not in [np.ndarray, np.ma.core.MaskedArray]:
         value = np.array(value)
 
@@ -2780,9 +2784,7 @@ def _project_2d(md, value, layer):
         vec2d = True
 
     # Project
-    if value.size == 1:
-        projection_value = value[(layer - 1) * md.mesh.numberofelements2d:layer * md.mesh.numberofelements2d]
-    elif value.shape[0] == md.mesh.numberofvertices:
+    if value.shape[0] == md.mesh.numberofvertices:
         projection_value = value[(layer - 1) * md.mesh.numberofvertices2d:layer * md.mesh.numberofvertices2d]
     elif value.shape[0] == md.mesh.numberofvertices + 1:
         if np.ndim(value) == 1:
