@@ -33,7 +33,7 @@ class dependent(class_registry.manage_state):
     index : :class:`int`, default=-1
         Index parameter.
     nods : :class:`int`, default=0
-        Size parameter.
+        Size parameter. Not used by ISSM for dependents (kept for compatibility).
 
     Examples
     --------
@@ -120,9 +120,8 @@ class dependent(class_registry.manage_state):
                 raise ValueError('pyissm.model.classes.dependent.check_consistency: need segments to compute massflux dependent variable response')
             if self.index < 0:
                 raise ValueError('pyissm.model.classes.dependent.check_consistency: index for massflux dependent variable must be non-negative')
-            
-        if not np.isnan(self.fos_reverse_index):
-            if self.nods == 0:
-                raise ValueError('pyissm.model.classes.dependent.check_consistency: nods must be specified when fos_reverse_index is used')
+
+        # NOTE: nods is not required here. Only independents' nods is marshalled (fos_forward index);
+        # the fos_reverse index uses fos_reverse_index alone, so MATLAB scripts that omit nods work unchanged.
 
         return md
