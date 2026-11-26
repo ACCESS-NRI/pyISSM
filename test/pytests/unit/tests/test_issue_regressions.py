@@ -4,6 +4,7 @@ Regression tests for fixed GitHub issues:
 - #141: friction.coulomb2 must implement ISSM friction law 13 (C, m), not duplicate friction.coulomb (law 7).
 - #224: Model.collapse() must handle material classes without rheology_n (estar) and collapse
   rheology_E / rheology_Ec / rheology_Es.
+- #128: a dependent with fos_reverse_index must not require nods (MATLAB scripts omit it; it is never marshalled).
 - #170: load_results_from_cluster() must download from the runtime_name it is given, and
   load_results_from_disk() must return the model when the output file is missing.
 """
@@ -97,6 +98,19 @@ class TestCoulomb2Law13:
         c.p = np.ones(md.mesh.numberofelements)
         c.q = np.ones(md.mesh.numberofelements)
         assert _integer_record(_marshall_records(c, md, 'md.friction')['md.friction.law']) == 7
+
+
+class TestDependentNods:
+    """A fos_reverse dependent does not need nods (issue #128)."""
+
+    def test_fos_reverse_dependent_without_nods(self):
+        from pyissm.model.classes import dependent
+        dep = dependent()
+        dep.name = 'Outputdefinition1'
+        dep.type = 'scalar'
+        dep.fos_reverse_index = 1
+        md = SimpleNamespace()
+        assert dep.check_consistency(md, 'TransientSolution', []) is md
 
 
 class TestLoadResults:
