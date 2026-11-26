@@ -76,7 +76,16 @@ class massfluxatgate(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - massfluxatgate Class'
         return s
-    
+
+    # Extrude to 3D mesh
+    def _extrude(self, md):
+        """
+        Extrude [massfluxatgate.massfluxatgate] fields to 3D
+
+        Nothing to extrude: segments are computed from the profile when the model is marshalled (as upstream ISSM).
+        """
+        return self
+
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
