@@ -2,6 +2,8 @@
 Class registry management for ISSM classes.
 """
 
+import sys
+
 import numpy as np
 
 CLASS_REGISTRY = {}
@@ -54,7 +56,68 @@ def register_class(cls):
 
     key = ".".join(key_parts + [cls.__name__])
     CLASS_REGISTRY[key] = cls
+
+    # Give the defining module an available() listing its classes, e.g. pyissm.model.classes.friction.available()
+    module = sys.modules.get(cls.__module__)
+    if module is not None and 'available' not in vars(module):
+        module.available = _module_available(".".join(key_parts))
+
     return cls
+
+def _class_description(cls):
+    """First paragraph of a class docstring, on one line."""
+    doc = (cls.__doc__ or '').strip()
+    if not doc:
+        return 'No description available.'
+    return ' '.join(doc.split('\n\n')[0].split())
+
+def available(category):
+    """
+    List the available classes (parameterisations) for a model component.
+
+    Parameters
+    ----------
+    category : :class:`str`
+        Model component, i.e. the name of the module that defines its classes
+        (e.g. ``'friction'``, ``'smb'``, ``'basalforcings'``).
+
+    Returns
+    -------
+    :class:`dict`
+        ``{class name: one-line description}``, in the order the classes are defined.
+
+    Raises
+    ------
+    ValueError
+        If no classes are registered for ``category``.
+
+    Examples
+    --------
+    .. code-block:: python
+
+        >>> from pyissm.model.classes import class_registry
+        >>> list(class_registry.available('friction'))
+        ['default', 'coulomb', 'coulomb2', 'hydro', 'josh', 'pism', 'regcoulomb', ...]
+        >>> pyissm.model.classes.friction.available()  # same, from the module
+        >>> md.friction.available()                    # same, from a model field
+    """
+    prefix = category + "."
+    classes = {key[len(prefix):]: _class_description(cls) for key, cls in CLASS_REGISTRY.items()
+               if key.startswith(prefix) and "." not in key[len(prefix):]}
+    if not classes:
+        categories = sorted({key.rsplit(".", 1)[0] for key in CLASS_REGISTRY})
+        raise ValueError(f"available: no classes registered for '{category}'. Known components: {', '.join(categories)}")
+    return classes
+
+def _module_available(category):
+    def available_in_module():
+        return available(category)
+    available_in_module.__name__ = 'available'
+    available_in_module.__qualname__ = 'available'
+    available_in_module.__doc__ = (f"List the available {category} classes.\n\n"
+                                   "Returns\n-------\n:class:`dict`\n"
+                                   "    ``{class name: one-line description}``, in the order the classes are defined.")
+    return available_in_module
 
 def map_classtype(classtype):
     """
@@ -314,6 +377,46 @@ class manage_state:
                     # If the fields are different, replace the field_self with field_other
                     if not self._fields_equal(field_self, field_other):
                         setattr(self, attr, field_other)
+
+    ## List the fields of this instance
+    def get_fieldnames(self):
+        """
+        Return the names of the fields of this instance.
+
+        Returns
+        -------
+        :class:`list` of :class:`str`
+            Field names, in the order they were defined. Private attributes (leading underscore) are left out.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            >>> md.friction.get_fieldnames()
+            ['coefficient', 'p', 'q', 'coupling', 'linearize', 'effective_pressure', 'effective_pressure_limit']
+        """
+        return [name for name in vars(self) if not name.startswith('_')]
+
+    ## List the alternative classes for this model component
+    @classmethod
+    def available(cls):
+        """
+        List the available classes (parameterisations) for this model component.
+
+        Returns
+        -------
+        :class:`dict`
+            ``{class name: one-line description}`` for every class defined alongside this one
+            (e.g. all friction laws for a friction class).
+
+        Examples
+        --------
+        .. code-block:: python
+
+            >>> md.friction.available()
+            {'default': 'Default friction class for ISSM.', 'coulomb': 'Coulomb friction class for ISSM.', ...}
+        """
+        return available(cls.__module__.split('.')[-1])
 
     ## Check if fields are equal (used above)
     def _fields_equal(self, a, b):

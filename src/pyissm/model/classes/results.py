@@ -227,7 +227,7 @@ class solution(class_registry.manage_state):
         else:
             s = '  1x{} array with fields:\n'.format(numsteps)
             s += '\n'
-            for fieldname in self.steps[0].get_fieldnames():
+            for fieldname in self.get_fieldnames():
                 s += '    {}\n'.format(fieldname)
         return s
 
@@ -257,7 +257,23 @@ class solution(class_registry.manage_state):
         """
         # No checks
         return md
-    
+
+    # List result fields (across all steps), not the container's own attributes
+    def get_fieldnames(self):
+        """
+        Return the names of the result fields stored in this solution.
+
+        Returns
+        -------
+        :class:`list` of :class:`str`
+            Field names found in any step (e.g. ``'Vel'``, ``'Thickness'``), in first-seen order.
+            Each can be read with dot access, e.g. ``md.results.TransientSolution.Vel``.
+        """
+        names = {}
+        for step in self.steps or []:
+            names.update(dict.fromkeys(step.get_fieldnames()))
+        return list(names)
+
     # Define getitem
     def __getitem__(self, index):
         while index >= len(self.steps):
@@ -420,7 +436,3 @@ class solutionstep(class_registry.manage_state):
         """
         # No checks
         return md
-
-    # Define get_fieldnames
-    def get_fieldnames(self):
-        return self.__dict__.keys()
