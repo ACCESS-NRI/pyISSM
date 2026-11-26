@@ -441,7 +441,8 @@ def plot_model_field(md,
     figsize : tuple, optional
         Figure size in inches when creating a new figure. Default is (6.4, 4.8).
     log : bool, optional
-        If True, applies a logarithmic color normalization. Default is 'False'.
+        If True, applies a logarithmic color normalization. Default is 'False'. Colour limits can still be set
+        with ``vmin`` and ``vmax`` (both must be positive); they are passed to the :class:`matplotlib.colors.LogNorm`.
     constrained_layout : bool, optional
         Whether to use constrained layout for the figure. Default is 'True'.
     show_mesh : bool, optional
@@ -464,6 +465,7 @@ def plot_model_field(md,
     -------
     fig, ax = plot_model_field(md, md.inversion.vel_obs)
     fig, ax = plot_model_field(md, md.results.TransientSolution.Vel[0], log = True)
+    fig, ax = plot_model_field(md, md.results.TransientSolution.Vel[0], log = True, vmin = 1, vmax = 1000)
     fig, ax = plot_model_field(md, md.results.TransientSolution.Temperature[-1], layer = 3)
     fig, ax = plot_model_field(md, md.results.TransientSolution.Temperature[-1], layer = 3, show_cbar = True, show_mesh = True)
 
@@ -476,7 +478,15 @@ def plot_model_field(md,
 
     ## Set defaults
     ax_defined = ax is not None
-    norm = matplotlib.colors.LogNorm() if log else None
+    norm = kwargs.pop('norm', None)
+    if log:
+        # matplotlib rejects vmin/vmax alongside a norm, so the colour limits go into the LogNorm
+        if norm is not None:
+            raise ValueError('plot_model_field: pass either log = True or norm, not both.')
+        vmin, vmax = kwargs.pop('vmin', None), kwargs.pop('vmax', None)
+        if (vmin is not None and vmin <= 0) or (vmax is not None and vmax <= 0):
+            raise ValueError(f'plot_model_field: vmin and vmax must be positive when log = True (got vmin = {vmin}, vmax = {vmax}).')
+        norm = matplotlib.colors.LogNorm(vmin = vmin, vmax = vmax)
     shading = 'gouraud' # Consistent with plot_data_on = 'points'
 
     # Accept 'colormap' as an alias for 'cmap' (consistent with other pyissm functions)
