@@ -383,63 +383,47 @@ def _get_longest_fieldname(self):
 def marshall_inversion_cost_functions(cost_functions):
     """
     Map inversion cost function codes to their corresponding string names.
-    
+
     This function converts integer cost function codes used in ISSM inversion
-    routines to their human-readable string representations. It supports both
-    single cost function codes and lists of multiple codes.
-    
+    routines to the names ISSM expects. It supports both single cost function
+    codes and lists or arrays of codes.
+
     Parameters
     ----------
     cost_functions : :class:`int` or list of :class:`int`
-        Cost function code(s) to be mapped. Supported codes include:
+        Cost function code(s) to be mapped. See
+        :func:`supported_inversion_cost_functions` (``return_dict = True``)
+        for the supported codes and their names.
 
-        - 101: SurfaceAbsVelMisfit
-        - 102: SurfaceRelVelMisfit  
-        - 103: SurfaceLogVelMisfit
-        - 104: SurfaceLogVxVyMisfit
-        - 105: SurfaceAverageVelMisfit
-        - 201: ThicknessAbsMisfit
-        - 501: DragCoefficientAbsGradient
-        - 502: RheologyBbarAbsGradient
-        - 503: ThicknessAbsGradient
-        - 504: ThicknessAlongGradient
-        - 505: ThicknessAcrossGradient
-    
     Returns
     -------
     list of :class:`str`
         List containing the string name(s) corresponding to the input cost
         function code(s).
-    
+
+    Raises
+    ------
+    ValueError
+        If a code is not a supported cost function.
+
     Examples
     --------
     .. code-block:: python
 
-        >>> map_inversion_cost_functions(101)
+        >>> marshall_inversion_cost_functions(101)
         ['SurfaceAbsVelMisfit']
-        
-        >>> map_inversion_cost_functions([101, 201, 501])
+
+        >>> marshall_inversion_cost_functions([101, 201, 501])
         ['SurfaceAbsVelMisfit', 'ThicknessAbsMisfit', 'DragCoefficientAbsGradient']
     """
 
-    ## Define dictionary of cost functions
-    cfDict = {101: 'SurfaceAbsVelMisfit',
-            102: 'SurfaceRelVelMisfit',
-            103: 'SurfaceLogVelMisfit',
-            104: 'SurfaceLogVxVyMisfit',
-            105: 'SurfaceAverageVelMisfit',
-            201: 'ThicknessAbsMisfit',
-            501: 'DragCoefficientAbsGradient',
-            502: 'RheologyBbarAbsGradient',
-            503: 'ThicknessAbsGradient',
-            504: 'ThicknessAlongGradient',
-            505: 'ThicknessAcrossGradient'}
-
-    ## Marshall cost functions
-    if isinstance(cost_functions, int):
-        return [cfDict[cost_functions]]
-    else:
-        return [cfDict[cf] for cf in cost_functions]
+    names = []
+    for cf in np.atleast_1d(cost_functions).ravel():
+        if cf not in _INVERSION_COST_FUNCTIONS:
+            raise ValueError(f'marshall_inversion_cost_functions: unsupported cost function {cf}. '
+                             f'Supported codes: {supported_inversion_cost_functions()}')
+        names.append(_INVERSION_COST_FUNCTIONS[int(cf)])
+    return names
 
 def supported_inversion_control_parameters():
     """
@@ -466,16 +450,47 @@ def supported_inversion_control_parameters():
         'MaterialsRheologyB'
     ]
 
-def supported_inversion_cost_functions():
+# Inversion cost function codes and the names ISSM expects in md.inversion.cost_functions
+# (from $ISSM_DIR/src/m/inversions/marshallcostfunctions.m). This is the single source for both
+# validation and marshalling, so a code that passes check_consistency can always be marshalled.
+# Upstream's supportedcostfunctions also lists 602-604, but no name exists for them, so they are left out.
+_INVERSION_COST_FUNCTIONS = {
+    101: 'SurfaceAbsVelMisfit',
+    102: 'SurfaceRelVelMisfit',
+    103: 'SurfaceLogVelMisfit',
+    104: 'SurfaceLogVxVyMisfit',
+    105: 'SurfaceAverageVelMisfit',
+    201: 'ThicknessAbsMisfit',
+    501: 'DragCoefficientAbsGradient',
+    502: 'RheologyBbarAbsGradient',
+    503: 'ThicknessAbsGradient',
+    504: 'ThicknessAlongGradient',
+    505: 'ThicknessAcrossGradient',
+    506: 'BalancethicknessMisfit',
+    507: 'RheologyBAbsGradient',
+    508: 'RheologyBInitialguessMisfit',
+    510: 'ThicknessPositive',
+    601: 'SurfaceAbsMisfit',
+}
+
+def supported_inversion_cost_functions(return_dict = False):
     """
-    Return a list of supported inversion cost function codes.
+    Return the supported inversion cost function codes.
+
+    Parameters
+    ----------
+    return_dict : :class:`bool`, default=False
+        If True, return the mapping of codes to ISSM cost function names;
+        otherwise, return just the list of codes.
 
     Returns
     -------
-    list of :class:`int`
-        List of supported inversion cost function codes.
+    list of :class:`int` or :class:`dict`
+        Supported inversion cost function codes, or the code-to-name mapping.
     """
-    return list(range(101, 105 + 1)) + [201] + list(range(501, 508 + 1)) + [510] + list(range(601, 604 + 1))
+    if return_dict:
+        return dict(_INVERSION_COST_FUNCTIONS)
+    return list(_INVERSION_COST_FUNCTIONS)
 
 def supported_analyses():
     """

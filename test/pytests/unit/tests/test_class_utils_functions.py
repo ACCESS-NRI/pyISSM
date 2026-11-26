@@ -162,10 +162,12 @@ class TestSupportedInversionCostFunctions:
         for code in range(501, 509):
             assert code in result
 
-    def test_contains_601_to_604(self):
+    def test_contains_601_not_602_to_604(self):
+        # 602-604 are in upstream's supportedcostfunctions but have no name to marshall (issue #78)
         result = supported_inversion_cost_functions()
-        for code in range(601, 605):
-            assert code in result
+        assert 601 in result
+        for code in range(602, 605):
+            assert code not in result
 
 
 # ============== SUPPORTED_ANALYSES ==============
@@ -360,3 +362,34 @@ class TestCheckSize:
         field = np.zeros((3,))
         _check_size(md, field, 'test.field', (3, 4))
         assert md.private.isconsistent is False
+
+
+class TestInversionCostFunctionsConsistent:
+    """Every cost function accepted by check_consistency can be marshalled (issue #78)."""
+
+    def test_every_supported_code_marshalls(self):
+        codes = supported_inversion_cost_functions()
+        assert len(marshall_inversion_cost_functions(codes)) == len(codes)
+
+    def test_dict_matches_list(self):
+        mapping = supported_inversion_cost_functions(return_dict = True)
+        assert list(mapping) == supported_inversion_cost_functions()
+
+    @pytest.mark.parametrize('code, name', [(506, 'BalancethicknessMisfit'),
+                                            (507, 'RheologyBAbsGradient'),
+                                            (508, 'RheologyBInitialguessMisfit'),
+                                            (510, 'ThicknessPositive'),
+                                            (601, 'SurfaceAbsMisfit')])
+    def test_codes_previously_missing(self, code, name):
+        assert marshall_inversion_cost_functions(code) == [name]
+
+    def test_numpy_input(self):
+        import numpy as np
+        assert marshall_inversion_cost_functions(np.array([101., 501.])) == ['SurfaceAbsVelMisfit', 'DragCoefficientAbsGradient']
+        assert marshall_inversion_cost_functions(np.int64(201)) == ['ThicknessAbsMisfit']
+
+    @pytest.mark.parametrize('code', [602, 999])
+    def test_unsupported_code_raises(self, code):
+        assert code not in supported_inversion_cost_functions()
+        with pytest.raises(ValueError, match = 'unsupported cost function'):
+            marshall_inversion_cost_functions(code)
