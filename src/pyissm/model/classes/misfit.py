@@ -1,7 +1,7 @@
 import numpy as np
 from pyissm.model.classes import class_utils
 from pyissm.model.classes import class_registry
-from pyissm.model import execute
+from pyissm.model import execute, mesh
 
 @class_registry.register_class
 class misfit(class_registry.manage_state):
@@ -95,7 +95,20 @@ class misfit(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - misfit Class'
         return s
-    
+
+    # Extrude to 3D mesh
+    def _extrude(self, md):
+        """
+        Extrude [misfit.misfit] fields to 3D
+        """
+        # weights and observation are vertex fields (optionally time series); leave unset (NaN) fields alone
+        if not np.all(np.isnan(self.weights)):
+            self.weights = mesh._project_3d(md, vector = self.weights, type = 'node')
+        if not np.all(np.isnan(self.observation)):
+            self.observation = mesh._project_3d(md, vector = self.observation, type = 'node')
+
+        return self
+
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """

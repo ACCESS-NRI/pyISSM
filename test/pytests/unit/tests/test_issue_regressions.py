@@ -7,6 +7,7 @@ Regression tests for fixed GitHub issues:
 - #128: a dependent with fos_reverse_index must not require nods (MATLAB scripts omit it; it is never marshalled).
 - #170: load_results_from_cluster() must download from the runtime_name it is given, and
   load_results_from_disk() must return the model when the output file is missing.
+- #152: Model.extrude() / collapse() must work with every output definition class in md.outputdefinition.
 """
 
 import os
@@ -223,3 +224,63 @@ class TestCollapseMaterials:
         md = md.collapse()
         np.testing.assert_array_equal(md.friction.C, 1. + np.arange(nv))
         np.testing.assert_array_equal(md.friction.m, np.ones(ne) / 3.)
+
+
+@requires_wrappers
+class TestOutputDefinitionExtrude:
+    """md.extrude() and md.collapse() handle every output definition class (issue #152)."""
+
+    def _model_with_definitions(self):
+        from pyissm.model import Model, mesh
+        from pyissm.model.classes import cf
+        from pyissm.model.classes.massfluxatgate import massfluxatgate
+        from pyissm.model.classes.misfit import misfit
+        from pyissm.model.classes.nodalvalue import nodalvalue
+        from pyissm.model.classes.regionaloutput import regionaloutput
+        md = mesh.square_mesh(Model(), 1.e5, 1.e5, 5, 5)
+        nv = md.mesh.numberofvertices
+        md.geometry.thickness = 1000. * np.ones(nv)
+        md.geometry.base = -500. * np.ones(nv)
+        md.geometry.surface = md.geometry.base + md.geometry.thickness
+        md.geometry.bed = -600. * np.ones(nv)
+        md.mask.ice_levelset = -np.ones(nv)
+        md.mask.ocean_levelset = np.ones(nv)
+        md.materials.rheology_B = 1.e8 * np.ones(nv)
+        md.materials.rheology_n = 3. * np.ones(md.mesh.numberofelements)
+
+        obs = 1. + np.arange(nv, dtype = float)
+        d_cf = cf.surfacesquare()
+        d_cf.observation, d_cf.weights = obs.copy(), np.ones(nv)
+        d_misfit = misfit()
+        d_misfit.observation, d_misfit.weights = obs.copy(), np.ones(nv)
+        d_misfit_ts = misfit()
+        d_misfit_ts.observation = np.vstack((np.tile(obs[:, None], (1, 2)), [[0., 1.]]))  # time series, nv + 1 rows
+        d_region = regionaloutput()
+        d_region.mask = np.ones(nv)
+        d_node = nodalvalue()
+        d_node.node = 3
+        d_flux = massfluxatgate()
+        d_flux.profilename = 'gate.exp'
+        md.outputdefinition.definitions = [d_cf, d_misfit, d_misfit_ts, d_region, d_node, d_flux]
+        return md, nv, obs
+
+    def test_extrude(self):
+        md, nv, obs = self._model_with_definitions()
+        md = md.extrude(3, 1.)
+        nv3d = md.mesh.numberofvertices
+        d_cf, d_misfit, d_misfit_ts, d_region, d_node, d_flux = md.outputdefinition.definitions
+        for field in [d_cf.observation, d_cf.weights, d_misfit.observation, d_misfit.weights, d_region.mask]:
+            assert np.size(field) == nv3d
+        np.testing.assert_array_equal(d_misfit.observation[:nv], obs)
+        assert d_misfit_ts.observation.shape == (nv3d + 1, 2)
+        assert np.isnan(d_misfit_ts.weights)
+        assert d_node.node == 3
+        assert d_flux.profilename == 'gate.exp'
+
+    def test_extrude_collapse_round_trip(self):
+        md, nv, obs = self._model_with_definitions()
+        md = md.extrude(3, 1.).collapse()
+        assert md.mesh.numberofvertices == nv
+        d_cf, d_misfit = md.outputdefinition.definitions[:2]
+        np.testing.assert_array_equal(d_cf.observation, obs)
+        np.testing.assert_array_equal(d_misfit.observation, obs)

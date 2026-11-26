@@ -71,7 +71,16 @@ class nodalvalue(class_registry.manage_state):
     def __str__(self):
         s = 'ISSM - nodalvalue Class'
         return s
-    
+
+    # Extrude to 3D mesh
+    def _extrude(self, md):
+        """
+        Extrude [nodalvalue.nodalvalue] fields to 3D
+
+        Nothing to extrude: node is a vertex index, and the base layer of an extruded mesh keeps the 2D vertex numbering.
+        """
+        return self
+
     # Check model consistency
     def check_consistency(self, md, solution, analyses):
         """
