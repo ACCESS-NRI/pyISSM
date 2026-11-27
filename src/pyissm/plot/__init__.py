@@ -5,6 +5,7 @@ from .plot import (
     plot_model_field,
     plot_model_bc,
     plot_model_ts,
+    animate_model_field,
     plot_contour,
     plot_streamlines,
     plot_quiver,

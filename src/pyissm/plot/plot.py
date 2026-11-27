@@ -986,6 +986,172 @@ def plot_model_ts(md,
 
     return fig, axs
 
+def animate_model_field(md,
+                        field,
+                        solution = 'TransientSolution',
+                        time = None,
+                        frames = None,
+                        title = None,
+                        interval = 200,
+                        repeat = True,
+                        save = None,
+                        fps = 5,
+                        dpi = None,
+                        ax = None,
+                        figsize = (6.4, 4.8),
+                        constrained_layout = True,
+                        show_cbar = True,
+                        cbar_kwargs = {},
+                        **kwargs):
+    """
+    Animate a transient 2D field on the model mesh (e.g. velocity through a transient run).
+
+    Each frame is drawn with :func:`plot_model_field`, so the same options apply (``log``, ``layer``,
+    ``depth_average``, ``cmap``/``colormap``, ``show_mesh``, ``plot_data_on``, ...). The colour limits are
+    fixed across frames so that frames can be compared: unless ``vmin``/``vmax`` (or ``norm``) are given,
+    they span the whole animation.
+
+    Parameters
+    ----------
+    md : ISSM Model object
+        Model containing the mesh (and the results, if ``field`` is a name).
+    field : str, np.ndarray or list of np.ndarray
+        Either the name of a result field in ``md.results.<solution>`` (e.g. ``'Vel'``), an array with one
+        row per time step (shape ``(ntimes, nvertices)`` or ``(ntimes, nelements)``; a trailing singleton
+        dimension is allowed), or a list of 1D arrays, one per time step.
+    solution : str, optional
+        Results solution to read ``field`` (and ``time``) from when ``field`` is a name. Default is ``'TransientSolution'``.
+    time : array_like, optional
+        Time of each step, used in the frame titles. Defaults to ``md.results.<solution>.time`` when ``field`` is a name.
+    frames : array_like of int, optional
+        Indices of the time steps to animate. Default is all steps.
+    title : str, optional
+        Frame title, formatted with ``time`` and ``step`` (the time-step index), e.g. ``'Velocity at {time:.0f} yr'``.
+        Default is ``'Time = {time:g}'`` when times are known, otherwise ``'Step {step}'``. Use ``''`` for no title.
+    interval : int, optional
+        Delay between frames in milliseconds (interactive display). Default is 200.
+    repeat : bool, optional
+        Whether the animation repeats when displayed. Default is True.
+    save : str, optional
+        If given, save the animation to this file. ``.gif`` uses Pillow; other extensions (e.g. ``.mp4``) use ffmpeg,
+        which must be installed.
+    fps : int, optional
+        Frames per second when saving. Default is 5.
+    dpi : int, optional
+        Resolution when saving. Default is the figure's dpi.
+    ax : matplotlib.axes.Axes, optional
+        Axes to draw on. If None, a new figure and axes are created.
+    figsize : tuple, optional
+        Figure size when a new figure is created. Default is (6.4, 4.8).
+    constrained_layout : bool, optional
+        Use constrained layout when a new figure is created. Default is True.
+    show_cbar : bool, optional
+        Add one colour bar for the whole animation. Default is True.
+    cbar_kwargs : dict, optional
+        Keyword arguments for the colour bar.
+    **kwargs : dict, optional
+        Passed to :func:`plot_model_field` (e.g. ``log``, ``vmin``, ``vmax``, ``cmap``, ``layer``).
+
+    Returns
+    -------
+    fig : matplotlib.figure.Figure
+    ax : matplotlib.axes.Axes
+    anim : matplotlib.animation.FuncAnimation
+        Keep a reference to ``anim`` while it is displayed, otherwise matplotlib garbage-collects it.
+        In a notebook, ``IPython.display.HTML(anim.to_jshtml())`` shows it inline.
+
+    Examples
+    --------
+    fig, ax, anim = animate_model_field(md, 'Vel', log = True, cmap = 'viridis', save = 'vel.gif')
+    fig, ax, anim = animate_model_field(md, 'Thickness', frames = range(0, 100, 10), title = 'H at {time:.0f} yr')
+    fig, ax, anim = animate_model_field(md, md.results.TransientSolution.Temperature, layer = 1)
+    """
+    import matplotlib.animation
+
+    ## Collect the frames
+    if isinstance(field, str):
+        if not tools.general.has_nested_attr(md, 'results', solution):
+            raise ValueError(f"animate_model_field: md.results has no '{solution}'.")
+        results = getattr(md.results, solution)
+        if not hasattr(results, field):
+            raise ValueError(f"animate_model_field: '{field}' not found in md.results.{solution}.")
+        data = getattr(results, field)
+        if time is None:
+            time = getattr(results, 'time', None)
+    else:
+        data = field
+
+    if isinstance(data, (list, tuple)):
+        steps = [np.asarray(d, dtype = float).reshape(-1) for d in data]
+    else:
+        data = np.asarray(data, dtype = float)
+        if data.ndim == 3 and data.shape[2] == 1:
+            data = data[:, :, 0]
+        if data.ndim != 2:
+            raise ValueError(f'animate_model_field: field must have one row per time step (2D array), got shape {data.shape}. '
+                             'A field that does not change between steps cannot be animated.')
+        steps = list(data)
+
+    nsteps = len(steps)
+    if nsteps == 0:
+        raise ValueError('animate_model_field: field has no time steps.')
+    frames = list(range(nsteps)) if frames is None else [int(i) for i in frames]
+    if not frames or min(frames) < -nsteps or max(frames) >= nsteps:
+        raise ValueError(f'animate_model_field: frames must be indices into the {nsteps} time steps.')
+
+    if time is not None:
+        time = np.asarray(time, dtype = float).reshape(-1)
+        if time.size != nsteps:
+            raise ValueError(f'animate_model_field: time has {time.size} values but field has {nsteps} time steps.')
+    if title is None:
+        title = 'Time = {time:g}' if time is not None else 'Step {step}'
+
+    ## Fix the colour limits across frames
+    if kwargs.get('norm') is None:
+        values = np.concatenate([steps[i] for i in frames])
+        values = values[np.isfinite(values)]
+        if kwargs.get('log', False):
+            values = values[values > 0]
+        if values.size:
+            kwargs.setdefault('vmin', float(values.min()))
+            kwargs.setdefault('vmax', float(values.max()))
+
+    ## Figure
+    if ax is None:
+        fig, ax = plt.subplots(figsize = figsize, constrained_layout = constrained_layout)
+    else:
+        fig = ax.get_figure()
+
+    state = {'trip': None, 'cbar': None}
+
+    def draw(frame):
+        if state['trip'] is not None:
+            state['trip'].remove()
+        with warnings.catch_warnings():
+            # plot_model_field repeats the same shape/layer warnings for every frame; show them once
+            if state['trip'] is not None:
+                warnings.simplefilter('ignore')
+            _, _, state['trip'] = plot_model_field(md, steps[frame], ax = ax, show_cbar = False, **kwargs)
+        if show_cbar:
+            if state['cbar'] is None:
+                state['cbar'] = fig.colorbar(state['trip'], ax = ax, **cbar_kwargs)
+            else:
+                state['cbar'].update_normal(state['trip'])
+        if title:
+            ax.set_title(title.format(time = time[frame] if time is not None else np.nan, step = frame))
+        return (state['trip'],)
+
+    draw(frames[0])
+    anim = matplotlib.animation.FuncAnimation(fig, draw, frames = frames, interval = interval,
+                                              repeat = repeat, blit = False)
+
+    ## Save
+    if save is not None:
+        writer = 'pillow' if str(save).lower().endswith('.gif') else 'ffmpeg'
+        anim.save(save, writer = writer, fps = fps, dpi = dpi)
+
+    return fig, ax, anim
+
 ## ------------------------------------------------------------------------------------
 ## CONTOUR, STREAMLINES, QUIVER
 
