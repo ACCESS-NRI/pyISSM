@@ -67,8 +67,12 @@ def load_model(path):
         for var_name, var in group.variables.items():
             try:
                 data = var[:]
+                # Numeric Python lists are stored as arrays tagged with their element type; restore the list
+                if "__LIST_TYPE__" in var.ncattrs():
+                    values = np.array(data).reshape(-1).tolist()
+                    state[var_name] = [bool(v) for v in values] if var.getncattr("__LIST_TYPE__") == "bool" else values
                 # If it's a scalar, extract the item, otherwise make numpy array
-                if isinstance(data, np.ndarray) and data.shape == ():
+                elif isinstance(data, np.ndarray) and data.shape == ():
                     state[var_name] = data.item()
                 else:
                     state[var_name] = np.array(data)
@@ -415,6 +419,25 @@ def load_model(path):
     return md
 
 
+def _numeric_list_type(values):
+    """
+    Return 'bool', 'int' or 'float' if every element of a list is a number of that kind, else None.
+
+    Used by save_model so that lists such as md.inversion.cost_functions = [101, 501] are written as
+    numbers (and read back as a list of numbers) rather than as strings.
+    """
+    if not values:
+        return None
+    if all(isinstance(v, (bool, np.bool_)) for v in values):
+        return 'bool'
+    if any(isinstance(v, (bool, np.bool_)) for v in values):
+        return None
+    if all(isinstance(v, (int, np.integer)) for v in values):
+        return 'int'
+    if all(isinstance(v, (int, float, np.integer, np.floating)) for v in values):
+        return 'float'
+    return None
+
 def save_model(md, path, verbose = 0):
     """
     Save an ISSM model to a NetCDF file.
@@ -449,6 +472,9 @@ def save_model(md, path, verbose = 0):
       (``np.int32``, ``np.int64``, ``np.float32``, ``np.float64``, etc.).
     - Handles 1D and 2D string arrays (including MATLAB-style char arrays) and object arrays.
     - Empty lists are stored as the special string `"__EMPTY_LIST__"`.
+    - Lists of numbers (e.g. ``md.inversion.cost_functions``) are stored as numeric variables tagged with
+      a ``__LIST_TYPE__`` attribute, so that :func:`load_model` returns them as lists of numbers. Other
+      lists are stored as strings.
     - Nested dictionaries and OrderedDicts are serialized recursively into NetCDF groups.
     - Nested objects with `__getstate__()` or `__dict__` are serialized recursively.
     - The 'results' attribute is treated specially:
@@ -502,9 +528,17 @@ def save_model(md, path, verbose = 0):
                 group.setncattr(attr_name, "__EMPTY_LIST__")
                 return True
             
-            # If it's a list, convert to an array                    
+            # If it's a list, convert to an array. Lists of numbers keep their numeric type (tagged so that
+            # load_model returns a list again); other lists are stored as strings.
+            list_type = None
             if isinstance(value, list):
-                value = np.array(value, dtype='S')
+                list_type = _numeric_list_type(value)
+                if list_type == 'bool':
+                    value = np.array(value, dtype = np.int8)
+                elif list_type is not None:
+                    value = np.array(value)
+                else:
+                    value = np.array(value, dtype='S')
             # Otherwise, check the array type
             else:
                 # If it's an object array, convert to a string array (object arrays can't be written to NetCDF)
@@ -534,6 +568,8 @@ def save_model(md, path, verbose = 0):
 
             ## Add data to variable
             var[:] = value
+            if list_type is not None:
+                var.setncattr("__LIST_TYPE__", list_type)
 
             return True
         return False
