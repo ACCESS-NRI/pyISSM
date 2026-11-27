@@ -806,6 +806,179 @@ def compare_bin_files(
     else:
         print("\n".join(lines))
 
+_MISSING = object()
+
+def compare_models(md1,
+                   md2,
+                   rtol = 0.,
+                   atol = 0.,
+                   fields = None,
+                   ignore = None,
+                   ignore_singleton_dims = True,
+                   verbose = True):
+    """
+    Compare two ISSM models field by field and report the differences.
+
+    The Python counterpart of ``$ISSM_DIR/src/m/consistency/comparemodels.m``. Every model
+    class is compared recursively (including results, output definitions and other nested
+    objects and lists). Numeric fields are compared with NaN treated as equal to NaN, and
+    optionally within a tolerance. Either model can be given as a path to a NetCDF file
+    written by ``save_model`` (e.g. a model exported from MATLAB), which is loaded with
+    :func:`pyissm.model.io.load_model`.
+
+    Parameters
+    ----------
+    md1, md2 : :class:`pyissm.model.Model` or str
+        Models to compare, or paths to NetCDF model files.
+    rtol, atol : float, optional
+        Relative and absolute tolerance for numeric fields, as in :func:`numpy.allclose`.
+        Default is 0 (exact equality).
+    fields : list of str, optional
+        Only compare these top-level fields (e.g. ``['geometry', 'friction']``). Default is all fields.
+    ignore : list of str, optional
+        Field paths to skip, with everything below them (e.g. ``['results', 'private', 'miscellaneous.name']``).
+    ignore_singleton_dims : bool, optional
+        Treat arrays that differ only by singleton dimensions as the same shape, e.g. ``(n,)`` and
+        ``(n, 1)`` (MATLAB stores vectors as columns). Default is True.
+    verbose : bool, optional
+        Print the differences. Default is True.
+
+    Returns
+    -------
+    list of tuple of (str, str)
+        One ``(field path, description)`` per difference, e.g.
+        ``('geometry.thickness', 'values differ (3 of 1024 entries, max abs diff 0.5)')``.
+        Empty if the models match.
+
+    Examples
+    --------
+    .. code-block:: python
+
+        >>> diffs = compare_models(md, md_matlab)
+        >>> diffs = compare_models('run_python.nc', 'run_matlab.nc', rtol = 1e-10, ignore = ['results', 'private'])
+        >>> compare_models(md1, md2, fields = ['friction'], verbose = False)
+        [('friction.coefficient', 'values differ (12 of 1024 entries, max abs diff 3.2)')]
+    """
+
+    if not isinstance(md1, model.Model):
+        md1 = model.io.load_model(md1)
+    if not isinstance(md2, model.Model):
+        md2 = model.io.load_model(md2)
+
+    options = {'rtol': rtol, 'atol': atol, 'ignore_singleton_dims': ignore_singleton_dims,
+               'ignore': tuple(ignore or ())}
+    differences = []
+    names = list(fields) if fields is not None else _public_names(md1, md2)
+    for name in names:
+        _compare_values(name, getattr(md1, name, _MISSING), getattr(md2, name, _MISSING), differences, options)
+
+    if verbose:
+        if differences:
+            for path, description in differences:
+                print(f'{path}: {description}')
+        else:
+            print('compare_models: no differences found.')
+
+    return differences
+
+def _public_names(obj1, obj2):
+    """Public attribute names of obj1 then those only in obj2, in definition order."""
+    names = [name for name in vars(obj1) if not name.startswith('_')]
+    names += [name for name in vars(obj2) if not name.startswith('_') and name not in names]
+    return names
+
+def _is_ignored(path, ignore):
+    return any(path == item or path.startswith(item + '.') or path.startswith(item + '[') for item in ignore)
+
+def _compare_values(path, a, b, differences, options):
+    """Compare two field values and append (path, description) for each difference found."""
+    if _is_ignored(path, options['ignore']):
+        return
+    if a is _MISSING or b is _MISSING:
+        differences.append((path, 'only in md2' if a is _MISSING else 'only in md1'))
+        return
+    if a is None or b is None:
+        if (a is None) != (b is None):
+            differences.append((path, f'{type(a).__name__} vs {type(b).__name__}'))
+        return
+
+    ## Mappings (dict and OrderedDict compare by content)
+    if isinstance(a, dict) and isinstance(b, dict):
+        keys = list(a) + [key for key in b if key not in a]
+        for key in keys:
+            _compare_values(f'{path}[{key!r}]', a.get(key, _MISSING), b.get(key, _MISSING), differences, options)
+        return
+
+    ## Model classes and other objects: recurse into their fields
+    if hasattr(a, '__dict__') or hasattr(b, '__dict__'):
+        if type(a) is not type(b):
+            differences.append((path, f'class differs ({_class_name(a)} vs {_class_name(b)}), not compared further'))
+            return
+        for name in _public_names(a, b):
+            _compare_values(f'{path}.{name}', getattr(a, name, _MISSING), getattr(b, name, _MISSING), differences, options)
+        return
+
+    ## Containers
+    if isinstance(a, (list, tuple)) and isinstance(b, (list, tuple)) and not (_is_numeric(a) and _is_numeric(b)):
+        if len(a) != len(b):
+            differences.append((path, f'length differs ({len(a)} vs {len(b)})'))
+            return
+        for i, (ai, bi) in enumerate(zip(a, b)):
+            _compare_values(f'{path}[{i}]', ai, bi, differences, options)
+        return
+
+    ## Strings
+    if isinstance(a, str) or isinstance(b, str):
+        if not (isinstance(a, str) and isinstance(b, str)):
+            differences.append((path, f'type differs ({type(a).__name__} vs {type(b).__name__})'))
+        elif a != b:
+            differences.append((path, f'differs ({a!r} vs {b!r})'))
+        return
+
+    ## Numbers and arrays
+    if _is_numeric(a) and _is_numeric(b):
+        description = _compare_numeric(np.asarray(a, dtype = float), np.asarray(b, dtype = float), options)
+        if description:
+            differences.append((path, description))
+        return
+
+    ## Anything else (e.g. object or string arrays)
+    try:
+        equal = bool(np.array_equal(np.asarray(a), np.asarray(b)))
+    except Exception:
+        equal = a == b
+    if not equal:
+        differences.append((path, f'differs ({type(a).__name__} vs {type(b).__name__})'))
+
+def _class_name(obj):
+    cls = type(obj)
+    module = cls.__module__.split('.')[-1]
+    return cls.__name__ if module in ('Model', 'builtins') else f'{module}.{cls.__name__}'
+
+def _is_numeric(value):
+    try:
+        return np.asarray(value).dtype.kind in 'biuf'
+    except Exception:
+        return False
+
+def _compare_numeric(a, b, options):
+    """Describe how two numeric arrays differ, or return None if they match."""
+    if options['ignore_singleton_dims'] and a.size == b.size:
+        a, b = np.squeeze(a), np.squeeze(b)
+    if a.shape != b.shape:
+        return f'shape differs ({a.shape} vs {b.shape})'
+    nan_a, nan_b = np.isnan(a), np.isnan(b)
+    if not np.array_equal(nan_a, nan_b):
+        return f'NaN positions differ ({int(nan_a.sum())} vs {int(nan_b.sum())} NaN)'
+    close = np.isclose(a, b, rtol = options['rtol'], atol = options['atol'], equal_nan = True)
+    if close.all():
+        return None
+    finite = ~close & np.isfinite(a) & np.isfinite(b)
+    description = f'values differ ({int((~close).sum())} of {close.size} entries'
+    if finite.any():
+        description += f', max abs diff {np.abs(a[finite] - b[finite]).max():.6g}'
+    return description + ')'
+
 def summarize_solution(solution):
     """
     Print a summary of field names, types, and sizes for an ISSM solution object.
