@@ -7,7 +7,8 @@ import numpy as np
 import os
 import collections
 import matplotlib.tri as tri
-from scipy.interpolate import griddata
+from scipy.interpolate import CloughTocher2DInterpolator
+from scipy.spatial import Delaunay, cKDTree
 import warnings
 from pyissm import model, tools
 
@@ -356,6 +357,59 @@ def make_gridded_domain_mask(mesh_x,
 
     return domain_mask
 
+def _grid_interpolator(points, grid_x, grid_y, method = 'linear'):
+    """
+    Build a function that interpolates values at scattered points onto a regular grid.
+
+    Gives the same result as ``scipy.interpolate.griddata(points, values, (grid_x, grid_y), method)``
+    (NaN outside the convex hull for 'linear' and 'cubic'), but the triangulation, point location and
+    interpolation weights are computed once, so interpolating many fields (e.g. every time step of a
+    transient result) on the same mesh only costs a weighted sum per field.
+
+    Parameters
+    ----------
+    points : ndarray
+        (npoints, 2) coordinates of the data points.
+    grid_x, grid_y : ndarray
+        Coordinates of the grid points (any shape, typically from ``np.meshgrid``).
+    method : str, optional
+        'linear' (default), 'nearest' or 'cubic'.
+
+    Returns
+    -------
+    callable
+        ``interpolate(values)`` mapping a (npoints,) array to an array shaped like ``grid_x``.
+    """
+    xi = np.column_stack((np.ravel(grid_x), np.ravel(grid_y)))
+    shape = np.shape(grid_x)
+
+    if method == 'nearest':
+        _, nearest = cKDTree(points).query(xi)
+        return lambda values: np.asarray(values)[nearest].reshape(shape)
+
+    if method not in ('linear', 'cubic'):
+        raise ValueError(f"grid_model_field: unknown interpolation method '{method}'. Use 'linear', 'nearest' or 'cubic'.")
+
+    triangulation = Delaunay(points)
+
+    if method == 'cubic':
+        return lambda values: CloughTocher2DInterpolator(triangulation, values)(xi).reshape(shape)
+
+    # Linear: barycentric weights of each grid point in its containing triangle
+    simplex = triangulation.find_simplex(xi)
+    inside = simplex >= 0
+    transform = triangulation.transform[simplex[inside]]
+    barycentric = np.einsum('nij,nj->ni', transform[:, :2], xi[inside] - transform[:, 2])
+    weights = np.column_stack((barycentric, 1. - barycentric.sum(axis = 1)))
+    vertices = triangulation.simplices[simplex[inside]]
+
+    def interpolate(values):
+        out = np.full(xi.shape[0], np.nan)
+        out[inside] = np.einsum('ni,ni->n', np.asarray(values, dtype = float)[vertices], weights)
+        return out.reshape(shape)
+
+    return interpolate
+
 def grid_model_field(md,
                      model_field,
                      grid_x,
@@ -459,17 +513,15 @@ def grid_model_field(md,
 
     ## Interpolate data, one time-step at a time
     ## -------------------------------------
+    # The triangulation, point location and interpolation weights depend only on the mesh and grid,
+    # so they are computed once and reused for every time step (same result as scipy's griddata).
+    interpolate = _grid_interpolator(np.column_stack((mesh_x, mesh_y)), grid_x, grid_y, method)
     for t in range(nt):
-        gridded_model_field[t] = griddata(
-            points = np.column_stack((mesh_x, mesh_y)),
-            values = model_field[t],
-            xi = (grid_x, grid_y),
-            method = method
-        )
+        gridded_model_field[t] = interpolate(model_field[t])
 
     ## Mask the gridded data
     ## -------------------------------------
-    # By default griddata() returns data for the convex hull of the x/y points
+    # Linear and cubic interpolation return data for the convex hull of the x/y points
     # Here, we mask data to the mesh (default) or a provided domain_mask
     if domain_mask is None:
         # By default, mask data to mesh (use native md.mesh coordinates, not element centroids)
