@@ -1122,6 +1122,11 @@ class Model():
 
         if hasattr(md.calving, 'coeff') and not np.isnan(md.calving.coeff).all():
             md.calving.coeff = mesh._project_2d(md, md.calving.coeff, 1)
+        # Spatial calving fields (scalars are returned unchanged)
+        for field in ['flotation_fraction', 'stress_threshold_groundedice', 'stress_threshold_floatingice', 'basin_id']:
+            value = getattr(md.calving, field, None)
+            if value is not None and np.size(value) > 1 and np.shape(value)[0] in (md.mesh.numberofvertices, md.mesh.numberofvertices + 1, md.mesh.numberofelements):
+                setattr(md.calving, field, mesh._project_2d(md, value, 1))
         if hasattr(md.frontalforcings, 'meltingrate') and not np.isnan(md.frontalforcings.meltingrate).all():
             md.frontalforcings.meltingrate = mesh._project_2d(md, md.frontalforcings.meltingrate, 1)
 
